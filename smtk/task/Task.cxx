@@ -57,6 +57,22 @@ bool checkDependenciesRecursive(Task* check, Task* cycle, std::set<Task*>& visit
   return true;
 }
 
+// Checks to see if a task or any of its descendants are present in a set of tasks.
+// Returns true if neither the tasks nor its descendants are in the set.
+bool checkDescendants(Task* task, const std::unordered_set<const Task*>& taskSet)
+{
+  // Is the task in the set?
+  if (taskSet.find(task) != taskSet.end())
+  {
+    return false;
+  }
+
+  // Now check all of its children
+  return (std::all_of(task->children().begin(), task->children().end(), [taskSet](Task* child) {
+    return checkDescendants(child, taskSet);
+  }));
+}
+
 } // anonymous namespace
 
 void workflowsOfTask(
@@ -263,10 +279,6 @@ void Task::configure(const Configuration& config)
         }
       }
     }
-  }
-  if (!helper.topLevel())
-  {
-    m_parent = helper.tasks().unswizzle(1);
   }
 }
 
@@ -478,6 +490,15 @@ Task::PassedDependencies Task::dependencies() const
 bool Task::canAddDependency(const std::shared_ptr<Task>& dependency)
 {
   std::set<Task*> visited;
+  if (!dependency)
+  {
+    return false;
+  }
+  // Are both the tasks involved children of the same parents?
+  if (m_parent != dependency->m_parent)
+  {
+    return false;
+  }
   bool ok = checkDependenciesRecursive(dependency.get(), this, visited);
   return ok;
 }
@@ -856,6 +877,81 @@ std::unordered_set<Agent*> Task::agents() const
     aset.insert(agent.get());
   }
   return aset;
+}
+
+std::vector<Task*> Task::lineage() const
+{
+  std::vector<Task*> result;
+  for (Task* p = m_parent; p != nullptr; p = p->m_parent)
+  {
+    result.push_back(p);
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+std::unordered_set<const Task*> Task::ancestors() const
+{
+  std::unordered_set<const Task*> result;
+  for (const Task* p = this; p != nullptr; p = p->m_parent)
+  {
+    result.insert(p);
+  }
+  return result;
+}
+
+bool Task::canAddChild(const std::shared_ptr<Task>& child) const
+{
+  if (child->m_parent != nullptr)
+  {
+    // task is already a child to a task
+    return false;
+  }
+  auto taskSet = this->ancestors();
+  return checkDescendants(child.get(), taskSet);
+}
+
+bool Task::addChild(const std::shared_ptr<Task>& child)
+{
+  auto taskSet = this->ancestors();
+  return this->addChild(child, taskSet);
+}
+
+bool Task::addChild(
+  const std::shared_ptr<Task>& child,
+  const std::unordered_set<const Task*>& taskSet)
+{
+  // Is this child already parented?
+  if (child->m_parent != nullptr)
+  {
+    return false;
+  }
+  if (child && checkDescendants(child.get(), taskSet))
+  {
+    m_children.insert(child.get());
+    child->m_parent = this;
+    // Compute new task child state if needed
+    this->updateChildrenState(child.get(), State::Irrelevant, child->state());
+    return true;
+  }
+  return false;
+}
+
+bool Task::removeChild(const std::shared_ptr<Task>& child)
+{
+  if (child && (child->m_parent == this))
+  {
+    auto it = m_children.find(child.get());
+    if (it != m_children.end())
+    {
+      m_children.erase(it);
+      child->m_parent = nullptr;
+      // Compute new task child state if needed
+      this->updateChildrenState(child.get(), child->state(), State::Irrelevant);
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace task

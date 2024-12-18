@@ -22,6 +22,7 @@
 #include "smtk/extension/qt/diagram/qtDiagramView.h"
 #include "smtk/extension/qt/diagram/qtDiagramViewConfiguration.h"
 #include "smtk/extension/qt/diagram/qtTaskArc.h"
+#include "smtk/extension/qt/diagram/qtTaskPath.h"
 #include "smtk/extension/qt/diagram/qtTaskPortArc.h"
 #include "smtk/extension/qt/diagram/qtTaskPortNode.h"
 
@@ -34,6 +35,7 @@
 #include "smtk/extension/qt/diagram/qtDisconnectMode.h"
 #include "smtk/extension/qt/diagram/qtPanMode.h"
 #include "smtk/extension/qt/diagram/qtSelectMode.h"
+#include "smtk/extension/qt/diagram/qtTaskPath.h"
 
 #include "smtk/view/Configuration.h"
 #include "smtk/view/json/jsonView.h"
@@ -190,9 +192,16 @@ qtTaskEditor::qtTaskEditor(
   // Register an arc type for port connections
   this->diagram()->legend()->addEntry(
     new qtDiagramLegendEntry("arc"_token, SMTK_ARC_PORT_CONN, this));
+  m_taskPath = new qtTaskPath(this, this->diagram()->topFrame());
+  this->diagram()->topFrame()->layout()->addWidget(m_taskPath);
 }
 
 qtTaskEditor::~qtTaskEditor() = default;
+
+smtk::task::Manager* qtTaskEditor::manager() const
+{
+  return m_p->m_taskManager;
+}
 
 template<bool RemoveUnusedArcs>
 bool qtTaskEditor::updateArcs(
@@ -437,10 +446,11 @@ void qtTaskEditor::updateSceneNodes(
   const smtk::operation::Operation::Result& result)
 {
   (void)modified;
-  (void)expunged;
   (void)operation;
   (void)result;
 
+  // Get the parent task (if there is one) that will be used to set node visibility
+  smtk::task::Task* targetParent = m_taskPath->lastTask();
   // Track whether changes were made to the diagram. If so, we
   // will ask the view to scale/scroll to include the task-diagram.
   bool diagramModified = false;
@@ -492,6 +502,7 @@ void qtTaskEditor::updateSceneNodes(
         }
 
         tnode->setEnabled(this->diagram()->nodesEnabled());
+        tnode->setVisible(task->parent() == targetParent);
         if (this->diagram()->arcSelectionEnabled())
         {
           tnode->setFlags(tnode->flags() & ~QGraphicsItem::ItemIsSelectable);
@@ -514,7 +525,17 @@ void qtTaskEditor::updateSceneNodes(
             continue;
           }
 
-          qtTaskPortNode* pnode = new qtTaskPortNode(this, pinfo.second, tnode);
+          qtTaskPortNode* pnode;
+          if (pinfo.second->access() == smtk::task::Port::Internal)
+          {
+            pnode = new qtTaskPortNode(this, pinfo.second, nullptr);
+            // by default internal ports are not displayed
+            pnode->setVisible(false);
+          }
+          else
+          {
+            pnode = new qtTaskPortNode(this, pinfo.second, tnode);
+          }
           pnode->setEnabled(this->diagram()->nodesEnabled());
           if (this->diagram()->arcSelectionEnabled())
           {
@@ -543,6 +564,8 @@ void qtTaskEditor::updateSceneNodes(
             return;
           }
           // std::cout << "Switch active task from " << prev << " to " << next << "\n";
+          // What is the current tail of the task path
+          auto* currentLastTask = m_taskPath->lastTask();
           auto* prevTaskNode = this->findTaskNode(prev);
           auto* nextTaskNode = this->findTaskNode(next);
           if (prevTaskNode)
@@ -557,6 +580,10 @@ void qtTaskEditor::updateSceneNodes(
             nextTaskNode->updateTaskState(nextState, nextState, true);
             nextTaskNode->setOutlineStyle(qtBaseTaskNode::OutlineStyle::Active);
           }
+          this->m_taskPath->setActiveTask(next);
+          // Update visibility if needed
+          auto* newLastTask = m_taskPath->lastTask();
+          this->updateVisibility(currentLastTask, newLastTask);
         },
         0,
         true,
@@ -576,7 +603,17 @@ void qtTaskEditor::updateSceneNodes(
       }
 
       auto* tnode = this->findTaskNode(port->parent());
-      qtTaskPortNode* pnode = new qtTaskPortNode(this, port, tnode);
+      qtTaskPortNode* pnode;
+      if (port->access() == smtk::task::Port::Internal)
+      {
+        pnode = new qtTaskPortNode(this, port, nullptr);
+        // by default internal ports are not displayed
+        pnode->setVisible(false);
+      }
+      else
+      {
+        pnode = new qtTaskPortNode(this, port, tnode);
+      }
 
       pnode->setEnabled(this->diagram()->nodesEnabled());
       if (this->diagram()->arcSelectionEnabled())
@@ -591,6 +628,16 @@ void qtTaskEditor::updateSceneNodes(
       this->diagram()->addNode(pnode);
       diagramModified = true;
       modBounds = modBounds.united(pnode->boundingRect());
+    }
+  }
+
+  // Currently only deal with the project being deleted
+  for (auto* obj : expunged)
+  {
+    if (dynamic_cast<smtk::project::Project*>(obj) != nullptr)
+    {
+      // Make sure that the task path has been cleared.
+      m_taskPath->gotoRoot();
     }
   }
 
@@ -819,6 +866,107 @@ bool qtTaskEditor::acceptDrop(QDropEvent* event)
     smtkErrorMacro(smtk::io::Logger::instance(), "Failed to emplace one or more dropped worklets.");
   }
   return didAdd && !didFail;
+}
+
+void qtTaskEditor::updateVisibility(
+  const smtk::task::Task* prevTailTask,
+  const smtk::task::Task* newTailTask)
+{
+  // If the tasks are the same then there is nothing that needs to be done
+  if (prevTailTask == newTailTask)
+  {
+    return;
+  }
+
+  // We are changing the display so make sure the diagram is in its default mode
+  m_diagram->requestModeChange(m_diagram->defaultMode());
+
+  // If the previous tail of the task path is null then we were showing the toplevel tasks (and arcs) which need
+  // now need to be hidden
+  std::unordered_set<smtk::task::Task*> tasks;
+  if (prevTailTask == nullptr)
+  {
+    tasks = m_p->m_taskManager->taskInstances().topLevelTasks();
+  }
+  else
+  {
+    tasks = prevTailTask->children();
+    // Turn off the node's internal ports
+    for (auto pinfo : prevTailTask->ports())
+    {
+      if (pinfo.second->access() == smtk::task::Port::Internal)
+      {
+        auto* node = m_diagram->findNode(pinfo.second->id());
+        if (node)
+        {
+          node->setVisible(false);
+          // Turn off its arcs
+          auto nodeArcs = m_diagram->arcsOfNode(node);
+          for (auto* arc : nodeArcs)
+          {
+            arc->setVisible(false);
+          }
+        }
+      }
+    }
+  }
+
+  for (auto* t : tasks)
+  {
+    // Turn off the corresponding Task Node
+    auto* node = m_diagram->findNode(t->id());
+    if (node)
+    {
+      node->setVisible(false);
+      // Turn off its arcs
+      auto nodeArcs = m_diagram->arcsOfNode(node);
+      for (auto* arc : nodeArcs)
+      {
+        arc->setVisible(false);
+      }
+    }
+  }
+
+  if (newTailTask == nullptr)
+  {
+    tasks = m_p->m_taskManager->taskInstances().topLevelTasks();
+  }
+  else
+  {
+    // Turn on the node's internal ports
+    for (auto pinfo : newTailTask->ports())
+    {
+      if (pinfo.second->access() == smtk::task::Port::Internal)
+      {
+        auto* node = m_diagram->findNode(pinfo.second->id());
+        if (node)
+        {
+          node->setVisible(true);
+          // Turn off its arcs
+          auto nodeArcs = m_diagram->arcsOfNode(node);
+          for (auto* arc : nodeArcs)
+          {
+            arc->setVisible(true);
+          }
+        }
+      }
+    }
+    tasks = newTailTask->children();
+  }
+
+  for (auto* t : tasks)
+  {
+    auto* node = m_diagram->findNode(t->id());
+    if (node)
+    {
+      node->setVisible(true);
+      auto nodeArcs = m_diagram->arcsOfNode(node);
+      for (auto* arc : nodeArcs)
+      {
+        arc->setVisible(true);
+      }
+    }
+  }
 }
 
 } // namespace extension

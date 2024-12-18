@@ -46,15 +46,29 @@ void from_json(const json& jj, ProjectPtr& project)
   smtk::resource::ResourcePtr tmp = std::static_pointer_cast<smtk::resource::Resource>(project);
   smtk::resource::from_json(jj, tmp);
 
-  from_json(jj["resources"], project->resources(), project);
-  from_json(jj["operations"], project->operations());
-  auto it = jj.find("task_manager");
+  auto it = jj.find("resources");
+  if (it != jj.end())
+  {
+    from_json(*it, project->resources(), project);
+  }
+
+  it = jj.find("operations");
+  if (it != jj.end())
+  {
+    from_json(*it, project->operations());
+  }
+
+  it = jj.find("task_manager");
   if (it != jj.end())
   {
     from_json(*it, project->taskManager());
   }
 
-  project->setVersion(jj["conceptual_version"]);
+  it = jj.find("conceptual_version");
+  if (it != jj.end())
+  {
+    project->setVersion(*it);
+  }
 }
 } // namespace project
 } // namespace smtk

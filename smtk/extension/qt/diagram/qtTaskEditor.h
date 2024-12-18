@@ -27,12 +27,19 @@
 
 namespace smtk
 {
+
+namespace task
+{
+class Manager;
+}
+
 namespace extension
 {
 
 class qtBaseArc;
 class qtBaseNode;
 class qtBaseTaskNode;
+class qtTaskPath;
 
 /**\brief A widget that displays SMTK tasks available to users in a diagram.
   *
@@ -86,6 +93,14 @@ public:
   /// Return the qtBaseTaskNode that corresponds to a Task
   qtBaseTaskNode* findTaskNode(const smtk::task::Task* task) const;
 
+  /// Return the task manager associated with the editor
+  smtk::task::Manager* manager() const;
+
+  /// Update the visibility of Tasks, Ports and related Arcs.
+  ///
+  /// Due to changing the active task
+  void updateVisibility(const smtk::task::Task* prevTailTask, const smtk::task::Task* newTailTask);
+
 protected:
   template<bool RemoveUnusedArcs>
   bool updateArcs(
@@ -94,6 +109,7 @@ protected:
     ArcLegendEntries& legendInfo);
   class Internal;
   Internal* m_p;
+  qtTaskPath* m_taskPath;
 };
 
 } // namespace extension

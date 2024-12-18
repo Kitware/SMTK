@@ -70,5 +70,18 @@ smtk::task::Task::Ptr Instances::findById(const smtk::common::UUID& taskId) cons
   return foundTask;
 }
 
+std::unordered_set<smtk::task::Task*> Instances::topLevelTasks() const
+{
+  std::unordered_set<smtk::task::Task*> topTasks;
+  this->visit([&topTasks](const std::shared_ptr<smtk::task::Task>& task) {
+    if (task->parent() == nullptr)
+    {
+      topTasks.insert(task.get());
+    }
+    return smtk::common::Visit::Continue;
+  });
+  return topTasks;
+}
+
 } // namespace task
 } // namespace smtk

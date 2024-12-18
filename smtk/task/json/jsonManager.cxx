@@ -228,7 +228,7 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         // TODO: UI state.
       }
     }
-    // Do a second pass to deserialize dependencies.
+    // Do a second pass to deserialize dependencies and children.
     for (const auto& jsonTask : jj.at("tasks"))
     {
       auto jTaskId = jsonTask.at("id");
@@ -297,6 +297,50 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
           }
         }
         task->addDependencies(taskDeps);
+      }
+      if (jsonTask.contains("children"))
+      {
+        std::set<smtk::task::TaskPtr> taskChildren;
+        for (const auto& cid : jsonTask.at("children"))
+        {
+          if (cid.is_number_integer())
+          {
+            // Set by call to helper.tasks().setSwizzleId(task.get(), taskId) above
+            auto* childTask = helper.tasks().unswizzle(cid.get<json::Helper::SwizzleId>());
+            if (childTask)
+            {
+              taskChildren.insert(
+                std::static_pointer_cast<smtk::task::Task>(childTask->shared_from_this()));
+            }
+            else
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                task->name() << " has unknown child task " << cid.get<json::Helper::SwizzleId>()
+                             << "; skipping.");
+              continue;
+            }
+          }
+          else
+          {
+            auto it = taskMap.find(cid.get<smtk::common::UUID>());
+            if (it == taskMap.end())
+            {
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                task->name() << " has unknown child " << cid << "; skipping.");
+              continue;
+            }
+            if (it->second == task)
+            {
+              smtkWarningMacro(
+                smtk::io::Logger::instance(), task->name() << " trying to set child to itself");
+              continue;
+            }
+            taskChildren.insert(it->second);
+          }
+        }
+        task->addChildren(taskChildren);
       }
     }
 
@@ -414,20 +458,10 @@ void to_json(nlohmann::json& jj, const Manager& manager)
   // Serialize tasks
   nlohmann::json::array_t taskList;
   manager.taskInstances().visit([&taskList](const smtk::task::Task::Ptr& task) {
-    auto& helper = json::Helper::instance();
-    if (
-      !task->parent() ||
-      (smtk::task::json::Helper::nestingDepth() > 1 &&
-       helper.tasks().unswizzle(1) == task->parent()))
+    nlohmann::json jsonTask = task;
+    if (!jsonTask.is_null())
     {
-      // Only serialize top-level tasks. (Tasks with children are responsible
-      // for serializing their children).
-      nlohmann::json jsonTask = task;
-      if (!jsonTask.is_null())
-      {
-        // helper.updateUIState(task, jsonTask);
-        taskList.push_back(jsonTask);
-      }
+      taskList.push_back(jsonTask);
     }
     return smtk::common::Visit::Continue;
   });

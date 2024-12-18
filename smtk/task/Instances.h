@@ -92,6 +92,9 @@ public:
   /// Returns the task with the given ID.
   smtk::task::Task::Ptr findById(const smtk::common::UUID& taskId) const;
 
+  /// Return the top-level (parent-less) tasks
+  std::unordered_set<smtk::task::Task*> topLevelTasks() const;
+
 protected:
   Manager& m_taskManager;
 };

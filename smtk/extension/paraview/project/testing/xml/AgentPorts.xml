@@ -45,15 +45,15 @@
   <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/smtk::task::ConnectPorts11/ReferenceItemFrame_from/CopyFromSelection" command="activate" arguments="" />
   <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/OpViewApplyButton" command="activate" arguments="" />
   <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_tabbar/1CloseButton0" command="activate" arguments="" />
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,285,142" />
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,285,142" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/MainCentralFame/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,285,142" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/MainCentralFame/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,285,142" />
   <pqevent object="nodeContainer_eaf53a10-ceaf-4543-a0a5-2f5ce7e2a5a1/m_title" command="set_boolean" arguments="true" />
   <pqevent object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/assignColorsView/AssignColorsParameters/ApplyDefaultColorBtn" command="activate" arguments="" />
 
   <!-- Validate that the operation ran by changing the active task to a dependent task and validating one of its parameters -->
   <pqevent object="pqClientMainWindow/pqSMTKResourceDock/pqSMTKResourcePanel/pqSMTKResourceBrowser/m_view" command="setSelection" arguments="" />
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,450,140" />
-  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,450,140" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/MainCentralFame/DiagramView/1QWidget0" command="mousePress" arguments="1,1,0,450,140" />
+  <pqevent object="pqClientMainWindow/pqSMTKDiagramDock/pqSMTKDiagramPanel/qtDiagramView/ContentsSplitter/MainCentralFame/DiagramView/1QWidget0" command="mouseRelease" arguments="1,0,0,450,140" />
   <pqevent object="nodeContainer_8941c887-c27e-4a1d-9d37-416230605664/m_title" command="set_boolean" arguments="true" />
   <pqcheck object="pqClientMainWindow/pqSMTKOperationParameterDock/1pqSMTKOperationParameterPanel0/OperationTabs/qt_tabwidget_stackedwidget/1QWidget0/OpViewFrame/Parameters/math_op.MathOp9/IntValue/dataFrame/valuesFrame/editBox0" property="text" arguments="100" />
 
