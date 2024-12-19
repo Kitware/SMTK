@@ -21,6 +21,8 @@
 
 #include <QGraphicsScene>
 
+#include <unordered_set>
+
 class QAbstractItemModel;
 class QItemSelection;
 class QTreeView;
@@ -57,6 +59,8 @@ public:
   /// Return the parent diagram.
   qtDiagram* diagram() { return m_diagram; }
 
+  std::unordered_set<qtBaseNode*> nodesOfSelection() const;
+
 public Q_SLOTS:
   /// Compute a layout of the \a nodes and \a arcs passed into this method.
   ///
@@ -64,6 +68,29 @@ public Q_SLOTS:
   bool computeLayout(
     const std::unordered_set<qtBaseNode*>& nodes,
     const std::unordered_set<qtBaseArc*>& arcs);
+
+  /// These methods are called with +1, 0, or -1 from the above methods
+  /// (alignLeft/HCenterRight and alignTop/VCenter/Bottom).
+  /// Call these methods with \a aignment set to +1, 0, or -1
+  /// to align nodes horizontally or vertically.
+  ///
+  /// When called with +1, nodes are aligned to their right-/top-most edges.
+  /// When called with  0, nodes are aligned to their centers.
+  /// When called with -1, nodes are aligned to their left-/bottom-most edges.
+  virtual void alignHorizontal(const std::unordered_set<qtBaseNode*>& nodeSet, int alignment);
+  virtual void alignVertical(const std::unordered_set<qtBaseNode*>& nodeSet, int alignment);
+
+  /// Call these methods with \a distribution set to "centers" or "gaps"
+  /// to redistribute nodes horizontally or vertically.
+  ///
+  /// When called with "centers", node center points are evenly distributed.
+  /// When called with "gaps", the space between nodes is evenly distributed.
+  virtual void distributeHorizontal(
+    const std::unordered_set<qtBaseNode*>& nodeSet,
+    smtk::string::Token distribution);
+  virtual void distributeVertical(
+    const std::unordered_set<qtBaseNode*>& nodeSet,
+    smtk::string::Token distribution);
 
 protected:
   /// Snaps the given \a x and \a y coordinate to the next available top left grid point.

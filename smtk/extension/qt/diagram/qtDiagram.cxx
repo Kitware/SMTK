@@ -373,6 +373,16 @@ public:
         }
       }
 
+      // After adding mode buttons to m_toolbar – but before entering the
+      // default mode – add a spacer to separate modes from mode-specific
+      // widgets (which should be created when the mode is first entered).
+      auto* spacer = new QFrame;
+      spacer->setObjectName("DiagramToolbarModeSpacer");
+      spacer->setFrameShape(QFrame::NoFrame);
+      spacer->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Minimum);
+      spacer->setMinimumSize(20, 1);
+      m_toolbar->addWidget(spacer);
+
       m_taskMode->setExclusionPolicy(QActionGroup::ExclusionPolicy::Exclusive);
       if (defaultMode)
       {
@@ -1221,6 +1231,11 @@ qtDiagramViewMode* qtDiagram::modeObject() const
     return nullptr;
   }
   return it->second.get();
+}
+
+QToolBar* qtDiagram::tools() const
+{
+  return m_p->m_toolbar;
 }
 
 const std::unordered_map<smtk::string::Token, std::shared_ptr<qtDiagramViewMode>>&

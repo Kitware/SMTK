@@ -35,6 +35,12 @@ public:
   qtPanMode(qtDiagram* diagram, qtDiagramView* view, QToolBar* toolbar, QActionGroup* modeGroup);
   ~qtPanMode() override;
 
+  virtual void enableSelectionSensitiveActions();
+
+public Q_SLOTS:
+  virtual void zoomToAll();
+  virtual void zoomToSelected();
+
 protected:
   friend class qtDiagram;
 
@@ -43,6 +49,16 @@ protected:
   void exitMode() override;
 
   void removeSelection();
+
+  /// If zoom actions do not exist, create them.
+  void addModeButtons();
+  /// Called when this mode is entered/exited to show/hide alignment/distribution actions.
+  void showModeButtons(bool show = true);
+  /// Called when the SMTK selection is updated to enable/disable actions that require a selection.
+  void changeSelectionSensitiveActions(bool enable);
+
+  QAction* m_zoomToAll{ nullptr };
+  QAction* m_zoomToSelected{ nullptr };
 };
 
 } // namespace extension
