@@ -27,6 +27,23 @@ namespace py = pybind11;
 inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > pybind11_init_smtk_operation_Operation(py::module &m)
 {
   PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > instance(m, "Operation");
+
+  py::enum_<smtk::operation::Operation::ObserverOption>(instance, "ObserverOption")
+    .value("InvokeObservers", smtk::operation::Operation::ObserverOption::InvokeObservers)
+    .value("SkipObservers", smtk::operation::Operation::ObserverOption::SkipObservers)
+    .export_values();
+
+  py::enum_<smtk::operation::Operation::LockOption>(instance, "LockOption")
+    .value("LockAll", smtk::operation::Operation::LockOption::LockAll)
+    .value("ParentLocksOnly", smtk::operation::Operation::LockOption::ParentLocksOnly)
+    .value("SkipLocks", smtk::operation::Operation::LockOption::SkipLocks)
+    .export_values();
+
+  py::enum_<smtk::operation::Operation::ParametersOption>(instance, "ParametersOption")
+    .value("Validate", smtk::operation::Operation::ParametersOption::Validate)
+    .value("SkipValidation", smtk::operation::Operation::ParametersOption::SkipValidation)
+    .export_values();
+
   instance
     .def(py::init<>())
     .def("deepcopy", (smtk::operation::Operation & (smtk::operation::Operation::*)(::smtk::operation::Operation const &)) &smtk::operation::Operation::operator=)
