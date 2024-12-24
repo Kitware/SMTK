@@ -120,7 +120,7 @@ void from_json(const nlohmann::json& jj, smtk::task::Task::Ptr& task)
     auto& helper = json::Helper::instance();
     auto managers = helper.managers();
     auto& taskManager = helper.taskManager();
-    auto taskType = jj.at("type").get<std::string>();
+    auto taskType = jj.contains("type") ? jj.at("type").get<std::string>() : "smtk::task::Task";
     task = taskManager.taskInstances().createFromName(
       taskType, const_cast<nlohmann::json&>(jj), managers);
     if (jj.contains("active") && jj.at("active").get<bool>())

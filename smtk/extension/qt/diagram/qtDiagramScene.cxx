@@ -30,6 +30,8 @@
 
 #include <cmath>
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace extension
@@ -43,34 +45,44 @@ qtDiagramScene::qtDiagramScene(qtDiagram* parent)
 
 qtDiagramScene::~qtDiagramScene() = default;
 
+std::unordered_set<qtBaseNode*> qtDiagramScene::nodesOfSelection() const
+{
+  std::unordered_set<qtBaseNode*> result;
+  for (const auto& item : this->selectedItems())
+  {
+    if (auto* node = dynamic_cast<qtBaseNode*>(item))
+    {
+      result.insert(node);
+    }
+  }
+  return result;
+}
+
 bool qtDiagramScene::computeLayout(
   const std::unordered_set<qtBaseNode*>& nodes,
   const std::unordered_set<qtBaseArc*>& arcs)
 {
 #if SMTK_ENABLE_GRAPHVIZ_SUPPORT
   // compute dot string
-  qreal maxHeight = 0.0;
-  qreal maxY = 0;
+  QPointF oldCenter;
   std::string dotString;
   {
     std::stringstream nodeString;
     std::stringstream edgeString;
 
+    double scale = 1. / nodes.size();
     for (const auto& node : nodes)
     {
       // Ignore hidden nodes
-      if (!node->isVisible() || !node->nodeId())
-      {
-        continue;
-      }
+      // if (!node->isVisible() || !node->nodeId())
+      // {
+      //   continue;
+      // }
 
-      const QRectF& b = node->boundingRect();
+      const QRectF& b = node->sceneBoundingRect();
       qreal width = b.width() / POINTS_PER_INCH; // convert from points to inches
       qreal height = b.height() / POINTS_PER_INCH;
-      if (maxHeight < height)
-      {
-        maxHeight = height;
-      }
+      oldCenter += scale * node->pos();
 
       // Construct the string declaring a node.
       // See https://www.graphviz.org/pdf/libguide.pdf for more detail
@@ -112,10 +124,10 @@ bool qtDiagramScene::computeLayout(
     int i = -2;
     for (const auto& node : nodes)
     {
-      if (!node->isVisible() || !node->nodeId())
-      {
-        continue;
-      }
+      // if (!node->isVisible() || !node->nodeId())
+      // {
+      //   continue;
+      // }
 
       i += 2;
 
@@ -133,8 +145,6 @@ bool qtDiagramScene::computeLayout(
         auto& y = coords[i + 1];
         x = (coord.x - w * POINTS_PER_INCH / 2.0); // convert w/h in inches to points
         y = (-coord.y - h * POINTS_PER_INCH / 2.0);
-
-        maxY = std::max(maxY, y);
       }
     }
 
@@ -151,16 +161,25 @@ bool qtDiagramScene::computeLayout(
 
   // set positions
   {
+    auto nc = static_cast<int>(coords.size() / 2);
+    double scale = 1. / nc;
+    QPointF newCenter;
+    for (int ii = 0; ii < nc; ++ii)
+    {
+      newCenter += QPointF(coords[2 * ii], coords[2 * ii + 1]) * scale;
+    }
+    oldCenter -= newCenter;
     int i = -2;
     for (const auto& node : nodes)
     {
-      if (!node->isVisible() || !node->nodeId())
-      {
-        continue;
-      }
+      // if (!node->isVisible() || !node->nodeId())
+      // {
+      //   continue;
+      // }
       i += 2;
 
-      node->setPos(qtDiagramScene::snapToGrid(coords[i], coords[i + 1]));
+      node->setPos(
+        qtDiagramScene::snapToGrid(coords[i] + oldCenter.x(), coords[i + 1] + oldCenter.y()));
     }
   }
 
@@ -170,6 +189,316 @@ bool qtDiagramScene::computeLayout(
   (void)arcs;
   return false;
 #endif // NodeEditor_ENABLE_GRAPHVIZ
+}
+
+void qtDiagramScene::alignHorizontal(const std::unordered_set<qtBaseNode*>& nodeSet, int alignment)
+{
+  // WARNING: If you make changes to this function, also change alignVertical().
+  // The two functions are identical except for several calls specific to x- vs. y-axis
+  // coordinate methods on various objects.
+
+  // Create a map from selected nodes to their current coordinates.
+  // Depending on \a alignment, the map values are the left-, center-, or right-most
+  // point of their bounds in the scene.
+  // This also computes the minimum/maximum coordinates across the nodes.
+  std::map<qtBaseNode*, qreal> nodes;
+  qreal xlo = std::numeric_limits<qreal>::infinity();
+  qreal xhi = -std::numeric_limits<qreal>::infinity();
+  for (const auto& item : nodeSet)
+  {
+    if (auto* node = dynamic_cast<qtBaseNode*>(item))
+    {
+      auto rect = node->sceneBoundingRect();
+      qreal itemX =
+        (alignment < 0 ? rect.left() : (alignment > 0 ? rect.right() : rect.center().x()));
+      nodes[node] = itemX;
+      if (rect.left() < xlo)
+      {
+        xlo = rect.left();
+      }
+      if (rect.right() > xhi)
+      {
+        xhi = rect.right();
+      }
+    }
+  }
+  // Compute the coordinate to align the nodes to (\a location):
+  qreal location = (alignment < 0 ? xlo : (alignment > 0 ? xhi : (xlo + xhi) / 2.));
+  // Iterate over the set of nodes and update each node's coordinate
+  // to match \a location, taking parent-child coordinate systems into account.
+  for (const auto& entry : nodes)
+  {
+    qreal delta = location - entry.second;
+    QPointF pt = entry.first->pos();
+    QGraphicsItem* pp = entry.first->parentItem();
+    while (pp)
+    {
+      if (auto* parent = dynamic_cast<qtBaseNode*>(pp))
+      {
+        auto pit = nodes.find(parent);
+        if (pit != nodes.end())
+        {
+          delta -= location - pit->second;
+        }
+      }
+      pp = pp->parentItem();
+    }
+    if (delta != 0.)
+    {
+      pt.setX(pt.x() + delta);
+      entry.first->setPos(pt);
+    }
+  }
+}
+
+void qtDiagramScene::alignVertical(const std::unordered_set<qtBaseNode*>& nodeSet, int alignment)
+{
+  // WARNING: If you make changes to this function, also change alignHorizontal().
+  // The two functions are identical except for several calls specific to x- vs. y-axis
+  // coordinate methods on various objects.
+
+  // Create a map from selected nodes to their current coordinates.
+  // Depending on \a alignment, the map values are the top-, center-, or bottom-most
+  // point of their bounds in the scene.
+  // This also computes the minimum/maximum coordinates across the nodes.
+  std::map<qtBaseNode*, qreal> nodes;
+  qreal ylo = std::numeric_limits<qreal>::infinity();
+  qreal yhi = -std::numeric_limits<qreal>::infinity();
+  for (const auto& item : nodeSet)
+  {
+    if (auto* node = dynamic_cast<qtBaseNode*>(item))
+    {
+      auto rect = node->sceneBoundingRect();
+      qreal itemY =
+        (alignment < 0 ? rect.top() : (alignment > 0 ? rect.bottom() : rect.center().y()));
+      nodes[node] = itemY;
+      if (rect.top() < ylo)
+      {
+        ylo = rect.top();
+      }
+      if (rect.bottom() > yhi)
+      {
+        yhi = rect.bottom();
+      }
+    }
+  }
+  // Compute the coordinate to align the nodes to (\a location):
+  qreal location = (alignment < 0 ? ylo : (alignment > 0 ? yhi : (ylo + yhi) / 2.));
+  // Iterate over the set of nodes and update each node's coordinate
+  // to match \a location, taking parent-child coordinate systems into account.
+  for (const auto& entry : nodes)
+  {
+    qreal delta = location - entry.second;
+    QPointF pt = entry.first->pos();
+    QGraphicsItem* pp = entry.first->parentItem();
+    while (pp)
+    {
+      if (auto* parent = dynamic_cast<qtBaseNode*>(pp))
+      {
+        auto pit = nodes.find(parent);
+        if (pit != nodes.end())
+        {
+          delta -= location - pit->second;
+        }
+      }
+      pp = pp->parentItem();
+    }
+    if (delta != 0.)
+    {
+      pt.setY(pt.y() + delta);
+      entry.first->setPos(pt);
+    }
+  }
+}
+
+void qtDiagramScene::distributeHorizontal(
+  const std::unordered_set<qtBaseNode*>& nodeSet,
+  smtk::string::Token distribution)
+{
+  // WARNING: If you make changes to this function, also change alignVertical().
+  // The two functions are identical except for several calls specific to x- vs. y-axis
+  // coordinate methods on various objects.
+  std::map<qtBaseNode*, qreal> nodes;
+  std::multimap<qreal, qtBaseNode*> order;
+  qreal xlo = std::numeric_limits<qreal>::infinity();
+  qreal xhi = -std::numeric_limits<qreal>::infinity();
+  // cumSize holds the accumulated size (width) of items, which is used
+  // when distribution == "gaps"_token to determine how much additional
+  // space remains that can be distributed between items.
+  qreal cumSize = 0.;
+  for (const auto& item : nodeSet)
+  {
+    if (auto* node = dynamic_cast<qtBaseNode*>(item))
+    {
+      auto rect = node->sceneBoundingRect();
+      qreal itemX = rect.center().x();
+      nodes[node] = itemX;
+      order.insert(std::make_pair(itemX, node));
+      cumSize += rect.width();
+      if (distribution == "gaps"_token)
+      {
+        if (rect.left() < xlo)
+        {
+          xlo = rect.left();
+        }
+        if (rect.right() > xhi)
+        {
+          xhi = rect.right();
+        }
+      }
+      else if (distribution == "centers"_token)
+      {
+        if (itemX < xlo)
+        {
+          xlo = itemX;
+        }
+        if (itemX > xhi)
+        {
+          xhi = itemX;
+        }
+      }
+    }
+  }
+  // Now compute total (unadjusted for parents) movement of each node.
+  // For "gaps", spacing is the distance between node bounding rectangles.
+  // For "centers", spacing is the distance between node centers.
+  // Note that spacing can be any real number (positive, zero, or negative).
+  qreal spacing =
+    (distribution == "centers"_token ? (xhi - xlo) / (nodes.size() - 1.)
+                                     : (xhi - xlo - cumSize) / (nodes.size() - 1.));
+  qreal xx = xlo; // Distribute from left to right, starting with xlo.
+  // Assign each node an initial "delta" (horizontal distance to move) by accumulating
+  // spacing from the far left item's node-center (xlo) coordinate:
+  for (const auto& entry : order)
+  {
+    qreal init = entry.first;
+    qreal currHalfWidth = entry.second->sceneBoundingRect().width() / 2.;
+    if (distribution == "gaps"_token)
+    {
+      xx += currHalfWidth;
+    }
+    // Store the difference between the initial location (init) of
+    // the item's center and the final position (xx).
+    nodes[entry.second] = xx - init;
+    xx += (distribution == "centers"_token ? spacing : currHalfWidth + spacing);
+  }
+  // Now compute the actual "delta" for each item by accounting for parent-child
+  // relationships, then assign the new location.
+  for (const auto& entry : order)
+  {
+    QPointF pt = entry.second->pos();
+    qreal px = pt.x() + nodes[entry.second];
+    auto* pp = entry.second->parentItem();
+    while (pp)
+    {
+      if (auto* nn = dynamic_cast<qtBaseNode*>(pp))
+      {
+        auto pit = nodes.find(nn);
+        if (pit != nodes.end())
+        {
+          px -= nodes[nn];
+        }
+      }
+      pp = pp->parentItem();
+    }
+    pt.setX(px);
+    entry.second->setPos(pt);
+  }
+}
+
+void qtDiagramScene::distributeVertical(
+  const std::unordered_set<qtBaseNode*>& nodeSet,
+  smtk::string::Token distribution)
+{
+  // WARNING: If you make changes to this function, also change alignHorizontal().
+  // The two functions are identical except for several calls specific to x- vs. y-axis
+  // coordinate methods on various objects.
+  std::map<qtBaseNode*, qreal> nodes;
+  std::multimap<qreal, qtBaseNode*> order;
+  qreal ylo = std::numeric_limits<qreal>::infinity();
+  qreal yhi = -std::numeric_limits<qreal>::infinity();
+  // cumSize holds the accumulated size (height) of items, which is used
+  // when distribution == "gaps"_token to determine how much additional
+  // space remains that can be distributed between items.
+  qreal cumSize = 0.;
+  for (const auto& item : nodeSet)
+  {
+    if (auto* node = dynamic_cast<qtBaseNode*>(item))
+    {
+      auto rect = node->sceneBoundingRect();
+      qreal itemY = rect.center().y();
+      nodes[node] = itemY;
+      order.insert(std::make_pair(itemY, node));
+      cumSize += rect.height();
+      if (distribution == "gaps"_token)
+      {
+        if (rect.left() < ylo)
+        {
+          ylo = rect.left();
+        }
+        if (rect.right() > yhi)
+        {
+          yhi = rect.right();
+        }
+      }
+      else if (distribution == "centers"_token)
+      {
+        if (itemY < ylo)
+        {
+          ylo = itemY;
+        }
+        if (itemY > yhi)
+        {
+          yhi = itemY;
+        }
+      }
+    }
+  }
+  // Now compute total (unadjusted for parents) movement of each node.
+  // For "gaps", spacing is the distance between node bounding rectangles.
+  // For "centers", spacing is the distance between node centers.
+  // Note that spacing can be any real number (positive, zero, or negative).
+  qreal spacing =
+    (distribution == "centers"_token ? (yhi - ylo) / (nodes.size() - 1.)
+                                     : (yhi - ylo - cumSize) / (nodes.size() - 1.));
+  qreal yy = ylo; // Distribute from left to right, starting with ylo.
+  // Assign each node an initial "delta" (horizontal distance to move) by accumulating
+  // spacing from the far left item's node-center (ylo) coordinate:
+  for (const auto& entry : order)
+  {
+    qreal init = entry.first;
+    qreal currHalfWidth = entry.second->sceneBoundingRect().height() / 2.;
+    if (distribution == "gaps"_token)
+    {
+      yy += currHalfWidth;
+    }
+    // Store the difference between the initial location (init) of
+    // the item's center and the final position (yy).
+    nodes[entry.second] = yy - init;
+    yy += (distribution == "centers"_token ? spacing : currHalfWidth + spacing);
+  }
+  // Now compute the actual "delta" for each item by accounting for parent-child
+  // relationships, then assign the new location.
+  for (const auto& entry : order)
+  {
+    QPointF pt = entry.second->pos();
+    qreal py = pt.y() + nodes[entry.second];
+    auto* pp = entry.second->parentItem();
+    while (pp)
+    {
+      if (auto* nn = dynamic_cast<qtBaseNode*>(pp))
+      {
+        auto pit = nodes.find(nn);
+        if (pit != nodes.end())
+        {
+          py -= nodes[nn];
+        }
+      }
+      pp = pp->parentItem();
+    }
+    pt.setY(py);
+    entry.second->setPos(pt);
+  }
 }
 
 QPointF qtDiagramScene::snapToGrid(const qreal& x, const qreal& y, const qreal& resolution)

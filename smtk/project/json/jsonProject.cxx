@@ -29,7 +29,10 @@ void to_json(json& jj, const ProjectPtr& project)
 {
   smtk::resource::to_json(jj, std::static_pointer_cast<smtk::resource::Resource>(project));
 
-  to_json(jj["resources"], project->resources(), project);
+  if (!project->resources().empty())
+  {
+    to_json(jj["resources"], project->resources(), project);
+  }
   to_json(jj["operations"], project->operations());
 
   jj["task_manager"] = project->taskManager();

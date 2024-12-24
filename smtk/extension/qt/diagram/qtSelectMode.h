@@ -12,6 +12,8 @@
 
 #include "smtk/extension/qt/diagram/qtDiagramViewMode.h"
 
+#include "smtk/view/SelectionObserver.h"
+
 namespace smtk
 {
 namespace extension
@@ -34,11 +36,63 @@ public:
   qtSelectMode(qtDiagram* diagram, qtDiagramView* view, QToolBar* toolbar, QActionGroup* modeGroup);
   ~qtSelectMode() override;
 
+public Q_SLOTS:
+  /// Horizontally align selected nodes.
+  virtual void alignLeft();
+  virtual void alignHCenter();
+  virtual void alignRight();
+
+  /// Vertically align selected nodes.
+  virtual void alignTop();
+  virtual void alignVCenter();
+  virtual void alignBottom();
+
+  /// Distribute selected nodes horizontally.
+  virtual void distributeHCenters();
+  virtual void distributeHGaps();
+
+  /// Distribute selected nodes vertically.
+  virtual void distributeVCenters();
+  virtual void distributeVGaps();
+
+  /// Use graphviz to lay out selected nodes based on arcs between them (if built with graphviz).
+  virtual void layoutSelectedNodesWithTheirArcs();
+
+  /// Called when the set of selected nodes changes.
+  virtual void enableSelectionSensitiveActions();
+
 protected:
+  /// Overriden to capture key presses that modulate modes and delete nodes.
   bool eventFilter(QObject* obj, QEvent* event) override;
+
   // void sceneCleared() override;
   void enterMode() override;
   void exitMode() override;
+
+  /// If alignment/distribution actions do not exist, create them.
+  void addModeButtons();
+  /// Called when this mode is entered/exited to show/hide alignment/distribution actions.
+  void showModeButtons(bool show = true);
+  /// Called when the SMTK selection is updated to enable/disable actions that require a selection.
+  void changeSelectionSensitiveActions(bool enable);
+
+  QAction* m_alignLeft{ nullptr };
+  QAction* m_alignHCenter{ nullptr };
+  QAction* m_alignRight{ nullptr };
+  QAction* m_alignTop{ nullptr };
+  QAction* m_alignVCenter{ nullptr };
+  QAction* m_alignBottom{ nullptr };
+
+  QAction* m_distributeHCenters{ nullptr };
+  QAction* m_distributeHGaps{ nullptr };
+  QAction* m_distributeVCenters{ nullptr };
+  QAction* m_distributeVGaps{ nullptr };
+
+  QAction* m_relayoutNodes{ nullptr };
+
+  QAction* m_resetViewportToBounds{ nullptr };
+
+  smtk::view::SelectionObservers::Key m_selectionObserver;
 };
 
 } // namespace extension

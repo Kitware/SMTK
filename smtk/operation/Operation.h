@@ -201,6 +201,32 @@ public:
   /// retrieve the resource manager, if available.
   smtk::resource::ManagerPtr resourceManager();
 
+  /// When running a nested operation, specify how resource locks should be handled.
+  enum LockOption
+  {
+    LockAll,         //!< Lock all resources mentioned in the nested operation's parameters.
+    ParentLocksOnly, //!< Use only the locks already held by this (the parent's) operation.
+    SkipLocks        //!< Do not attempt to lock any resources.
+  };
+
+  /// When running a nested operation, specify whether observers should be invoked.
+  ///
+  /// This does not control the outermost operation's observers; those will always
+  /// be invoked.
+  enum ObserverOption
+  {
+    InvokeObservers, //!< Do not invoke observers for the internal/nested operation.
+    SkipObservers    //!< Skip running observers for the internal/nested operation.
+  };
+
+  /// When running a nested operation, specify whether to call the
+  /// operation's ableToOperate() method or skip it.
+  enum ParametersOption
+  {
+    Validate,      //!< Ensure the nested operation's parameters are valid.
+    SkipValidation //!< Assume the nested operation's parameters are valid.
+  };
+
 protected:
   Operation();
 
@@ -241,26 +267,11 @@ protected:
   std::weak_ptr<Manager> m_manager;
   std::shared_ptr<smtk::common::Managers> m_managers;
 
-  enum LockOption
-  {
-    LockAll,
-    ParentLocksOnly,
-    SkipLocks
-  };
-
-  enum ObserverOption
-  {
-    InvokeObservers,
-    SkipObservers
-  };
-
-  enum ParametersOption
-  {
-    Validate,
-    SkipValidation
-  };
-
-private:
+  /// A key used to run operations nested from within this operation.
+  ///
+  /// The key cannot be constructed outside of classes that inherit
+  /// operations, so that developers cannot accidentally run operations
+  /// with the proper resource locking.
   struct BaseKey
   {
     BaseKey() = default;
@@ -282,18 +293,24 @@ private:
     ParametersOption m_paramsOption{ ParametersOption::SkipValidation };
   };
 
-protected:
   struct SMTK_DEPRECATED_IN_24_11("Use this->childKey() instead.") Key : BaseKey
   {
     Key() = default;
   };
 
+  /// Return a key that will allow subclasses of Operation to run other
+  /// nested operations (from within `operateInternal()`).
+  ///
+  /// The options passed to this method control how the nested operation
+  /// is validated before running and whether to invoke observers on
+  /// the sub-operation or not.
   BaseKey childKey(
     ObserverOption observerOption = ObserverOption::SkipObservers,
     LockOption lockOption = LockOption::LockAll,
     ParametersOption paramsOption = ParametersOption::Validate) const;
 
 public:
+  /// Run an operation given a key returned by Operation::childKey().
   Result operate(const BaseKey& key);
 
 private:

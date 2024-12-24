@@ -1,5 +1,21 @@
 <RCC>
   <qresource prefix="/icons/diagram">
     <file alias = "house-solid.svg">icons/house-solid.svg</file>
+    <file alias = "align_left.svg">../../../view/icons/align_left.svg</file>
+    <file alias = "align_right.svg">../../../view/icons/align_right.svg</file>
+    <file alias = "align_hcenter.svg">../../../view/icons/align_hcenter.svg</file>
+    <file alias = "align_top.svg">../../../view/icons/align_top.svg</file>
+    <file alias = "align_bottom.svg">../../../view/icons/align_bottom.svg</file>
+    <file alias = "align_vcenter.svg">../../../view/icons/align_vcenter.svg</file>
+
+    <file alias = "distribute_hcenters.svg">../../../view/icons/distribute_hcenters.svg</file>
+    <file alias = "distribute_hgaps.svg">../../../view/icons/distribute_hgaps.svg</file>
+    <file alias = "distribute_vcenters.svg">../../../view/icons/distribute_vcenters.svg</file>
+    <file alias = "distribute_vgaps.svg">../../../view/icons/distribute_vgaps.svg</file>
+
+    <file alias = "relayout.svg">../../../view/icons/relayout.svg</file>
+
+    <file alias = "zoom_all.svg">../../../view/icons/zoom_all.svg</file>
+    <file alias = "zoom_selected.svg">../../../view/icons/zoom_selected.svg</file>
   </qresource>
 </RCC>

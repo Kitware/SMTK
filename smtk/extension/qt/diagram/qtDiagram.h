@@ -33,6 +33,7 @@
 
 class QLabel;
 class QFrame;
+class QToolBar;
 
 namespace smtk
 {
@@ -190,6 +191,12 @@ public:
 
   /// Return the map from mode names to modes.
   const std::unordered_map<smtk::string::Token, std::shared_ptr<qtDiagramViewMode>>& modes() const;
+
+  /// Return a toolbar to which modes can add actions/widgets.
+  ///
+  /// Any actions a mode adds to the toolbar should be deleted or hidden when switching away from
+  /// the mode.
+  QToolBar* tools() const;
 
   /// Return the application state (smtk::common::Managers) object this editor was configured with.
   smtk::common::Managers::Ptr managers() const;

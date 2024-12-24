@@ -64,12 +64,22 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 set(iconFiles
+  icons/align_bottom.svg
+  icons/align_hcenter.svg
+  icons/align_left.svg
+  icons/align_right.svg
+  icons/align_top.svg
+  icons/align_vcenter.svg
   icons/attribute.svg
   icons/attributeResource.svg
   icons/checkbox_blanked.svg
   icons/checkbox_partial.svg
   icons/checkbox_visible.svg
   icons/default_operation_opt.svg
+  icons/distribute_hcenters.svg
+  icons/distribute_hgaps.svg
+  icons/distribute_vcenters.svg
+  icons/distribute_vgaps.svg
   icons/edge.svg
   icons/face.svg
   icons/lock_locked.svg
@@ -78,6 +88,7 @@ set(iconFiles
   icons/meshResource.svg
   icons/model.svg
   icons/modelResource.svg
+  icons/relayout.svg
   icons/resource.svg
   icons/selected.svg
   icons/tree_blanked.svg
@@ -90,6 +101,8 @@ set(iconFiles
   icons/mode_disconnection.svg
   icons/mode_pan.svg
   icons/mode_selection.svg
+  icons/zoom_all.svg
+  icons/zoom_selected.svg
 )
 
 set(_viewDependencies)
