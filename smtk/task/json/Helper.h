@@ -80,6 +80,14 @@ public:
   /// The outermost helper will return 1 (assuming you have called instance() first).
   static std::size_t nestingDepth();
 
+  /// Turn on/off mapping of JSON UUIDs to new, random UUIDs.
+  ///
+  /// This is used by EmplaceWorklet.
+  /// Do not call this after any tasks/ports/adaptors have been
+  /// swizzled by any of this helper's configurators.
+  void setMapUUIDs(bool shouldMap);
+  bool mapUUIDs() const { return m_mapUUIDs; }
+
   Manager& taskManager() { return *m_taskManager; }
 
   /// Return an object for registering task classes and serialization helpers.
@@ -113,7 +121,7 @@ public:
   void currentTasks(std::vector<Task*>& tasks);
 
   /// Populate \a ports with the set of current ports.
-  void currentPorts(std::vector<Task*>& ports);
+  void currentPorts(std::vector<Port*>& ports);
 
   /// Populate \a adaptors with the set of current adaptors.
   void currentAdaptors(std::vector<Adaptor*>& adaptors);
@@ -144,6 +152,34 @@ public:
   void setActiveSerializedTask(Task* task);
   Task* activeSerializedTask() const;
 
+  /// Return a pointer to a persistent object given a JSON \a spec.
+  ///
+  /// Because workflow designers may provide worklets whose objects (tasks/ports/adaptors)
+  /// do not have UUIDs, we need a way for worklet state to reference these objects.
+  /// We must also handle cases where UUIDs *are* provided. This method is used by
+  /// deserialization code to fetch the relevant object given a variety of input JSON
+  /// that uniquely specifies objects in different ways.
+  ///
+  /// The \a spec may be:
+  /// + a JSON array holding a pair of UUIDs: a resource UUID and a component UUID.
+  ///   If the resource UUID is null, the component UUID is assumed to belong to
+  ///   the current project.
+  /// + a single integer: the swizzle ID of a task, port, or adaptor (as indicated by
+  ///   the optional \a objType argument.
+  /// + a JSON array holding a string and an integer: the string indicates the type
+  ///   of component (one of "task", "port", or "adaptor") and the integer represents
+  ///   a swizzle ID.
+  smtk::resource::PersistentObject* objectFromJSONSpec(
+    const json& spec,
+    smtk::string::Token objType = "task");
+  template<typename T>
+  T* objectFromJSONSpecAs(const json& spec, smtk::string::Token objType = "task")
+  {
+    auto* obj = this->objectFromJSONSpec(spec, objType);
+    auto* result = dynamic_cast<T*>(obj);
+    return result;
+  }
+
 protected:
   Helper();
   Helper(Manager*);
@@ -161,6 +197,9 @@ protected:
   /// was used to create this helper. If m_topLevel is false, the parent task
   /// is assigned swizzle ID 1.
   bool m_topLevel{ true };
+  /// m_mapUUIDs is true when deserializing worklet JSON.
+  /// This causes all persistent objects in the JSON to have their UUIDs remapped.
+  bool m_mapUUIDs{ false };
 };
 
 } // namespace json

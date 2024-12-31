@@ -128,11 +128,39 @@ void Port::configure(const Configuration& config)
     {
     }
   }
-  // NB: Do not deserialize connections here as tasks are not created
-  //     until after ports during project::Read. Instead, we provide
-  //     a way for connections to be assigned directly.
-  // NB: Do not deserialize parent here as tasks are not created
-  //     until after ports during project::Read.
+  // We deserialize connections here, so that ports may be
+  // completely configured from JSON data. However, this
+  // initialization may be partial when loading a task::Manager
+  // from disk as tasks are not created until after ports
+  // during project::Read. Port::configureConnections() is
+  // a separate method to connections to be assigned directly
+  // by operations such as this.
+  it = config.find("connections");
+  if (it != config.end())
+  {
+    this->configureConnections(*it);
+  }
+  // We deserialize parent here if possible, but be aware that
+  // tasks are not created until after ports by the task::Manager's
+  // JSON deserializer.
+  it = config.find("parent");
+  if (it != config.end())
+  {
+    auto& helper = json::Helper::instance();
+    m_parent = helper.objectFromJSONSpecAs<Task>(*it);
+  }
+}
+
+void Port::configureConnections(const Configuration& connConfig)
+{
+  auto& helper = json::Helper::instance();
+  for (const auto& connSpec : connConfig)
+  {
+    if (auto* obj = helper.objectFromJSONSpec(connSpec))
+    {
+      m_connections.insert(obj);
+    }
+  }
 }
 
 bool Port::setId(const common::UUID& newId)

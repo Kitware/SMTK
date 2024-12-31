@@ -42,6 +42,8 @@
 
 #include <string>
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace task
@@ -62,6 +64,11 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
   // Transcribe task data into the project's task manager.
   auto& taskHelper =
     smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
+  // Force transcription to rewrite UUIDs to newly-generated random IDs.
+  // This is done so that users can drag and drop the same worklet into a project
+  // multiple times without UUID collisions, while maintaining graphical layout,
+  // port connections, and other inter-object references.
+  taskHelper.setMapUUIDs(true);
 
   // Deserialize the worklet and see if it has an active task.
   smtk::task::from_json(workletData, project->taskManager());
@@ -99,7 +106,11 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
               //         computer average nodal position.
               for (auto& entry : *lit)
               {
-                entry[0] = taskHelper.tasks().unswizzle(entry[0].get<int>())->id().toString();
+                auto* obj = taskHelper.objectFromJSONSpec(entry[0], "task"_token);
+                if (obj)
+                {
+                  entry[0] = obj->id().toString();
+                }
                 for (int ii = 0; ii < 2; ++ii)
                 {
                   xy[ii] += entry[1][ii].get<double>();
@@ -142,6 +153,10 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
     }
   }
 
+  // Now that the worklet has been emplaced, reset the task-helper so
+  // objects do not have their UUIDs mapped.
+  taskHelper.setMapUUIDs(false);
+
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     auto created = result->findComponent("created");
@@ -157,6 +172,18 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
       sharedTasks.push_back(sharedTask);
     }
     created->appendValues(sharedTasks.begin(), sharedTasks.end());
+
+    // Indicate that new ports have been created:
+    std::vector<smtk::task::Port*> ports;
+    std::vector<smtk::resource::Component::Ptr> sharedPorts;
+    taskHelper.currentPorts(ports);
+    sharedPorts.reserve(ports.size());
+    for (const auto& port : ports)
+    {
+      auto sharedPort = port->shared_from_this();
+      sharedPorts.push_back(sharedPort);
+    }
+    created->appendValues(sharedPorts.begin(), sharedPorts.end());
 
     // Indicate that new adaptors have been created:
     std::vector<smtk::task::Adaptor*> adaptors;

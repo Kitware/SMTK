@@ -92,6 +92,19 @@ public:
   /// with an uninitialized object.
   virtual void configure(const Configuration& config);
 
+  /// Add port connections from configuration data.
+  ///
+  /// This method is called by configure() but may also be called
+  /// elsewhere. Specifically, the task::Manager's `from_json()`
+  /// function calls it after all of a project's persistent objects
+  /// have been constructed to ensure the connections are able to
+  /// be assigned.
+  ///
+  /// Note that \a connConfig is not the same as the \a config parameter
+  /// passed to Port::configure(). Instead, it is a subitem of \a config
+  /// that holds only connections.
+  virtual void configureConnections(const Configuration& connConfig);
+
   /// Set/get the task's unique identifier.
   const common::UUID& id() const override { return m_id; }
   bool setId(const common::UUID& newId) override;

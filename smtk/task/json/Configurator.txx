@@ -138,43 +138,6 @@ void Configurator<ObjectType, MF>::clear()
   m_nextSwizzle = 1;
 }
 
-template<typename ObjectType, TypeMutexFunction MF>
-void Configurator<ObjectType, MF>::clearNestedSwizzles()
-{
-  std::unordered_set<ObjectType*> removals;
-  auto end = m_swizzleBck.lower_bound(SwizzleId(0));
-  for (auto it = m_swizzleBck.begin(); it != end; ++it)
-  {
-    removals.insert(it->second);
-  }
-  m_swizzleBck.erase(m_swizzleBck.begin(), end);
-  for (const auto& object : removals)
-  {
-    m_swizzleFwd.erase(object);
-  }
-  m_nextNested = -1;
-}
-
-template<typename ObjectType, TypeMutexFunction MF>
-typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::nestedSwizzleId(
-  const ObjectType* object)
-{
-  if (!object)
-  {
-    return 0;
-  }
-  auto* ncobject = const_cast<ObjectType*>(object); // Need a non-const ObjectType in some cases.
-  const auto& it = m_swizzleFwd.find(ncobject);
-  if (it != m_swizzleFwd.end())
-  {
-    return it->second;
-  }
-  SwizzleId id = m_nextNested--;
-  m_swizzleFwd[ncobject] = id;
-  m_swizzleBck[id] = ncobject;
-  return id;
-}
-
 /// Return the ID of an object as computed by the swizzler.
 /// This will allocate a new ID if none exists.
 template<typename ObjectType, TypeMutexFunction MF>
@@ -185,15 +148,29 @@ typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::s
   {
     return 0;
   }
-  auto* ncobject = const_cast<ObjectType*>(object); // Need a non-const ObjectType in some cases.
-  const auto& it = m_swizzleFwd.find(ncobject);
+  auto ncptr = std::const_pointer_cast<ObjectType>(
+    std::dynamic_pointer_cast<const ObjectType>(object->shared_from_this()));
+  return this->swizzleId(ncptr);
+}
+
+/// Return the ID of an object as computed by the swizzler.
+/// This will allocate a new ID if none exists.
+template<typename ObjectType, TypeMutexFunction MF>
+typename Configurator<ObjectType, MF>::SwizzleId Configurator<ObjectType, MF>::swizzleId(
+  const typename ObjectType::Ptr& object)
+{
+  if (!object)
+  {
+    return 0;
+  }
+  const auto& it = m_swizzleFwd.find(object);
   if (it != m_swizzleFwd.end())
   {
     return it->second;
   }
   SwizzleId id = m_nextSwizzle++;
-  m_swizzleFwd[ncobject] = id;
-  m_swizzleBck[id] = ncobject;
+  m_swizzleFwd[object] = id;
+  m_swizzleBck[id] = object.get();
   return id;
 }
 
@@ -218,9 +195,41 @@ bool Configurator<ObjectType, MF>::setSwizzleId(
                                  << ". Skipping.");
     return false;
   }
-  auto* ncobject = const_cast<ObjectType*>(object); // Need a non-const ObjectType in some cases.
-  m_swizzleFwd[ncobject] = swizzle;
-  m_swizzleBck[swizzle] = ncobject;
+  // Need a non-const ObjectType in some cases:
+  auto ncptr = std::const_pointer_cast<ObjectType>(
+    std::dynamic_pointer_cast<const ObjectType>(object->shared_from_this()));
+  m_swizzleFwd[ncptr] = swizzle;
+  m_swizzleBck[swizzle] = ncptr.get();
+  if (swizzle >= m_nextSwizzle)
+  {
+    m_nextSwizzle = swizzle + 1;
+  }
+  return true;
+}
+
+/// Assign a previously-provided swizzle ID to the object.
+/// This will warn and return false if the ID already exists.
+template<typename ObjectType, TypeMutexFunction MF>
+bool Configurator<ObjectType, MF>::setSwizzleId(
+  const typename ObjectType::Ptr& object,
+  typename Configurator<ObjectType, MF>::SwizzleId swizzle)
+{
+  if (!object)
+  {
+    return false;
+  }
+  auto bit = m_swizzleBck.find(swizzle);
+  if (bit != m_swizzleBck.end())
+  {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Deserialized swizzle ID " << swizzle << " is already assigned to"
+                                 << "\"" << bit->second->name() << "\" " << bit->second
+                                 << ". Skipping.");
+    return false;
+  }
+  m_swizzleFwd[object] = swizzle;
+  m_swizzleBck[swizzle] = object.get();
   if (swizzle >= m_nextSwizzle)
   {
     m_nextSwizzle = swizzle + 1;
@@ -253,6 +262,106 @@ void Configurator<ObjectType, MF>::currentObjects(
       objects.push_back(entry.second);
     }
   }
+}
+
+template<typename ObjectType, TypeMutexFunction MF>
+ObjectType* Configurator<ObjectType, MF>::construct(nlohmann::json dict)
+{
+  SwizzleId swizzleId = 0;
+  smtk::common::UUID objId = smtk::common::UUID::null();
+  smtk::common::UUID origId = smtk::common::UUID::null();
+  typename ObjectType::Ptr obj(nullptr);
+  auto idit = dict.find("id");
+  if (idit != dict.end())
+  {
+    if (idit->is_number_integer())
+    {
+      swizzleId = idit->get<SwizzleId>();
+    }
+    else if (idit->is_string())
+    {
+      objId = idit->get<smtk::common::UUID>();
+      if (m_helper->mapUUIDs())
+      {
+        origId = objId;
+        // Write a new UUID to the JSON so that when we deserialize below
+        // the object is unique relative to the JSON source.
+        objId = smtk::common::UUID::random();
+        *idit = objId;
+      }
+
+      // If a UUID is provided, also allow a swizzle ID separately in "swizzle":
+      auto swit = dict.find("swizzle");
+      if (swit != dict.end())
+      {
+        swizzleId = swit->get<SwizzleId>();
+      }
+    }
+    // Deserialize the object via nlohmann::json, using from_json().
+    // If m_helper->mapUUIDs() is true, its UUID will not match
+    // objId obtained above.
+    obj = dict;
+    if (swizzleId)
+    {
+      this->setSwizzleId(obj, swizzleId);
+      objId = obj->id();
+    }
+    else
+    {
+      swizzleId = this->swizzleId(obj);
+    }
+    m_objectById[obj->id()] = obj.get();
+    if (origId != obj->id())
+    {
+      m_idMap[origId] = obj->id();
+    }
+  }
+  return obj.get();
+}
+
+template<typename ObjectType, TypeMutexFunction MF>
+ObjectType* Configurator<ObjectType, MF>::get(const smtk::common::UUID& uid)
+{
+  auto oit = m_objectById.find(uid);
+  if (oit == m_objectById.end())
+  {
+    auto iit = m_idMap.find(uid);
+    if (iit != m_idMap.end())
+    {
+      oit = m_objectById.find(iit->second);
+      if (oit == m_objectById.end())
+      {
+        return nullptr;
+      }
+    }
+    else
+    {
+      return nullptr;
+    }
+  }
+  return oit->second;
+}
+
+template<typename ObjectType, TypeMutexFunction MF>
+ObjectType* Configurator<ObjectType, MF>::get(const nlohmann::json& spec)
+{
+  if (spec.contains("swizzle"))
+  {
+    return this->unswizzle(spec.at("swizzle").get<SwizzleId>());
+  }
+  if (spec.contains("id"))
+  {
+    auto jid = spec.at("id");
+    if (jid.is_number_integer())
+    {
+      return this->unswizzle(jid.get<SwizzleId>());
+    }
+    else if (jid.is_string())
+    {
+      return this->get(jid.get<smtk::common::UUID>());
+    }
+  }
+  return nullptr;
 }
 
 template<typename ObjectType, TypeMutexFunction MF>

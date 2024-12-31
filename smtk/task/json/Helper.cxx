@@ -13,8 +13,12 @@
 #include "smtk/io/Logger.h"
 #include "smtk/task/Manager.h"
 
+#include "smtk/resource/Manager.h"
+
 #include <thread>
 #include <vector>
+
+using namespace smtk::string::literals;
 
 namespace
 {
@@ -100,6 +104,24 @@ std::size_t Helper::nestingDepth()
   return g_instanceStack.size();
 }
 
+void Helper::setMapUUIDs(bool shouldMap)
+{
+  if (shouldMap == m_mapUUIDs)
+  {
+    return;
+  }
+
+  if (shouldMap)
+  {
+    if (!m_tasks.empty() || !m_ports.empty() || !m_adaptors.empty())
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Turned mapping of UUIDs on with non-empty configurators.");
+    }
+  }
+  m_mapUUIDs = shouldMap;
+}
+
 Configurator<Task>& Helper::tasks()
 {
   return m_tasks;
@@ -134,6 +156,11 @@ void Helper::clear()
 void Helper::currentTasks(std::vector<Task*>& tasks)
 {
   m_tasks.currentObjects(tasks, this->topLevel() ? 1 : 2);
+}
+
+void Helper::currentPorts(std::vector<Port*>& ports)
+{
+  m_ports.currentObjects(ports, this->topLevel() ? 1 : 2);
 }
 
 void Helper::currentAdaptors(std::vector<Adaptor*>& adaptors)
@@ -243,6 +270,120 @@ void Helper::setActiveSerializedTask(Task* task)
 Task* Helper::activeSerializedTask() const
 {
   return m_activeSerializedTask;
+}
+
+smtk::resource::PersistentObject* Helper::objectFromJSONSpec(
+  const json& spec,
+  smtk::string::Token objType)
+{
+  if (spec.is_number_integer())
+  {
+    switch (objType.id())
+    {
+      default:
+      case "task"_hash:
+        return this->tasks().unswizzle(spec.get<smtk::task::json::Configurator<Task>::SwizzleId>());
+        break;
+      case "port"_hash:
+        return this->ports().unswizzle(spec.get<smtk::task::json::Configurator<Port>::SwizzleId>());
+        break;
+      case "adaptor"_hash:
+        return this->adaptors().unswizzle(
+          spec.get<smtk::task::json::Configurator<Adaptor>::SwizzleId>());
+        break;
+    }
+  }
+  else if (spec.is_array() && spec.size() == 2)
+  {
+    if (spec[0].is_string() && spec[1].is_number_integer())
+    {
+      // spec is an object type and swizzle ID
+      return this->objectFromJSONSpec(spec[1], spec[0].get<smtk::string::Token>());
+    }
+    else
+    {
+      try
+      {
+        auto rsrcId = spec[0].get<smtk::common::UUID>();
+        auto compId = spec[1].get<smtk::common::UUID>();
+        if (!rsrcId && compId)
+        {
+          auto* mgrRsrc = this->taskManager().resource();
+          auto* comp = mgrRsrc->component(compId);
+          if (!comp && m_mapUUIDs)
+          {
+            // We are mapping UUIDs; the component may be mapped by
+            // one of our configurators:
+            if (auto* port = m_ports.get(compId))
+            {
+              comp = port;
+            }
+            else if (auto* task = m_ports.get(compId))
+            {
+              comp = task;
+            }
+            else if (auto* adaptor = m_adaptors.get(compId))
+            {
+              comp = adaptor;
+            }
+          }
+          return comp;
+        }
+        else if (rsrcId && !compId)
+        {
+          auto mgrs = this->managers();
+          auto rsrcMgr = (mgrs ? mgrs->get<smtk::resource::Manager::Ptr>() : nullptr);
+          if (rsrcMgr)
+          {
+            auto rsrc = rsrcMgr->get(rsrcId);
+            return rsrc.get();
+          }
+        }
+        else if (rsrcId && compId)
+        {
+          auto mgrs = this->managers();
+          auto rsrcMgr = (mgrs ? mgrs->get<smtk::resource::Manager::Ptr>() : nullptr);
+          if (rsrcMgr)
+          {
+            if (auto rsrc = rsrcMgr->get(rsrcId))
+            {
+              auto* comp = rsrc->component(compId);
+              return comp;
+            }
+          }
+        }
+      }
+      catch (nlohmann::json::exception& e)
+      {
+        // Do nothing, which ultimately returns a nullptr.
+      }
+    }
+  }
+  else if (spec.is_string() && m_taskManager && m_taskManager->resource())
+  {
+    // It should be a UUID.
+    auto uid = spec.get<smtk::common::UUID>();
+    auto* obj = m_taskManager->resource()->component(uid);
+    if (!obj && m_mapUUIDs)
+    {
+      // The object may be mapped by our configurator.
+      switch (objType.id())
+      {
+        default:
+        case "task"_hash:
+          obj = m_tasks.get(uid);
+          break;
+        case "port"_hash:
+          obj = m_ports.get(uid);
+          break;
+        case "adaptor"_hash:
+          obj = m_adaptors.get(uid);
+          break;
+      }
+    }
+    return obj;
+  }
+  return nullptr;
 }
 
 } // namespace json
