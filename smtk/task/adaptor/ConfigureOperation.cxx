@@ -350,6 +350,10 @@ bool ConfigureOperation::updateOperation() const
 {
   auto* operationTask = dynamic_cast<smtk::task::SubmitOperation*>(this->to());
   auto* operation = operationTask->operation();
+  if (!operation)
+  {
+    return false;
+  }
 
   // We'll add modified item paths to a Signal operation:
   auto managers = this->from()->manager()->managers();
