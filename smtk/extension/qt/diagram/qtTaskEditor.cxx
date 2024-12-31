@@ -400,6 +400,11 @@ bool qtTaskEditor::updateArcs(
     // Create any missing dependency arcs on newly-created ports.
     for (const auto& connObj : portConns)
     {
+      if (!connObj)
+      {
+        continue;
+      }
+
       auto* depNode = dynamic_cast<qtBaseObjectNode*>(m_diagram->findNode(connObj->id()));
       if (!depNode)
       {
