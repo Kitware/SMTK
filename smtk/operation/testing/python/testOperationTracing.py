@@ -150,15 +150,27 @@ class TestOperationTracing(smtk.testing.TestCase):
         import_op.parameters().findFile('filename').setValue(gen_path)
         # Demonstrate/test use of safeOperate() instead of operate():
         resource = None
+        handlerOutcome = None
+        modifiedOutcome = None
 
         def handler(op, result):
-            nonlocal resource
+            nonlocal resource, handlerOutcome, modifiedOutcome
             resource = smtk.model.Resource.CastTo(
                 result.find('resource').value())
+            # Test that smtk.operation wraps outcome() and setOutcome() properly:
+            handlerOutcome = smtk.operation.outcome(result)
+            smtk.operation.setOutcome(
+                result, smtk.operation.Operation.Outcome.FAILED)
+            modifiedOutcome = smtk.operation.outcome(result)
         outcome = import_op.safeOperate(handler)
         print('Outcome = ', outcome)
+        print('Handler Outcome = ', handlerOutcome)
         self.assertEqual(outcome, smtk.operation.Operation.Outcome.SUCCEEDED,
                          'Failed to import model file {}'.format(gen_path))
+        self.assertEqual(outcome, handlerOutcome,
+                         'Failed to import model file {}'.format(gen_path))
+        self.assertEqual(modifiedOutcome, smtk.operation.Operation.Outcome.FAILED,
+                         'Failed to validate setOutcome on result.')
         print('Resource is ', resource)
         return resource
 

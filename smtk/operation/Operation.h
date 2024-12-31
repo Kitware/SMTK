@@ -335,6 +335,7 @@ private:
   * to an outcome.
   */
 SMTKCORE_EXPORT Operation::Outcome outcome(const Operation::Result& result);
+SMTKCORE_EXPORT bool setOutcome(const Operation::Result& result, Operation::Outcome outcome);
 
 } // namespace operation
 } // namespace smtk
