@@ -193,7 +193,9 @@ public:
 
   /// Populate a type-container with view-related data for configuration.
   ///
-  /// Subclasses should override this method.
+  /// Internally, this method will iterate over agents, giving each
+  /// a chance to insert view-related data.
+  ///
   /// Generally, views will want access to a resource and potentially
   /// components in the resource that are the subject of the view.
   /// Other view configuration will come from view style() (see above)

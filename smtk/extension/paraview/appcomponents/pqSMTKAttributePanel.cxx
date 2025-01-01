@@ -557,12 +557,26 @@ void pqSMTKAttributePanel::updateTitle(const smtk::view::ConfigurationPtr& view)
 
 bool pqSMTKAttributePanel::displayTaskAttribute(smtk::task::Task* task)
 {
+  using ResourceSet = std::
+    set<smtk::attribute::Resource::WeakPtr, std::owner_less<smtk::attribute::Resource::WeakPtr>>;
+
   bool didDisplay = false;
   if (!task)
   {
     return didDisplay;
   }
+  // Ask the \a task for relevant attribute resources which can provide a view
+  // with the name specified by the task's style.
+  smtk::common::TypeContainer taskConfigData;
+  if (!task->getViewData(taskConfigData) || !taskConfigData.contains<ResourceSet>())
+  {
+    return didDisplay;
+  }
+  auto managers = task->manager()->managers();
+  this->updateManagers(managers);
+  auto& resourceSet(taskConfigData.get<ResourceSet>());
   auto styles = task->style();
+  // Iterate over styles attached to the \a task:
   for (const auto& style : styles)
   {
     auto styleConfig = task->manager()->getStyle(style);
@@ -574,33 +588,19 @@ bool pqSMTKAttributePanel::displayTaskAttribute(smtk::task::Task* task)
       {
         auto viewName = panelConfig.at("attribute-editor").get<std::string>();
         // std::cout << "Got view name " << viewName << std::endl;
-        if (auto rsrc = m_rsrc.lock())
+        for (const auto& weakRsrc : resourceSet)
         {
-          auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-          smtk::view::ConfigurationPtr viewConfig =
-            attrRsrc ? attrRsrc->findView(viewName) : nullptr;
-          if (viewConfig)
+          if (auto rsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(weakRsrc.lock()))
           {
-            this->resetPanel(attrRsrc->manager());
-            // replace the contents with UI for this view.
-            didDisplay = this->displayResource(attrRsrc, viewConfig);
-          }
-        }
-        if (!didDisplay)
-        {
-          auto managers = task->manager()->managers();
-          this->updateManagers(managers);
-          auto rsrcMgr = managers->get<smtk::resource::Manager::Ptr>();
-          // Look in all the attribute resources the task manager knows of for the named view.
-          this->resetPanel(rsrcMgr);
-          auto attributeResources = rsrcMgr->find("smtk::attribute::Resource");
-          for (const auto& rsrc : attributeResources)
-          {
-            auto attrRsrc = std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-            auto viewConfig = attrRsrc->findView(viewName);
+            auto viewConfig = rsrc->findView(viewName);
             if (viewConfig)
             {
-              didDisplay = this->displayResource(attrRsrc, viewConfig);
+              // The task provided an attribute resource that
+              // can provide view configuration given the view name;
+              // we can proceed to display the view:
+              this->resetPanel(rsrc->manager());
+              // Replace the contents with UI for this view.
+              didDisplay = this->displayResource(rsrc, viewConfig);
               if (didDisplay)
               {
                 break;

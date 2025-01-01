@@ -425,8 +425,12 @@ bool Task::clearStyle()
 
 bool Task::getViewData(smtk::common::TypeContainer& configuration) const
 {
-  (void)configuration;
-  return false;
+  bool didAdd = false;
+  for (const auto& agent : m_agents)
+  {
+    didAdd |= agent->getViewData(configuration);
+  }
+  return didAdd;
 }
 
 bool Task::editableCompletion() const

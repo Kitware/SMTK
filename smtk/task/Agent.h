@@ -76,6 +76,13 @@ public:
   ///\brief Return the agent's parent task
   Task* parent() const { return m_parent; }
 
+  ///\brief Insert view-related objects into \a configuration.
+  ///
+  /// Subclasses should override this; the default implementation does nothing.
+  /// This method should return true when \a configuration is modified
+  /// and false otherwise.
+  virtual bool getViewData(smtk::common::TypeContainer& configuration) const;
+
 protected:
   friend class Task; // So that tasks can notify their agents of state changes.
 

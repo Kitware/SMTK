@@ -18,6 +18,10 @@ Most panels register themselves with ParaView by calling ``pqApplicationCore::re
 and can thus be retrieved by calling ``pqApplicationCore::manager()`` with their registered
 name (listed in the sections below).
 
+Panels may also register themselves as :smtk:`smtk::view::UIElementState` so that operations
+(especially those that read and write projects) can serialize/deserialize their state.
+The diagram panel in particular is an example of this.
+
 .. _smtk-pv-resource-panel:
 
 Resource panel
@@ -50,6 +54,13 @@ The :smtk:`pqSMTKAttributePanel` displays the top-level view of an SMTK attribut
 It is registered with the pqApplicationCore instance as a manager named "smtk attribute panel".
 It can also be programmatically configured to show views (including non-top-level views) by
 calling the ``displayResource()`` or ``displayView()`` methods.
+
+When a task-based workflow is used (i.e., a document with a task manager is loaded), the
+active task's style tags can dictate a view that the attribute panel should display.
+When using the task-manager's style to determine what to display, the attribute panel will
+call the active task's :smtk:`smtk::task::Task::getViewData` method to obtain relevant
+attribute resources; these resources will be queried to find a view-configuration whose name
+matches the one specified by the style.
 
 .. _smtk-pv-legacy-operation-panel:
 

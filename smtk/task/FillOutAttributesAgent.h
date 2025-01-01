@@ -73,8 +73,11 @@ public:
   /// If the agent is not assigned to \a port, the method returns nullptr.
   std::shared_ptr<PortData> portData(const Port* port) const override;
 
-  ///\brief  Tell the agent that the data on \a port has been updated.
+  ///\brief Tell the agent that the data on \a port has been updated.
   void portDataUpdated(const Port* port) override;
+
+  ///\brief Insert an attribute resource pointer into \a configuration.
+  bool getViewData(smtk::common::TypeContainer& configuration) const override;
 
   /// Per-resource sets of validated attributes
   ///
@@ -130,9 +133,6 @@ public:
 
   /// The port (if any) that the agent pushes its configured attribute resources.
   Port* outputPort() const { return m_outputPort; }
-
-  /// Return the set of attribute-resource UUIDs relevant to this agent.
-  bool getViewData(smtk::common::TypeContainer& configuration) const;
 
 protected:
   /// Receive notification the parent Task's state has changed.
