@@ -293,8 +293,11 @@ void from_json(const nlohmann::json& jj, smtk::markup::Resource::Ptr& resource)
   smtk::graph::from_json(jj, tmp);
 
   // Now initialize nodes from their JSON.
-  NodeInitializer<smtk::markup::Resource> initializer(resource.get(), jj.at("nodes"));
-  smtk::tuple_evaluate<typename Traits::NodeTypes>(initializer);
+  if (jj.contains("nodes"))
+  {
+    NodeInitializer<smtk::markup::Resource> initializer(resource.get(), jj.at("nodes"));
+    smtk::tuple_evaluate<typename Traits::NodeTypes>(initializer);
+  }
 
   // Finally, wait for threads loading VTK data for node geometry to complete.
   for (auto& work : helper.futures())
