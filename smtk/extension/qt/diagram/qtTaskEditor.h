@@ -40,6 +40,7 @@ class qtBaseArc;
 class qtBaseNode;
 class qtBaseTaskNode;
 class qtTaskPath;
+class qtTaskPortArc;
 
 /**\brief A widget that displays SMTK tasks available to users in a diagram.
   *
@@ -96,17 +97,26 @@ public:
   /// Return the task manager associated with the editor
   smtk::task::Manager* manager() const;
 
-  /// Update the visibility of Tasks, Ports and related Arcs.
+  /// Update the visibility of tasks, ports and related arcs.
   ///
-  /// Due to changing the active task
-  void updateVisibility(const smtk::task::Task* prevTailTask, const smtk::task::Task* newTailTask);
+  /// This is called when the active task is changed.
+  void updateVisibility(const smtk::task::Task* prevTailTask, const smtk::task::Task* nextTailTask);
 
 protected:
+  /// Used to create/destroy arcs incident to the node for \a object.
+  ///
+  /// As this method creates arcs, it will call updateArcStatus() on them
+  /// to ensure they match the current diagram mode/state.
   template<bool RemoveUnusedArcs>
   bool updateArcs(
     smtk::resource::PersistentObject* object,
     QRectF& modBounds,
     ArcLegendEntries& legendInfo);
+
+  /// Determine visibility and pickability based on
+  /// the current interaction mode and the current task-path.
+  void updateArcStatus(qtTaskPortArc* arc);
+
   class Internal;
   Internal* m_p;
   qtTaskPath* m_taskPath;

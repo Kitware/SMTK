@@ -192,7 +192,7 @@ qtTaskEditor::qtTaskEditor(
   // Register an arc type for port connections
   this->diagram()->legend()->addEntry(
     new qtDiagramLegendEntry("arc"_token, SMTK_ARC_PORT_CONN, this));
-  m_taskPath = new qtTaskPath(this, this->diagram()->topFrame());
+  m_taskPath = new qtTaskPath(this);
   this->diagram()->topFrame()->layout()->addWidget(m_taskPath);
 }
 
@@ -427,10 +427,30 @@ bool qtTaskEditor::updateArcs(
         this->diagram()->addArc(arc);
         diagramModified = true;
         modBounds = modBounds.united(arc->boundingRect());
+        this->updateArcStatus(arc);
       }
     }
   }
   return diagramModified;
+}
+
+void qtTaskEditor::updateArcStatus(qtTaskPortArc* arc)
+{
+  if (!arc)
+  {
+    return;
+  }
+  bool visible = arc->successor()->isVisible() && arc->predecessor()->isVisible();
+  arc->setVisible(visible);
+  bool selectable = (m_diagram->mode() == "disconnect"_token);
+  if (selectable)
+  {
+    arc->setFlags(arc->flags() | QGraphicsItem::ItemIsSelectable);
+  }
+  else
+  {
+    arc->setFlags(arc->flags() & ~QGraphicsItem::ItemIsSelectable);
+  }
 }
 
 qtBaseTaskNode* qtTaskEditor::findTaskNode(const smtk::task::Task* task) const
@@ -875,10 +895,10 @@ bool qtTaskEditor::acceptDrop(QDropEvent* event)
 
 void qtTaskEditor::updateVisibility(
   const smtk::task::Task* prevTailTask,
-  const smtk::task::Task* newTailTask)
+  const smtk::task::Task* nextTailTask)
 {
   // If the tasks are the same then there is nothing that needs to be done
-  if (prevTailTask == newTailTask)
+  if (prevTailTask == nextTailTask)
   {
     return;
   }
@@ -886,8 +906,8 @@ void qtTaskEditor::updateVisibility(
   // We are changing the display so make sure the diagram is in its default mode
   m_diagram->requestModeChange(m_diagram->defaultMode());
 
-  // If the previous tail of the task path is null then we were showing the toplevel tasks (and arcs) which need
-  // now need to be hidden
+  // If the previous tail of the task path is null then we were showing the toplevel
+  // tasks (and arcs) which need now need to be hidden.
   std::unordered_set<smtk::task::Task*> tasks;
   if (prevTailTask == nullptr)
   {
@@ -896,7 +916,7 @@ void qtTaskEditor::updateVisibility(
   else
   {
     tasks = prevTailTask->children();
-    // Turn off the node's internal ports
+    // Hide the node's internal ports and arcs
     for (auto pinfo : prevTailTask->ports())
     {
       if (pinfo.second->access() == smtk::task::Port::Internal)
@@ -916,6 +936,7 @@ void qtTaskEditor::updateVisibility(
     }
   }
 
+  // Hide previously visible tasks, plus their external ports and associated arcs.
   for (auto* t : tasks)
   {
     // Turn off the corresponding Task Node
@@ -929,36 +950,53 @@ void qtTaskEditor::updateVisibility(
       {
         arc->setVisible(false);
       }
+      // Now handle ports of task and port arcs
+      for (const auto& entry : t->ports())
+      {
+        if (auto* portNode = m_diagram->findNode(entry.second->id()))
+        {
+          // Hide external ports and attached arcs.
+          portNode->setVisible(false);
+          auto nodeArcs = m_diagram->arcsOfNode(portNode);
+          for (auto* arc : nodeArcs)
+          {
+            arc->setVisible(false);
+          }
+        }
+      }
     }
   }
 
-  if (newTailTask == nullptr)
+  if (nextTailTask == nullptr)
   {
     tasks = m_p->m_taskManager->taskInstances().topLevelTasks();
   }
   else
   {
     // Turn on the node's internal ports
-    for (auto pinfo : newTailTask->ports())
+    for (auto pinfo : nextTailTask->ports())
     {
-      if (pinfo.second->access() == smtk::task::Port::Internal)
+      // Togggle visibility of ports based on whether
+      // they are internal (becoming visible) or external
+      // (becoming hidden).
+      bool visibility = (pinfo.second->access() == smtk::task::Port::Internal);
+      auto* node = m_diagram->findNode(pinfo.second->id());
+      if (node)
       {
-        auto* node = m_diagram->findNode(pinfo.second->id());
-        if (node)
+        node->setVisible(visibility);
+        // Turn off its arcs
+        auto nodeArcs = m_diagram->arcsOfNode(node);
+        for (auto* arc : nodeArcs)
         {
-          node->setVisible(true);
-          // Turn off its arcs
-          auto nodeArcs = m_diagram->arcsOfNode(node);
-          for (auto* arc : nodeArcs)
-          {
-            arc->setVisible(true);
-          }
+          arc->setVisible(visibility);
         }
       }
     }
-    tasks = newTailTask->children();
+    tasks = nextTailTask->children();
   }
 
+  // Show the tasks selected above, plus these tasks' external
+  // ports and associated arcs.
   for (auto* t : tasks)
   {
     auto* node = m_diagram->findNode(t->id());
@@ -969,6 +1007,21 @@ void qtTaskEditor::updateVisibility(
       for (auto* arc : nodeArcs)
       {
         arc->setVisible(true);
+      }
+      // Now handle ports of task and port arcs
+      for (const auto& entry : t->ports())
+      {
+        if (auto* portNode = m_diagram->findNode(entry.second->id()))
+        {
+          // Show external ports and attached arcs.
+          bool visibility = (entry.second->access() == smtk::task::Port::Access::External);
+          portNode->setVisible(visibility);
+          auto nodeArcs = m_diagram->arcsOfNode(portNode);
+          for (auto* arc : nodeArcs)
+          {
+            arc->setVisible(visibility);
+          }
+        }
       }
     }
   }
