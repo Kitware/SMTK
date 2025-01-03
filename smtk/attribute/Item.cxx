@@ -63,6 +63,31 @@ AttributePtr Item::attribute() const
 
 bool Item::isValid(bool useActiveCategories) const
 {
+  // If the resource has active categories enabled, use them
+  if (useActiveCategories)
+  {
+    auto myAttribute = this->attribute();
+    if (myAttribute)
+    {
+      auto aResource = myAttribute->attributeResource();
+      if (aResource && aResource->activeCategoriesEnabled() && m_customIsValid)
+      {
+        return m_customIsValid(this, aResource->activeCategories());
+      }
+    }
+  }
+
+  if (m_customIsValid)
+  {
+    const std::set<std::string> cats;
+    return m_customIsValid(this, cats);
+  }
+
+  return this->defaultIsValid(useActiveCategories);
+}
+
+bool Item::defaultIsValid(bool useActiveCategories) const
+{
   // If the item is not enabled, or marked to be ignored, then return true since the item
   // is not going to have an effect
   if ((!this->isEnabled()) || this->isIgnored())
