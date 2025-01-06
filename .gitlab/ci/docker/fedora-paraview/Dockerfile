@@ -1,4 +1,4 @@
-FROM fedora:33
+FROM fedora:41
 MAINTAINER Ben Boeckel <ben.boeckel@kitware.com>
 
 COPY install_deps.sh /root/install_deps.sh
