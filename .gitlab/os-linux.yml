@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora33:
-    # Update to use ParaView 5.13.1 and to fix Python Artifacts
-    image: "kitware/cmb:ci-smtk-fedora33-20241101"
+    # Xcode 16.1 update; synchronize with other platforms
+    image: "kitware/cmb:ci-smtk-fedora33-20250105"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -67,14 +67,14 @@
 
 .fedora33_vtk_python3:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-vtk-20240724"
+    image: "kitware/cmb:ci-smtk-fedora33-vtk-20250105"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_vtk_python3
 
 .fedora33_paraview:
     extends: .fedora33
-    image: "kitware/cmb:ci-smtk-fedora33-paraview-20241101"
+    image: "kitware/cmb:ci-smtk-fedora33-paraview-20250105"
 
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview

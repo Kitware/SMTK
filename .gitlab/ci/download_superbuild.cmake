@@ -8,16 +8,16 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20241101 - Update to use ParaView 5.13.1 and to fix Python Artifacts
+# 20250105 - Update to use Xcode 16.1
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_id "18XQy5PT34mDndeb_4KxiWB1Vfpa74w0F")
-  set(file_hash "76141151c2d9faa7df1321b24afc7b572212ee639ffb5564ccfadc99577c280427f7444c2ca998f06c0d131f0e1272aa061f7ee2bb5923f91cde18e94792020b")
+  set(file_id "1fv29BZW5MedtbwV_-XuvGFNYHNFLdVxm")
+  set(file_hash "7d0919c3217e143c4be6f4e7c4e47e5b9831858efc0a406f7531d09d091243fb5be44bc7ed7e26a4c61d81a5e57f38a453c253dcc8037d3ffe0fb7c9b09ba77f")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_id "1T3IdfGuYvRcrH3mK1c7fzIJbsc_u7Wp7")
-  set(file_hash "c9c0b1c65ec8c83620181f5a5ba54e6ed6e2d76a8ea08b800ee69c39033d4a36ca312b691eaaf86c20f3713d2a250451c231e7f6820d20bcea5d8d74235f02fc")
+  set(file_id "1q_yl0ZXBzXZu27CqH0RJIggUO0dcdzxz")
+  set(file_hash "a8cd9a32216b5c1153b1a37ff672941302004a64e066192288727c4b6be5c2fd6c57a818b9254c0d7aed5e8ed26bdd357d54224ce503468ed34b8352315f6138")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_id "1L9yqQMJDw_peBTDcI6AbX4s8iLiQ8XWY")
-  set(file_hash "a87b1f079b8a4191d81a9b0726342714dd8ea8a60f2bc8fe9c6081fa30e2a9afaf70d3b6b821948033e01dceb7aca927b4635a69afee92f245e1f18a41c558e2")
+  set(file_id "1BluXPsmfRNqAqSpYahyvC6iWAVlJ0vzy")
+  set(file_hash "8e8a2f8492cc383658028184a25cd555f85697e2a0075c0792321de7980eda58e7b60c0ef5be743f253d44f5abaebf89852a606a90078214bb9eed885428ce73")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")
