@@ -33,119 +33,119 @@ stages:
 
 ## Build and test
 
-fedora33:build:
+fedora41:build:
     extends:
-        - .fedora33
+        - .fedora41
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33:test:
+fedora41:test:
     extends:
-        - .fedora33
+        - .fedora41
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
     needs:
-        - fedora33:build
+        - fedora41:build
 
-fedora33-vtk-python3:build:
+fedora41-vtk-python3:build:
     extends:
-        - .fedora33_vtk_python3
+        - .fedora41_vtk_python3
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33-vtk-python3:test:
+fedora41-vtk-python3:test:
     extends:
-        - .fedora33_vtk_python3
+        - .fedora41_vtk_python3
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
     needs:
-        - fedora33-vtk-python3:build
+        - fedora41-vtk-python3:build
 
-fedora33-paraview:build:
+fedora41-paraview:build:
     extends:
-        - .fedora33_paraview
+        - .fedora41_paraview
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33-paraview:test:
+fedora41-paraview:test:
     extends:
-        - .fedora33_paraview
+        - .fedora41_paraview
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
     needs:
-        - fedora33-paraview:build
+        - fedora41-paraview:build
 
-fedora33-nodata:build:
+fedora41-nodata:build:
     extends:
-        - .fedora33_nodata
+        - .fedora41_nodata
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33-nodata:test:
+fedora41-nodata:test:
     extends:
-        - .fedora33_nodata
+        - .fedora41_nodata
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
         - .run_dependent
     needs:
-        - fedora33-nodata:build
+        - fedora41-nodata:build
 
 ## Lint builds
 
-fedora33-asan:build:
+fedora41-asan:build:
     extends:
-        - .fedora33_asan
+        - .fedora41_asan
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33-asan:test:
+fedora41-asan:test:
     extends:
-        - .fedora33_asan
+        - .fedora41_asan
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_dependent
     needs:
-        - fedora33-asan:build
+        - fedora41-asan:build
 
-fedora33-ubsan:build:
+fedora41-ubsan:build:
     extends:
-        - .fedora33_ubsan
+        - .fedora41_ubsan
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_automatically
 
-fedora33-ubsan:test:
+fedora41-ubsan:test:
     extends:
-        - .fedora33_ubsan
+        - .fedora41_ubsan
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
         - .linux_test_priv_tags
         - .run_dependent
     needs:
-        - fedora33-ubsan:build
+        - fedora41-ubsan:build
 
-fedora33-tidy:build:
+fedora41-tidy:build:
     extends:
-        - .fedora33_tidy
+        - .fedora41_tidy
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
@@ -153,33 +153,33 @@ fedora33-tidy:build:
     # Give more time until we can implement clang-tidy-cache:
     timeout: 1h 30m
 
-fedora33-coverage:build:
+fedora41-coverage:build:
     extends:
-        - .fedora33_coverage
+        - .fedora41_coverage
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
         - .run_dependent
 
-fedora33-coverage:test:
+fedora41-coverage:test:
     extends:
-        - .fedora33_coverage
+        - .fedora41_coverage
         - .cmake_test_linux
         - .linux_test_tags
         - .cmake_coverage_artifacts
         - .run_dependent
     needs:
-        - fedora33-coverage:build
+        - fedora41-coverage:build
 
-fedora33-coverage:analyze:
+fedora41-coverage:analyze:
     extends:
-        - .fedora33_coverage
+        - .fedora41_coverage
         - .cmake_coverage_linux
         - .linux_builder_tags
         - .cmake_annotations_artifacts
         - .run_dependent
     needs:
-        - fedora33-coverage:test
+        - fedora41-coverage:test
 
 # macOS
 

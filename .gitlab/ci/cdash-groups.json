@@ -1,13 +1,13 @@
 {
     "latest-master": [
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_asan" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_coverage" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_nodata" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_paraview" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_plain" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_tidy" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_ubsan" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora33_vtk_python3" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_asan" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_coverage" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_nodata" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_paraview" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_plain" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_tidy" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_ubsan" },
+        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_vtk_python3" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_arm64" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_x86_64" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-windows_vs2022_ninja" }
