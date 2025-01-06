@@ -41,11 +41,7 @@ public:
       throw reference_cast_error();
     }
 
-#if PY_VERSION_HEX >= 0x03030000
     char* ustr = uuidBytes ? PyBytes_AS_STRING(uuidBytes) : nullptr;
-#else
-    char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : nullptr;
-#endif
     if (ustr)
     {
       for (int i = 0; i < 16; ++i)
