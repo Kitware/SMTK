@@ -41,7 +41,7 @@ public:
       throw reference_cast_error();
     }
 
-#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
+#if PY_VERSION_HEX >= 0x03030000
     char* ustr = uuidBytes ? PyBytes_AS_STRING(uuidBytes) : nullptr;
 #else
     char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : nullptr;

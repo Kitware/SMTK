@@ -105,7 +105,7 @@ void PythonInterpreter::initialize()
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
-#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
+#if PY_VERSION_HEX >= 0x03030000
   // Python 3.3 switched to wchar_t.
   static std::vector<wchar_t> loc;
   loc.resize(pythonLibraryLocation.size() + 1);
@@ -378,14 +378,14 @@ bool PythonInterpreter::loadPythonSourceFile(
 
   testCmd << "loaded = True\n"
           << "try:\n"
-#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 5
+#if PY_VERSION_HEX >= 0x03050000
           << "    import sys, types, importlib.machinery\n"
           << "    loader = importlib.machinery.SourceFileLoader('" << moduleName << "', '"
           << fileName << "')\n"
           << "    mod = types.ModuleType(loader.name)\n"
           << "    loader.exec_module(mod)\n"
           << "    sys.modules['" << moduleName << "'] = mod\n"
-#elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3 && PY_MINOR_VERSION <= 4
+#elif PY_VERSION_HEX >= 0x03000000
           << "    from importlib.machinery import SourceFileLoader\n"
           << "    tmp = SourceFileLoader('" << moduleName << "', '" << fileName
           << "').load_module()\n"
