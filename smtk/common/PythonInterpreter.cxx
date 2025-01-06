@@ -105,14 +105,28 @@ void PythonInterpreter::initialize()
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
+  size_t needed = mbstowcs(nullptr, pythonLibraryLocation.c_str(), 0);
+
+#if PY_VERSION_HEX >= 0x03080000
+  PyConfig config;
+  PyConfig_InitPythonConfig(&config);
+  wchar_t* wcs_pn = (wchar_t*)PyMem_RawMalloc(sizeof(wchar_t) * (needed + 1));
+  mbstowcs(wcs_pn, pythonLibraryLocation.c_str(), needed + 1);
+  config.program_name = wcs_pn;
+  config.site_import = 0;
+
+  pybind11::initialize_interpreter(&config);
+  PyConfig_Clear(&config);
+#else
   static std::vector<wchar_t> loc;
-  loc.resize(pythonLibraryLocation.size() + 1);
+  loc.resize(needed + 1);
   mbstowcs(loc.data(), pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
   Py_SetProgramName(loc.data());
 
   // Initialize the embedded interpreter.
   Py_NoSiteFlag = 1;
   pybind11::initialize_interpreter();
+#endif
 
   // Locate the directory containing the library that describes this
   // class.
