@@ -208,7 +208,7 @@ macos-x86_64:build:
         - .macos_x86_64
         - .cmake_build_macos
         - .cmake_build_artifacts
-        - .macos_builder_tags
+        - .macos_x86_64_builder_tags
         - .run_automatically
 
 macos-x86_64:test:
@@ -216,7 +216,7 @@ macos-x86_64:test:
         - .macos_x86_64
         - .cmake_test_macos
         - .cmake_test_artifacts
-        - .macos_builder_tags
+        - .macos_x86_64_builder_tags
         - .run_dependent
     needs:
         - macos-x86_64:build
