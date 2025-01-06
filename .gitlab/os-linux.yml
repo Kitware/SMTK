@@ -79,13 +79,6 @@
     variables:
         CMAKE_CONFIGURATION: fedora33_paraview
 
-# .fedora33_paraview59_compat:
-#     extends: .fedora33
-#     image: "kitware/cmb:ci-smtk-fedora33-paraview59-20240724"
-
-#     variables:
-#         CMAKE_CONFIGURATION: fedora33_paraview59_compat
-
 ## Tags
 
 .linux_builder_tags:
