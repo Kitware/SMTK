@@ -105,15 +105,11 @@ void PythonInterpreter::initialize()
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
-#if PY_VERSION_HEX >= 0x03030000
   // Python 3.3 switched to wchar_t.
   static std::vector<wchar_t> loc;
   loc.resize(pythonLibraryLocation.size() + 1);
   mbstowcs(loc.data(), pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
   Py_SetProgramName(loc.data());
-#else
-  Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
-#endif
 
   // Initialize the embedded interpreter.
   Py_NoSiteFlag = 1;
@@ -385,13 +381,10 @@ bool PythonInterpreter::loadPythonSourceFile(
           << "    mod = types.ModuleType(loader.name)\n"
           << "    loader.exec_module(mod)\n"
           << "    sys.modules['" << moduleName << "'] = mod\n"
-#elif PY_VERSION_HEX >= 0x03000000
+#else
           << "    from importlib.machinery import SourceFileLoader\n"
           << "    tmp = SourceFileLoader('" << moduleName << "', '" << fileName
           << "').load_module()\n"
-#else /* PY_MAJOR_VERSION == 2 */
-          << "    import imp\n"
-          << "    tmp = imp.load_source('" << moduleName << "', '" << fileName << "')\n"
 #endif
           << "except Exception as e:\n"
           << "    print(e)\n"
