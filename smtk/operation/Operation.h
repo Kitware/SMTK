@@ -293,7 +293,9 @@ protected:
     ParametersOption m_paramsOption{ ParametersOption::SkipValidation };
   };
 
-  struct SMTK_DEPRECATED_IN_24_11("Use this->childKey() instead.") Key : BaseKey
+  struct SMTK_DEPRECATED_IN_24_11(
+    "Use this->childKey(ObserverOption::SkipObservers, LockOption::SkipLocks, "
+    "ParametersOption::SkipValidation) instead.") Key : BaseKey
   {
     Key() = default;
   };
