@@ -24,6 +24,8 @@ namespace task
 namespace json
 {
 
+using namespace smtk::string::literals;
+
 Port::Configuration jsonPort::operator()(const Port* port, Helper& helper) const
 {
   Port::Configuration config;
@@ -36,6 +38,10 @@ Port::Configuration jsonPort::operator()(const Port* port, Helper& helper) const
     config["direction"] = Port::LabelFromDirection(port->direction());
     config["access"] = Port::LabelFromAccess(port->access());
     config["data-types"] = port->dataTypes();
+    if (port->unassignedRole() != "unassigned"_token)
+    {
+      config["unassigned-role"] = port->unassignedRole();
+    }
     if (!port->style().empty())
     {
       config["style"] = port->style();

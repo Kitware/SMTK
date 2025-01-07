@@ -33,6 +33,7 @@ namespace task
 
 Port::Port()
   : m_id(smtk::common::UUIDGenerator::instance().random())
+  , m_unassignedRole("unassigned"_token)
 {
 }
 
@@ -43,6 +44,7 @@ Port::Port(
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_parent(parentTask)
   , m_manager(parentTask->manager()->shared_from_this())
+  , m_unassignedRole("unassigned"_token)
 {
   (void)managers;
   this->configure(config);
@@ -54,6 +56,7 @@ Port::Port(
   const std::shared_ptr<smtk::common::Managers>& managers)
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_manager(taskManager.shared_from_this())
+  , m_unassignedRole("unassigned"_token)
 {
   (void)managers;
   this->configure(config);
@@ -116,6 +119,9 @@ void Port::configure(const Configuration& config)
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Port configuration must include data-types.");
   }
+
+  it = config.find("unassigned-role");
+  m_unassignedRole = (it != config.end() ? it->get<smtk::string::Token>() : "unassigned"_token);
 
   it = config.find("style");
   if (it != config.end())
@@ -213,7 +219,7 @@ std::shared_ptr<PortData> Port::portData(smtk::resource::PersistentObject* objec
     if (m_dataTypes.find(smtk::common::typeName<ObjectsInRoles>()) != m_dataTypes.end())
     {
       auto data = ObjectsInRoles::create();
-      data->addObject(object, "unassigned");
+      data->addObject(object, m_unassignedRole);
       return data;
     }
   }
