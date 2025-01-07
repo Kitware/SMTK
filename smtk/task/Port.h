@@ -92,6 +92,19 @@ public:
   /// with an uninitialized object.
   virtual void configure(const Configuration& config);
 
+  /// Add port connections from configuration data.
+  ///
+  /// This method is called by configure() but may also be called
+  /// elsewhere. Specifically, the task::Manager's `from_json()`
+  /// function calls it after all of a project's persistent objects
+  /// have been constructed to ensure the connections are able to
+  /// be assigned.
+  ///
+  /// Note that \a connConfig is not the same as the \a config parameter
+  /// passed to Port::configure(). Instead, it is a subitem of \a config
+  /// that holds only connections.
+  virtual void configureConnections(const Configuration& connConfig);
+
   /// Set/get the task's unique identifier.
   const common::UUID& id() const override { return m_id; }
   bool setId(const common::UUID& newId) override;
@@ -136,6 +149,13 @@ public:
   virtual std::shared_ptr<PortData> portData(smtk::resource::PersistentObject* object) const;
 
   const std::shared_ptr<resource::Resource> resource() const override;
+
+  /// Return a role to be assigned to connections that are not ports.
+  ///
+  /// Since persistent objects that are not ports cannot produce smtk::task::PortData
+  /// themselves (that includes roles for objects), this helps ports produce
+  /// ObjectsInRoles data (where a role is required).
+  smtk::string::Token unassignedRole() const { return m_unassignedRole; }
 
   /// Set/get style classes for the port.
   /// A style class specifies how applications should present the port
@@ -190,6 +210,10 @@ protected:
   std::unordered_set<PersistentObject*> m_connections;
   /// The subclasses of PortData this port is allowed to pass.
   std::unordered_set<smtk::string::Token> m_dataTypes;
+  /// The role which "bare" objects in m_connections should be assigned.
+  ///
+  /// This defaults to "unassigned".
+  smtk::string::Token m_unassignedRole;
   /// The set of style classes for this task.
   std::unordered_set<smtk::string::Token> m_style;
 };

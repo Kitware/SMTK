@@ -23,6 +23,8 @@
 
 #include <stdexcept>
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace task
@@ -224,15 +226,7 @@ void Task::configure(const Configuration& config)
     for (const auto& portEntry : config.at("ports").items())
     {
       const std::string& portName = portEntry.key();
-      smtk::task::Port* port = nullptr;
-      if (portEntry.value().is_number_integer())
-      {
-        port = helper.ports().unswizzle(portEntry.value().get<int>());
-      }
-      else if (portEntry.value().is_string())
-      {
-        port = manager->portInstances().findById(portEntry.value().get<smtk::common::UUID>()).get();
-      }
+      auto* port = helper.objectFromJSONSpecAs<smtk::task::Port>(portEntry.value(), "port"_token);
       if (port && !portName.empty())
       {
         port->setParent(this);
@@ -242,7 +236,8 @@ void Task::configure(const Configuration& config)
       {
         smtkErrorMacro(
           smtk::io::Logger::instance(),
-          "Malformed port: key \"" << portName << "\" value " << port << ". Skipping.");
+          "Malformed port: key \"" << portName << "\" value " << portEntry.value().dump()
+                                   << ". Skipping.");
       }
     }
   }
@@ -430,8 +425,12 @@ bool Task::clearStyle()
 
 bool Task::getViewData(smtk::common::TypeContainer& configuration) const
 {
-  (void)configuration;
-  return false;
+  bool didAdd = false;
+  for (const auto& agent : m_agents)
+  {
+    didAdd |= agent->getViewData(configuration);
+  }
+  return didAdd;
 }
 
 bool Task::editableCompletion() const

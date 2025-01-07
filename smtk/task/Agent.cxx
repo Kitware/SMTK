@@ -34,6 +34,12 @@ Agent::Configuration Agent::configuration() const
 
 void Agent::portDataUpdated(const Port*) {}
 
+bool Agent::getViewData(smtk::common::TypeContainer& configuration) const
+{
+  (void)configuration;
+  return false;
+}
+
 void Agent::taskStateChanged(State, State&) {}
 
 void Agent::taskStateChanged(Task*, State, State) {}

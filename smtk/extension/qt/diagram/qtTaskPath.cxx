@@ -255,6 +255,11 @@ void qtTaskPath::gotoRoot()
 {
   auto* currentLast = this->lastTask();
   this->clearPath();
+  if (!m_editor->manager())
+  {
+    // It is not an error for there to be no task-manager.
+    return;
+  }
   m_editor->manager()->active().switchTo(nullptr);
   if (currentLast != nullptr)
   {

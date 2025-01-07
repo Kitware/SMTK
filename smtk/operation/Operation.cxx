@@ -759,5 +759,16 @@ Operation::Outcome outcome(const Operation::Result& result)
   return static_cast<Operation::Outcome>(result->findInt("outcome")->value());
 }
 
+bool setOutcome(const Operation::Result& result, Operation::Outcome outcome)
+{
+  auto value = static_cast<int>(outcome);
+  auto item = result->findInt("outcome");
+  if (!item || item->value() == value)
+  {
+    return false;
+  }
+  return item->setValue(value);
+}
+
 } // namespace operation
 } // namespace smtk

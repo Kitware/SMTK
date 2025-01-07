@@ -33,6 +33,7 @@ namespace task
 
 Port::Port()
   : m_id(smtk::common::UUIDGenerator::instance().random())
+  , m_unassignedRole("unassigned"_token)
 {
 }
 
@@ -43,6 +44,7 @@ Port::Port(
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_parent(parentTask)
   , m_manager(parentTask->manager()->shared_from_this())
+  , m_unassignedRole("unassigned"_token)
 {
   (void)managers;
   this->configure(config);
@@ -54,6 +56,7 @@ Port::Port(
   const std::shared_ptr<smtk::common::Managers>& managers)
   : m_id(smtk::common::UUIDGenerator::instance().random())
   , m_manager(taskManager.shared_from_this())
+  , m_unassignedRole("unassigned"_token)
 {
   (void)managers;
   this->configure(config);
@@ -117,6 +120,9 @@ void Port::configure(const Configuration& config)
     smtkErrorMacro(smtk::io::Logger::instance(), "Port configuration must include data-types.");
   }
 
+  it = config.find("unassigned-role");
+  m_unassignedRole = (it != config.end() ? it->get<smtk::string::Token>() : "unassigned"_token);
+
   it = config.find("style");
   if (it != config.end())
   {
@@ -128,11 +134,39 @@ void Port::configure(const Configuration& config)
     {
     }
   }
-  // NB: Do not deserialize connections here as tasks are not created
-  //     until after ports during project::Read. Instead, we provide
-  //     a way for connections to be assigned directly.
-  // NB: Do not deserialize parent here as tasks are not created
-  //     until after ports during project::Read.
+  // We deserialize connections here, so that ports may be
+  // completely configured from JSON data. However, this
+  // initialization may be partial when loading a task::Manager
+  // from disk as tasks are not created until after ports
+  // during project::Read. Port::configureConnections() is
+  // a separate method to connections to be assigned directly
+  // by operations such as this.
+  it = config.find("connections");
+  if (it != config.end())
+  {
+    this->configureConnections(*it);
+  }
+  // We deserialize parent here if possible, but be aware that
+  // tasks are not created until after ports by the task::Manager's
+  // JSON deserializer.
+  it = config.find("parent");
+  if (it != config.end())
+  {
+    auto& helper = json::Helper::instance();
+    m_parent = helper.objectFromJSONSpecAs<Task>(*it);
+  }
+}
+
+void Port::configureConnections(const Configuration& connConfig)
+{
+  auto& helper = json::Helper::instance();
+  for (const auto& connSpec : connConfig)
+  {
+    if (auto* obj = helper.objectFromJSONSpec(connSpec))
+    {
+      m_connections.insert(obj);
+    }
+  }
 }
 
 bool Port::setId(const common::UUID& newId)
@@ -185,7 +219,7 @@ std::shared_ptr<PortData> Port::portData(smtk::resource::PersistentObject* objec
     if (m_dataTypes.find(smtk::common::typeName<ObjectsInRoles>()) != m_dataTypes.end())
     {
       auto data = ObjectsInRoles::create();
-      data->addObject(object, "unassigned");
+      data->addObject(object, m_unassignedRole);
       return data;
     }
   }

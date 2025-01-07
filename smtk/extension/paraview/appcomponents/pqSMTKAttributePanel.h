@@ -156,6 +156,11 @@ protected:
   /// Otherwise, use the default "Attribute Editor" window title.
   virtual void updateTitle(const smtk::view::ConfigurationPtr& view = nullptr);
   /// Display an attribute view as requested by a task's style.
+  ///
+  /// This will call the \a task's getViewData() method; the \a task's agents
+  /// should be configured to provide a set of weak pointers to attribute resources
+  /// that may hold view specifications that match the view name in the \a task's
+  /// style.
   virtual bool displayTaskAttribute(smtk::task::Task* task);
   /// Monitor the task controlling the panel's view (when a task is active).
   virtual void activeTaskStateChange(

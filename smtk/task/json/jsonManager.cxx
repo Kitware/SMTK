@@ -45,64 +45,25 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     { // Do not clear the parent task when deserializing nested tasks.
       helper.clear();
     }
-    // helper.setManagers(managers);
-    std::map<smtk::common::UUID, Task::Ptr> taskMap;
-    std::map<smtk::common::UUID, Port::Ptr> portMap;
-    std::map<json::Helper::SwizzleId, Adaptor::Ptr> adaptorMap;
     // Deserialize ports first so tasks/agents can find them upon initial
     // configuration.
     if (jj.contains("ports"))
     {
       for (const auto& jsonPort : jj.at("ports"))
       {
-        json::Helper::SwizzleId portSwizzle = 0;
-        auto portId = smtk::common::UUID::null();
-        auto jPortId = jsonPort.at("id");
-        if (jPortId.is_number_integer())
-        {
-          portSwizzle = jPortId.get<json::Helper::SwizzleId>();
-        }
-        else if (jPortId.is_string())
-        {
-          portId = jsonPort.at("id").get<smtk::common::UUID>();
-        }
-        Port::Ptr port = jsonPort;
-        if (portSwizzle)
-        {
-          helper.ports().setSwizzleId(port.get(), portSwizzle);
-          portId = port->id(); // port->setId(portId);
-        }
-        else
-        {
-          portSwizzle = helper.ports().swizzleId(port.get());
-        }
-        portMap[portId] = port;
+        helper.ports().construct(jsonPort);
       }
     }
-    for (const auto& jsonTask : jj.at("tasks"))
+    // Deserialize tasks; note that this does not ensure the set of
+    // children or dependencies are set on each task as the order of
+    // deserialization does not guarantee children/dependencies exist
+    // a priori.
+    if (jj.contains("tasks"))
     {
-      json::Helper::SwizzleId taskSwizzle = 0;
-      auto taskId = smtk::common::UUID::null();
-      auto jTaskId = jsonTask.at("id");
-      if (jTaskId.is_number_integer())
+      for (const auto& jsonTask : jj.at("tasks"))
       {
-        taskSwizzle = jTaskId.get<json::Helper::SwizzleId>();
+        helper.tasks().construct(jsonTask);
       }
-      else if (jTaskId.is_string())
-      {
-        taskId = jsonTask.at("id").get<smtk::common::UUID>();
-      }
-      Task::Ptr task = jsonTask;
-      if (taskSwizzle)
-      {
-        helper.tasks().setSwizzleId(task.get(), taskSwizzle);
-        taskId = task->id(); // task->setId(taskId);
-      }
-      else
-      {
-        taskSwizzle = helper.tasks().swizzleId(task.get());
-      }
-      taskMap[taskId] = task;
     }
     // Do a second pass on ports to deserialize connections and UI config.
     // All objects in a port's connections should now exist (tasks have
@@ -112,235 +73,85 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     {
       for (const auto& jsonPort : jj.at("ports"))
       {
-        auto jPortId = jsonPort.at("id");
-        Port::Ptr port;
-        if (jPortId.is_number_integer())
-        {
-          auto portSwizzle = jPortId.get<json::Helper::SwizzleId>();
-          auto* tp = helper.ports().unswizzle(portSwizzle);
-          port = tp ? std::static_pointer_cast<smtk::task::Port>(tp->shared_from_this()) : nullptr;
-        }
-        else
-        {
-          auto portId = jsonPort.at("id").get<smtk::common::UUID>();
-          auto it = portMap.find(portId);
-          if (it != portMap.end())
-          {
-            port = it->second;
-          }
-        }
+        auto* port = helper.ports().get(jsonPort);
         if (!port)
         {
           smtkErrorMacro(
-            smtk::io::Logger::instance(), "Could not find port for id: " << jPortId << ".");
+            smtk::io::Logger::instance(), "Could not find port for id: " << jsonPort.dump() << ".");
           continue;
         }
-        auto* portRsrc = port->parentResource();
         if (jsonPort.contains("connections"))
         {
           auto resourceManager = helper.managers()->get<smtk::resource::Manager::Ptr>();
           const auto& jpconn(jsonPort.at("connections"));
           port->connections().reserve(jpconn.size());
-          for (const auto& dep : jsonPort.at("connections"))
+          for (const auto& conn : jsonPort.at("connections"))
           {
-            if (dep.is_number_integer())
+            auto* obj = helper.objectFromJSONSpec(conn, "port");
+            if (obj)
             {
-              // Set by call to helper.ports().setSwizzleId(port.get(), portId) above
-              auto* depPort = helper.ports().unswizzle(dep.get<json::Helper::SwizzleId>());
-              if (depPort)
-              {
-                port->connections().insert(depPort);
-              }
-              else
-              {
-                smtkErrorMacro(
-                  smtk::io::Logger::instance(),
-                  port->name() << " has unknown dependency " << dep.get<json::Helper::SwizzleId>()
-                               << "; skipping.");
-                continue;
-              }
+              port->connections().insert(obj);
             }
-            else if (dep.is_array() && dep.size() == 2)
+            else
             {
-              // We have an array with 1 or 2 UUIDs:
-              // [ null, UUID ] ⇒  dep is a component in the project resource.
-              // [ UUID, null ] ⇒  dep is a resource (presumably one owned by the project).
-              // [ UUID, UUID ] ⇒  dep is a component in an external resource.
-              if (dep[0].is_null())
-              {
-                // Fetch project component:
-                auto* comp = portRsrc->find(dep[1].get<smtk::common::UUID>()).get();
-                if (comp)
-                {
-                  port->connections().insert(comp);
-                }
-                else
-                {
-                  smtkErrorMacro(
-                    smtk::io::Logger::instance(),
-                    "Could not find \"" << dep[1] << "\" in project resource.");
-                }
-              }
-              else if (dep[1].is_null())
-              {
-                // Fetch resource.
-                auto* rsrc = resourceManager->get(dep[0].get<smtk::common::UUID>()).get();
-                if (rsrc)
-                {
-                  port->connections().insert(rsrc);
-                }
-                else
-                {
-                  smtkErrorMacro(
-                    smtk::io::Logger::instance(),
-                    "Could not find \"" << dep[0] << "\" in resource manager.");
-                }
-              }
-              else
-              {
-                // Both dep[0] and dep[1] should be UUIDs.
-                auto* rsrc = resourceManager->get(dep[0].get<smtk::common::UUID>()).get();
-                if (rsrc)
-                {
-                  auto* comp = rsrc->find(dep[1].get<smtk::common::UUID>()).get();
-                  if (comp)
-                  {
-                    port->connections().insert(comp);
-                  }
-                  else
-                  {
-                    smtkErrorMacro(
-                      smtk::io::Logger::instance(),
-                      "Could not find \"" << dep[1] << "\" in resource \"" << rsrc->name()
-                                          << "\".");
-                  }
-                }
-                else
-                {
-                  smtkErrorMacro(
-                    smtk::io::Logger::instance(),
-                    "Could not find \"" << dep[0] << "\" in resource manager.");
-                }
-              }
+              smtkErrorMacro(
+                smtk::io::Logger::instance(),
+                port->name() << " has unknown connection " << conn.dump() << "; skipping.");
+              continue;
             }
           }
         }
         // TODO: UI state.
       }
     }
-    // Do a second pass to deserialize dependencies and children.
-    for (const auto& jsonTask : jj.at("tasks"))
+    // Do a second pass to deserialize task dependencies and children.
+    if (jj.contains("tasks"))
     {
-      auto jTaskId = jsonTask.at("id");
-      Task::Ptr task;
-      if (jTaskId.is_number_integer())
+      for (const auto& jsonTask : jj.at("tasks"))
       {
-        auto taskSwizzle = jTaskId.get<json::Helper::SwizzleId>();
-        auto* tp = helper.tasks().unswizzle(taskSwizzle);
-        task = tp ? std::static_pointer_cast<smtk::task::Task>(tp->shared_from_this()) : nullptr;
-      }
-      else
-      {
-        auto taskId = jsonTask.at("id").get<smtk::common::UUID>();
-        auto it = taskMap.find(taskId);
-        if (it != taskMap.end())
+        auto* task = helper.tasks().get(jsonTask);
+        if (!task)
         {
-          task = it->second;
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Could not find task for id: " << jsonTask.dump() << ".");
+          continue;
         }
-      }
-      if (!task)
-      {
-        smtkErrorMacro(
-          smtk::io::Logger::instance(), "Could not find task for id: " << jTaskId << ".");
-        continue;
-      }
-      if (jsonTask.contains("dependencies"))
-      {
-        smtk::task::Task::PassedDependencies taskDeps;
-        for (const auto& dep : jsonTask.at("dependencies"))
+        if (jsonTask.contains("dependencies"))
         {
-          if (dep.is_number_integer())
+          smtk::task::Task::PassedDependencies taskDeps;
+          for (const auto& dep : jsonTask.at("dependencies"))
           {
-            // Set by call to helper.tasks().setSwizzleId(task.get(), taskId) above
-            auto* depTask = helper.tasks().unswizzle(dep.get<json::Helper::SwizzleId>());
-            if (depTask)
-            {
-              taskDeps.insert(
-                std::static_pointer_cast<smtk::task::Task>(depTask->shared_from_this()));
-            }
-            else
+            auto* depTask = helper.objectFromJSONSpecAs<smtk::task::Task>(dep, "task");
+            if (!depTask)
             {
               smtkErrorMacro(
                 smtk::io::Logger::instance(),
-                task->name() << " has unknown dependency " << dep.get<json::Helper::SwizzleId>()
-                             << "; skipping.");
+                task->name() << " has unknown dependency " << dep.dump() << "; skipping.");
               continue;
             }
+            taskDeps.insert(
+              std::static_pointer_cast<smtk::task::Task>(depTask->shared_from_this()));
           }
-          else
-          {
-            auto it = taskMap.find(dep.get<smtk::common::UUID>());
-            if (it == taskMap.end())
-            {
-              smtkErrorMacro(
-                smtk::io::Logger::instance(),
-                task->name() << " has unknown dependency " << dep << "; skipping.");
-              continue;
-            }
-            if (it->second == task)
-            {
-              smtkWarningMacro(
-                smtk::io::Logger::instance(), task->name() << " trying to set deps to itself");
-              continue;
-            }
-            taskDeps.insert(it->second);
-          }
+          task->addDependencies(taskDeps);
         }
-        task->addDependencies(taskDeps);
-      }
-      if (jsonTask.contains("children"))
-      {
-        std::set<smtk::task::TaskPtr> taskChildren;
-        for (const auto& cid : jsonTask.at("children"))
+        if (jsonTask.contains("children"))
         {
-          if (cid.is_number_integer())
+          std::set<smtk::task::TaskPtr> taskChildren;
+          for (const auto& cid : jsonTask.at("children"))
           {
-            // Set by call to helper.tasks().setSwizzleId(task.get(), taskId) above
-            auto* childTask = helper.tasks().unswizzle(cid.get<json::Helper::SwizzleId>());
-            if (childTask)
-            {
-              taskChildren.insert(
-                std::static_pointer_cast<smtk::task::Task>(childTask->shared_from_this()));
-            }
-            else
+            auto* childTask = helper.objectFromJSONSpecAs<smtk::task::Task>(cid, "task");
+            if (!childTask)
             {
               smtkErrorMacro(
                 smtk::io::Logger::instance(),
-                task->name() << " has unknown child task " << cid.get<json::Helper::SwizzleId>()
-                             << "; skipping.");
+                task->name() << " has unknown child task " << cid.dump() << "; skipping.");
               continue;
             }
+            taskChildren.insert(
+              std::static_pointer_cast<smtk::task::Task>(childTask->shared_from_this()));
           }
-          else
-          {
-            auto it = taskMap.find(cid.get<smtk::common::UUID>());
-            if (it == taskMap.end())
-            {
-              smtkErrorMacro(
-                smtk::io::Logger::instance(),
-                task->name() << " has unknown child " << cid << "; skipping.");
-              continue;
-            }
-            if (it->second == task)
-            {
-              smtkWarningMacro(
-                smtk::io::Logger::instance(), task->name() << " trying to set child to itself");
-              continue;
-            }
-            taskChildren.insert(it->second);
-          }
+          task->addChildren(taskChildren);
         }
-        task->addChildren(taskChildren);
       }
     }
 
@@ -351,66 +162,22 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     {
       for (const auto& jsonAdaptor : jj.at("adaptors"))
       {
-        // Skip things that are not adaptors.
-        if (jsonAdaptor.is_object() && jsonAdaptor.contains("id"))
+        if (!helper.adaptors().construct(jsonAdaptor))
         {
-          try
-          {
-            auto jAdaptorId = jsonAdaptor.at("id");
-            json::Helper::SwizzleId adaptorId;
-            if (jAdaptorId.is_string())
-            {
-              adaptorId = -128;
-            }
-            else if (jAdaptorId.is_number_integer())
-            {
-              adaptorId = jsonAdaptor.at("id").get<json::Helper::SwizzleId>();
-            }
-            // Tasks are now components. They may have temporary IDs that need to
-            // be de-swizzled. Or they may just have UUIDs.
-            auto jTaskFrom = jsonAdaptor.at("from");
-            auto jTaskTo = jsonAdaptor.at("to");
-            if (jTaskFrom.is_string() && jTaskTo.is_string())
-            {
-              // Both tasks specified by UUID.
-              auto taskFromId = jTaskFrom.get<smtk::common::UUID>();
-              auto taskToId = jTaskTo.get<smtk::common::UUID>();
-              helper.setAdaptorTaskIds(taskFromId, taskToId);
-            }
-            else if (jTaskFrom.is_number_integer() && jTaskTo.is_number_integer())
-            {
-              // Both tasks specified by integer index (not a UUID).
-              auto taskFromId = jTaskFrom.get<json::Helper::SwizzleId>();
-              auto taskToId = jTaskTo.get<json::Helper::SwizzleId>();
-              helper.setAdaptorTaskIds(taskFromId, taskToId);
-            }
-            else
-            {
-              smtkErrorMacro(
-                smtk::io::Logger::instance(),
-                "Skipping adaptor because 'from' and 'to' are not of the same, proper type.");
-              continue;
-            }
-            Adaptor::Ptr adaptor = jsonAdaptor;
-            adaptorId = helper.adaptors().swizzleId(adaptor.get());
-            adaptorMap[adaptorId] = adaptor;
-          }
-          catch (std::exception& e)
-          {
-            std::cout << e.what() << "ERROR\n";
-            smtkErrorMacro(
-              smtk::io::Logger::instance(),
-              "Skipping adaptor because 'id', 'from', and/or 'to' fields are missing.");
-          }
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Could not construct adaptor for " << jsonAdaptor.dump() << "; skipping.");
         }
       }
     }
+
+    // Copy style specifications into the task manager.
     if (jj.contains("styles"))
     {
       taskManager.setStyles(jj.at("styles"));
     }
 
-    // Read in the Worklet Gallery if one exists
+    // Read in the worklet gallery if one exists.
     auto it = jj.find("gallery");
     if (it != jj.end())
     {
@@ -426,8 +193,6 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         }
       }
     }
-
-    // helper.clear();
   }
   catch (std::exception& e)
   {

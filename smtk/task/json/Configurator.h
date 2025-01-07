@@ -11,7 +11,12 @@
 #define smtk_task_json_Configurator_h
 
 #include "smtk/task/Adaptor.h"
+#include "smtk/task/Port.h"
 #include "smtk/task/Task.h"
+
+#include "smtk/task/json/jsonAdaptor.h"
+#include "smtk/task/json/jsonPort.h"
+#include "smtk/task/json/jsonTask.h"
 
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
@@ -111,30 +116,16 @@ public:
   /// it will free memory.
   void clear();
 
-  /// Reset just the portion of the configurator's state related to negative SwizzleIds.
-  ///
-  /// Sometimes serializers need to process nested objects.
-  /// While a more general solution is possible (wherein each nested
-  /// call to the serializer creates a new helper and pops it once
-  /// complete, it is simpler to constrain nested swizzlers to never
-  /// overlap one another. Then, we can simply re-use the namespace
-  /// of negative swizzle IDs for each nested call.
-  /// This method clears any negative swizzle IDs and should be called
-  /// at the start of each nested deserialization.
-  void clearNestedSwizzles();
-
-  /// Return the ID of an object as computed by the swizzler.
-  /// This will allocate a new, negative ID if none exists.
-  SwizzleId nestedSwizzleId(const ObjectType* object);
-
   /// Return the ID of an object as computed by the swizzler.
   /// This will allocate a new ID if none exists.
   SwizzleId swizzleId(const ObjectType* object);
+  SwizzleId swizzleId(const typename ObjectType::Ptr& object);
 
   /// When deserializing an object, we have the swizzle ID assigned previously.
   /// Accept the given ID; if it already exists, then return false and print
   /// a warning. Otherwise, assign the given ID and return true.
   bool setSwizzleId(const ObjectType* object, SwizzleId swizzle);
+  bool setSwizzleId(const typename ObjectType::Ptr& object, SwizzleId swizzle);
 
   /// Return the pointer to an object given its swizzled ID (or null).
   ObjectType* unswizzle(SwizzleId objectId) const;
@@ -142,12 +133,49 @@ public:
   /// Populate the vector with tasks whose swizzle ID is \a start or above.
   void currentObjects(std::vector<ObjectType*>& objects, SwizzleId start = 2);
 
+  /// Return whether the current swizzling maps are both empty.
+  bool empty() const { return m_swizzleFwd.empty() && m_swizzleBck.empty(); }
+
+  /// Given a JSON \a dict containing configuration data for
+  /// an object, construct one and map its "id" and "swizzle" field(s)
+  /// if present.
+  ///
+  /// This method is used by deserialization code to create tasks,
+  /// ports, and adaptors given their JSON specifications (\a dict).
+  /// It indexes these objects so that they can be referenced elsewhere
+  /// in the JSON by UUID, by swizzle ID, or by object type (as a string
+  /// token) and swizzle ID.
+  ///
+  /// This method also accounts for the parent-helper's mapUUIDs setting.
+  /// If true, a random UUID is assigned to each newly-encountered UUID and
+  /// the mapping is stored in a separate map.
+  /// This allows task::Worklet JSON to contain "temporary" UUIDs that are
+  /// modified during the deserialization done by EmplaceWorklet or other
+  /// operations.
+  ///
+  /// Note that we pass \a dict by value intentionally so that when
+  /// the hepler is mapping UUIDs we can alter \a dict.
+  ObjectType* construct(nlohmann::json dict);
+
+  /// Look up an object instantiated via construct() by its UUID.
+  ObjectType* get(const smtk::common::UUID& uid);
+  /// Look up an object instantiated via construct() by its JSON (using "id" or "swizzle").
+  ObjectType* get(const nlohmann::json& spec);
+
+  /// Return the map to instance UUIDs given "mapped" UUIDs.
+  ///
+  /// This is used when the parent Helper's mapUUID flag is set
+  /// to deserialized instances that do not have the same UUIDs
+  /// as those specified in the JSON.
+  const std::unordered_map<smtk::common::UUID, smtk::common::UUID>& uuidMap() { return m_idMap; }
+
 protected:
   Helper* m_helper;
-  std::unordered_map<ObjectType*, SwizzleId> m_swizzleFwd;
+  std::unordered_map<typename ObjectType::Ptr, SwizzleId> m_swizzleFwd;
   std::map<SwizzleId, ObjectType*> m_swizzleBck;
+  std::unordered_map<smtk::common::UUID, ObjectType*> m_objectById;
+  std::unordered_map<smtk::common::UUID, smtk::common::UUID> m_idMap;
   SwizzleId m_nextSwizzle = 1;
-  SwizzleId m_nextNested = -1;
   static HelperTypeMap s_types;
 };
 
@@ -157,6 +185,7 @@ protected:
 // issues with type containers since each instance of what is effectively the
 // same type will have a different type ID in each DLL.
 template class SMTKCORE_EXPORT Configurator<Task>;
+template class SMTKCORE_EXPORT Configurator<Port>;
 template class SMTKCORE_EXPORT Configurator<Adaptor>;
 #endif
 
