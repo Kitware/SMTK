@@ -8,7 +8,7 @@
         GIT_CLONE_PATH: "$CI_BUILDS_DIR/cmb-ci-ext/$CI_CONCURRENT_ID"
         # TODO: Factor this out so that each job selects the Xcode version to
         # use so that different versions can be tested in a single pipeline.
-        DEVELOPER_DIR: "/Applications/Xcode-14.2.app/Contents/Developer"
+        DEVELOPER_DIR: "/Applications/Xcode-16.1.app/Contents/Developer"
         # Avoid conflicting with other projects running on the same machine.
         SCCACHE_SERVER_PORT: 4228
 
@@ -41,12 +41,12 @@
 
 ## Tags
 
-.macos_builder_tags:
+.macos_x86_64_builder_tags:
     tags:
         - cmb
         - macos-x86_64
         - shell
-        - xcode-14.2
+        - xcode-16.1
         - nonconcurrent
 
 .macos_arm64_builder_tags:
@@ -54,7 +54,7 @@
         - cmb
         - macos-arm64
         - shell
-        - xcode-14.2
+        - xcode-16.1
         - nonconcurrent
 
 ## macOS-specific scripts

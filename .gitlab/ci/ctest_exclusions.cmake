@@ -18,6 +18,10 @@ if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "fedora")
     "^RenderMesh$"
     # QTest::qWaitForWindowActive fails on CI machines but works locally
     "^UnitTestDoubleClickButton$"
+    # Segfault; global dtor order where `H5P_close` tries to allocate memory after `malloc`
+    # machinery has been torn down
+    # https://gitlab.kitware.com/cmb/smtk/-/issues/544
+    "^TestMutexedOperation$"
     )
 endif ()
 

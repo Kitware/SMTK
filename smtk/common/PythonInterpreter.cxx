@@ -105,19 +105,28 @@ void PythonInterpreter::initialize()
   // Locate the directory containing the python library in use, and set
   // PYTHONHOME to this path.
   static std::string pythonLibraryLocation = Paths::pathToLibraryContainingFunction(Py_Initialize);
-#if (PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3) || PY_MAJOR_VERSION > 3
-  // Python 3.3 switched to wchar_t.
+  size_t needed = mbstowcs(nullptr, pythonLibraryLocation.c_str(), 0);
+
+#if PY_VERSION_HEX >= 0x03080000
+  PyConfig config;
+  PyConfig_InitPythonConfig(&config);
+  wchar_t* wcs_pn = (wchar_t*)PyMem_RawMalloc(sizeof(wchar_t) * (needed + 1));
+  mbstowcs(wcs_pn, pythonLibraryLocation.c_str(), needed + 1);
+  config.program_name = wcs_pn;
+  config.site_import = 0;
+
+  pybind11::initialize_interpreter(&config);
+  PyConfig_Clear(&config);
+#else
   static std::vector<wchar_t> loc;
-  loc.resize(pythonLibraryLocation.size() + 1);
+  loc.resize(needed + 1);
   mbstowcs(loc.data(), pythonLibraryLocation.c_str(), static_cast<size_t>(loc.size()));
   Py_SetProgramName(loc.data());
-#else
-  Py_SetProgramName(const_cast<char*>(pythonLibraryLocation.c_str()));
-#endif
 
   // Initialize the embedded interpreter.
   Py_NoSiteFlag = 1;
   pybind11::initialize_interpreter();
+#endif
 
   // Locate the directory containing the library that describes this
   // class.
@@ -378,21 +387,12 @@ bool PythonInterpreter::loadPythonSourceFile(
 
   testCmd << "loaded = True\n"
           << "try:\n"
-#if PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 5
           << "    import sys, types, importlib.machinery\n"
           << "    loader = importlib.machinery.SourceFileLoader('" << moduleName << "', '"
           << fileName << "')\n"
           << "    mod = types.ModuleType(loader.name)\n"
           << "    loader.exec_module(mod)\n"
           << "    sys.modules['" << moduleName << "'] = mod\n"
-#elif PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION >= 3 && PY_MINOR_VERSION <= 4
-          << "    from importlib.machinery import SourceFileLoader\n"
-          << "    tmp = SourceFileLoader('" << moduleName << "', '" << fileName
-          << "').load_module()\n"
-#else /* PY_MAJOR_VERSION == 2 */
-          << "    import imp\n"
-          << "    tmp = imp.load_source('" << moduleName << "', '" << fileName << "')\n"
-#endif
           << "except Exception as e:\n"
           << "    print(e)\n"
           << "    loaded = False";

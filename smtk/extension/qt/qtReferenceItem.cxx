@@ -758,6 +758,15 @@ void qtReferenceItem::updateSynopsisLabels() const
 
 bool qtReferenceItem::eventFilter(QObject* src, QEvent* event)
 {
+  // Filter events up front. UBSan is noticing that, during destruction of the widget tree,
+  // `m_popup` is transmogrified from a `QDialog` into a `QWidget` (this is called from the
+  // `QWidget` destructor). Do nothing for certain events to avoid looking at `m_popup` during
+  // this state.
+  if (event->type() == QEvent::ChildRemoved || event->type() == QEvent::Destroy)
+  {
+    return false;
+  }
+
   // We serve as an event filter on 2 widgets:
   // 1. the inherited frame holding the item (m_widget),
   //    which we monitor for the enter/exit events that enable hovering
