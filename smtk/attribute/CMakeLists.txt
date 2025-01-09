@@ -123,6 +123,7 @@ set(attributeHeaders
   ModelEntityItemDefinition.h
   PathGrammar.h
   ReferenceItem.h
+  ReferenceItemConstIteratorTemplate.h
   ReferenceItemDefinition.h
   Registrar.h
   Resource.h
