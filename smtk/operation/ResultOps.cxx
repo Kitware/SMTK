@@ -16,6 +16,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/UnsetValueError.h"
+#include "smtk/io/Logger.h"
 
 namespace smtk
 {
@@ -27,24 +29,31 @@ void addResourcesOfReferenceItem(
   std::set<smtk::resource::Resource::Ptr>& resources,
   bool includeProjectChildren)
 {
-  for (const auto& obj : *item)
+  try
   {
-    if (auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj))
+    for (const auto& obj : *item)
     {
-      resources.insert(rsrc);
-      if (includeProjectChildren)
+      if (auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj))
       {
-        if (auto proj = std::dynamic_pointer_cast<smtk::project::Project>(rsrc))
+        resources.insert(rsrc);
+        if (includeProjectChildren)
         {
-          // Also add resources of project
-          // TODO: Note that this will not recurse if a project has child projects.
-          for (const auto& pr : proj->resources())
+          if (auto proj = std::dynamic_pointer_cast<smtk::project::Project>(rsrc))
           {
-            resources.insert(pr);
+            // Also add resources of project
+            // TODO: Note that this will not recurse if a project has child projects.
+            for (const auto& pr : proj->resources())
+            {
+              resources.insert(pr);
+            }
           }
         }
       }
     }
+  }
+  catch (smtk::attribute::UnsetValueError&)
+  {
+    smtkWarningMacro(smtk::io::Logger::instance(), "Operation has an unset return resource item.");
   }
 }
 

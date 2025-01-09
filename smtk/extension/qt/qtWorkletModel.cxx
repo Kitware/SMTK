@@ -18,6 +18,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
+#include "smtk/attribute/UnsetValueError.h"
 #include "smtk/common/Managers.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/SpecificationOps.h"
@@ -297,10 +298,19 @@ void qtWorkletModel::workletUpdate(
     };
   if (createdResources)
   {
-    for (const auto& obj : *createdResources)
+    try
     {
-      auto rsrc = std::static_pointer_cast<smtk::resource::Resource>(obj);
-      rsrc->visit(visitor);
+      for (const auto& obj : *createdResources)
+      {
+        auto rsrc = std::static_pointer_cast<smtk::resource::Resource>(obj);
+        rsrc->visit(visitor);
+      }
+    }
+    catch (smtk::attribute::UnsetValueError&)
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Operation " << operation.type_name << ": has an unset return resource item.");
     }
   }
   for (const auto& comp : *created)
