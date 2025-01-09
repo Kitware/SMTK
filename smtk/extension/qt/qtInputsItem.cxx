@@ -415,6 +415,7 @@ void qtInputsItem::updateItemData()
       if (editor != nullptr)
       {
         editor->updateItemData();
+        editor->updateContents();
       }
     }
     this->qtItem::updateItemData();
