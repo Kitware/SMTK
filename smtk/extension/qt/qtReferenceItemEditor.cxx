@@ -679,7 +679,7 @@ void qtReferenceItemEditor::handleResourceEvent(
   // If this resource is marked for removal, then we don't need to update this widget since
   // it should be deleted shortly - this will also prevent the resource's links system from
   // pulling in associated resources unnecessarily
-  if (attResource->isMarkedForRemoval())
+  if (!attResource || attResource->isMarkedForRemoval())
   {
     return;
   }
