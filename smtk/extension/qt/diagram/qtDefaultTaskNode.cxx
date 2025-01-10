@@ -329,9 +329,9 @@ void qtDefaultTaskNode::paint(
     this->boundingRect().adjusted(borderOffset, borderOffset, -borderOffset, -borderOffset);
   path.addRoundedRect(br, 2 * cfg.nodeBorderThickness(), 2 * cfg.nodeBorderThickness());
 
-  const QColor baseColor = QApplication::palette().window().color();
-  const QColor highlightColor = QApplication::palette().highlight().color();
-  const QColor contrastColor = QColor::fromHslF(
+  QColor baseColor = QApplication::palette().window().color();
+  QColor highlightColor = QApplication::palette().highlight().color();
+  QColor nodeColor = QColor::fromHslF(
     baseColor.hueF(),
     baseColor.saturationF(),
     baseColor.lightnessF() > 0.5 ? baseColor.lightnessF() - 0.5 : baseColor.lightnessF() + 0.5);
@@ -341,7 +341,6 @@ void qtDefaultTaskNode::paint(
   switch (m_outlineStyle)
   {
     case OutlineStyle::Normal:
-      pen.setBrush(contrastColor);
       break;
     case OutlineStyle::Active:
       pen.setBrush(highlightColor);
@@ -351,21 +350,29 @@ void qtDefaultTaskNode::paint(
   }
 
   painter->setPen(pen);
-  painter->fillPath(path, baseColor);
-  painter->drawPath(path);
+  painter->fillPath(path, nodeColor);
+  if (m_outlineStyle == OutlineStyle::Active)
+  {
+    painter->drawPath(path);
+  }
+  auto widgetPalette = m_container->palette();
+  widgetPalette.setColor(QPalette::Window, nodeColor);
+  m_container->setPalette(widgetPalette);
 
   if (this->isSelected())
   {
     QPen spen;
     spen.setWidth(cfg.nodeBorderThickness());
     QPainterPath selPath;
+    const QColor selectedColor("#ff00ff");
+
     const QColor contrastColor2 = QColor::fromHslF(
-      pen.brush().color().hueF(),
-      pen.brush().color().saturationF(),
+      selectedColor.hueF(),
+      selectedColor.saturationF(),
       qBound(
         0.,
-        baseColor.lightnessF() > 0.5 ? pen.brush().color().lightnessF() + 0.25
-                                     : pen.brush().color().lightnessF() - 0.25,
+        baseColor.lightnessF() > 0.5 ? selectedColor.lightnessF() + 0.25
+                                     : selectedColor.lightnessF() - 0.25,
         1.));
     spen.setBrush(contrastColor2);
     painter->setPen(spen);

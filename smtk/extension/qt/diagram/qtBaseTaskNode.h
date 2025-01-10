@@ -93,9 +93,13 @@ public:
   SMTK_DEPRECATED_IN_24_01("Override or call dataUpdated() from qtBaseNode instead.")
   virtual void updateToMatchModifiedTask() { this->dataUpdated(); };
 
+  bool snapPorts() const { return m_snapPorts; }
+  virtual void setSnapPorts(bool val);
+
 protected:
   smtk::task::Task* m_task{ nullptr };
   OutlineStyle m_outlineStyle{ OutlineStyle::Normal };
+  bool m_snapPorts = false;
 };
 
 } // namespace extension

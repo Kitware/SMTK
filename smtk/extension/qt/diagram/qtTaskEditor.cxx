@@ -27,8 +27,8 @@
 #include "smtk/extension/qt/diagram/qtTaskPortNode.h"
 
 // nodes
-#include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
 #include "smtk/extension/qt/diagram/qtResourceNode.h"
+#include "smtk/extension/qt/diagram/qtTaskNode.h"
 
 // modes
 #include "smtk/extension/qt/diagram/qtConnectMode.h"
@@ -495,7 +495,7 @@ void qtTaskEditor::updateSceneNodes(
     {
       if (auto* taskManager = task->manager())
       {
-        std::string taskNodeType = "smtk::extension::qtDefaultTaskNode";
+        std::string taskNodeType = "smtk::extension::qtTaskNode";
         for (const auto& style : task->style())
         {
           const auto& styleConfig = taskManager->getStyle(style);
@@ -520,7 +520,7 @@ void qtTaskEditor::updateSceneNodes(
                         .release();
         if (!tnode)
         {
-          tnode = new qtDefaultTaskNode(this, task);
+          tnode = new qtTaskNode(this, task);
           smtkWarningMacro(
             smtk::io::Logger::instance(),
             "Could not find task node class " << taskNodeType << " creating default task node!");

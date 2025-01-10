@@ -150,7 +150,15 @@ bool qtConnectMode::eventFilter(QObject* obj, QEvent* event)
         {
           this->clickConnectNode(dynamic_cast<smtk::extension::qtBaseObjectNode*>(
             diagramView->itemAt(mouseEvent->pos())));
+          return true;
         }
+      }
+      break;
+      case QEvent::MouseButtonDblClick:
+      {
+        // Prevent any nodes from responding from double clicks - for
+        // example, this will prevent task name editing while in connect mode
+        return true;
       }
       break;
       default:
