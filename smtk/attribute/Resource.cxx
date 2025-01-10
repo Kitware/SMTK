@@ -58,6 +58,10 @@ Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr ma
   queries().registerQueries<QueryList>();
   m_unitsSystem = units::System::
     createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
+
+  // Do not display resource views in the attribute panel automatically.
+  // (Projects should use tasks to accomplish this now.)
+  this->properties().get<bool>()["smtk.attribute_panel.display_hint"] = false;
 }
 
 Resource::Resource(smtk::resource::ManagerPtr manager)
@@ -66,6 +70,10 @@ Resource::Resource(smtk::resource::ManagerPtr manager)
   queries().registerQueries<QueryList>();
   m_unitsSystem = units::System::
     createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
+
+  // Do not display resource views in the attribute panel automatically.
+  // (Projects should use tasks to accomplish this now.)
+  this->properties().get<bool>()["smtk.attribute_panel.display_hint"] = false;
 }
 
 Resource::~Resource()
