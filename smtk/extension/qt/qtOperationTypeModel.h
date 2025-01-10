@@ -13,8 +13,11 @@
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtOperationLauncher.h"
 
+#include "smtk/extension/qt/qtOperationAction.h"
+
 #include <QAbstractListModel>
 #include <QPointer>
+#include <QToolBar>
 
 #include "smtk/attribute/utility/Queries.h"
 #include "smtk/common/Managers.h"
@@ -23,7 +26,6 @@
 #include "smtk/view/Information.h"
 #include "smtk/view/SelectionObserver.h"
 
-class qtOperationAction;
 namespace smtk
 {
 namespace view
@@ -155,6 +157,13 @@ public:
   /// Create an operation of the given type and associate it with the current selection.
   std::shared_ptr<smtk::operation::Operation> prepareOperation(
     smtk::operation::Operation::Index typeIndex) const;
+
+  /// Given a \a toolbar, insert each of the \a operations in the tuple into it.
+  template<typename OperationTuple>
+  void insertIntoToolbar(QToolBar* toolbar)
+  {
+    this->insertActionIntoToolbar<0, OperationTuple>(toolbar);
+  }
 
 public Q_SLOTS:
   /**\brief Run an operation of the given type with its default parameters.
@@ -401,6 +410,25 @@ protected:
   std::string m_secondaryColor{ "#ffffff" };
 
   smtk::extension::qtOperationLauncher* m_launcher{ nullptr };
+
+  /// Helper templates for insertIntoToolbar()
+  template<std::size_t I, typename Tuple>
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type insertActionIntoToolbar(
+    QToolBar* toolbar)
+  {
+    (void)toolbar;
+    return true;
+  }
+
+  /// Helper templates for insertIntoToolbar()
+  template<std::size_t I, typename Tuple>
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type insertActionIntoToolbar(
+    QToolBar* toolbar)
+  {
+    this->actionFor<typename std::tuple_element<I, Tuple>::type>()->forceStyle(
+      Qt::ToolButtonIconOnly, [toolbar](qtOperationAction* action) { toolbar->addAction(action); });
+    return this->insertActionIntoToolbar<I + 1, Tuple>(toolbar);
+  }
 
 private:
   Q_DISABLE_COPY(qtOperationTypeModel);

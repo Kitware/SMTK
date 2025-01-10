@@ -9,6 +9,7 @@ set(classes
   pqSMTKDock
   pqSMTKOperationPanel
   pqSMTKOperationParameterPanel
+  pqSMTKOperationToolbar
   pqSMTKOperationToolboxPanel
   pqSMTKPipelineSelectionBehavior
   pqSMTKRenderResourceBehavior
