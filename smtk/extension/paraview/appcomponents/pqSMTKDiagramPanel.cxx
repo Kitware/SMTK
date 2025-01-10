@@ -181,7 +181,7 @@ void pqSMTKDiagramPanel::resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* se
     return;
   }
 
-  // Remove the panel to the View Manger
+  // Remove the panel from the view manager.
   auto& stateMap = viewMgr->elementStateMap();
   auto it = stateMap.find(this->elementType());
   if (it != stateMap.end())

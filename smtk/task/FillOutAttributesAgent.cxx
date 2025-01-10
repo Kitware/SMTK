@@ -468,7 +468,7 @@ bool FillOutAttributesAgent::updateResourceEntry(
     {
       smtkErrorMacro(
         smtk::io::Logger::instance(),
-        "Can not find required Attribute: " << attName << " in Resource:" << resource.name());
+        "Can not find required attribute: " << attName << " in resource:" << resource.name());
     }
     else
     {
