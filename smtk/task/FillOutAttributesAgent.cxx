@@ -28,6 +28,20 @@ namespace smtk
 {
 namespace task
 {
+namespace
+{
+
+bool hasMatchingDefinitions(
+  const smtk::attribute::Resource* resource,
+  const FillOutAttributesAgent::AttributeSet& attSet)
+{
+  return std::any_of(
+    attSet.m_definitions.begin(), attSet.m_definitions.end(), [&resource](const std::string& def) {
+      return resource->hasDefinition(def);
+    });
+}
+
+} // anonymous namespace
 
 FillOutAttributesAgent::FillOutAttributesAgent(Task* owningTask)
   : Agent(owningTask)
@@ -210,18 +224,26 @@ void FillOutAttributesAgent::portDataUpdated(const Port* port)
         if (it == roleMap.end())
         { // Accept "unassigned" resources in any role (so that raw resource connections work).
           it = roleMap.find("unassigned"_token);
-        }
-        if (it == roleMap.end())
-        {
-          continue;
+          if (it == roleMap.end())
+          {
+            continue;
+          }
         }
         // There is a matching role. Are the objects in that role attribute resources?
         for (auto* obj : it->second)
         {
           if (auto* resource = dynamic_cast<smtk::attribute::Resource*>(obj))
           {
-            auto rit = attSet.m_resources.insert({ resource->id(), { {}, {} } }).first;
+            auto result = attSet.m_resources.insert({ resource->id(), { {}, {} } });
+            auto rit = result.first;
             stateMayHaveChanged |= this->updateResourceEntry(*resource, attSet, rit->second);
+            if (result.second)
+            {
+              // We actually inserted a new resource.
+              // Even if there are no attributes to validate, the state may have changed
+              // because there is a matching definition.
+              stateMayHaveChanged |= hasMatchingDefinitions(resource, attSet);
+            }
           }
         }
       }
