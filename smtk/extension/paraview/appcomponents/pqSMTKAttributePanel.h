@@ -79,6 +79,11 @@ public Q_SLOTS:
     * it will obtain the wrapper associated with the resource's manager
     * and use it for selection as displayPipelineSource() does before
     * calling the plain displayResource() variant.
+    * Also, it will check the `smtk.attribute_panel.display_hint` property
+    * before attempting to display a resource (which displayResource() does
+    * not do so that the task system can force views to appear).
+    *
+    * This method is called by the pqSMTKDisplayAttributeOnLoadBehavior class.
     */
   virtual bool displayResourceOnServer(
     const smtk::attribute::ResourcePtr& rsrc,

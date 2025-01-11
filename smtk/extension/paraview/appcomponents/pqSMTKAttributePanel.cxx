@@ -169,7 +169,14 @@ bool pqSMTKAttributePanel::displayResourceOnServer(
     auto* behavior = pqSMTKBehavior::instance();
     pqSMTKWrapper* wrapper = behavior->getPVResourceManager(rsrcMgr);
     this->updateManagers(wrapper ? wrapper->smtkManagersPtr() : nullptr);
-    return this->displayResource(rsrc, view, advancedlevel);
+    // Do not display an attribute resource we have been told not to display:
+    if (
+      !rsrc->properties().contains<bool>("smtk.attribute_panel.display_hint") ||
+      (rsrc->properties().contains<bool>("smtk.attribute_panel.display_hint") &&
+       rsrc->properties().at<bool>("smtk.attribute_panel.display_hint")))
+    {
+      return this->displayResource(rsrc, view, advancedlevel);
+    }
   }
   return false;
 }
