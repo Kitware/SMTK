@@ -276,6 +276,13 @@ be used to determine if an item is currently relevant. For example, it is now po
 
 **Note** that no effort is made to serialize or deserialize the provided function; your application that uses SMTK must call :smtk:`Item::setCustomIsRelevant()` each time the item is loaded or created.
 
+Custom Validity for Items
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Similar to custom relevance, SMTK allows the assignment of a function for each attribute item, with custom logic determining whether that item is valid.
+
+**Note** that no effort is made to serialize or deserialize the provided function; your application that uses SMTK must call :smtk:`Item::setCustomIsValid()` each time the item is loaded or created.
+
 Custom Relevance for Enumerated Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -291,7 +298,12 @@ Related API
 * :smtk:`Item::isRelevant` - method to call to see if an item is relevant
 * :smtk:`Item::defaultIsRelevant` - default relevance method used by :smtk:`Attribute::isRelevant` when no custom relevance function has been specified
 * :smtk:`Item::setCustomIsRelevant` - method used to set a custom relevance function
-* :smtk:`Item::customIsRelevant` - method used to return the custom  relevance function if one has been set
+* :smtk:`Item::customIsRelevant` - method used to return the custom relevance function if one has been set
+* :smtk:`Attribute::isValid` - method to call to see if an attribute is valid
+* :smtk:`Item::isValid` - method to call to see if an item is valid
+* :smtk:`Item::defaultIsValid` - default validity method used by :smtk:`Attribute::isValid` when no custom validity function has been specified
+* :smtk:`Item::setCustomIsValid` - method used to set a custom validity function
+* :smtk:`Item::customIsValid` - method used to return the custom validity function if one has been set
 * :smtk:`ValueItem::relevantEnums` - returns a list of enum strings representing the current relevant discrete values
 * :smtk:`ValueItemDefinition::relevantEnums` - the method called by :smtk:`ValueItem::relevantEnums` when no custom relevance function has been specified
 * :smtk:`ValueItemDefinition::defaultIsEnumRelevant` - the default relevance method for enum values based solely on categories and read access level

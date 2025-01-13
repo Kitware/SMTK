@@ -59,6 +59,9 @@ public:
     bool(const Item*, bool includeCatagories, bool includeReadAccess, unsigned int readAccessLevel)>
     RelevanceFunc;
 
+  ///\brief Typedef for custom validity functions
+  typedef std::function<bool(const Item*, const std::set<std::string>& categories)> ValidityFunc;
+
   enum Type
   {
     AttributeRefType, //!< Needed for backward compatibility w/r XML/JSON formats < 4.0
@@ -97,12 +100,35 @@ public:
   /// In the form that takes in boolean.  If useActiveCategories is true, and
   /// the attributes resource has active categories enabled, then the resource's
   /// active categories are used to before the filtering
+  ///
+  /// If a customIsValid function has been set, then it will be used to determine
+  /// the validity of this attribute item instead.
   bool isValid(bool useActiveCategories = true) const;
   bool isValid(const std::set<std::string>& categories) const
+  {
+    if (m_customIsValid)
+    {
+      return m_customIsValid(this, categories);
+    }
+
+    return defaultIsValid(categories);
+  }
+  /// @}
+
+  /// @{
+  /// \brief The default implementation of isValid it ignores custom validity functions.
+  bool defaultIsValid(bool useActiveCategories) const;
+  bool defaultIsValid(const std::set<std::string>& categories) const
   {
     return (!this->isEnabled()) || this->isIgnored() || this->isValidInternal(true, categories);
   }
   /// @}
+
+  ///@{
+  ///\brief Set and Get Methods for specifying a custom isValid function
+  void setCustomIsValid(const ValidityFunc& func) { m_customIsValid = func; }
+  ValidityFunc customIsValid() const { return m_customIsValid; }
+  ///@}
 
   ///@{
   ///\brief Set and Get Methods for specifying a custom isRelevant function
@@ -327,6 +353,7 @@ protected:
   smtk::attribute::ConstItemDefinitionPtr m_definition;
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
   RelevanceFunc m_customIsRelevant = nullptr;
+  ValidityFunc m_customIsValid = nullptr;
 
 private:
   bool m_hasLocalAdvanceLevelInfo[2];

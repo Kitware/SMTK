@@ -13,6 +13,7 @@ set(attributeTests
   categoryTest
   childrenItemsTest
   customIsRelevantTest
+  customIsValidTest
   discreteStringsWithDefaultTest
   expressionTest
   expressionTest2
