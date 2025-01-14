@@ -65,10 +65,11 @@ Signal::Result Signal::operateInternal()
     auto* rsrc = dynamic_cast<smtk::geometry::Resource*>(comp->parentResource());
     if (rsrc)
     {
+      // Only create an empty cache entry if there is a geometry backend
+      // for the resource.
       auto& geom = rsrc->geometry();
       if (geom)
       {
-        // geom->markModified(item);
         marker.markModified(item);
       }
     }
@@ -80,10 +81,11 @@ Signal::Result Signal::operateInternal()
     auto* rsrc = dynamic_cast<smtk::geometry::Resource*>(comp->parentResource());
     if (rsrc)
     {
+      // Only empty the cache entry if there is a geometry backend
+      // for the resource.
       auto& geom = rsrc->geometry();
       if (geom)
       {
-        // geom->markModified(item);
         marker.markModified(item);
       }
     }
@@ -91,7 +93,7 @@ Signal::Result Signal::operateInternal()
 
   for (const auto& item : *expOut)
   {
-    // Always delete
+    // Always delete the cache entry for expunged components.
     marker.markModified(item);
   }
 

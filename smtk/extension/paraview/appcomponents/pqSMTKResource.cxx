@@ -30,6 +30,8 @@
 #include <iostream>
 #endif
 
+using namespace smtk::string::literals;
+
 pqSMTKResource::pqSMTKResource(
   const QString& grp,
   const QString& name,
@@ -71,7 +73,10 @@ pqSMTKResource::pqSMTKResource(
         {
           return 0; // My resource is not being effected
         }
-        if (!dynamic_cast<const smtk::attribute::Signal*>(&op))
+        // Only provide geometry updates on Signal operations for attribute resources.
+        if (
+          myResource->matchesType("smtk::attribute::Resource"_token) ||
+          !dynamic_cast<const smtk::attribute::Signal*>(&op))
         {
           Q_EMIT this->operationOccurred(QPrivateSignal());
         }
