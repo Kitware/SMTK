@@ -1,7 +1,6 @@
 set(classes
   ModelEntityPointLocator
   PointCloudFromVTKAuxiliaryGeometry
-  SourceFromAttribute
   SourceFromMesh
   SourceFromModel
   StructuredGridFromVTKAuxiliaryGeometry
