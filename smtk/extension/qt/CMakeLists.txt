@@ -104,6 +104,7 @@ set(QAttrLibSrcs
   diagram/qtResourceNode.cxx
   diagram/qtSelectMode.cxx
   diagram/qtTaskArc.cxx
+  diagram/qtTaskNode.cxx
   diagram/qtTaskPath.cxx
   diagram/qtTaskEditor.cxx
   diagram/qtTaskPortNode.cxx
@@ -226,6 +227,7 @@ set(QAttrLibMocHeaders
   diagram/qtSelectMode.h
   diagram/qtTaskArc.h
   diagram/qtTaskEditor.h
+  diagram/qtTaskNode.h
   diagram/qtTaskNodeFactory.h
   diagram/qtTaskPath.h
   diagram/qtTaskPortNode.h

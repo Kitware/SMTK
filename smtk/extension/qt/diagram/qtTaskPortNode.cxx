@@ -13,6 +13,7 @@
 
 #include "smtk/extension/qt/diagram/qtTaskPortNode.h"
 
+#include "smtk/extension/qt/diagram/qtBaseTaskNode.h"
 #include "smtk/extension/qt/diagram/qtDiagram.h"
 #include "smtk/extension/qt/diagram/qtDiagramGenerator.h"
 #include "smtk/extension/qt/diagram/qtDiagramScene.h"
@@ -104,6 +105,22 @@ qtTaskPortNode::qtTaskPortNode(
   this->setZValue(cfg.nodeLayer() + 1);
 }
 
+QVariant qtTaskPortNode::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& val)
+{
+  if (change == ItemPositionChange && scene())
+  {
+    // correct the port orientation if needed
+    QPointF newPos = val.toPointF();
+    this->adjustOrientation(newPos);
+
+    // Next take snapping into consideration
+    this->adjustPosition(newPos);
+    QVariant newVal(newPos);
+    return Superclass::itemChange(change, newVal);
+  }
+  return Superclass::itemChange(change, val);
+}
+
 smtk::common::UUID qtTaskPortNode::nodeId() const
 {
   return m_port ? m_port->id() : smtk::common::UUID::null();
@@ -140,7 +157,15 @@ void qtTaskPortNode::updateShape()
     return; // No port has been set
   }
 
-  qreal hl = m_length * 0.5;
+  qreal hl;
+  if (m_port->access() == smtk::task::Port::Access::External)
+  {
+    hl = m_length * 0.5;
+  }
+  else
+  {
+    hl = m_length * 0.75;
+  }
   qreal xmax = hl * (1 + (1.0 / tan(0.5 * m_angle * pi / 180.0)));
 
   if (m_port->direction() == task::Port::Direction::In)
@@ -164,9 +189,13 @@ void qtTaskPortNode::updateShape()
 }
 QRectF qtTaskPortNode::boundingRect() const
 {
-  qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
-  const auto border = 4 * cfg.nodeBorderThickness();
-  return m_path.boundingRect().adjusted(-border, -border, border, border);
+  if (this->isSelected())
+  {
+    qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
+    const auto border = 0.5 * cfg.nodeBorderThickness();
+    return m_path.boundingRect().adjusted(-border, -border, border, border);
+  }
+  return m_path.boundingRect();
 }
 
 void qtTaskPortNode::paint(
@@ -178,41 +207,15 @@ void qtTaskPortNode::paint(
   (void)widget;
   qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
 
-  // Determine where the port is relative to its parent task and then properly
-  // rotate it.
-  this->adjustOrientation(this->scenePos());
-  const QColor baseColor = QApplication::palette().window().color();
-  const QColor contrastColor = QColor::fromHslF(
-    baseColor.hueF(),
-    baseColor.saturationF(),
-    baseColor.lightnessF() > 0.5 ? baseColor.lightnessF() - 0.5 : baseColor.lightnessF() + 0.5);
-
-  QPen pen;
-  pen.setWidth(cfg.nodeBorderThickness() * 1.1);
-  pen.setBrush(contrastColor);
-
-  painter->setPen(pen);
-  painter->fillPath(m_path, baseColor);
-  painter->drawPath(m_path);
+  painter->fillPath(m_path, cfg.baseNodeColor());
 
   if (this->isSelected())
   {
     QPen spen;
     spen.setWidth(cfg.nodeBorderThickness());
-    QPainterPath selPath;
-    const QColor selectedColor("#ff00ff");
-    const QColor contrastColor2 = QColor::fromHslF(
-      selectedColor.hueF(),
-      selectedColor.saturationF(),
-      qBound(
-        0.,
-        baseColor.lightnessF() > 0.5 ? selectedColor.lightnessF()
-                                     : selectedColor.lightnessF() - 0.25,
-        1.));
-    spen.setBrush(contrastColor2);
+    spen.setBrush(cfg.selectionColor());
     painter->setPen(spen);
     painter->drawPath(m_path);
-    painter->fillPath(m_path, contrastColor2);
   }
 }
 
@@ -236,7 +239,7 @@ void qtTaskPortNode::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   this->Superclass::hoverLeaveEvent(event);
 }
 
-void qtTaskPortNode::adjustOrientation(QPointF pnt)
+void qtTaskPortNode::adjustOrientation(const QPointF& pnt)
 {
   // Determine where the pnt is relative to the port's  parent task and then properly
   // rotate the port.
@@ -244,10 +247,10 @@ void qtTaskPortNode::adjustOrientation(QPointF pnt)
   {
     return;
   }
+  double origAngle = this->rotation();
   double angle;
 
-  auto pBox =
-    this->parentItem()->boundingRegion(this->parentItem()->sceneTransform()).boundingRect();
+  auto pBox = this->parentItem()->boundingRect();
 
   if (pnt.x() <= pBox.left())
   {
@@ -265,15 +268,69 @@ void qtTaskPortNode::adjustOrientation(QPointF pnt)
   {
     angle = (m_port->direction() == task::Port::Direction::In) ? 90 : 270;
   }
-  this->setRotation(angle);
+  if (origAngle != angle)
+  {
+    this->setRotation(angle);
+  }
 }
 
-void qtTaskPortNode::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+void qtTaskPortNode::adjustPosition(QPointF& pnt)
 {
-  // Determine where the port is relative to its parent task and then properly
-  // rotate it.
-  this->adjustOrientation(event->scenePos());
-  this->Superclass::mouseMoveEvent(event);
+  // See if the task node is requesting its ports to be snapped.
+  auto* taskNode = dynamic_cast<qtBaseTaskNode*>(this->parentItem());
+  if ((!taskNode) || !taskNode->snapPorts())
+  {
+    return;
+  }
+  auto taskBounds = this->parentItem()->boundingRect();
+
+  auto myBounds = this->boundingRect();
+  if (pnt.x() <= taskBounds.left())
+  {
+    // change X if the new point is too far away from the node
+    double xmin = taskBounds.left() - (0.5 * myBounds.width());
+    if (pnt.x() < xmin)
+    {
+      pnt.setX(xmin);
+    }
+    // Move the point away if it is too close and if there is
+    // a possibility that it would intersect the task node
+    else if (
+      ((pnt.y() + 0.5 * m_length) < taskBounds.bottom()) &&
+      ((pnt.y() - 0.5 * m_length) > taskBounds.top()))
+    {
+      pnt.setX(xmin);
+    }
+  }
+  else if (pnt.x() >= taskBounds.right())
+  {
+    // change X if the new point is too far away from the node
+    double xmax = taskBounds.right() + (0.5 * myBounds.width());
+    if (pnt.x() > xmax)
+    {
+      pnt.setX(xmax);
+    }
+    // Move the point away if it is too close and if there is
+    // a possibility that it would intersect the task node
+    else if (
+      ((pnt.y() + 0.5 * m_length) < taskBounds.bottom()) &&
+      ((pnt.y() - 0.5 * m_length) > taskBounds.top()))
+    {
+      pnt.setX(xmax);
+    }
+  }
+  else if (pnt.y() >= taskBounds.center().y())
+  {
+    // Change Y so that the point is near the top of the task node
+    double ymin = taskBounds.bottom() + myBounds.height();
+    pnt.setY(ymin);
+  }
+  else
+  {
+    // Change Y so that the point is near the bottom of the task node
+    double ymax = taskBounds.top() - myBounds.height();
+    pnt.setY(ymax);
+  }
 }
 
 } // namespace extension

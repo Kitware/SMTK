@@ -81,5 +81,9 @@ bool qtBaseTaskNode::isActive() const
   return taskManager->active().task() == m_task;
 }
 
+void qtBaseTaskNode::setSnapPorts(bool val)
+{
+  m_snapPorts = val;
+}
 } // namespace extension
 } // namespace smtk

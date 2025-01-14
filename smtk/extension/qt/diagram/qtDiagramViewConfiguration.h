@@ -12,6 +12,7 @@
 
 #include "smtk/extension/qt/diagram/qtPreviewArc.h"
 #include "smtk/extension/qt/diagram/qtTaskArc.h"
+#include "smtk/string/Token.h"
 #include "smtk/task/State.h"
 
 #include <QColor>
@@ -42,12 +43,39 @@ public:
   QColor backgroundFillColor() const { return m_backgroundFillColor; }
   QColor backgroundGridColor() const { return m_backgroundGridColor; }
 
+  ///\brief Return the color used to indicate the task is active.
   QColor activeTaskColor() const { return m_activeTaskColor; }
 
-  QColor colorForState(smtk::task::State state) const
-  {
-    return m_colorForState[static_cast<int>(state)];
-  }
+  ///\brief Return the color used to indicate the item is selected.
+  QColor selectionColor() const { return m_selectionColor; }
+
+  ///\brief Return the color used to indicate the task's state.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor colorForState(smtk::task::State state) const;
+
+  ///\brief Return the base color used for a node.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor baseNodeColor() const;
+  ///\brief Return the color used to display text.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor textColor() const;
+  ///\brief Return the color used for the background.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor backgroundColor() const;
+  ///\brief Return the color associated with a string token.
+  /// If the token is not found, the method will return black.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor colorFromToken(const smtk::string::Token& token) const;
 
   QColor colorFromPalette(int entry) const;
   QColor colorForArcType(smtk::string::Token arcType) const
@@ -83,12 +111,13 @@ public:
   int constructionLayer() const { return m_constructionLayer; }
 
 protected:
+  std::unordered_map<smtk::string::Token, QColor> m_lightPalette;
+  std::unordered_map<smtk::string::Token, QColor> m_darkPalette;
   QColor m_backgroundFillColor;
   QColor m_backgroundGridColor;
-
+  QColor m_selectionColor;
   QColor m_activeTaskColor;
 
-  std::array<QColor, static_cast<int>(smtk::task::State::Completed) + 1> m_colorForState;
   std::array<QColor, static_cast<int>(qtPreviewArc::ArcStatus::Valid) + 1> m_colorForArcStatus;
 
   std::unordered_map<smtk::string::Token, QColor> m_colorForArcType;

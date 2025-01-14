@@ -24,6 +24,7 @@
 #include "smtk/extension/qt/diagram/qtResourceNode.h"
 #include "smtk/extension/qt/diagram/qtSelectMode.h"
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
+#include "smtk/extension/qt/diagram/qtTaskNode.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -80,7 +81,7 @@ using BadgeList =
 
 using DiagramGeneratorList = std::tuple<qtTaskEditor, qtResourceDiagram>;
 using DiagramViewModeList = std::tuple<qtConnectMode, qtDisconnectMode, qtPanMode, qtSelectMode>;
-using TaskNodeList = std::tuple<qtDefaultTaskNode, qtDefaultTaskNode1>;
+using TaskNodeList = std::tuple<qtTaskNode, qtDefaultTaskNode, qtDefaultTaskNode1>;
 using ObjectNodeList = std::tuple<qtResourceNode, qtComponentNode>;
 
 } // namespace

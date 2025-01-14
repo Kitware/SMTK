@@ -74,13 +74,16 @@ protected:
   friend class PortNodeWidget;
   // Adjusts the orientation of the port based on a location
   // with respects to its parent task
-  void adjustOrientation(QPointF pnt);
+  void adjustOrientation(const QPointF& pnt);
+  // Adjust the position of the Port node if snapping is
+  // requested.
+  void adjustPosition(QPointF& pnt);
+  QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& val) override;
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
   /// Handle pointer hovers
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
   void updateShape();
 
   qreal m_length;

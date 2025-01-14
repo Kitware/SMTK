@@ -18,6 +18,8 @@
 #include <QColor>
 #include <QPalette>
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace extension
@@ -31,13 +33,37 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
   m_backgroundFillColor = palette.base().color();
   m_backgroundGridColor = palette.midlight().color();
   m_activeTaskColor = palette.highlight().color();
-  m_colorForState = {
-    QColor("#e7e7e7"), // irrelevant
-    QColor("#ff9898"), // unavailable
-    QColor("#ffeca3"), // incomplete
-    QColor("#e0f1ba"), // completable
-    QColor("#7ed637")  // completed
+  m_selectionColor = QColor("#ff00ff");
+
+  // TODO - Have the ability to load in the workflow
+  // designer's custom palettes and indicate if
+  // the workflow is using them, the defaults, or
+  // user specified palettes
+
+  // clang-format off
+  m_lightPalette = {
+    {"irrelevant"_token,  QColor("#CCCCCC")},
+    {"unavailable"_token, QColor("#DA7C7C")},
+    {"incomplete"_token,  QColor("#FFCC00")},
+    {"completable"_token, QColor("#BCD35F")},
+    {"completed"_token,   QColor("#677821")},
+    {"text"_token,        QColor("#000000")},
+    {"base"_token,        QColor("#B8B8B8")},
+    {"background"_token,  QColor("#FFFFFF")}
   };
+
+  m_darkPalette = {
+    {"irrelevant"_token,  QColor("#999999")},
+    {"unavailable"_token, QColor("#A83030")},
+    {"incomplete"_token,  QColor("#E1B400")},
+    {"completable"_token, QColor("#7D8B45")},
+    {"completed"_token,   QColor("#AEC652")},
+    {"text"_token,        QColor("#E6E6E6")},
+    {"base"_token,        QColor("#737373")},
+    {"background"_token,  QColor("#000000")}
+    // clang-format on
+  };
+
   m_colorForArcType = {
     { "task dependency", QColor("#BF5B17") }, // dependency
     { "task adaptor", QColor("#386CB0") }     // adaptor
@@ -55,24 +81,6 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
     return;
   }
   const auto& styleComp = viewConfig.details().child(styleIdx);
-
-  int statusColorIdx = styleComp.findChild("StatusPalette");
-  if (statusColorIdx >= 0)
-  {
-    using smtk::task::State;
-    const auto& statusColor = styleComp.child(statusColorIdx);
-    for (const auto& entry : statusColor.attributes())
-    {
-      bool validName;
-      State state = smtk::task::stateEnum(entry.first, &validName);
-      // Skip invalid attributes:
-      if (!validName)
-      {
-        continue;
-      }
-      m_colorForState[static_cast<int>(state)] = QColor(QString::fromStdString(entry.second));
-    }
-  }
 
   int arcColorIdx = styleComp.findChild("ArcPalette");
   if (arcColorIdx >= 0)
@@ -159,6 +167,63 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
   }
 
   // TODO: Look for overrides from the user (via QSettings).
+}
+
+QColor qtDiagramViewConfiguration::colorFromToken(const smtk::string::Token& token) const
+{
+  if (QApplication::palette().window().color().lightnessF() > 0.5)
+  {
+    auto it = m_lightPalette.find(token);
+    if (it != m_lightPalette.end())
+    {
+      return it->second;
+    }
+  }
+  else
+  {
+    auto it = m_darkPalette.find(token);
+    if (it != m_darkPalette.end())
+    {
+      return it->second;
+    }
+  }
+  return QColor("#000000");
+}
+
+QColor qtDiagramViewConfiguration::baseNodeColor() const
+{
+  return this->colorFromToken("base"_token);
+}
+
+QColor qtDiagramViewConfiguration::textColor() const
+{
+  return this->colorFromToken("text"_token);
+}
+
+QColor qtDiagramViewConfiguration::backgroundColor() const
+{
+  return this->colorFromToken("background"_token);
+}
+
+QColor qtDiagramViewConfiguration::colorForState(smtk::task::State state) const
+{
+  if (QApplication::palette().window().color().lightnessF() > 0.5)
+  {
+    auto it = m_lightPalette.find(smtk::task::stateToken(state));
+    if (it != m_lightPalette.end())
+    {
+      return it->second;
+    }
+  }
+  else
+  {
+    auto it = m_darkPalette.find(smtk::task::stateToken(state));
+    if (it != m_darkPalette.end())
+    {
+      return it->second;
+    }
+  }
+  return QColor("#000000");
 }
 
 QColor qtDiagramViewConfiguration::colorFromPalette(int entry) const

@@ -44,6 +44,17 @@ inline std::string stateName(const State& s)
   return names[static_cast<int>(s)];
 }
 
+/// A type-conversion operation to cast enumerants to string tokens.
+inline smtk::string::Token stateToken(const State& s)
+{
+  using namespace smtk::string::literals;
+  static std::array<smtk::string::Token, 5> names{ { "irrelevant"_token,
+                                                     "unavailable"_token,
+                                                     "incomplete"_token,
+                                                     "completable"_token,
+                                                     "completed"_token } };
+  return names[static_cast<int>(s)];
+}
 /// A type-conversion operation to cast strings to enumerants.
 inline State stateEnum(const std::string& s, bool* valid = nullptr)
 {
