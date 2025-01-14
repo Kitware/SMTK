@@ -12,12 +12,16 @@
 
 #include "smtk/attribute/operators/Signal_xml.h"
 
+#include "smtk/operation/MarkGeometry.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
+
+#include "smtk/geometry/Geometry.h"
 
 #include "smtk/io/Logger.h"
 
@@ -53,6 +57,43 @@ Signal::Result Signal::operateInternal()
   categoriesModOut->setValues(categoriesModIn->begin(), categoriesModIn->end());
   updateOut->setIsEnabled(updateIn->isEnabled());
   resourcesAddedOut->setValues(resourcesAddedIn->begin(), resourcesAddedIn->end());
+
+  smtk::operation::MarkGeometry marker;
+  for (const auto& item : *creOut)
+  {
+    auto comp = std::static_pointer_cast<smtk::resource::Component>(item);
+    auto* rsrc = dynamic_cast<smtk::geometry::Resource*>(comp->parentResource());
+    if (rsrc)
+    {
+      auto& geom = rsrc->geometry();
+      if (geom)
+      {
+        // geom->markModified(item);
+        marker.markModified(item);
+      }
+    }
+  }
+
+  for (const auto& item : *modOut)
+  {
+    auto comp = std::static_pointer_cast<smtk::resource::Component>(item);
+    auto* rsrc = dynamic_cast<smtk::geometry::Resource*>(comp->parentResource());
+    if (rsrc)
+    {
+      auto& geom = rsrc->geometry();
+      if (geom)
+      {
+        // geom->markModified(item);
+        marker.markModified(item);
+      }
+    }
+  }
+
+  for (const auto& item : *expOut)
+  {
+    // Always delete
+    marker.markModified(item);
+  }
 
   return result;
 }
