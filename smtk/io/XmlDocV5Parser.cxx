@@ -109,8 +109,6 @@ bool XmlDocV5Parser::canParse(pugi::xml_node& node)
 void XmlDocV5Parser::processHints(pugi::xml_node& root)
 {
   pugi::xml_attribute xatt = root.attribute("DisplayHint");
-  if (xatt && xatt.as_bool())
-  {
-    m_resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
-  }
+  m_resource->properties().get<bool>()["smtk.attribute_panel.display_hint"] =
+    xatt && xatt.as_bool();
 }

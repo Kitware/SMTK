@@ -72,6 +72,7 @@ public:
 
 protected:
   friend class PortNodeWidget;
+  void updateToolTip();
   // Adjusts the orientation of the port based on a location
   // with respects to its parent task
   void adjustOrientation(const QPointF& pnt);

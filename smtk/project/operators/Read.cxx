@@ -120,7 +120,7 @@ Read::Result Read::operateInternal()
   auto& resourceHelper = smtk::resource::json::Helper::pushInstance(project);
   // Add a key to the operation helper so that the ResourceContainer de-serialization code can
   // internally call Resource Read Operations.
-  auto key = this->childKey();
+  auto key = this->childKey(ObserverOption::SkipObservers, LockOption::SkipLocks);
   smtk::operation::Helper::pushInstance(&key);
   resourceHelper.setManagers(this->managers());
   auto& taskHelper =
@@ -137,9 +137,16 @@ Read::Result Read::operateInternal()
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
+    // Indicate what resources were created (the project's resources plus the project itself).
     auto createdProject = result->findResource("resource");
-    createdProject->setNumberOfValues(1);
-    createdProject->setValue(project);
+    createdProject->setNumberOfValues(project->resources().size() + 1);
+    int rr = 0;
+    createdProject->setValue(rr++, project);
+    for (const auto& rsrc : project->resources())
+    {
+      createdProject->setValue(rr++, rsrc);
+    }
+
     // Indicate what worklets were read.
     auto createdComponents = result->findComponent("created");
     project->taskManager().taskInstances().visit(

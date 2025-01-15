@@ -111,11 +111,18 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
                 {
                   entry[0] = obj->id().toString();
                 }
-                for (int ii = 0; ii < 2; ++ii)
+                if (auto* task = dynamic_cast<smtk::task::Task*>(obj))
                 {
-                  xy[ii] += entry[1][ii].get<double>();
+                  // Only include top-level task nodes in average coordinate.
+                  if (!task->parent())
+                  {
+                    for (int ii = 0; ii < 2; ++ii)
+                    {
+                      xy[ii] += entry[1][ii].get<double>();
+                    }
+                    ++nxy;
+                  }
                 }
-                ++nxy;
               }
               // Compute adjustment to task node locations based on drop point:
               // std::cout << "Average worklet pt  " << (xy[0]/nxy) << " " << (xy[1]/nxy) << "\n";

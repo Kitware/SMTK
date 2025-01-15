@@ -380,10 +380,14 @@ int PhraseModel::handleOperationEvent(
   operation::EventType event,
   const Operation::Result& res)
 {
+#ifdef SMTK_DBG_PHRASE
   smtkDebugMacro(
     smtk::io::Logger::instance(),
     "      Phrase handler: op " << (event == operation::EventType::DID_OPERATE ? "ran" : "cre/pre")
                                 << " " << &op);
+#else
+  (void)op;
+#endif
 
   if (!res)
   {
