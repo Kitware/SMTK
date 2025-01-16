@@ -17,7 +17,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include <QGraphicsScene>
 
 class QAbstractItemModel;
@@ -44,16 +44,14 @@ class qtDiagramScene;
   * with connections (of various edge types) to other qtBaseNode instances
   * via a qtBaseArc instance.
   */
-class SMTKQTEXT_EXPORT qtBaseNode
-  : public QObject
-  , public QGraphicsItem
+class SMTKQTEXT_EXPORT qtBaseNode : public QGraphicsObject
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem);
   Q_PROPERTY(ContentStyle contentStyle READ contentStyle WRITE setContentStyle);
 
 public:
-  smtkSuperclassMacro(QGraphicsItem);
+  smtkSuperclassMacro(QGraphicsObject);
   smtkTypeMacroBase(smtk::extension::qtBaseNode);
 
   /// Determine how the node is presented to users.

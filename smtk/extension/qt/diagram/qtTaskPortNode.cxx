@@ -207,16 +207,21 @@ void qtTaskPortNode::paint(
   (void)widget;
   qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
 
-  painter->fillPath(m_path, cfg.baseNodeColor());
+  painter->fillPath(m_path, cfg.portNodeColor());
 
+  QPen spen;
   if (this->isSelected())
   {
-    QPen spen;
     spen.setWidth(cfg.nodeBorderThickness());
     spen.setBrush(cfg.selectionColor());
-    painter->setPen(spen);
-    painter->drawPath(m_path);
   }
+  else
+  {
+    spen.setWidth(cfg.nodeBorderThickness() * 0.25);
+    spen.setBrush(cfg.borderColor());
+  }
+  painter->setPen(spen);
+  painter->drawPath(m_path);
 }
 
 void qtTaskPortNode::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
@@ -277,27 +282,27 @@ void qtTaskPortNode::adjustOrientation(const QPointF& pnt)
 void qtTaskPortNode::adjustPosition(QPointF& pnt)
 {
   // See if the task node is requesting its ports to be snapped.
-  auto* taskNode = dynamic_cast<qtBaseTaskNode*>(this->parentItem());
-  if ((!taskNode) || !taskNode->snapPorts())
+  qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
+  if ((m_port->access() == smtk::task::Port::Access::Internal) || !cfg.snapPortsToTask())
   {
     return;
   }
-  auto taskBounds = this->parentItem()->boundingRect();
 
-  auto myBounds = this->boundingRect();
+  auto taskBounds = this->parentItem()->boundingRect();
+  double hl = (m_length * 0.5) + cfg.snapPortOffset();
+  ;
+
   if (pnt.x() <= taskBounds.left())
   {
     // change X if the new point is too far away from the node
-    double xmin = taskBounds.left() - (0.5 * myBounds.width());
+    double xmin = taskBounds.left() - hl;
     if (pnt.x() < xmin)
     {
       pnt.setX(xmin);
     }
     // Move the point away if it is too close and if there is
     // a possibility that it would intersect the task node
-    else if (
-      ((pnt.y() + 0.5 * m_length) < taskBounds.bottom()) &&
-      ((pnt.y() - 0.5 * m_length) > taskBounds.top()))
+    else if (((pnt.y() + hl) < taskBounds.bottom()) && ((pnt.y() - hl) > taskBounds.top()))
     {
       pnt.setX(xmin);
     }
@@ -305,16 +310,14 @@ void qtTaskPortNode::adjustPosition(QPointF& pnt)
   else if (pnt.x() >= taskBounds.right())
   {
     // change X if the new point is too far away from the node
-    double xmax = taskBounds.right() + (0.5 * myBounds.width());
+    double xmax = taskBounds.right() + hl;
     if (pnt.x() > xmax)
     {
       pnt.setX(xmax);
     }
     // Move the point away if it is too close and if there is
     // a possibility that it would intersect the task node
-    else if (
-      ((pnt.y() + 0.5 * m_length) < taskBounds.bottom()) &&
-      ((pnt.y() - 0.5 * m_length) > taskBounds.top()))
+    else if (((pnt.y() + hl) < taskBounds.bottom()) && ((pnt.y() - hl) > taskBounds.top()))
     {
       pnt.setX(xmax);
     }
@@ -322,13 +325,13 @@ void qtTaskPortNode::adjustPosition(QPointF& pnt)
   else if (pnt.y() >= taskBounds.center().y())
   {
     // Change Y so that the point is near the top of the task node
-    double ymin = taskBounds.bottom() + myBounds.height();
+    double ymin = taskBounds.bottom() + hl;
     pnt.setY(ymin);
   }
   else
   {
     // Change Y so that the point is near the bottom of the task node
-    double ymax = taskBounds.top() - myBounds.height();
+    double ymax = taskBounds.top() - hl;
     pnt.setY(ymax);
   }
 }

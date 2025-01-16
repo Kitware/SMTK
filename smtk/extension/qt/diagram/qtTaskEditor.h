@@ -115,7 +115,7 @@ protected:
 
   /// Determine visibility and pickability based on
   /// the current interaction mode and the current task-path.
-  void updateArcStatus(qtTaskPortArc* arc);
+  void updateArcStatus(qtBaseArc* arc);
 
   class Internal;
   Internal* m_p;

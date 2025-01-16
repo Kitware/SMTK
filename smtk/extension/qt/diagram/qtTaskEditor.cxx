@@ -344,6 +344,7 @@ bool qtTaskEditor::updateArcs(
         this->diagram()->addArc(arc);
         diagramModified = true;
         modBounds = modBounds.united(arc->boundingRect());
+        this->updateArcStatus(arc);
       }
     }
   }
@@ -434,7 +435,7 @@ bool qtTaskEditor::updateArcs(
   return diagramModified;
 }
 
-void qtTaskEditor::updateArcStatus(qtTaskPortArc* arc)
+void qtTaskEditor::updateArcStatus(qtBaseArc* arc)
 {
   if (!arc)
   {

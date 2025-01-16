@@ -95,65 +95,73 @@ protected:
     // Now see if we need to display active or select status
     bool isActive = m_node->isActive();
     bool isSelected = m_node->isSelected();
-    if (isActive || isSelected)
+
+    // In the case of being neither active or selected draw
+    // a thin boundary around the outside of the item
+    double borderThickness = cfg.nodeBorderThickness() * ((isActive || isSelected) ? 1.0 : 0.25);
+    auto outerOffset = borderThickness;
+    QPainterPath p2; // An approximate offset curve of p1
+    p2.moveTo(m_node->sideTotalWidth(), outerOffset);
+    p2.lineTo(m_node->controlPointOffset() + outerOffset, outerOffset);
+    p2.quadTo(outerOffset, outerOffset, outerOffset, m_node->controlPointOffset() + outerOffset);
+    p2.lineTo(outerOffset, cbounds.height() - (m_node->controlPointOffset() + outerOffset));
+    p2.quadTo(
+      outerOffset,
+      cbounds.height() - outerOffset,
+      m_node->controlPointOffset() + outerOffset,
+      cbounds.height() - outerOffset);
+    p2.lineTo(m_node->sideTotalWidth(), cbounds.height() - outerOffset);
+
+    // Create a region that is defined by the outer edge (p1) and its offset (p2)
+    QPainterPath outerPath;
+    outerPath.connectPath(p1);
+    outerPath.connectPath(p2);
+    // Add the path of the curve indicating the where the outer indicator region would meet the indicator region
+    outerPath.lineTo(m_node->sideTotalWidth(), cbounds.height());
+
+    if (isSelected)
     {
-      // We know we need to draw at least the outer indicator
-      double borderThickness = cfg.nodeBorderThickness();
-      auto outerOffset = borderThickness;
-      QPainterPath p2; // An approximate offset curve of p1
-      p2.moveTo(m_node->sideTotalWidth(), outerOffset);
-      p2.lineTo(m_node->controlPointOffset() + outerOffset, outerOffset);
-      p2.quadTo(outerOffset, outerOffset, outerOffset, m_node->controlPointOffset() + outerOffset);
-      p2.lineTo(outerOffset, cbounds.height() - (m_node->controlPointOffset() + outerOffset));
-      p2.quadTo(
-        outerOffset,
-        cbounds.height() - outerOffset,
-        m_node->controlPointOffset() + outerOffset,
-        cbounds.height() - outerOffset);
-      p2.lineTo(m_node->sideTotalWidth(), cbounds.height() - outerOffset);
-
-      // Create a region that is defined by the outer edge (p1) and its offset (p2)
-      QPainterPath outerPath;
-      outerPath.connectPath(p1);
-      outerPath.connectPath(p2);
-      // Add the path of the curve indicating the where the outer indicator region would meet the indicator region
-      outerPath.lineTo(m_node->sideTotalWidth(), cbounds.height());
-
-      // if the item is not selected then show the outer indicator as active
-      if (!isSelected)
+      painter->fillPath(outerPath, cfg.selectionColor());
+    }
+    else // In this case we know we will only draw 1 border
+    {
+      if (isActive)
       {
         painter->fillPath(outerPath, cfg.activeTaskColor());
-        return;
       }
-
-      painter->fillPath(outerPath, cfg.selectionColor());
-
-      if (!isActive)
+      else
       {
-        return;
+        painter->fillPath(outerPath, cfg.borderColor());
       }
-
-      auto innerOffset = borderThickness * 2.0;
-      // Create a region defined by p2 and an approximate offset of p2
-      QPainterPath innerPath;
-      // This part is an approximate offset of p2
-      innerPath.moveTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
-      innerPath.lineTo(m_node->controlPointOffset() + innerOffset, cbounds.height() - innerOffset);
-      innerPath.quadTo(
-        innerOffset,
-        cbounds.height() - innerOffset,
-        innerOffset,
-        cbounds.height() - (m_node->controlPointOffset() + innerOffset));
-      innerPath.lineTo(innerOffset, m_node->controlPointOffset() + innerOffset);
-      innerPath.quadTo(
-        innerOffset, innerOffset, m_node->controlPointOffset() + innerOffset, innerOffset);
-      innerPath.lineTo(m_node->sideTotalWidth(), innerOffset);
-      innerPath.connectPath(p2);
-      innerPath.lineTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
-
-      painter->fillPath(innerPath, cfg.activeTaskColor());
+      return;
     }
+
+    if (!isActive) // There is no second border
+    {
+      return;
+    }
+
+    auto innerOffset = borderThickness * 2.0;
+    // Create a region defined by p2 and an approximate offset of p2
+    QPainterPath innerPath;
+    // This part is an approximate offset of p2
+    innerPath.moveTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
+    innerPath.lineTo(m_node->controlPointOffset() + innerOffset, cbounds.height() - innerOffset);
+    innerPath.quadTo(
+      innerOffset,
+      cbounds.height() - innerOffset,
+      innerOffset,
+      cbounds.height() - (m_node->controlPointOffset() + innerOffset));
+    innerPath.lineTo(innerOffset, m_node->controlPointOffset() + innerOffset);
+    innerPath.quadTo(
+      innerOffset, innerOffset, m_node->controlPointOffset() + innerOffset, innerOffset);
+    innerPath.lineTo(m_node->sideTotalWidth(), innerOffset);
+    innerPath.connectPath(p2);
+    innerPath.lineTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
+
+    painter->fillPath(innerPath, cfg.activeTaskColor());
   }
+
   qtTaskNode* m_node;
 };
 
@@ -267,72 +275,80 @@ protected:
     // Now see if we need to display active or select status
     bool isActive = m_node->isActive();
     bool isSelected = m_node->isSelected();
-    if (isActive || isSelected)
+
+    // In the case of being neither active or selected draw
+    // a thin boundary around the outside of the item
+    double borderThickness = cfg.nodeBorderThickness() * ((isActive || isSelected) ? 1.0 : 0.25);
+    auto outerOffset = borderThickness;
+
+    QPainterPath p2; // An approximate offset curve of p1
+    p2.moveTo(w, outerOffset);
+    p2.lineTo(w + m_node->sideTotalWidth() - (delta + outerOffset), outerOffset);
+    p2.quadTo(
+      w + m_node->sideTotalWidth() - outerOffset,
+      outerOffset,
+      w + m_node->sideTotalWidth() - outerOffset,
+      delta + outerOffset);
+    p2.lineTo(w + m_node->sideTotalWidth() - outerOffset, h - (delta + outerOffset));
+    p2.quadTo(
+      w + m_node->sideTotalWidth() - outerOffset,
+      h - outerOffset,
+      w + m_node->sideTotalWidth() - (delta + outerOffset),
+      h - outerOffset);
+    p2.lineTo(w, h - outerOffset);
+
+    // Create a region that is defined by the outer edge (p1) and its offset (p2)
+    QPainterPath outerPath;
+    outerPath.connectPath(p1);
+    outerPath.connectPath(p2);
+    // Close the path
+    outerPath.lineTo(w, h);
+
+    if (isSelected)
     {
-      // We know we need to draw at least the outer indicator
-      double borderThickness = cfg.nodeBorderThickness();
-      auto outerOffset = borderThickness;
-
-      QPainterPath p2; // An approximate offset curve of p1
-      p2.moveTo(w, outerOffset);
-      p2.lineTo(w + m_node->sideTotalWidth() - (delta + outerOffset), outerOffset);
-      p2.quadTo(
-        w + m_node->sideTotalWidth() - outerOffset,
-        outerOffset,
-        w + m_node->sideTotalWidth() - outerOffset,
-        delta + outerOffset);
-      p2.lineTo(w + m_node->sideTotalWidth() - outerOffset, h - (delta + outerOffset));
-      p2.quadTo(
-        w + m_node->sideTotalWidth() - outerOffset,
-        h - outerOffset,
-        w + m_node->sideTotalWidth() - (delta + outerOffset),
-        h - outerOffset);
-      p2.lineTo(w, h - outerOffset);
-
-      // Create a region that is defined by the outer edge (p1) and its offset (p2)
-      QPainterPath outerPath;
-      outerPath.connectPath(p1);
-      outerPath.connectPath(p2);
-      // Close the path
-      outerPath.lineTo(w, h);
-
-      // if the item is not selected then show the outer indicator as active
-      if (!isSelected)
+      painter->fillPath(outerPath, cfg.selectionColor());
+    }
+    else // In this case we know we will only draw 1 border
+    {
+      if (isActive)
       {
         painter->fillPath(outerPath, cfg.activeTaskColor());
-        return;
       }
-
-      painter->fillPath(outerPath, cfg.selectionColor());
-
-      if (!isActive)
+      else
       {
-        return;
+        painter->fillPath(outerPath, cfg.borderColor());
       }
-
-      auto innerOffset = borderThickness * 2.0;
-      // Create a region defined by p2 and an approximate offset of p2
-      QPainterPath innerPath;
-      // This part is an approximate offset of p2
-      innerPath.moveTo(w, h - innerOffset);
-      innerPath.lineTo(w + m_node->sideTotalWidth() - (delta + innerOffset), h - innerOffset);
-      innerPath.quadTo(
-        w + m_node->sideTotalWidth() - innerOffset,
-        h - innerOffset,
-        w + m_node->sideTotalWidth() - innerOffset,
-        h - (delta + innerOffset));
-      innerPath.lineTo(w + m_node->sideTotalWidth() - innerOffset, delta + innerOffset);
-      innerPath.quadTo(
-        w + m_node->sideTotalWidth() - innerOffset,
-        innerOffset,
-        w + m_node->sideTotalWidth() - (delta + innerOffset),
-        innerOffset);
-      innerPath.lineTo(w, innerOffset);
-      innerPath.connectPath(p2);
-      innerPath.lineTo(w, h - innerOffset);
-      painter->fillPath(innerPath, cfg.activeTaskColor());
+      return;
     }
+
+    if (!isActive) // There is no second border
+    {
+      return;
+    }
+
+    auto innerOffset = borderThickness * 2.0;
+    // Create a region defined by p2 and an approximate offset of p2
+    QPainterPath innerPath;
+    // This part is an approximate offset of p2
+    innerPath.moveTo(w, h - innerOffset);
+    innerPath.lineTo(w + m_node->sideTotalWidth() - (delta + innerOffset), h - innerOffset);
+    innerPath.quadTo(
+      w + m_node->sideTotalWidth() - innerOffset,
+      h - innerOffset,
+      w + m_node->sideTotalWidth() - innerOffset,
+      h - (delta + innerOffset));
+    innerPath.lineTo(w + m_node->sideTotalWidth() - innerOffset, delta + innerOffset);
+    innerPath.quadTo(
+      w + m_node->sideTotalWidth() - innerOffset,
+      innerOffset,
+      w + m_node->sideTotalWidth() - (delta + innerOffset),
+      innerOffset);
+    innerPath.lineTo(w, innerOffset);
+    innerPath.connectPath(p2);
+    innerPath.lineTo(w, h - innerOffset);
+    painter->fillPath(innerPath, cfg.activeTaskColor());
   }
+
   qtTaskNode* m_node;
   qtTaskCompletionCheckBoxItem* m_checkbox;
 };
@@ -552,46 +568,61 @@ void qtTaskNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
   // with rendering issues.
   path.addRect(cbounds.adjusted(-1.0, 0.0, 1.0, 0.0));
 
-  QPen pen;
-
   painter->fillPath(path, cfg.baseNodeColor());
+
+  // Now see if we need to display active or select status
+  bool isActive = this->isActive();
+  bool isSelected = this->isSelected();
+
+  // In the case of being neither active or selected draw
+  // a thin boundary around the outside of the item
+  double borderThickness = cfg.nodeBorderThickness() * ((isActive || isSelected) ? 1.0 : 0.25);
+  auto outerOffset = borderThickness * 0.5;
+
+  QPen pen;
+  pen.setWidth(borderThickness);
+  QPainterPath outerPath;
+  outerPath.moveTo(m_sideTotalWidth - 2, outerOffset);
+  outerPath.lineTo(m_sideTotalWidth + cbounds.width() + 2, outerOffset);
+  outerPath.moveTo(m_sideTotalWidth - 2, cbounds.height() - outerOffset);
+  outerPath.lineTo(m_sideTotalWidth + cbounds.width() + 2, cbounds.height() - outerOffset);
+
+  if (isSelected)
+  {
+    pen.setBrush(cfg.selectionColor());
+  }
+  else // In this case we know we will only draw 1 border
+  {
+    if (isActive)
+    {
+      pen.setBrush(cfg.activeTaskColor());
+    }
+    else
+    {
+      pen.setBrush(cfg.borderColor());
+    }
+  }
+
   painter->setPen(pen);
+  painter->drawPath(outerPath);
 
-  if (this->isActive())
+  if (!(isActive && isSelected)) // There is no second border to draw
   {
-    QPen apen;
-    double activeThickness = cfg.nodeBorderThickness();
-    auto activeOffset = activeThickness * (this->isSelected() ? 1.5 : 0.5);
-    apen.setWidth(activeThickness);
-    QPainterPath activePath;
-    // Note that we are making the lines a little longer to deal with a rendering issue
-    // where sometimes there is a small gap with the sides
-    activePath.moveTo(m_sideTotalWidth - 2, activeOffset);
-    activePath.lineTo(m_sideTotalWidth + cbounds.width() + 2, activeOffset);
-    activePath.moveTo(m_sideTotalWidth - 2, cbounds.height() - activeOffset);
-    activePath.lineTo(m_sideTotalWidth + cbounds.width() + 2, cbounds.height() - activeOffset);
-
-    apen.setBrush(cfg.activeTaskColor());
-    painter->setPen(apen);
-    painter->drawPath(activePath);
+    return;
   }
 
-  if (this->isSelected())
-  {
-    QPen spen;
-    double selThickness = cfg.nodeBorderThickness();
-    auto selOffset = selThickness * 0.5;
-    spen.setWidth(selThickness);
-    QPainterPath selPath;
-    selPath.moveTo(m_sideTotalWidth - 2, selOffset);
-    selPath.lineTo(m_sideTotalWidth + cbounds.width() + 2, selOffset);
-    selPath.moveTo(m_sideTotalWidth - 2, cbounds.height() - selOffset);
-    selPath.lineTo(m_sideTotalWidth + cbounds.width() + 2, cbounds.height() - selOffset);
+  auto activeOffset = borderThickness * (isSelected ? 1.5 : 0.5);
+  QPainterPath activePath;
+  // Note that we are making the lines a little longer to deal with a rendering issue
+  // where sometimes there is a small gap with the sides
+  activePath.moveTo(m_sideTotalWidth - 2, activeOffset);
+  activePath.lineTo(m_sideTotalWidth + cbounds.width() + 2, activeOffset);
+  activePath.moveTo(m_sideTotalWidth - 2, cbounds.height() - activeOffset);
+  activePath.lineTo(m_sideTotalWidth + cbounds.width() + 2, cbounds.height() - activeOffset);
 
-    spen.setBrush(cfg.selectionColor());
-    painter->setPen(spen);
-    painter->drawPath(selPath);
-  }
+  pen.setBrush(cfg.activeTaskColor());
+  painter->setPen(pen);
+  painter->drawPath(activePath);
 }
 
 int qtTaskNode::updateSize()

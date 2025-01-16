@@ -58,7 +58,7 @@ void qtDiagramLegendEntry::paint(
   (void)painter;
   const auto& cfg(*this->scene()->configuration());
 
-  QColor color = cfg.colorForArcType(m_type);
+  QColor color = cfg.colorFromToken(m_type);
   qreal width = cfg.arcWidth();
   color.setAlphaF(1.0); // 0.75 for unselected
   QPen pen;

@@ -240,7 +240,7 @@ void qtResourceDiagramArc::paint(
   (void)widget;
   const auto& cfg(*this->scene()->configuration());
 
-  QColor color = cfg.colorForArcType(m_arcType);
+  QColor color = cfg.colorFromToken(m_arcType);
   qreal width = cfg.arcWidth();
   if (this->isSelected())
   {
