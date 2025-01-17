@@ -10,6 +10,7 @@
 #ifndef smtk_extension_qtDiagramViewConfiguration_h
 #define smtk_extension_qtDiagramViewConfiguration_h
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/extension/qt/diagram/qtPreviewArc.h"
 #include "smtk/extension/qt/diagram/qtTaskArc.h"
 #include "smtk/string/Token.h"
@@ -60,6 +61,11 @@ public:
   /// Note that this method will take light/dark mode into
   /// consideration.
   QColor baseNodeColor() const;
+  ///\brief Return the base color used for a task port node.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor portNodeColor() const;
   ///\brief Return the color used to display text.
   ///
   /// Note that this method will take light/dark mode into
@@ -70,28 +76,49 @@ public:
   /// Note that this method will take light/dark mode into
   /// consideration.
   QColor backgroundColor() const;
+  ///\brief Return the color used for the node's border when
+  /// not selected or active.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  QColor borderColor() const;
   ///\brief Return the color associated with a string token.
-  /// If the token is not found, the method will return black.
+  /// If the token is not found in the configuration's palette,
+  /// a consistent color will be returned based on its integer value.
   ///
   /// Note that this method will take light/dark mode into
   /// consideration.
   QColor colorFromToken(const smtk::string::Token& token) const;
 
-  QColor colorFromPalette(int entry) const;
+  // Returns the color based on the arc type.
+  ///
+  /// Note that this method will take light/dark mode into
+  /// consideration.
+  SMTK_DEPRECATED_IN_NEXT("Use qtDiagramViewConfiguration::colorFromToken instead.")
   QColor colorForArcType(smtk::string::Token arcType) const
   {
-    auto it = m_colorForArcType.find(arcType);
-    if (it == m_colorForArcType.end())
-    {
-      return this->colorFromPalette(static_cast<int>(arcType.id()));
-    }
-    return it->second;
+    return this->colorFromToken(arcType);
   }
+
   QColor colorForArcStatus(qtPreviewArc::ArcStatus status) const
   {
     return m_colorForArcStatus[static_cast<int>(status)];
   }
 
+  ///@{
+  ///\brief Controls if external task port nodes should be snapped
+  /// with respected to their task nodes using the snap offset
+  bool snapPortsToTask() const { return m_snapPortsToTask; }
+  void setSnapPortsToTask(bool val) { m_snapPortsToTask = val; }
+  ///@}
+  ///@{
+  ///\brief Get/set the offset to be used when snapping task ports
+  /// nodes with respect to their task nodes.
+  ///
+  /// Note that the offset should be a positive value.
+  double snapPortOffset() const { return m_snapPortOffset; }
+  void setSnapPortOffset(double val) { m_snapPortOffset = val; }
+  ///@}
   qreal nodeWidth() const { return m_nodeWidth; }
   qreal nodeRadius() const { return m_nodeRadius; }
   qreal nodeHeadlineHeight() const { return m_nodeHeadlineHeight; }
@@ -139,6 +166,8 @@ protected:
   qreal m_arrowTipAspectRatio{ 2. }; // The width of the arrow head as a fraction of head length.
 
   int m_constructionLayer{ 15 };
+  bool m_snapPortsToTask = true;
+  double m_snapPortOffset = 0.0;
 };
 
 } // namespace extension

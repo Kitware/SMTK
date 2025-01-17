@@ -42,32 +42,36 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
 
   // clang-format off
   m_lightPalette = {
-    {"irrelevant"_token,  QColor("#CCCCCC")},
-    {"unavailable"_token, QColor("#DA7C7C")},
-    {"incomplete"_token,  QColor("#FFCC00")},
-    {"completable"_token, QColor("#BCD35F")},
-    {"completed"_token,   QColor("#677821")},
-    {"text"_token,        QColor("#000000")},
-    {"base"_token,        QColor("#B8B8B8")},
-    {"background"_token,  QColor("#FFFFFF")}
+    {"irrelevant",       QColor("#CCCCCC")},
+    {"unavailable",      QColor("#DA7C7C")},
+    {"incomplete",       QColor("#FFCC00")},
+    {"completable",      QColor("#BCD35F")},
+    {"completed",        QColor("#677821")},
+    {"text",             QColor("#000000")},
+    {"base",             QColor("#B8B8B8")},
+    {"background",       QColor("#FFFFFF")},
+    {"border",           QColor("#000000")},
+    {"port",             QColor("#999999")},
+    { "task dependency", QColor("#BF5B17")},
+    { "task adaptor",    QColor("#386CB0") }
   };
 
   m_darkPalette = {
-    {"irrelevant"_token,  QColor("#999999")},
-    {"unavailable"_token, QColor("#A83030")},
-    {"incomplete"_token,  QColor("#E1B400")},
-    {"completable"_token, QColor("#7D8B45")},
-    {"completed"_token,   QColor("#AEC652")},
-    {"text"_token,        QColor("#E6E6E6")},
-    {"base"_token,        QColor("#737373")},
-    {"background"_token,  QColor("#000000")}
+    {"irrelevant",       QColor("#999999")},
+    {"unavailable",      QColor("#A83030")},
+    {"incomplete",       QColor("#E1B400")},
+    {"completable",      QColor("#7D8B45")},
+    {"completed",        QColor("#AEC652")},
+    {"text",             QColor("#E6E6E6")},
+    {"base",             QColor("#737373")},
+    {"background",       QColor("#000000")},
+    {"border",           QColor("#000000")},
+    {"port",             QColor("#B3B3B3")},
+    { "task dependency", QColor("#BF5B17") },
+    { "task adaptor",    QColor("#386CB0") }
     // clang-format on
   };
 
-  m_colorForArcType = {
-    { "task dependency", QColor("#BF5B17") }, // dependency
-    { "task adaptor", QColor("#386CB0") }     // adaptor
-  };
   // NB!!! QColor uses ARGB rather than RGBA if 4-byte color is provided:
   m_colorForArcStatus = {
     QColor("#ffff5555"), // invalid
@@ -82,13 +86,26 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
   }
   const auto& styleComp = viewConfig.details().child(styleIdx);
 
-  int arcColorIdx = styleComp.findChild("ArcPalette");
-  if (arcColorIdx >= 0)
+  int cpindex = styleComp.findChild("ColorPalettes");
+  if (cpindex >= 0)
   {
-    const auto& arcColor = styleComp.child(arcColorIdx);
-    for (const auto& entry : arcColor.attributes())
+    int dpindex = styleComp.child(cpindex).findChild("Dark");
+    if (dpindex >= 0)
     {
-      m_colorForArcType[entry.first] = QColor(QString::fromStdString(entry.second));
+      const auto& dpalette = styleComp.child(cpindex).child(dpindex);
+      for (const auto& entry : dpalette.attributes())
+      {
+        m_darkPalette[entry.first] = QColor(QString::fromStdString(entry.second));
+      }
+    }
+    int lpindex = styleComp.child(cpindex).findChild("Light");
+    if (lpindex >= 0)
+    {
+      const auto& lpalette = styleComp.child(cpindex).child(lpindex);
+      for (const auto& entry : lpalette.attributes())
+      {
+        m_lightPalette[entry.first] = QColor(QString::fromStdString(entry.second));
+      }
     }
   }
 
@@ -171,6 +188,17 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
 
 QColor qtDiagramViewConfiguration::colorFromToken(const smtk::string::Token& token) const
 {
+  // In addition to the light and dark palettes that contain mappings for
+  // "known" tokens, create a palette that can be used consistently for
+  // "unknown" tokens
+  static std::array<QColor, 8> palette = { { QColor("#66C2A5"),
+                                             QColor("#FC8D62"),
+                                             QColor("#8DA0CB"),
+                                             QColor("#E78AC3"),
+                                             QColor("#A6D854"),
+                                             QColor("#FFD92F"),
+                                             QColor("#E5C494"),
+                                             QColor("#B3B3B3") } };
   if (QApplication::palette().window().color().lightnessF() > 0.5)
   {
     auto it = m_lightPalette.find(token);
@@ -187,7 +215,11 @@ QColor qtDiagramViewConfiguration::colorFromToken(const smtk::string::Token& tok
       return it->second;
     }
   }
-  return QColor("#000000");
+  // The token is not known so map in into one of
+  // the entries in the above palette.
+  auto entry = static_cast<int>(token.id());
+  int idx = (entry < 0 ? -entry : entry) % 8;
+  return palette[idx];
 }
 
 QColor qtDiagramViewConfiguration::baseNodeColor() const
@@ -203,6 +235,16 @@ QColor qtDiagramViewConfiguration::textColor() const
 QColor qtDiagramViewConfiguration::backgroundColor() const
 {
   return this->colorFromToken("background"_token);
+}
+
+QColor qtDiagramViewConfiguration::borderColor() const
+{
+  return this->colorFromToken("border"_token);
+}
+
+QColor qtDiagramViewConfiguration::portNodeColor() const
+{
+  return this->colorFromToken("port"_token);
 }
 
 QColor qtDiagramViewConfiguration::colorForState(smtk::task::State state) const
@@ -224,20 +266,6 @@ QColor qtDiagramViewConfiguration::colorForState(smtk::task::State state) const
     }
   }
   return QColor("#000000");
-}
-
-QColor qtDiagramViewConfiguration::colorFromPalette(int entry) const
-{
-  static std::array<QColor, 8> palette = { { QColor("#66C2A5"),
-                                             QColor("#FC8D62"),
-                                             QColor("#8DA0CB"),
-                                             QColor("#E78AC3"),
-                                             QColor("#A6D854"),
-                                             QColor("#FFD92F"),
-                                             QColor("#E5C494"),
-                                             QColor("#B3B3B3") } };
-  int idx = (entry < 0 ? -entry : entry) % 8;
-  return palette[idx];
 }
 
 } // namespace extension
