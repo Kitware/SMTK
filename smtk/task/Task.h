@@ -174,7 +174,7 @@ public:
   /// A style class specifies how applications should present the task
   /// (e.g., what type of view to provide the user, what rendering mode
   /// to use, what objects to list or exclude).
-  const std::set<smtk::string::Token>& style() const { return m_style; }
+  const std::unordered_set<smtk::string::Token>& style() const { return m_style; }
   bool addStyle(const smtk::string::Token& styleClass);
   bool removeStyle(const smtk::string::Token& styleClass);
   bool clearStyle();
@@ -510,7 +510,7 @@ protected:
   /// A task name to present to the user.
   std::string m_name;
   /// The set of style classes for this task.
-  std::set<smtk::string::Token> m_style;
+  std::unordered_set<smtk::string::Token> m_style;
   /// Whether the user has marked the task completed or not.
   bool m_completed = false;
   /// A set of dependent tasks and the keys used to observe their
