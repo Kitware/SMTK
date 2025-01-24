@@ -1404,6 +1404,7 @@
           <String value="Entity" />
           <String value="Volume" />
           <String value="Field" />
+          <String value="None" />
         </StringListDomain>
         <Documentation>
           components can be colored in different ways:

@@ -260,9 +260,10 @@ public:
     ENTITY = 0,
     VOLUME,
     FIELD,
+    NONE,
   };
 
-  vtkSetClampMacro(ColorBy, int, ENTITY, FIELD);
+  vtkSetClampMacro(ColorBy, int, ENTITY, NONE);
   vtkGetMacro(ColorBy, int);
   /**
    * Overload to set color mode using a string. Accepted strings are:
@@ -403,6 +404,7 @@ protected:
   void ColorByVolume(vtkMultiBlockDataSet* data);
   void ColorByEntity(vtkMultiBlockDataSet* data);
   void ColorByField();
+  void ColorByNone();
 
   //@{
   /**
