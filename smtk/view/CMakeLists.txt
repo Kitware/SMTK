@@ -6,6 +6,7 @@ set(viewClasses
   BadgeSet
   ComponentPhraseContent
   ComponentPhraseModel
+  Configuration
   DescriptivePhrase
   EmptySubphraseGenerator
   Information
@@ -31,7 +32,7 @@ set(viewClasses
   SubphraseGenerator
   SVGIconConstructor
   TwoLevelSubphraseGenerator
-  Configuration
+  Utility
 
   # Serialization
   json/jsonView
