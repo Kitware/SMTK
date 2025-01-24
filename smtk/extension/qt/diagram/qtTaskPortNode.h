@@ -22,6 +22,7 @@
 #include <QPainterPath>
 
 class QAbstractItemModel;
+class QGraphicsPathItem;
 class QGraphicsTextItem;
 class QItemSelection;
 class QTreeView;
@@ -84,11 +85,13 @@ protected:
   /// Handle pointer hovers
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  void updateArc();
   void updateShape();
 
   qreal m_length;
   qreal m_angle;
   QPainterPath m_path;
+  QGraphicsPathItem* m_arc;
 
   smtk::task::Port* m_port{ nullptr };
 };

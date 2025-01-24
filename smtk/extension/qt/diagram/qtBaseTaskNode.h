@@ -36,6 +36,7 @@ namespace extension
 {
 
 class qtDiagramGenerator;
+class qtTaskEditor;
 
 /**\brief A Graphical Item that represents a task as a node in a scene.
   *
@@ -71,6 +72,9 @@ public:
   /// Return the task this node represents.
   smtk::task::Task* task() const { return m_task; }
 
+  /// Return the Task Editor for the node
+  qtTaskEditor* editor() const { return static_cast<qtTaskEditor*>(m_generator); }
+
   /// Set/get how the node's boundary should be rendered.
   virtual void setOutlineStyle(OutlineStyle cs);
   OutlineStyle outlineStyle() const { return m_outlineStyle; }
@@ -92,6 +96,12 @@ public:
   /// makes other changes that require a visual update to the GUI.
   SMTK_DEPRECATED_IN_24_01("Override or call dataUpdated() from qtBaseNode instead.")
   virtual void updateToMatchModifiedTask() { this->dataUpdated(); };
+
+  /// Return the rounding radius used at the corners of the task node.
+  ///
+  /// Note that this does not mean the rounded corners are represented by circular arcs but in
+  /// some cases are approximations based on quadratic curves.
+  virtual double roundingRadius() { return 0.0; }
 
 protected:
   smtk::task::Task* m_task{ nullptr };

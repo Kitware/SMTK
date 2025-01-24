@@ -19,6 +19,8 @@
 #include "smtk/task/Manager.h"
 #include "smtk/task/Task.h"
 
+#include <cassert>
+
 #include <QAction>
 #include <QApplication>
 #include <QColor>
@@ -48,6 +50,7 @@ qtBaseTaskNode::qtBaseTaskNode(
   : Superclass(generator, task, parent)
   , m_task(task)
 {
+  assert(dynamic_cast<qtTaskEditor*>(generator));
 }
 
 qtBaseTaskNode::~qtBaseTaskNode() = default;

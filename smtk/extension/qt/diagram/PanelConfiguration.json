@@ -48,7 +48,13 @@
             ]}
            ]},
 
-        { "Name": "Diagram", "Attributes": { "Type": "smtk::extension::qtTaskEditor", "Name": "task editor" } },
+        { "Name": "Diagram", "Attributes": {
+          "Type": "smtk::extension::qtTaskEditor",
+          "Name": "task editor",
+          "PortSnapping": "true",
+          "DrawPortsToTaskCurves": "true",
+          "PortSnappingOffset": 0
+        }},
 
         { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtPanMode", "Default": true } },
         { "Name": "Mode", "Attributes": { "Type": "smtk::extension::qtSelectMode" } },

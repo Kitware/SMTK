@@ -194,6 +194,10 @@ qtTaskEditor::qtTaskEditor(
     new qtDiagramLegendEntry("arc"_token, SMTK_ARC_PORT_CONN, this));
   m_taskPath = new qtTaskPath(this);
   this->diagram()->topFrame()->layout()->addWidget(m_taskPath);
+
+  config.attributeAsBool("PortSnapping", m_snapPortsToTask);
+  config.attributeAsBool("DrawPortsToTaskCurves", m_drawPortsToTaskCurves);
+  config.attributeAsDouble("PortSnappingOffset", m_snapPortOffset);
 }
 
 qtTaskEditor::~qtTaskEditor() = default;

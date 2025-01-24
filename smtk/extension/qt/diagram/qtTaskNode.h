@@ -74,14 +74,17 @@ public:
   /// Get the scale factor for the text height
   double contentHeightOffset() const { return m_contentHeightOffset; }
 
-  /// Control Point Offset for rounded corners
-  double controlPointOffset() const { return m_controlPointOffset; }
-
   /// Width of the side items
   double sideTotalWidth() const { return m_sideTotalWidth; }
 
   /// Deals with state updates
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) override;
+
+  /// Return the rounding radius used at the corners of the task node.
+  ///
+  /// Note that this does not mean the rounded corners are represented by circular arcs but in
+  /// some cases are approximations based on quadratic curves.
+  double roundingRadius() override { return m_roundingRadius; }
 
 protected:
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
@@ -93,7 +96,7 @@ protected:
   qtTaskStatusItem* m_statusItem;
   qtTaskCompletionItem* m_completionItem;
   double m_contentHeightOffset = 30.0;
-  double m_controlPointOffset = 8.0;
+  double m_roundingRadius = 8.0;
   double m_sideTotalWidth = 50.0;
   double m_width;
 };
