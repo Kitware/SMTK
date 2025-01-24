@@ -123,6 +123,10 @@ public:
   void setDrawPortsToTaskCurves(bool val) { m_drawPortsToTaskCurves = val; }
   ///@}
 
+  /// Return the task-editor's task breadcrumb.
+  const qtTaskPath* taskPath() const { return m_taskPath; }
+  qtTaskPath* taskPath() { return m_taskPath; }
+
 protected:
   /// Used to create/destroy arcs incident to the node for \a object.
   ///
@@ -140,10 +144,10 @@ protected:
 
   class Internal;
   Internal* m_p;
-  qtTaskPath* m_taskPath;
-  bool m_snapPortsToTask = false;
-  double m_snapPortOffset = 0.0;
-  bool m_drawPortsToTaskCurves = true;
+  qtTaskPath* m_taskPath{ nullptr };
+  bool m_snapPortsToTask{ false };
+  double m_snapPortOffset{ 0.0 };
+  bool m_drawPortsToTaskCurves{ true };
 };
 
 } // namespace extension
