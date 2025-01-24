@@ -2,12 +2,12 @@
   <BriefDescription>A base attribute for operation result hints.</BriefDescription>
 </AttDef>
 
-<AttDef Type="focus hint" BaseType="hint" Abstract="True">
+<AttDef Type="association hint" BaseType="hint" Abstract="True">
   <BriefDescription>
-    Hints whose associations are objects the application should focus upon.
+    Hints whose associations are objects the application should process in some way.
   </BriefDescription>
   <AssociationsDef NumberOfRequiredValues="1" Extensible="true">
-    <BriefDescription>The objects to focus on.</BriefDescription>
+    <BriefDescription>The objects to process.</BriefDescription>
     <!-- Note that child attribute definitions are allowed to narrow association rules. -->
     <Accepts>
       <!-- Any component -->
@@ -18,8 +18,27 @@
   </AssociationsDef>
 </AttDef>
 
+<AttDef Type="focus hint" BaseType="association hint" Abstract="True">
+  <BriefDescription>
+    Hints whose associations are objects the application should focus upon.
+  </BriefDescription>
+</AttDef>
+
 <AttDef Type="render focus hint" BaseType="focus hint">
   <BriefDescription>Specify objects that the active view should zoom to.</BriefDescription>
+</AttDef>
+
+<AttDef Type="render visibility hint" BaseType="association hint">
+  <BriefDescription>Specify objects that the active view should hide or show.</BriefDescription>
+  <ItemDefinitions>
+    <!-- By default, hide the associated objects.
+         Most applications already show objects by default, so adding the
+         hint with defaults should hide hinted objects rather than show them.
+      -->
+    <Void Name="show" Optional="true" IsEnabledByDefault="false">
+      <BriefDescription>Enabled when the associated items should be shown; disable to hide objects.</BriefDescription>
+    </Void>
+  </ItemDefinitions>
 </AttDef>
 
 <AttDef Type="browser scroll hint" BaseType="focus hint">

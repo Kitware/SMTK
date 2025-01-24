@@ -12,6 +12,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourceDock.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResourcePanel.h"
 #include "smtk/extension/paraview/project/pqSMTKProjectMenu.h"
+#include "smtk/extension/paraview/project/pqSMTKTaskResourceVisibility.h"
 #include "smtk/project/Project.h"
 #include "smtk/view/ResourcePhraseModel.h"
 
@@ -67,11 +68,13 @@ pqSMTKProjectAutoStart::~pqSMTKProjectAutoStart() = default;
 void pqSMTKProjectAutoStart::startup()
 {
   auto* projectMenuMgr = pqSMTKProjectMenu::instance(this);
+  auto* taskResourceVis = pqSMTKTaskResourceVisibility::instance(this);
 
   auto* pqCore = pqApplicationCore::instance();
   if (pqCore)
   {
     pqCore->registerManager("smtk project menu", projectMenuMgr);
+    pqCore->registerManager("smtk task visibility", taskResourceVis);
   }
 
   // Since the loading order of smtk plugins is indeterminate, a spinning

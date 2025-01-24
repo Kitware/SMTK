@@ -37,6 +37,12 @@ namespace smtk
 namespace operation
 {
 
+/// Add a hint of the given \a hintType to the \a result.
+///
+/// This can be used to create a \a hintType attribute of any type
+/// that allows objects in \a associations to be associated to it.
+/// You can use this function to create most hints which inherit the
+/// "association hint" definition.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addHintWithAssociations(
   smtk::operation::Operation::Result result,
@@ -83,6 +89,12 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addHintWithAssociation
   return hint;
 }
 
+/// Create a hint to indicate the application selection should be modified.
+///
+/// This adds a "selection hint" attribute associated to \a associations
+/// to the \a result and prepares it with the \a selectionAction, \a selectionValue,
+/// \a bitwise, and \a ephemeral items to indicate how applications should modify
+/// their selection based on the \a result.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addSelectionHint(
   smtk::operation::Operation::Result result,
@@ -104,6 +116,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addSelectionHint(
   return hint;
 }
 
+/// Create a hint indicating browsers should scroll to show objects in \a associations.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addBrowserScrollHint(
   smtk::operation::Operation::Result result,
@@ -113,6 +126,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addBrowserScrollHint(
   return hint;
 }
 
+/// Create a hint indicating browsers should expand trees to show objects in \a associations.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addBrowserExpandHint(
   smtk::operation::Operation::Result result,
@@ -122,6 +136,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addBrowserExpandHint(
   return hint;
 }
 
+/// Create a hint indicating render-views should zoom to objects in \a associations.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addRenderFocusHint(
   smtk::operation::Operation::Result result,
@@ -131,6 +146,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addRenderFocusHint(
   return hint;
 }
 
+/// Visit hints in the \a result that inherit "selection hint" and invoke \a functor on them.
 template<typename Functor>
 SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitSelectionHints(
   smtk::operation::Operation::Result result,
@@ -163,8 +179,9 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitSelectionHints(
   return didVisit ? smtk::common::Visited::All : smtk::common::Visited::Empty;
 }
 
+/// Visit hints of \a hintType and invoke \a functor on them.
 template<typename Functor>
-SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitFocusHintsOfType(
+SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitAssociationHintsOfType(
   smtk::operation::Operation::Result result,
   const std::string& hintType,
   Functor functor)
@@ -192,6 +209,17 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitFocusHintsOfType(
   return didVisit ? smtk::common::Visited::All : smtk::common::Visited::Empty;
 }
 
+/// Visit "focus hint" hints of \a hintType (that inherit "focus hint") and invoke \a functor.
+template<typename Functor>
+SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitFocusHintsOfType(
+  smtk::operation::Operation::Result result,
+  const std::string& hintType,
+  Functor functor)
+{
+  return visitAssociationHintsOfType(result, hintType, functor);
+}
+
+/// Create a hint of type \a hintType that reference tasks in a project.
 template<typename Container>
 SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addHintWithTasks(
   smtk::operation::Operation::Result result,
@@ -251,6 +279,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addActivateTaskHint(
   return hint;
 }
 
+/// Visit "task hint" hints of type \a hintType and invoke \a functor on them.
 template<typename Functor>
 SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitTaskHintsOfType(
   smtk::operation::Operation::Result result,
@@ -304,6 +333,23 @@ SMTK_ALWAYS_EXPORT inline smtk::common::Visited visitTaskHintsOfType(
     }
   }
   return didVisit ? smtk::common::Visited::All : smtk::common::Visited::Empty;
+}
+
+/// Show or hide the objects in \a associations based on \a show.
+///
+/// This adds a "render visibility hint" to \a result associated to all
+/// the resources/components in \a associations indicating that applications
+/// should show (when \a show is true) or hide (otherwise) the associated
+/// objects.
+template<typename Container>
+SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addRenderVisibilityHint(
+  smtk::operation::Operation::Result result,
+  const Container& associations,
+  bool show = false)
+{
+  auto hint = addHintWithAssociations(result, associations, "render visibility hint");
+  hint->findVoid("show")->setIsEnabled(show);
+  return hint;
 }
 
 } // namespace operation
