@@ -148,7 +148,10 @@ public:
 
   /// Given a port owned by this task, return data to be transmitted over the port.
   ///
-  /// Subclasses that own ports must override this method in order to produce port-data.
+  /// If the \a port is an output port, the task's agents are each given an
+  /// opportunity to produce PortData in turn.
+  /// It the \a port is an input port, the port's connections are queried for
+  /// port data.
   virtual std::shared_ptr<PortData> portData(const Port* port) const;
 
   /// Accept notification that data on the given \a port has been updated.
@@ -506,6 +509,11 @@ protected:
   virtual State computeAgentState() const;
   /// Compute the state based on the state of the task's children
   virtual State computeChildrenState() const;
+
+  /// Produce port data for an output port of this task by querying its agents.
+  std::shared_ptr<PortData> outputPortData(const Port* port) const;
+  /// Produce port data for an input port of this task by querying its connections.
+  std::shared_ptr<PortData> inputPortData(const Port* port) const;
 
   /// A task name to present to the user.
   std::string m_name;
