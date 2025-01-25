@@ -20,6 +20,7 @@
 #include "smtk/task/SubmitOperation.h"
 #include "smtk/task/SubmitOperationAgent.h"
 #include "smtk/task/Task.h"
+#include "smtk/task/TrivialProducerAgent.h"
 #include "smtk/task/adaptor/ConfigureOperation.h"
 #include "smtk/task/adaptor/ResourceAndRole.h"
 #include "smtk/task/json/Configurator.h"
@@ -65,7 +66,8 @@ using AdaptorJSON = std::tuple<json::jsonConfigureOperation, json::jsonResourceA
 using PortList = std::tuple<Port>;
 using PortJSON = std::tuple<json::jsonPort>;
 
-using AgentList = std::tuple<FillOutAttributesAgent, GatherObjectsAgent, SubmitOperationAgent>;
+using AgentList = std::
+  tuple<FillOutAttributesAgent, GatherObjectsAgent, SubmitOperationAgent, TrivialProducerAgent>;
 
 using OperationList = std::
   tuple<AddDependency, ConnectPorts, DisconnectPorts, EmplaceWorklet, RemoveDependency, RenameTask>;

@@ -12,6 +12,7 @@ set(agents
   FillOutAttributesAgent
   GatherObjectsAgent
   SubmitOperationAgent
+  TrivialProducerAgent
 )
 
 set(adaptors
