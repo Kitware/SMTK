@@ -323,7 +323,6 @@ const std::shared_ptr<resource::Resource> Task::resource() const
 
 std::string Task::information(const InformationOptions& opts) const
 {
-  std::cout << "Rebuild tooltip " << this->name() << "\n";
   std::ostringstream result;
   if (opts.m_includeTitle)
   {

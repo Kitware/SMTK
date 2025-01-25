@@ -535,6 +535,20 @@ qtTaskNode::qtTaskNode(qtDiagramGenerator* generator, smtk::task::Task* task, QG
   m_textItem->setPos(m_sideTotalWidth, 0.5 * m_contentHeightOffset);
 
   m_completionItem = new qtTaskCompletionItem(this);
+
+  m_taskObserver = m_task->observers().insert(
+    [this](smtk::task::Task&, smtk::task::State prev, smtk::task::State next) {
+      // Sometimes the application invokes this observer after the GUI
+      // has been shut down. Calling setEnabled on widgets generates a
+      // log message and attempting to construct a QPixmap throws exceptions;
+      // so, check that qApp exists before going further.
+      if (qApp)
+      {
+        this->updateTaskState(prev, next, this->isActive());
+      }
+    },
+    "qtTaskNode task-observer");
+
   this->addToScene();
 
   // === Task-specific constructor ===
@@ -635,6 +649,9 @@ int qtTaskNode::updateSize()
 
 void qtTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
 {
+  // The superclass updates the tooltip for us.
+  this->Superclass::updateTaskState(prev, next, active);
+
   // Nothing needs to be done since the item's
   // children take care of this when painting themselves
   (void)prev;

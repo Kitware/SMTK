@@ -16,6 +16,7 @@
 #include "smtk/common/TypeContainer.h"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/task/Task.h"
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
@@ -99,6 +100,7 @@ protected:
   double m_roundingRadius = 8.0;
   double m_sideTotalWidth = 50.0;
   double m_width;
+  smtk::task::Task::Observers::Key m_taskObserver;
 };
 
 } // namespace extension

@@ -156,7 +156,9 @@ public:
 
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
   {
-    (void)prev;
+    // The superclass updates the tooltip for us.
+    m_node->updateTaskState(prev, next, active);
+
     m_completed->setEnabled(m_node->m_task->editableCompletion());
 
     // Update the checkbox widget without infinite recursion:

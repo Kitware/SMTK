@@ -84,5 +84,23 @@ bool qtBaseTaskNode::isActive() const
   return taskManager->active().task() == m_task;
 }
 
+void qtBaseTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
+{
+  // Update the tool tip with diagnostic information
+  smtk::task::Task::InformationOptions opt;
+  opt.m_includeTitle = false;
+  this->setToolTip(QString::fromStdString(m_task->information(opt)));
+}
+
+void qtBaseTaskNode::dataUpdated()
+{
+  this->Superclass::dataUpdated();
+
+  // Update the tool tip with diagnostic information
+  smtk::task::Task::InformationOptions opt;
+  opt.m_includeTitle = false;
+  this->setToolTip(QString::fromStdString(m_task->information(opt)));
+}
+
 } // namespace extension
 } // namespace smtk

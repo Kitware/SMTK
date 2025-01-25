@@ -661,6 +661,19 @@ void qtTaskEditor::updateSceneNodes(
     }
   }
 
+  // Notify nodes they may need to refresh.
+  // NB: This also notifies scene arcs that have a corresponding persistent object.
+  for (auto* obj : modified)
+  {
+    if (auto* node = m_diagram->findNode(obj->id()))
+    {
+      if (node->generator() == this)
+      {
+        node->dataUpdated();
+      }
+    }
+  }
+
   // Currently only deal with the project being deleted
   for (auto* obj : expunged)
   {
