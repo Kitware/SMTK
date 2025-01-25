@@ -76,6 +76,19 @@ public:
   ///\brief Return the agent's parent task
   Task* parent() const { return m_parent; }
 
+  ///\brief Return a description of actions users must take to
+  ///       make the agent's state completable.
+  ///
+  /// Subclasses should override this method.
+  ///
+  /// This should be XHTML text that can be inserted into
+  /// an unordered HTML list (<ul>…</ul>) along with the
+  /// text from other agent instances.
+  ///
+  /// This should be an empty string when the agent's state is either
+  /// completable or completed.
+  virtual std::string troubleshoot() const { return std::string(); }
+
   ///\brief Insert view-related objects into \a configuration.
   ///
   /// Subclasses should override this; the default implementation does nothing.

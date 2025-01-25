@@ -95,6 +95,15 @@ public:
     Child   //!< Visit child tasks.
   };
 
+  /// Options for the information() method.
+  struct InformationOptions
+  {
+    InformationOptions() {}
+    bool m_includeTitle{ true };
+    bool m_includeDescription{ true };
+    bool m_includeTroubleshooting{ true };
+  };
+
   Task();
   Task(
     const Configuration& config,
@@ -136,6 +145,22 @@ public:
   /// This is not intended to be a unique identifier.
   SMTK_DEPRECATED_IN_24_01("Use setName() instead.")
   void setTitle(const std::string& title) { this->setName(title); }
+
+  /// Return user-presentable information about the task in XHTML form.
+  ///
+  /// This is the concatenation of a description (see setDescription())
+  /// along with tips from each configured agent that is incomplete
+  /// or unavailable describing actions users may need to address to
+  /// make the task completable.
+  virtual std::string information(const InformationOptions& opts = InformationOptions()) const;
+
+  /// Set/get a description of the task provided by workflow designers.
+  ///
+  /// The description should be in XHTML form but not include <html> or
+  /// <body> elements as those are added by the information() method.
+  void setDescription(const std::string& description);
+  const std::string& description() const { return m_description; }
+  std::string& description() { return m_description; }
 
   /// Return a set of ports for this task indexed by their function (a descriptive string).
   virtual const std::unordered_map<smtk::string::Token, Port*>& ports() const;
@@ -517,6 +542,9 @@ protected:
 
   /// A task name to present to the user.
   std::string m_name;
+  /// A description of the task provided by a workflow designer.
+  std::string m_description;
+
   /// The set of style classes for this task.
   std::unordered_set<smtk::string::Token> m_style;
   /// Whether the user has marked the task completed or not.

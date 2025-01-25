@@ -464,6 +464,24 @@ Agent::Configuration SubmitOperationAgent::configuration() const
   return config;
 }
 
+std::string SubmitOperationAgent::troubleshoot() const
+{
+  std::string result;
+  switch (this->state())
+  {
+    default:
+    case State::Irrelevant:
+    case State::Unavailable:
+    case State::Completable:
+    case State::Completed:
+      break;
+    case State::Incomplete:
+      result = R"(<li>You must run the operation at least once.</li>)";
+      break;
+  }
+  return result;
+}
+
 std::shared_ptr<PortData> SubmitOperationAgent::portData(const Port* port) const
 {
   if (

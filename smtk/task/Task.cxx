@@ -181,6 +181,10 @@ void Task::configure(const Configuration& config)
   {
     this->setName(config.at("title").get<std::string>());
   }
+  if (config.contains("description"))
+  {
+    this->setDescription(config.at("description").get<std::string>());
+  }
   if (config.contains("style"))
   {
     try
@@ -315,6 +319,39 @@ const std::shared_ptr<resource::Resource> Task::resource() const
     }
   }
   return rsrc;
+}
+
+std::string Task::information(const InformationOptions& opts) const
+{
+  std::cout << "Rebuild tooltip " << this->name() << "\n";
+  std::ostringstream result;
+  if (opts.m_includeTitle)
+  {
+    result << "<h1>" << this->name() << "</h1>\n";
+  }
+  if (opts.m_includeDescription)
+  {
+    result << m_description;
+  }
+
+  if (opts.m_includeTroubleshooting)
+  {
+    std::string troubleshooting;
+    for (const auto& agent : m_agents)
+    {
+      troubleshooting += agent->troubleshoot();
+    }
+    if (!troubleshooting.empty())
+    {
+      result << "<h2>Diagnostics</h2>\n<ul>\n" << troubleshooting << "\n</ul>";
+    }
+  }
+  return result.str();
+}
+
+void Task::setDescription(const std::string& description)
+{
+  m_description = description;
 }
 
 const std::unordered_map<smtk::string::Token, Port*>& Task::ports() const
