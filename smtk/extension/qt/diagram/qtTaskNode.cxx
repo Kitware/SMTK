@@ -79,10 +79,10 @@ protected:
     QPainterPath
       p1; // Represents the outside edge of the item (excluding the contact with the task node item)
     p1.moveTo(m_node->sideTotalWidth(), cbounds.height());
-    p1.lineTo(m_node->controlPointOffset(), cbounds.height());
-    p1.quadTo(0.0, cbounds.height(), 0.0, cbounds.height() - m_node->controlPointOffset());
-    p1.lineTo(0.0, m_node->controlPointOffset());
-    p1.quadTo(0.0, 0.0, m_node->controlPointOffset(), 0.0);
+    p1.lineTo(m_node->roundingRadius(), cbounds.height());
+    p1.quadTo(0.0, cbounds.height(), 0.0, cbounds.height() - m_node->roundingRadius());
+    p1.lineTo(0.0, m_node->roundingRadius());
+    p1.quadTo(0.0, 0.0, m_node->roundingRadius(), 0.0);
     p1.lineTo(m_node->sideTotalWidth(), 0.0);
     // Paint the overall area first
     QPainterPath path;
@@ -102,13 +102,13 @@ protected:
     auto outerOffset = borderThickness;
     QPainterPath p2; // An approximate offset curve of p1
     p2.moveTo(m_node->sideTotalWidth(), outerOffset);
-    p2.lineTo(m_node->controlPointOffset() + outerOffset, outerOffset);
-    p2.quadTo(outerOffset, outerOffset, outerOffset, m_node->controlPointOffset() + outerOffset);
-    p2.lineTo(outerOffset, cbounds.height() - (m_node->controlPointOffset() + outerOffset));
+    p2.lineTo(m_node->roundingRadius() + outerOffset, outerOffset);
+    p2.quadTo(outerOffset, outerOffset, outerOffset, m_node->roundingRadius() + outerOffset);
+    p2.lineTo(outerOffset, cbounds.height() - (m_node->roundingRadius() + outerOffset));
     p2.quadTo(
       outerOffset,
       cbounds.height() - outerOffset,
-      m_node->controlPointOffset() + outerOffset,
+      m_node->roundingRadius() + outerOffset,
       cbounds.height() - outerOffset);
     p2.lineTo(m_node->sideTotalWidth(), cbounds.height() - outerOffset);
 
@@ -146,15 +146,14 @@ protected:
     QPainterPath innerPath;
     // This part is an approximate offset of p2
     innerPath.moveTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
-    innerPath.lineTo(m_node->controlPointOffset() + innerOffset, cbounds.height() - innerOffset);
+    innerPath.lineTo(m_node->roundingRadius() + innerOffset, cbounds.height() - innerOffset);
     innerPath.quadTo(
       innerOffset,
       cbounds.height() - innerOffset,
       innerOffset,
-      cbounds.height() - (m_node->controlPointOffset() + innerOffset));
-    innerPath.lineTo(innerOffset, m_node->controlPointOffset() + innerOffset);
-    innerPath.quadTo(
-      innerOffset, innerOffset, m_node->controlPointOffset() + innerOffset, innerOffset);
+      cbounds.height() - (m_node->roundingRadius() + innerOffset));
+    innerPath.lineTo(innerOffset, m_node->roundingRadius() + innerOffset);
+    innerPath.quadTo(innerOffset, innerOffset, m_node->roundingRadius() + innerOffset, innerOffset);
     innerPath.lineTo(m_node->sideTotalWidth(), innerOffset);
     innerPath.connectPath(p2);
     innerPath.lineTo(m_node->sideTotalWidth(), cbounds.height() - innerOffset);
@@ -253,7 +252,7 @@ protected:
     auto cbounds = m_node->contentBoundingRect();
     double h = cbounds.height();
     double w = cbounds.width() + m_node->sideTotalWidth();
-    double delta = m_node->controlPointOffset();
+    double delta = m_node->roundingRadius();
     auto& cfg = *m_node->scene()->configuration();
 
     QPainterPath

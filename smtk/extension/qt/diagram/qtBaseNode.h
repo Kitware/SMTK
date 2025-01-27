@@ -47,7 +47,6 @@ class qtDiagramScene;
 class SMTKQTEXT_EXPORT qtBaseNode : public QGraphicsObject
 {
   Q_OBJECT
-  Q_INTERFACES(QGraphicsItem);
   Q_PROPERTY(ContentStyle contentStyle READ contentStyle WRITE setContentStyle);
 
 public:

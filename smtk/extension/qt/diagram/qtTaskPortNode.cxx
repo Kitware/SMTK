@@ -30,12 +30,14 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/task/ObjectsInRoles.h"
 
+#include <cassert>
 #include <cmath>
 
 #include <QAction>
 #include <QApplication>
 #include <QColor>
 #include <QEvent>
+#include <QGraphicsPathItem>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsTextItem>
@@ -119,6 +121,15 @@ qtTaskPortNode::qtTaskPortNode(
   , m_angle(90)
   , m_port(dynamic_cast<smtk::task::Port*>(obj))
 {
+  // If the port is external then it must have a qtBaseTaskNode as its parent.
+  if (m_port->access() == smtk::task::Port::Access::External)
+  {
+    assert(dynamic_cast<qtBaseTaskNode*>(parent));
+  }
+
+  // We want the arc to be behind the port node
+  m_arc = new QGraphicsPathItem(this);
+  m_arc->setFlag(QGraphicsItem::ItemStacksBehindParent);
   this->updateShape();
 
   qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
@@ -170,7 +181,12 @@ QVariant qtTaskPortNode::itemChange(QGraphicsItem::GraphicsItemChange change, co
     // Next take snapping into consideration
     this->adjustPosition(newPos);
     QVariant newVal(newPos);
-    return Superclass::itemChange(change, newVal);
+    QVariant result = Superclass::itemChange(change, newVal);
+
+    // Update the curve connecting the port to its task if needed.
+    this->updateArc();
+
+    return result;
   }
   return Superclass::itemChange(change, val);
 }
@@ -259,8 +275,11 @@ void qtTaskPortNode::paint(
 {
   (void)option;
   (void)widget;
-  qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
+  // Update the connection between the port and its task
+  // if needed
+  this->updateArc();
 
+  qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
   painter->fillPath(m_path, cfg.portNodeColor());
 
   QPen spen;
@@ -278,6 +297,105 @@ void qtTaskPortNode::paint(
   painter->drawPath(m_path);
 }
 
+void qtTaskPortNode::updateArc()
+{
+  auto* tasknode = static_cast<qtBaseTaskNode*>(this->parentItem());
+
+  if ((this->parentItem() == nullptr) || (!tasknode->editor()->drawPortsToTaskCurves()))
+  {
+    m_arc->setVisible(false);
+    return;
+  }
+
+  m_arc->setVisible(true);
+  // Calculate the offset needed to touch the task node
+  double offset = ((tasknode != nullptr) ? tasknode->roundingRadius() : 0.0);
+
+  // Determine what side of the task the port is on.
+  auto taskBounds = this->mapRectFromParent(this->parentItem()->boundingRect());
+
+  QPainterPath lpath;
+  QPen pen; // needed to offset points by the line thickness
+  double thicknessOffset = 0.5 * pen.widthF();
+  lpath.moveTo(0, 0); // Start at the port
+  double xBound;      // x coordinate of the task's bounds used to define the curve
+  // indicates the orientation of the task relative to the port
+  // 0: they are oriented top/bottom
+  // 1: the task node is on the right side of the port
+  // -1: the task node is on the left side of the port
+  int orientation = 0;
+
+  if (taskBounds.left() > 0)
+  {
+    xBound = taskBounds.left();
+    orientation = 1;
+  }
+  else if ((taskBounds.right() <= 0))
+  {
+    xBound = taskBounds.right();
+    orientation = -1;
+  }
+
+  if (orientation) // The nodes are side by side
+  {
+    lpath.lineTo(xBound - (orientation * offset), 0);
+    // If the port is above the top of the task node (offset by line thickness) then continue the curve
+    // to the edge of the bounding box and then curve downward to touch the top of the node.
+    if (taskBounds.top() > -thicknessOffset)
+    {
+      lpath.lineTo(xBound, 0);
+      lpath.quadTo(
+        xBound + (orientation * offset),
+        0,
+        xBound + (orientation * offset),
+        taskBounds.top() + thicknessOffset);
+    }
+    // Is the task node relative to the port node such that we need to curve downward to touch the straight section
+    // of the task node?
+    else if (taskBounds.top() > -offset)
+    {
+      lpath.quadTo(
+        xBound + (orientation * thicknessOffset),
+        0,
+        xBound + (orientation * thicknessOffset),
+        taskBounds.top() + offset);
+    }
+    // Is the task node relative to the port node such that we can draw a simple straight line?
+    else if (taskBounds.bottom() > offset)
+    {
+      lpath.lineTo(xBound, 0);
+    }
+    // Is the task node relative to the port node such that we need to curve upward to touch the straight section
+    // of the task node?
+    else if (taskBounds.bottom() > 0)
+    {
+      lpath.quadTo(
+        xBound + (orientation * thicknessOffset),
+        0,
+        xBound + (orientation * thicknessOffset),
+        taskBounds.bottom() - offset);
+    }
+    // The port is below the  bottom of the task node  then continue the curve
+    // to the edge of the bounding box and then curve upward to touch the bottom of the node.
+    else
+    {
+      lpath.lineTo(xBound, 0);
+      lpath.quadTo(
+        xBound + (orientation * offset),
+        0,
+        xBound + (orientation * offset),
+        taskBounds.bottom() - thicknessOffset);
+    }
+  }
+  // The port is below the  bottom of the task node  then continue the curve
+  // to the edge of the bounding box and then curve upward to touch the bottom of the node.
+  else
+  {
+    lpath.lineTo(0, taskBounds.center().y());
+  }
+  m_arc->setPath(lpath);
+  m_arc->update();
+}
 void qtTaskPortNode::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
   this->updateToolTip();
@@ -382,15 +500,16 @@ void qtTaskPortNode::adjustOrientation(const QPointF& pnt)
 void qtTaskPortNode::adjustPosition(QPointF& pnt)
 {
   // See if the task node is requesting its ports to be snapped.
-  qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
-  if ((m_port->access() == smtk::task::Port::Access::Internal) || !cfg.snapPortsToTask())
+  auto* tasknode = static_cast<qtBaseTaskNode*>(this->parentItem());
+  if (
+    (m_port->access() == smtk::task::Port::Access::Internal) ||
+    !tasknode->editor()->snapPortsToTask())
   {
     return;
   }
 
   auto taskBounds = this->parentItem()->boundingRect();
-  double hl = (m_length * 0.5) + cfg.snapPortOffset();
-  ;
+  double hl = (m_length * 0.5) + tasknode->editor()->snapPortOffset();
 
   if (pnt.x() <= taskBounds.left())
   {

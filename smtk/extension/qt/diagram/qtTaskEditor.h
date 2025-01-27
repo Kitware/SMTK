@@ -102,6 +102,27 @@ public:
   /// This is called when the active task is changed.
   void updateVisibility(const smtk::task::Task* prevTailTask, const smtk::task::Task* nextTailTask);
 
+  ///@{
+  ///\brief Controls if external task port nodes should be snapped
+  /// with respected to their task nodes using the snap offset
+  bool snapPortsToTask() const { return m_snapPortsToTask; }
+  void setSnapPortsToTask(bool val) { m_snapPortsToTask = val; }
+  ///@}
+  ///@{
+  ///\brief Get/set the offset to be used when snapping task ports
+  /// nodes with respect to their task nodes.
+  ///
+  /// Note that the offset should be a positive value.
+  double snapPortOffset() const { return m_snapPortOffset; }
+  void setSnapPortOffset(double val) { m_snapPortOffset = val; }
+  ///@}
+  ///@{
+  ///\brief Controls if external task port nodes should have a curve
+  /// connecting it to their task nodes.
+  bool drawPortsToTaskCurves() const { return m_drawPortsToTaskCurves; }
+  void setDrawPortsToTaskCurves(bool val) { m_drawPortsToTaskCurves = val; }
+  ///@}
+
 protected:
   /// Used to create/destroy arcs incident to the node for \a object.
   ///
@@ -120,6 +141,9 @@ protected:
   class Internal;
   Internal* m_p;
   qtTaskPath* m_taskPath;
+  bool m_snapPortsToTask = false;
+  double m_snapPortOffset = 0.0;
+  bool m_drawPortsToTaskCurves = true;
 };
 
 } // namespace extension

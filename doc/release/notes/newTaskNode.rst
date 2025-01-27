@@ -18,12 +18,21 @@ Supporting the Snapping of Port Nodes
 -------------------------------------
 
 It is now possible to snap a Task's Ports to be close to the Task itself.
-This is controlled by the following methods provided by qtDiagramViewConfiguration:
+This is controlled by the following methods provided by qtTaskEditor:
 
 * snapPortsToTask - indicates that the port nodes should be snapped w/r the Task Node (on by default)
 * setSnapPortsToTask
 * snapPortOffset - provides the offset distance that the port nodes should use when offsetting (0 by default)
 * setSnapPortOffset
+
+Ability to Connect Ports to Tasks
+---------------------------------
+
+It is now possible to draw curves that connect external port nodes to their task nodes.
+This is controlled by the following methods provided by qtTaskEditor:
+
+* drawPortsToTaskCurves()
+* setDrawPortsToTaskCurves(bool val)
 
 Consolidating Color Information for Task and Port Nodes
 -------------------------------------------------------

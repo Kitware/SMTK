@@ -105,20 +105,6 @@ public:
     return m_colorForArcStatus[static_cast<int>(status)];
   }
 
-  ///@{
-  ///\brief Controls if external task port nodes should be snapped
-  /// with respected to their task nodes using the snap offset
-  bool snapPortsToTask() const { return m_snapPortsToTask; }
-  void setSnapPortsToTask(bool val) { m_snapPortsToTask = val; }
-  ///@}
-  ///@{
-  ///\brief Get/set the offset to be used when snapping task ports
-  /// nodes with respect to their task nodes.
-  ///
-  /// Note that the offset should be a positive value.
-  double snapPortOffset() const { return m_snapPortOffset; }
-  void setSnapPortOffset(double val) { m_snapPortOffset = val; }
-  ///@}
   qreal nodeWidth() const { return m_nodeWidth; }
   qreal nodeRadius() const { return m_nodeRadius; }
   qreal nodeHeadlineHeight() const { return m_nodeHeadlineHeight; }
@@ -166,8 +152,6 @@ protected:
   qreal m_arrowTipAspectRatio{ 2. }; // The width of the arrow head as a fraction of head length.
 
   int m_constructionLayer{ 15 };
-  bool m_snapPortsToTask = true;
-  double m_snapPortOffset = 0.0;
 };
 
 } // namespace extension

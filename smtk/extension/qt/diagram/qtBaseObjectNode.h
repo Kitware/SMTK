@@ -11,6 +11,7 @@
 #define smtk_extension_qtBaseObjectNode_h
 
 #include "smtk/extension/qt/diagram/qtBaseNode.h"
+#include "smtk/extension/qt/diagram/qtTaskEditor.h"
 
 #include "smtk/PublicPointerDefs.h"
 
