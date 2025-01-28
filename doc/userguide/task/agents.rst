@@ -173,9 +173,9 @@ managed by SubmitOperationAgent.
 
   * ``handler``: One of the following values:
 
-    * ``smtk::task::SubmitOperationAgent::PortDataHandler::AddObjects`` (or ``set``):
+    * ``smtk::task::SubmitOperationAgent::PortDataHandler::AddObjects`` (or ``add``):
       Append the objects to the item (or associations) at the given item path.
-    * ``smtk::task::SubmitOperationAgent::PortDataHandler::SetObjects`` (or ``add``):
+    * ``smtk::task::SubmitOperationAgent::PortDataHandler::SetObjects`` (or ``set``):
       Reset the reference-item (or associations) at the given item path to
       the objects on the named port in the named role.
     * ``smtk::task::SubmitOperationAgent::PortDataHandler::AssignFromAttribute`` (or
