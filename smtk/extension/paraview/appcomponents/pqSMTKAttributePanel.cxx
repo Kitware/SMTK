@@ -22,6 +22,7 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/project/Container.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 
@@ -51,6 +52,28 @@
 #include <QPointer>
 #include <QTimer>
 #include <QVBoxLayout>
+
+namespace
+{
+bool resourceInProject(
+  const std::shared_ptr<smtk::resource::Resource>& rsrc,
+  const std::shared_ptr<smtk::project::Manager>& projectMgr)
+{
+  if (!rsrc || !projectMgr)
+  {
+    return false;
+  }
+
+  for (const auto& project : projectMgr->projects())
+  {
+    if (project->resources().get(rsrc->id()))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+} // anonymous namespace
 
 pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
@@ -422,6 +445,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
     m_seln = nullptr;
     m_opManager = nullptr;
     m_viewManager = nullptr;
+    m_projectManager = nullptr;
     return false;
   }
   // Keep hold of the selection instance for the active server connection
@@ -429,6 +453,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
   m_seln = managers->get<smtk::view::Selection::Ptr>();
   m_opManager = managers->get<smtk::operation::Manager::Ptr>();
   m_viewManager = managers->get<smtk::view::Manager::Ptr>();
+  m_projectManager = managers->get<smtk::project::Manager::Ptr>();
   return true;
 }
 
@@ -444,6 +469,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   m_attrUIMgr = new smtk::extension::qtUIManager(rsrc);
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
   m_attrUIMgr->setViewManager(m_viewManager);
+  m_attrUIMgr->managers().insert(m_projectManager);
   m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
   m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
 
@@ -500,7 +526,12 @@ bool pqSMTKAttributePanel::displayResourceInternal(
     didDisplay = this->displayView(theView);
     if (didDisplay)
     {
-      rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+      // Only force the resource to display this view in the future if the
+      // resource does not belong to a project.
+      if (!resourceInProject(rsrc, m_projectManager))
+      {
+        rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
+      }
       // If the view was specified then set the advance level as well
       if (view)
       {
