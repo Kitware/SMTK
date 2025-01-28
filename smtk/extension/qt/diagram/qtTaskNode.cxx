@@ -365,7 +365,6 @@ public:
     this->setFlags(ItemIsSelectable | ItemIsFocusable);
     this->setTextInteractionFlags(Qt::NoTextInteraction);
     auto f = this->font();
-    std::cerr << "Default Font Size:" << f.pointSize();
     f.setPointSize(18);
     this->setFont(f);
     qtDiagramViewConfiguration& cfg(*m_node->scene()->configuration());
