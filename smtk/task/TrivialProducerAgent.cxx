@@ -11,6 +11,7 @@
 
 #include "smtk/task/ObjectsInRoles.h"
 #include "smtk/task/json/Helper.h"
+#include "smtk/task/json/jsonObjectsInRoles.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -34,9 +35,21 @@ void TrivialProducerAgent::configure(const Configuration& config)
 {
   bool addedData = false;
   auto& helper(smtk::task::json::Helper::instance());
-  auto it = config.find("data");
+  auto it = config.find("name");
+  if (it != config.end())
+  {
+    m_name = it->get<std::string>();
+  }
+  it = config.find("data");
   if (it != config.end() && it->is_object())
   {
+#if 0
+    // We could use the from_json() method, but it will not update
+    // incrementally and report changes. Instead, it resets and rebuilds
+    // solely from \a config.
+    m_data = *it;
+    addedData = !m_data->data().empty();
+#else
     for (const auto& entry : it->items())
     {
       smtk::string::Token role(entry.key());
@@ -45,6 +58,8 @@ void TrivialProducerAgent::configure(const Configuration& config)
         for (const auto& objectSpec : entry.value())
         {
           auto* obj = helper.objectFromJSONSpec(objectSpec, "port");
+          std::cout << "Port \"" << m_name << "\" add obj " << obj << " role " << entry.key()
+                    << "\n";
           if (obj)
           {
             addedData |= m_data->addObject(obj, role);
@@ -52,11 +67,7 @@ void TrivialProducerAgent::configure(const Configuration& config)
         }
       }
     }
-  }
-  it = config.find("name");
-  if (it != config.end())
-  {
-    m_name = it->get<std::string>();
+#endif
   }
   it = config.find("output-port");
   if (it != config.end())
@@ -71,6 +82,24 @@ void TrivialProducerAgent::configure(const Configuration& config)
   {
     this->portDataUpdated(m_outputPort);
   }
+}
+
+TrivialProducerAgent::Configuration TrivialProducerAgent::configuration() const
+{
+  auto config = this->Superclass::configuration();
+  if (m_outputPort)
+  {
+    config["output-port"] = m_outputPort->name();
+  }
+  if (!m_name.empty())
+  {
+    config["name"] = m_name;
+  }
+  if (!m_data->data().empty())
+  {
+    config["data"] = m_data;
+  }
+  return config;
 }
 
 std::shared_ptr<PortData> TrivialProducerAgent::portData(const Port* port) const

@@ -41,8 +41,11 @@ public:
   /// This agent will always be completable, even if no resources are assigned.
   State state() const override;
 
-  ///\brief Configure the agent based on a provided JSON configuration
+  ///\brief Configure the agent based on a provided JSON configuration.
   void configure(const Configuration& config) override;
+
+  ///\brief Produce a JSON configuration object for the current task state.
+  Configuration configuration() const override;
 
   ///\brief Return the port data from the agent.
   std::shared_ptr<PortData> portData(const Port* port) const override;
