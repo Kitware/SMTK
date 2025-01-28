@@ -237,6 +237,11 @@ public:
   /// This method is exposed so that diagram generators can add widgets to the sidebar.
   QWidget* sidebar() const;
 
+  /// Return the bounding rect of visible nodes and arcs in the scene.
+  ///
+  /// This only includes nodes and arcs, not other QGraphicsItems.
+  QRectF visibleBounds() const;
+
 Q_SIGNALS:
   /// Emitted by modeChangeRequested when the mode is actually changed
   /// (and not when unchanged).
