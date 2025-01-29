@@ -60,7 +60,9 @@ public:
   virtual State state() const = 0;
 
   ///\brief Configure the agent based on a provided JSON configuration
-  virtual void configure(const Configuration& config) = 0;
+  ///
+  /// The base implementation will set m_name if provided.
+  virtual void configure(const Configuration& config);
 
   ///\brief Return the agent's configuration.
   virtual Configuration configuration() const;
@@ -96,6 +98,14 @@ public:
   /// and false otherwise.
   virtual bool getViewData(smtk::common::TypeContainer& configuration) const;
 
+  /// Agents may have a name that can be used to distinguish them.
+  ///
+  /// You are allowed to create multiple instances of an Agent subclass
+  /// assigned to the same task. In order to distinguish them, you may
+  /// assign them names. You are not required to name agents.
+  /// Names must be specified by data passed to Agent::configure().
+  smtk::string::Token name() const { return m_name; }
+
 protected:
   friend class Task; // So that tasks can notify their agents of state changes.
 
@@ -111,6 +121,9 @@ protected:
   // Agents must have a parent task in order to notify it
   // of state changes.
   smtk::task::Task* m_parent;
+
+  /// A name that can be used to distinguish instances of agents.
+  smtk::string::Token m_name;
 };
 
 } // namespace task

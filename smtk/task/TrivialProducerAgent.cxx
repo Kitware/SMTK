@@ -33,14 +33,10 @@ State TrivialProducerAgent::state() const
 
 void TrivialProducerAgent::configure(const Configuration& config)
 {
+  this->Superclass::configure(config); // Sets name.
   bool addedData = false;
   auto& helper(smtk::task::json::Helper::instance());
-  auto it = config.find("name");
-  if (it != config.end())
-  {
-    m_name = it->get<std::string>();
-  }
-  it = config.find("data");
+  auto it = config.find("data");
   if (it != config.end() && it->is_object())
   {
 #if 0
@@ -58,7 +54,7 @@ void TrivialProducerAgent::configure(const Configuration& config)
         for (const auto& objectSpec : entry.value())
         {
           auto* obj = helper.objectFromJSONSpec(objectSpec, "port");
-          std::cout << "Port \"" << m_name << "\" add obj " << obj << " role " << entry.key()
+          std::cout << "Port \"" << m_name.data() << "\" add obj " << obj << " role " << entry.key()
                     << "\n";
           if (obj)
           {
@@ -91,7 +87,7 @@ TrivialProducerAgent::Configuration TrivialProducerAgent::configuration() const
   {
     config["output-port"] = m_outputPort->name();
   }
-  if (!m_name.empty())
+  if (m_name.valid())
   {
     config["name"] = m_name;
   }

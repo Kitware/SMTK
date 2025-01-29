@@ -53,9 +53,6 @@ public:
   ///\brief Tell the agent that the data on \a port has been updated.
   // void portDataUpdated(const Port* port) override;
 
-  ///\brief Return a name for this agent, which may be empty.
-  const std::string& name() const { return m_name; }
-
   ///\brief Return the port this agent broadcasts its data to.
   Port* outputPort() const { return m_outputPort; }
 
@@ -97,7 +94,6 @@ public:
   static bool resetData(Task* task, Port* port);
 
 protected:
-  std::string m_name;
   std::shared_ptr<ObjectsInRoles> m_data;
   Port* m_outputPort{ nullptr };
 };

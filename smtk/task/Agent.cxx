@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/task/Agent.h"
 
+#include "smtk/string/json/jsonToken.h"
+
 namespace smtk
 {
 namespace task
@@ -24,10 +26,23 @@ std::shared_ptr<PortData> Agent::portData(const Port*) const
   return std::shared_ptr<PortData>();
 }
 
+void Agent::configure(const Configuration& config)
+{
+  auto it = config.find("name");
+  if (it != config.end())
+  {
+    m_name = it->get<smtk::string::Token>();
+  }
+}
+
 Agent::Configuration Agent::configuration() const
 {
   Configuration config;
   config["type"] = this->typeName();
+  if (m_name.valid())
+  {
+    config["name"] = m_name;
+  }
   // Do not write "parent" since agent configuration is placed inside its parent's configuration.
   return config;
 }

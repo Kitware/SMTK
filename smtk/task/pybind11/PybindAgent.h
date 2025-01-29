@@ -35,6 +35,7 @@ inline py::class_< smtk::task::Agent > pybind11_init_smtk_task_Agent(py::module 
         self.configure(config);
       })
     .def("configuration", &smtk::task::Agent::configuration)
+    .def("name", &smtk::task::Agent::name)
     .def("portData", [](smtk::task::Agent& self, smtk::task::Port::Ptr port)
       {
         return self.portData(port.get());

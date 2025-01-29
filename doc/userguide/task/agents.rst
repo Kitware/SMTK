@@ -16,10 +16,14 @@ Agent
 
 The base :smtk:`agent <smtk::task::Agent>` class is abstract and may not
 be instantiated, but every concrete subclass of agent must have the
-``type`` JSON configuration parameter:
+``type`` JSON configuration parameter and may have a ``name``:
 
 * ``type``: the type-name of a concrete agent subclass to instantiate (chosen
   from those listed below.
+* ``name``: an arbitrary name that can be used to distinguish agents within
+  the same parent task from one another. Multiple instances of the same type
+  of agent are allowed within the same task. (Presumably they would be
+  configured differently.)
 
 .. _task-fill-out-attributes-agent:
 
@@ -451,3 +455,93 @@ Example
 
 The JSON above provides a resource in the "thermal simulation parameters" role
 and two components from within that resource in the "thermal materials" role.
+
+.. _task-trivial-producer-agent:
+
+TrivialProducerAgent
+--------------------
+
+The :smtk:`TrivialProducerAgent<smtk::task::TrivialProducerAgent>` is nearly
+identical to the :smtk:`GatherObjectsAgent<smtk::task::GatherObjectsAgent>`
+but holds the data to be broadcast to its output port in an
+:smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>` instance owned by the agent.
+Use TrivialProducerAgent when you do not wish the overhead of looking up large
+numbers of persistent objects by UUID each time ``portData()`` is called.
+However, be aware that because TrivialProducerAgent holds raw pointers and does
+not monitor operations, you must be sure to remove objects before the pointers
+become invalid.
+
+To add objects to the agent programmatically, you should
+call :smtk:`TrivialProducerAgent::addObjectInRole()<smtk::task::TrivialProducerAgent::addObjectInRole>`,
+:smtk:`TrivialProducerAgent::removeObjectFromRole()<smtk::task::TrivialProducerAgent::removeObjectFromRole>`,
+or :smtk:`TrivialProducerAgent::resetData()<smtk::task::TrivialProducerAgent::resetData>`.
+Note that these methods do *not* call ``portDataUpdated()`` on the agent's output port.
+If you call these methods from within an operation, simply add the modified port to the operation's
+results to indicate port data has been updated.
+
+The following JSON configuration parameters are available for
+this agent:
+
+* ``output-port``: is the name of the parent-task's port on which this agent
+  should broadcast its data.
+* ``objects``: is a map from a role name to an array of persistent-object specifiers.
+  If an object is a resource, each specifier is a tuple holding a UUID and ``null``.
+  If an object is a component, each specified is a tuple holding the UUID of the
+  component's parent resource and the component's UUID.
+
+Example
+"""""""
+
+The GatherObjectsAgent example above may be used identically for TrivialProducerAgent
+by changing the "type" parameter to TrivialProducerAgent.
+
+.. _task-port-forwarding-agent:
+
+PortForwardingAgent
+-------------------
+
+The :smtk:`PortForwardingAgent<smtk::task::PortForwardingAgent>`
+copies ObjectsInRoles data from a set of input ports to a set of output ports.
+
+This agent accepts all the JSON configuration that the base agent class does, plus:
+
+* ``forward``: an _optional_ JSON array of objects specifying information to copy.
+  If no array is provided, the agent will do nothing but will not impede progress.
+  Each object in the ``forward`` array holds a dictionary with:
+  * ``input-port``: the name of an input port (internal or external) associated
+    to the task from which port data is drawn. This key is _mandatory_.
+  * ``output-port``: the name of an output port (internal or external) associated
+    to the task to which port data is copied. This key is _mandatory_.
+  * ``roles``: an _optional_ dictionary mapping role names to filters that specify the
+    types of persistent objects to copy. If none is provided, all data from the
+    input port is copied to the output port. An asterisk (``*``) serves as a wildcard
+    to accept objects in any role so long as they are of the specified type(s).
+    When ``roles`` is not provided, it is identical to passing ``"*": [ ["*", null], ["*", "*"] ]``
+    as the role filter.
+
+Example
+"""""""
+
+.. code:: json
+
+   {
+     "type": "smtk::task::PortForwardingAgent",
+     "forward": [
+       { "input-port": "setup", "output-port": "result" },
+       { "input-port": "model", "output-port": "parts-of-interest",
+         "roles": {
+           "*": [
+             ["smtk::markup::Resource", "smtk::markup::UnstructuredData"],
+             ["smtk::markup::Resource", "smtk::markup::ImageData"]
+            ]
+         }
+       }
+     ]
+   }
+
+The JSON above forwards objects from the "setup" input port to the "result"
+output port, regardless of the object type or role.
+It also forwards objects that are :smtk:`smtk::markup::Component` instances
+from the "model" port to the "parts-of-interest" port if they inherit
+either ``UnstructuredData`` or ``ImageData``, regardless of their role on
+the input port. (The objects appear in the same role on the outputp port.
