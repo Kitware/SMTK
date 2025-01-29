@@ -578,7 +578,6 @@ protected:
   std::unordered_set<Task*> m_children;
   /// The agents of the task
   std::unordered_set<std::unique_ptr<Agent>> m_agents;
-  //std::unordered_set<Agent*> m_agents;
   /// The ports of the Task
   std::unordered_map<smtk::string::Token, Port*> m_ports;
 
