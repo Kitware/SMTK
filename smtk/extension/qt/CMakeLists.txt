@@ -43,6 +43,7 @@ set(QAttrLibSrcs
   qtSimpleExpressionView.cxx
   qtSMTKCallObserversOnMainThreadBehavior.cxx
   qtViewInfoDialog.cxx
+  qtExpressionSortFilterProxyModel.cxx
   qtFileItem.cxx
   qtTableWidget.cxx
   qtToolPaletteLayout.cxx
