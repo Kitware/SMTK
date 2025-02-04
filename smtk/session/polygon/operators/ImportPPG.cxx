@@ -237,7 +237,7 @@ bool ImportPPG::Internal::createModel()
                                                    << createOp->log().convertToString());
   }
 
-  auto resourceItem = result->findResource("resource");
+  auto resourceItem = result->findResource("resourcesCreated");
   auto resource = resourceItem->value();
   m_resource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);
 
@@ -703,7 +703,7 @@ smtk::operation::Operation::Result ImportPPG::operateInternal()
   }
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  result->findResource("resource")->setValue(m_internal->resource());
+  result->findResource("resourcesCreated")->appendValue(m_internal->resource());
   return result;
 }
 

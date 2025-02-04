@@ -46,6 +46,10 @@ SMTKCORE_EXPORT std::set<smtk::resource::Resource::Ptr> createdResourcesOfResult
   const Operation::Result& result,
   bool includeProjectChildren = true);
 
+/// Construct a set of all modified resources referenced in the result.
+SMTKCORE_EXPORT std::set<smtk::resource::Resource::Ptr> modifiedResourcesOfResult(
+  const Operation::Result& result);
+
 /// Construct a set of all resources to be expunged after processing the result.
 SMTKCORE_EXPORT std::set<smtk::resource::Resource::Ptr> expungedResourcesOfResult(
   const Operation::Result& result,

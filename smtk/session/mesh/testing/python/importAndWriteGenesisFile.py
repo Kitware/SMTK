@@ -65,7 +65,8 @@ class ImportAndWriteGenesisFile(smtk.testing.TestCase):
             raise RuntimeError
 
         # Access the resource
-        resource = smtk.model.Resource.CastTo(loadRes.find('resource').value())
+        resource = smtk.model.Resource.CastTo(
+            loadRes.find('resourcesCreated').value())
 
         # Write the resulting smtk mesh session file
         writeOp = self.operationManager.createOperation(

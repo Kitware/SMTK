@@ -19,7 +19,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(vtk model instance placement selection)" BaseType="result">
-    </AttDef>
+    <AttDef Type="result(vtk model instance placement selection)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

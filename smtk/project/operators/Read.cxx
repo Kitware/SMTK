@@ -63,7 +63,7 @@ void Read::markModifiedResources(Read::Result& result)
     return;
   }
 
-  auto resourceItem = result->findResource("resource");
+  auto resourceItem = result->findResource("resourcesCreated");
   auto resource = resourceItem->value();
   if (resource != nullptr)
   {
@@ -138,7 +138,7 @@ Read::Result Read::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     // Indicate what resources were created (the project's resources plus the project itself).
-    auto createdProject = result->findResource("resource");
+    auto createdProject = result->findResource("resourcesCreated");
     createdProject->setNumberOfValues(project->resources().size() + 1);
     int rr = 0;
     createdProject->setValue(rr++, project);
@@ -214,7 +214,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace project
 } // namespace smtk

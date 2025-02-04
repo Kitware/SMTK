@@ -17,16 +17,6 @@
       </ItemDefinitions>
     </AttDef>
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(read)" BaseType="result">
-      <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
-          <Accepts>
-            <Resource Name="smtk::attribute::Resource"/>
-          </Accepts>
-        </Resource>
-
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(read)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

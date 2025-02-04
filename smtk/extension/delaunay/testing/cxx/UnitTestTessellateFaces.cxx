@@ -92,7 +92,7 @@ int UnitTestTessellateFaces(int /*unused*/, char** const /*unused*/)
       }
 
       resource = smtk::dynamic_pointer_cast<smtk::session::polygon::Resource>(
-        result->findResource("resource")->value(0));
+        result->findResource("resourcesCreated")->value(0));
     }
   }
 

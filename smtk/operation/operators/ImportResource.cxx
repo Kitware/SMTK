@@ -116,14 +116,15 @@ ImportResource::Result ImportResource::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    smtk::resource::ResourcePtr resource = importOperationResult->findResource("resource")->value();
+    smtk::resource::ResourcePtr resource =
+      importOperationResult->findResource("resourcesCreated")->value();
     if (resource == nullptr)
     {
       smtkErrorMacro(this->log(), "Error importing file \"" << filename << "\".");
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
     created->appendValue(resource);
   }
 
@@ -211,13 +212,6 @@ ImportResource::Specification ImportResource::createSpecification()
   opDef->addItemDefinition(fileDef);
 
   auto resultDef = spec->createDefinition("result(import resource operation)", "result");
-
-  auto resourceDef = smtk::attribute::ResourceItemDefinition::New("resource");
-  resourceDef->setNumberOfRequiredValues(0);
-  resourceDef->setIsExtensible(true);
-  resourceDef->setHoldReference(true);
-  resultDef->addItemDefinition(resourceDef);
-
   return spec;
 }
 

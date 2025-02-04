@@ -29,11 +29,7 @@
       </ItemDefinitions>
     </AttDef>
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(dissociate from attribute)" BaseType="result">
-      <ItemDefinitions>
-        <Resource Name="resource" NumberOfRequiredValues="0" Extensible="true"></Resource>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(dissociate from attribute)" BaseType="result"/>
 
   </Definitions>
 </SMTK_AttributeResource>

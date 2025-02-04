@@ -11,12 +11,6 @@
     </AttDef>
     <include href="smtk/operation/Hints.xml"/>
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(test op)" BaseType="result">
-      <ItemDefinitions>
-        <Resource Name="resource" HoldReference="True">
-          <Accepts Resource="smtk::model::Resource"/>
-        </Resource>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(test op)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

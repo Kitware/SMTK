@@ -142,7 +142,7 @@ class TestExtensibleGroup(smtk.testing.TestCase):
             print(read_op.log().convertToString())
         self.assertFalse(read_op.log().hasErrors())
 
-        resource_item = read_result.findResource("resource")
+        resource_item = read_result.findResource("resourcesCreated")
         test_resource = resource_item.value()
         self.assertIsNotNone(test_resource)
         return test_resource

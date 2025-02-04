@@ -65,7 +65,7 @@ MyOperation::Result MyOperation::operateInternal()
 
   // Create a result
   auto result = this->createResult(Outcome::SUCCEEDED);
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   // Add some hints to the result.
   std::set<smtk::resource::Resource::Ptr> hintTargets{ resource };

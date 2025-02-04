@@ -126,14 +126,14 @@ int TestRemoveResourceAssociations(int /*unused*/, char** const /*unused*/)
       {
         importSBTOp->parameters()->findFile("filename")->setValue(importFilePath);
         importOpResult = importSBTOp->operate();
-        auto resourceItem = importOpResult->findResource("resource");
+        auto resourceItem = importOpResult->findResource("resourcesCreated");
         attrResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value());
       }
       else
       {
         importAnyOp->parameters()->findFile("filename")->setValue(importFilePath);
         importOpResult = importAnyOp->operate();
-        auto resourceItem = importOpResult->findResource("resource");
+        auto resourceItem = importOpResult->findResource("resourcesCreated");
         modelResource = std::dynamic_pointer_cast<smtk::model::Resource>(resourceItem->value());
       }
       ++numberOfResources;
@@ -214,7 +214,7 @@ int TestRemoveResourceAssociations(int /*unused*/, char** const /*unused*/)
     importFilePath += importPaths[0];
     importSBTOp->parameters()->findFile("filename")->setValue(importFilePath);
     auto importOpResult = importSBTOp->operate();
-    auto resourceItem = importOpResult->findResource("resource");
+    auto resourceItem = importOpResult->findResource("resourcesCreated");
     attrResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(resourceItem->value());
     constraintAttr = attrResource->createAttribute("con0", "constraint");
     smtkTest(!!constraintAttr, "Cannot create contraint");

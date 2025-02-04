@@ -83,7 +83,7 @@ Import::Result Import::operateInternal()
     resource->assignDefaultNames();
   }
 
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   return result;
 }

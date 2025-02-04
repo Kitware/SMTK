@@ -87,5 +87,5 @@ smtk::resource::ResourcePtr vtkSMTKResourceReader::GenerateResource() const
     return smtk::resource::ResourcePtr();
   }
 
-  return result->findResource("resource")->value(0);
+  return result->findResource("resourcesCreated")->value(0);
 }

@@ -87,7 +87,7 @@ Read::Result Read::operateInternal()
 
   smtk::mesh::for_each(resource->meshes(), addMeshToResult);
 
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   return result;
 }
@@ -146,7 +146,7 @@ Read::Specification Read::createSpecification()
 
 void Read::markModifiedResources(Read::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);

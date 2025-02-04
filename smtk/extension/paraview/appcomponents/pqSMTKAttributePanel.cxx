@@ -53,28 +53,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-namespace
-{
-bool resourceInProject(
-  const std::shared_ptr<smtk::resource::Resource>& rsrc,
-  const std::shared_ptr<smtk::project::Manager>& projectMgr)
-{
-  if (!rsrc || !projectMgr)
-  {
-    return false;
-  }
-
-  for (const auto& project : projectMgr->projects())
-  {
-    if (project->resources().get(rsrc->id()))
-    {
-      return true;
-    }
-  }
-  return false;
-}
-} // anonymous namespace
-
 pqSMTKAttributePanel::pqSMTKAttributePanel(QWidget* parent)
   : Superclass(parent)
 {
@@ -520,7 +498,16 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   this->updateSettings();
 
   // Was the view specified or are we using the Resource's TopLevel View?
-  smtk::view::ConfigurationPtr theView = view ? view : (rsrc ? rsrc->findTopLevelView() : nullptr);
+  smtk::view::ConfigurationPtr theView = view;
+  if (!theView)
+  {
+    // Only use the top level view if the resource is not
+    // managed by a project
+    if (rsrc && (rsrc->parentResource() == nullptr))
+    {
+      theView = rsrc->findTopLevelView();
+    }
+  }
   if (theView)
   {
     didDisplay = this->displayView(theView);
@@ -528,7 +515,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(
     {
       // Only force the resource to display this view in the future if the
       // resource does not belong to a project.
-      if (!resourceInProject(rsrc, m_projectManager))
+      if (rsrc->parentResource() == nullptr)
       {
         rsrc->properties().get<bool>()["smtk.attribute_panel.display_hint"] = true;
       }

@@ -144,7 +144,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       // Add the mesh resource to the project
       smtk::attribute::ResourceItemPtr resourceItem =
         std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-          importOpResult->findResource("resource"));
+          importOpResult->findResource("resourcesCreated"));
 
       project->resources().add(
         std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value()), "my mesh");
@@ -273,7 +273,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
       return 1;
     }
 
-    project = readOpResult->findResource("resource")->valueAs<smtk::project::Project>();
+    project = readOpResult->findResource("resourcesCreated")->valueAs<smtk::project::Project>();
 
     if (!project)
     {

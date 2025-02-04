@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/ResultOps.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
@@ -208,31 +209,14 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
         return 0;
       }
 
-      // Gather all resource items
-      std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-      std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
-        [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
-      result->filterItems(resourceItems, filter);
-
-      // For each resource item found...
-      for (auto& resourceItem : resourceItems)
+      // Process all created resources
+      auto resourcesCreated = createdResourcesOfResult(result);
+      for (auto& resource : resourcesCreated)
       {
-        if (resourceItem->name() == "resourcesToExpunge")
+        // ignore any void resources
+        if (resource)
         {
-          // Skip this item since these are resources explicitly being removed from management.
-          continue;
-        }
-        // ...for each resource in a resource item...
-        for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
-        {
-          // (no need to look at resources that cannot be resolved)
-          if (!resourceItem->isValid() || resourceItem->value(i) == nullptr)
-          {
-            continue;
-          }
-
-          // ...add the resource to the manager.
-          rsrcManager->add(resourceItem->value(i));
+          rsrcManager->add(resource);
         }
       }
       return 0;

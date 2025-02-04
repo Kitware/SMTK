@@ -37,6 +37,12 @@ public:
     smtk::view::DescriptivePhrase::Ptr src,
     smtk::project::ProjectPtr project,
     smtk::view::DescriptivePhrases& result);
+
+protected:
+  Path indexOfObjectInParent(
+    const smtk::resource::PersistentObjectPtr& obj,
+    const smtk::view::DescriptivePhrasePtr& parent,
+    const Path& parentPath) override;
 };
 } // namespace view
 } // namespace project

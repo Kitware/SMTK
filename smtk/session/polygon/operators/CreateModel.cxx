@@ -161,8 +161,8 @@ CreateModel::Result CreateModel::operateInternal()
       }
 
       {
-        smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-        created->setValue(resource);
+        smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+        created->appendValue(resource);
       }
 
       {

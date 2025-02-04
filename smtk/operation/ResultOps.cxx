@@ -63,15 +63,36 @@ std::set<smtk::resource::Resource::Ptr> createdResourcesOfResult(
 {
   std::set<smtk::resource::Resource::Ptr> resources;
 
-  std::vector<std::string> addResourceItemNames = {
-    { "resource", "resources", "resourcesCreated" }
-  };
+  std::cerr << "Result Items:\n";
+  for (int i = 0; i < result->numberOfItems(); ++i)
+  {
+    std::cerr << "\t"
+              << "Item " << i << ": " << result->item(i)->name() << std::endl;
+  }
+  std::vector<std::string> addResourceItemNames = { "resource", "resources", "resourcesCreated" };
+
   for (const auto& itemName : addResourceItemNames)
   {
     auto rsrcItem = result->findResource(itemName);
     if (rsrcItem)
     {
       addResourcesOfReferenceItem(rsrcItem, resources, includeProjectChildren);
+    }
+  }
+  return resources;
+}
+
+std::set<smtk::resource::Resource::Ptr> modifiedResourcesOfResult(const Operation::Result& result)
+{
+  std::set<smtk::resource::Resource::Ptr> resources;
+
+  std::vector<std::string> addResourceItemNames = { { "resourcesModified" } };
+  for (const auto& itemName : addResourceItemNames)
+  {
+    auto rsrcItem = result->findResource(itemName);
+    if (rsrcItem)
+    {
+      addResourcesOfReferenceItem(rsrcItem, resources, false);
     }
   }
   return resources;

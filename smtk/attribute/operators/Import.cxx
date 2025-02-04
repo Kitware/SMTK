@@ -48,6 +48,7 @@ Import::Result Import::operateInternal()
   bool useDirectoryInfo = directoryInfoItem->isEnabled();
 
   smtk::attribute::ResourcePtr resource;
+  bool created = false;
   // Check if attribute resource is specified
   smtk::attribute::ReferenceItem::Ptr existingResourceItem = this->parameters()->associations();
   if (existingResourceItem->numberOfValues() > 0)
@@ -59,7 +60,7 @@ Import::Result Import::operateInternal()
     // Create an attribute resource. If available, use the item definition
     // manager to populate the resource with custom items.
     resource = smtk::attribute::Resource::create();
-
+    created = true;
     // If the operation has an associated manager...
     if (auto mgr = manager())
     {
@@ -118,11 +119,12 @@ Import::Result Import::operateInternal()
   // Create a result object.
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-  // Populate the result object with the new attribute resource.
+  // Populate the result object with either the created or modified resource
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setNumberOfValues(1);
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr attResult =
+      (created ? result->findResource("resourcesCreated")
+               : result->findResource("resourcesModified"));
+    attResult->appendValue(resource);
   }
 
   // Return with success.

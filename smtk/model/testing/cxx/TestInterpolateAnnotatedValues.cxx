@@ -171,7 +171,7 @@ smtk::session::mesh::Resource::Ptr readMeshResource(const std::string& importFil
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        importOpResult->findResource("resource"));
+        importOpResult->findResource("resourcesCreated"));
 
     // Access the generated resource
     resource = std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
@@ -225,7 +225,7 @@ smtk::session::vtk::Resource::Ptr readVTKResource(const std::string& importFileP
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        importOpResult->findResource("resource"));
+        importOpResult->findResource("resourcesCreated"));
 
     // Access the generated resource
     resource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());

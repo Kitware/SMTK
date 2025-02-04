@@ -66,7 +66,7 @@ Associate::Result Associate::operateInternal()
     bool success = resource->associate(associated);
     if (success)
     {
-      result->findResource("resource")->appendValue(resource);
+      result->findResource("resourcesModified")->appendValue(resource);
     }
     else
     {

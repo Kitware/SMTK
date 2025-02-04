@@ -40,7 +40,7 @@ SetName::Result SetName::operateInternal()
   if (auto resource = std::dynamic_pointer_cast<smtk::markup::Resource>(object))
   {
     resource->setName(name);
-    result->findResource("resource")->appendValue(resource);
+    result->findResource("resourcesModified")->appendValue(resource);
   }
   else if (auto component = std::dynamic_pointer_cast<smtk::markup::Component>(object))
   {

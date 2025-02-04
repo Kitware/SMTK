@@ -172,7 +172,8 @@ ReadResource::Result ReadResource::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    smtk::resource::ResourcePtr resource = readOperationResult->findResource("resource")->value();
+    smtk::resource::ResourcePtr resource =
+      readOperationResult->findResource("resourcesCreated")->value();
     if (resource == nullptr)
     {
       smtkErrorMacro(
@@ -180,7 +181,7 @@ ReadResource::Result ReadResource::operateInternal()
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
 
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
     created->appendValue(resource);
 
     // Reference hints from the internal reader's results to our results:
@@ -203,7 +204,7 @@ const char* ReadResource::xmlDescription() const
 
 void ReadResource::markModifiedResources(ReadResource::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);

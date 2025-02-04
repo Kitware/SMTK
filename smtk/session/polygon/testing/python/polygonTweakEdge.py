@@ -65,7 +65,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             cm.parameters().find('feature size').setValue(featureSize)
         self.res = cm.operate()
         self.resource = smtk.model.Resource.CastTo(
-            self.res.find('resource').value(0))
+            self.res.find('resourcesCreated').value(0))
         return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
     def createVertices(self, pt, model, **kwargs):
@@ -309,7 +309,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.startRenderTest()
 
             # mod = smtk.model.Model(mod)
-            #[mod.addCell(x) for x in self.resource.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
+            # [mod.addCell(x) for x in self.resource.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
 
             # Color faces but not edges or vertices
             cs = vtkColorSeries()
@@ -324,8 +324,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
                     'color', edgeColors[ei % len(edgeColors)])
                 print(ents[ei].name(), ' color ',
                       edgeColors[ei % len(edgeColors)])
-            #[v.setFloatProperty('color', [0,0,0,1]) for v in self.resource.findEntitiesOfType(smtk.model.VERTEX, True)]
-            #[e.setFloatProperty('color', [0,0,0,1]) for e in self.resource.findEntitiesOfType(smtk.model.EDGE, True)]
+            # [v.setFloatProperty('color', [0,0,0,1]) for v in self.resource.findEntitiesOfType(smtk.model.VERTEX, True)]
+            # [e.setFloatProperty('color', [0,0,0,1]) for e in self.resource.findEntitiesOfType(smtk.model.EDGE, True)]
 
             ms, vs, mp, ac = self.addModelToScene(mod)
             ac.GetProperty().SetLineWidth(2)

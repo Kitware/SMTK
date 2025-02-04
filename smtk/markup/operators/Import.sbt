@@ -26,14 +26,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
-
-        <!-- The model imported from the file. -->
-        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
-          <Accepts>
-            <Resource Name="smtk::markup::Resource"/>
-          </Accepts>
-        </Resource>
-
         <Void Name="allow camera reset" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

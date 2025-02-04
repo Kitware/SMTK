@@ -105,7 +105,7 @@ int TestProjectReadWriteEmpty(int /*unused*/, char** const /*unused*/)
     smtkTest(readOutcome == OP_SUCCEEDED, "failed to read project, outcome " << readOutcome);
 
     // Make sure project is there too
-    auto project = readResult->findResource("resource")->valueAs<smtk::project::Project>();
+    auto project = readResult->findResource("resourcesCreated")->valueAs<smtk::project::Project>();
     smtkTest(project != nullptr, "failed to return project");
     smtkTest(project->clean(), "project is marked modified");
   }

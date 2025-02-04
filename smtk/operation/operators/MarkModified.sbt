@@ -20,12 +20,6 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(mark modified)" BaseType="result">
-        <ItemDefinitions>
-          <Resource Name="resources" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
-            <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
-          </Resource>
-        </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(mark modified)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

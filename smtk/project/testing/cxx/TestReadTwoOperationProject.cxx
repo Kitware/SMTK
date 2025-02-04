@@ -143,7 +143,7 @@ int TestReadTwoOperationProject(int /*unused*/, char** const /*unused*/)
       smtkTest(false, "failed to read " << projectLocation);
     }
 
-    auto resource = readResult->findResource("resource")->value();
+    auto resource = readResult->findResource("resourcesCreated")->value();
     project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
     smtkTest(!!project, "failed to read  project from location " << projectLocation);
 

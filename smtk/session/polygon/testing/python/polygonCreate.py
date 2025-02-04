@@ -66,7 +66,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             cm.parameters().find('feature size').setValue(featureSize)
         res = cm.operate()
         self.resource = smtk.model.Resource.CastTo(
-            res.find('resource').value(0))
+            res.find('resourcesCreated').value(0))
         return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
     class CurveType:
@@ -315,7 +315,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
 
         # store the resource so it doesn't go out of scope
         self.resource = smtk.model.Resource.CastTo(
-            res.find('resource').value(0))
+            res.find('resourcesCreated').value(0))
         mod = self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
         self.checkModel(mod, [0, 0, 0], [1, 0, 0], [

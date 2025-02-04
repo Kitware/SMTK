@@ -45,7 +45,7 @@ loadTestResources(smtk::resource::Manager::Ptr resourceManager, int argc, char* 
   smtk::operation::ReadResource::Ptr read = smtk::operation::ReadResource::create();
   read->parameters()->findFile("filename")->setValue(argv[1]);
   auto opResult = read->operate();
-  result.push_back(opResult->findResource("resource")->value(0));
+  result.push_back(opResult->findResource("resourcesCreated")->value(0));
 
   return result;
 }

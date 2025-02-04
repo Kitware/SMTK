@@ -93,17 +93,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(editDomain)" BaseType="result">
-      <ItemDefinitions>
-
-        <Resource Name="resource" NumberOfRequiredValues="1" Extensible="true" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::oscillator::Resource"/>
-            <Resource Name="smtk::attribute::Resource"/>
-          </Accepts>
-        </Resource>
-
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(editDomain)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

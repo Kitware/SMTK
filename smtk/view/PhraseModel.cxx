@@ -410,7 +410,7 @@ int PhraseModel::handleOperationEvent(
     }
   }
 
-  if (auto resourcesToAdd = res->findResource("resource"))
+  if (auto resourcesToAdd = res->findResource("resourcesCreated"))
   {
     for (auto rsrcIt = resourcesToAdd->begin(); rsrcIt != resourcesToAdd->end(); ++rsrcIt)
     {
@@ -677,6 +677,18 @@ void PhraseModel::updateChildren(
     smtkErrorMacro(smtk::io::Logger::instance(), "Null phrase list.");
     return;
   }
+
+  std::cerr << "src: \"" << src->title() << "\" idx: { ";
+  for (auto i : idx)
+  {
+    std::cerr << i << " ";
+  }
+  std::cerr << "} next: { ";
+  for (auto n : next)
+  {
+    std::cerr << "\"" << n->title() << "\" ";
+  }
+  std::cerr << "}\n";
   // Are we in a recursive call to updateChildren?
   if (m_updatingChildren)
   {

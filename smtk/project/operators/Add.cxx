@@ -93,7 +93,10 @@ Add::Result Add::operateInternal()
     resource->setName(role);
   }
 
-  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  result->findResource("resourcesModified")->appendValue(project);
+
+  return result;
 }
 
 const char* Add::xmlDescription() const

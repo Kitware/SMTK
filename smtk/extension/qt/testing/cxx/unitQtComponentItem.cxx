@@ -310,7 +310,7 @@ int unitQtComponentItem(int argc, char* argv[])
     return 2;
   }
 
-  auto rsrc = result->findResource("resource")->value(0);
+  auto rsrc = result->findResource("resourcesCreated")->value(0);
   auto modelRsrc = std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   if (!modelRsrc)
   {

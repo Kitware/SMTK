@@ -73,7 +73,7 @@ public:
     project->resources().add(attRes, ATT_ROLE_NAME);
 
     auto result = this->createResult(Outcome::SUCCEEDED);
-    auto res = result->findResource("resource");
+    auto res = result->findResource("resourcesCreated");
     res->setValue(project);
     return result;
   }
@@ -111,7 +111,7 @@ const char CreateProjectOpXML[] = R"xml(
     </AttDef>
     <AttDef Type="result(create-project-op)" BaseType="result">
       <ItemDefinitions>
-        <Resource Name="resource" HoldReference="true">
+        <Resource Name="resourcesCreated" HoldReference="true">
           <Accepts>
             <Resource Name="smtk::project::Project"/>
           </Accepts>
@@ -167,7 +167,7 @@ int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
     int outcome = result->findInt("outcome")->value();
     smtkTest(outcome == OP_SUCCEEDED, "create operation failed");
 
-    auto res = result->findResource("resource");
+    auto res = result->findResource("resourcesCreated");
     project = std::dynamic_pointer_cast<smtk::project::Project>(res->value(0));
     smtkTest(res->value() != nullptr, "project not created");
   }

@@ -15,13 +15,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(read resource)" BaseType="result">
       <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
-          <Accepts>
-            <Resource Name="smtk::mesh::Resource"/>
-          </Accepts>
-        </Resource>
-
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

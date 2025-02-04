@@ -46,7 +46,10 @@ Remove::Result Remove::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  return this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  result->findResource("resourcesModified")->appendValue(project);
+
+  return result;
 }
 
 const char* Remove::xmlDescription() const

@@ -120,7 +120,8 @@ class TestBuildAttribute(unittest.TestCase):
         outcome = result.findInt('outcome').value()
         self.assertEqual(outcome, OP_SUCCEEDED,
                          'Failed to import model file {}'.format(gen_path))
-        resource = smtk.model.Resource.CastTo(result.find('resource').value())
+        resource = smtk.model.Resource.CastTo(
+            result.find('resourcesCreated').value())
 
         return resource
 

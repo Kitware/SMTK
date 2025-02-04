@@ -70,7 +70,7 @@ class TestVectorExpression(smtk.testing.TestCase):
         self.assertEqual(outcome, int(
             smtk.operation.Operation.Outcome.SUCCEEDED))
 
-        input_resource = result.findResource('resource').value()
+        input_resource = result.findResource('resourcesCreated').value()
         self.assertIsNotNone(input_resource)
 
         bc_att = input_resource.findAttribute('velocity_bc')

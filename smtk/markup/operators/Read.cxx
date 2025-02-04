@@ -112,7 +112,7 @@ Read::Result Read::operateInternal()
   // std::string fileDirectory = smtk::common::Paths::directory(rsrc->location()) + "/";
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   std::set<smtk::resource::PersistentObject::Ptr> targets{ { resource } };
   smtk::operation::addBrowserExpandHint(result, targets);
@@ -128,7 +128,7 @@ const char* Read::xmlDescription() const
 
 void Read::markModifiedResources(Read::Result& result)
 {
-  auto resourceItem = result->findResource("resource");
+  auto resourceItem = result->findResource("resourcesCreated");
   for (std::size_t ii = 0; ii < resourceItem->numberOfValues(); ++ii)
   {
     if (!resourceItem->isSet(ii))
@@ -157,7 +157,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 
 } // namespace markup

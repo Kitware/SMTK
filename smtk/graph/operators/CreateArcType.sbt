@@ -98,7 +98,6 @@
     <AttDef Type="result(create arc type)" BaseType="result">
       <ItemDefinitions>
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
-        <Resource Name="resource" NumberOfRequiredValues="0" Extensible="true"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

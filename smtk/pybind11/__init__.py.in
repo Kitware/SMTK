@@ -259,7 +259,7 @@ def read(filenames, context=None):
         print('ERROR: Operation failed with outcome %d' % outcome)
         print(reader.log().convertToString())
         return result
-    rlist = rres.findResource('resource')
+    rlist = rres.findResource('resourcesCreated')
     result = [rlist.value(ii) for ii in range(rlist.numberOfValues())]
     return result
 

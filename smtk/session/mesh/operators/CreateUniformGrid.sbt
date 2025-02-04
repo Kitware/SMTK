@@ -110,17 +110,7 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(createBackgroundDomain)" BaseType="result">
-      <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::mesh::Resource"/>
-          </Accepts>
-        </Resource>
-
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(createBackgroundDomain)" BaseType="result"/>
   </Definitions>
 
   <Views>

@@ -96,7 +96,7 @@ void readProject(smtk::common::ManagersPtr managers)
     smtkTest(false, "failed to read " << projectLocation);
   }
 
-  auto resource = readResult->findResource("resource")->value();
+  auto resource = readResult->findResource("resourcesCreated")->value();
   auto project = std::dynamic_pointer_cast<smtk::project::Project>(resource);
   smtkTest(!!project, "failed to read  project from location " << projectLocation);
 
@@ -274,7 +274,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
       smtkTest(false, "failed to read " << sbtPath);
     }
 
-    auto readResource = readResult->findResource("resource")->value();
+    auto readResource = readResult->findResource("resourcesCreated")->value();
     auto attResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(readResource);
     project->resources().add(attResource, "attributes");
   }

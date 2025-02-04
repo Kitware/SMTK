@@ -238,7 +238,7 @@ int unitDefinitionTags(int /*unused*/, char** const /*unused*/)
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
   resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-    opresult->findResource("resource")->value());
+    opresult->findResource("resourcesCreated")->value());
   //Test the resource created using JSON
   smtkTest(testTags(resource, "JSON Pass - "), "Failed testing Tags in JSON Pass");
   std::cout << "JSON Pass - Testing Tags Passed\n";

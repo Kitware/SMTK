@@ -95,7 +95,7 @@ CreateArcType::Result CreateArcType::operateInternal()
   if (didAdd)
   {
     // Mark the resource as modified.
-    result->findResource("resource")->appendValue(resource);
+    result->findResource("resourcesModified")->appendValue(resource);
 
     // Register an operation with the ArcCreator group for this arc type.
     Operation::Index opIndex = std::type_index(typeid(CreateArc)).hash_code();

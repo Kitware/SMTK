@@ -19,6 +19,7 @@
 #include "smtk/view/DescriptivePhrase.h"
 
 #include <QMetaType>
+#include <QVector>
 
 // Allow QVariant objects to hold shared pointers to
 // persistent objects and descriptive phrases.
@@ -26,5 +27,6 @@ Q_DECLARE_METATYPE(smtk::resource::PersistentObject::Ptr)
 Q_DECLARE_METATYPE(smtk::view::BadgeSet::BadgeList)
 Q_DECLARE_METATYPE(smtk::view::DescriptivePhrase::Ptr)
 Q_DECLARE_METATYPE(smtk::attribute::DefinitionPtr)
+Q_DECLARE_METATYPE(QVector<int>)
 
 #endif // smtk_extension_qtTypeDeclarations_h

@@ -151,7 +151,7 @@ int TestRemoveResourceProject(int /*unused*/, char** const /*unused*/)
         importOpResult = importAnyOp->operate();
       }
 
-      auto resourceItem = importOpResult->findResource("resource");
+      auto resourceItem = importOpResult->findResource("resourcesCreated");
       project->resources().add(resourceItem->value(), role);
       if (!resource)
       {

@@ -309,7 +309,7 @@ int unitComponentItemConstraints(int /*unused*/, char* /*unused*/[])
     "JSON Read operation failed\n"
       << writeOp->log().convertToString());
   attRes = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-    opresult->findResource("resource")->value());
+    opresult->findResource("resourcesCreated")->value());
   //Test the resource created using JSON
   smtkTest(testResource(attRes, "JSON Pass - "), "Failed checking Categories in JSON Pass");
 

@@ -116,7 +116,7 @@ smtk::operation::Operation::Result CopyResources::operateInternal()
   // Finally, we know that all the copying has succeeded.
   // Create a successful result and add  the created resources to it.
   auto result = this->createResult(Outcome::SUCCEEDED);
-  auto resources = result->findResource("resource");
+  auto resources = result->findResource("resourcesCreated");
   for (const auto& copyPair : copies)
   {
     resources->appendValue(copyPair.second);

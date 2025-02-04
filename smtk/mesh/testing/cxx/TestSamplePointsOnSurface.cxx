@@ -74,7 +74,7 @@ int TestSamplePointsOnSurface(int argc, char* argv[])
   // Retrieve the resulting resource
   smtk::attribute::ResourceItemPtr resourceItem =
     std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-      importOpResult->findResource("resource"));
+      importOpResult->findResource("resourcesCreated"));
 
   // Access the generated resource
   smtk::session::mesh::Resource::Ptr resource =

@@ -154,9 +154,8 @@ Read::Result Read::operateInternal()
 
   // Populate the result object with the new attribute resource.
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setNumberOfValues(1);
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   helper.clear();
@@ -172,7 +171,7 @@ const char* Read::xmlDescription() const
 
 void Read::markModifiedResources(Read::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
 
   // Special case, if loaded from project, resource item is not set
   // Reason is not known, but this serves as a workaround
@@ -204,7 +203,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace attribute
 } // namespace smtk

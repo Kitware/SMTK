@@ -92,8 +92,8 @@ LegacyRead::Result LegacyRead::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   return result;
@@ -113,7 +113,7 @@ smtk::resource::ResourcePtr legacyRead(const std::string& filename)
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 
 } // namespace vtk

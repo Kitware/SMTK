@@ -70,7 +70,7 @@ int TestExtractByDihedralAngle(int, char*[])
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        importOpResult->findResource("resource"));
+        importOpResult->findResource("resourcesCreated"));
 
     // Access the generated resource
     resource = std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value());

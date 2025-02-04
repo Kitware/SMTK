@@ -327,7 +327,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/[])
     }
 
     resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-      result->findResource("resource")->value());
+      result->findResource("resourcesCreated")->value());
   }
 
   // 4. Write the resource out to a .smtk file
@@ -373,7 +373,7 @@ int unitCustomItem(int /*unused*/, char* /*unused*/[])
     }
 
     copiedResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-      result->findResource("resource")->value());
+      result->findResource("resourcesCreated")->value());
 
     // Because both the original and the copied resources are managed by the
     // same manager, the copied resource will be forced to have a new id. Let's

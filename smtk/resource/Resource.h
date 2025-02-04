@@ -103,6 +103,19 @@ public:
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
   ~Resource() override;
 
+  ///\brief Return a raw (not shared) pointer to the resource that owns this resource.
+  ///
+  ///
+  /// Note that not all resources will have an owning resource.
+  ///
+  Resource* parentResource() const override { return m_parentResource; }
+
+  ///\brief Sets the parent resource for this resource.
+  ///
+  /// Note that \a newParent can be null which means the resource is no longer
+  /// owned by another.
+  void setParentResource(Resource* newParent) { m_parentResource = newParent; }
+
   ///@name Resource Type Introspection
   ///@{
   /// Resources provide an integer type-id common to their class definition
@@ -525,6 +538,8 @@ private:
   Properties m_properties;
   Queries m_queries;
   bool m_markedForRemoval = false;
+  Resource* m_parentResource = nullptr;
+
   mutable Lock m_lock;
 };
 
