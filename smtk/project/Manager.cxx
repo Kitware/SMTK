@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/ResourceItem.h"
 
+#include "smtk/operation/ResultOps.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -116,40 +117,33 @@ Manager::Manager(
         return doNotCancel;
       }
 
-      // Gather all resource items
-      std::vector<smtk::attribute::ResourceItemPtr> resourceItems;
-      std::function<bool(smtk::attribute::ResourceItemPtr)> filter =
-        [](smtk::attribute::ResourceItemPtr /*unused*/) { return true; };
-      result->filterItems(resourceItems, filter);
-
-      // For each resource item found...
-      for (auto& resourceItem : resourceItems)
+      auto resultResources = smtk::operation::createdResourcesOfResult(result, false);
+      for (const auto& res : resultResources)
       {
-        bool removing = (resourceItem->name() == "resourcesToExpunge");
-        // ...for each resource in a resource item...
-        for (std::size_t i = 0; i < resourceItem->numberOfValues(); i++)
+        auto projRes = std::dynamic_pointer_cast<smtk::project::Project>(res);
+        if (projRes)
         {
-          // (no need to look at resources that cannot be resolved)
-          if (!resourceItem->isValid(i) || !resourceItem->value(i))
-          {
-            continue;
-          }
-
-          if (auto project = resourceItem->valueAs<smtk::project::Project>(i))
-          {
-            if (removing)
-            {
-              // … remove the project from the manager.
-              // this->remove(project);
-            }
-            else
-            {
-              // … add the project to the manager.
-              this->add(project->index(), project);
-              // this->add(metadata->index(), project);
-              // this->add(index, project);
-            }
-          }
+          this->add(projRes->index(), projRes);
+          // DO NOT invoke observers! this->add already invokes them.
+        }
+      }
+      resultResources = smtk::operation::modifiedResourcesOfResult(result);
+      for (const auto& res : resultResources)
+      {
+        auto projRes = std::dynamic_pointer_cast<smtk::project::Project>(res);
+        if (projRes)
+        {
+          m_observers(*projRes, smtk::project::EventType::MODIFIED);
+        }
+      }
+      resultResources = smtk::operation::expungedResourcesOfResult(result, false);
+      for (const auto& res : resultResources)
+      {
+        auto projRes = std::dynamic_pointer_cast<smtk::project::Project>(res);
+        if (projRes)
+        {
+          this->remove(projRes);
+          // DO NOT invoke observers! this->remove() already invokes them.
         }
       }
 
@@ -509,9 +503,13 @@ bool Manager::add(const Project::Index& index, const smtk::project::Project::Ptr
 
 bool Manager::remove(const smtk::project::ProjectPtr& project)
 {
-  m_observers(*project, smtk::project::EventType::REMOVED);
   // Remove the project from the manager's set of projects
-  return m_projects.erase(project->id()) > 0;
+  if (m_projects.erase(project->id()) > 0)
+  {
+    m_observers(*project, smtk::project::EventType::REMOVED);
+    return true;
+  }
+  return false;
 }
 
 std::set<smtk::project::ProjectPtr> Manager::projectsSet() const

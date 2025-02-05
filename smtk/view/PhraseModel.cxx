@@ -410,6 +410,7 @@ int PhraseModel::handleOperationEvent(
     }
   }
 
+  smtk::resource::PersistentObjectSet createdObjects;
   if (auto resourcesToAdd = res->findResource("resourcesCreated"))
   {
     for (auto rsrcIt = resourcesToAdd->begin(); rsrcIt != resourcesToAdd->end(); ++rsrcIt)
@@ -417,6 +418,7 @@ int PhraseModel::handleOperationEvent(
       if (rsrcIt.isSet())
       {
         this->processResource(rsrcIt.as<smtk::resource::Resource>(), true);
+        createdObjects.insert(*rsrcIt);
       }
     }
   }
@@ -455,7 +457,6 @@ int PhraseModel::handleOperationEvent(
   ComponentItemPtr createdItem = res->findComponent("created");
   if (createdItem)
   {
-    smtk::resource::PersistentObjectSet createdObjects;
     for (auto createdIt = createdItem->begin(); createdIt != createdItem->end(); createdIt++)
     {
       if (createdIt.isSet() && (m_objectMap.find((*createdIt)->id()) == m_objectMap.end()))
@@ -678,17 +679,6 @@ void PhraseModel::updateChildren(
     return;
   }
 
-  std::cerr << "src: \"" << src->title() << "\" idx: { ";
-  for (auto i : idx)
-  {
-    std::cerr << i << " ";
-  }
-  std::cerr << "} next: { ";
-  for (auto n : next)
-  {
-    std::cerr << "\"" << n->title() << "\" ";
-  }
-  std::cerr << "}\n";
   // Are we in a recursive call to updateChildren?
   if (m_updatingChildren)
   {

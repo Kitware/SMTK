@@ -211,7 +211,7 @@ bool Manager::registerResourceManager(smtk::resource::ManagerPtr& resourceManage
 
       // Process all created resources
       auto resourcesCreated = createdResourcesOfResult(result);
-      for (auto& resource : resourcesCreated)
+      for (const auto& resource : resourcesCreated)
       {
         // ignore any void resources
         if (resource)

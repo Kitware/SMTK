@@ -62,13 +62,6 @@ std::set<smtk::resource::Resource::Ptr> createdResourcesOfResult(
   bool includeProjectChildren)
 {
   std::set<smtk::resource::Resource::Ptr> resources;
-
-  std::cerr << "Result Items:\n";
-  for (int i = 0; i < result->numberOfItems(); ++i)
-  {
-    std::cerr << "\t"
-              << "Item " << i << ": " << result->item(i)->name() << std::endl;
-  }
   std::vector<std::string> addResourceItemNames = { "resource", "resources", "resourcesCreated" };
 
   for (const auto& itemName : addResourceItemNames)

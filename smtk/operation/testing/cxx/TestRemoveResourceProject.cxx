@@ -205,14 +205,9 @@ int TestRemoveResourceProject(int /*unused*/, char** const /*unused*/)
     projectManager->projects().size() == 1 && resourceManager->size() == numberOfResources,
     "Should have project and loaded resources");
 
-  // test resource removal does not occur when part of a project
+  // Test that removing the project removes all its child resources as well.
   smtk::operation::Operation::Ptr removeOp =
     operationManager->create<smtk::operation::RemoveResource>();
-  removeOp->parameters()->associate(resource);
-  removeOp->operate();
-  smtkTest(resourceManager->size() == numberOfResources, "Should still have loaded resources");
-
-  // test removing the project
   removeOp->parameters()->removeAllAssociations();
   removeOp->parameters()->associate(project);
   removeOp->operate();

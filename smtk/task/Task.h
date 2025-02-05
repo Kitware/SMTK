@@ -98,7 +98,11 @@ public:
   /// Options for the information() method.
   struct InformationOptions
   {
+    // XXX(clang-tidy): Using InformationOptions() = default triggers a compiler
+    // error in both clang and gcc. See https://github.com/llvm/llvm-project/issues/36032
+    // NOLINTNEXTLINE(modernize-use-equals-default)
     InformationOptions() {}
+
     bool m_includeTitle{ true };
     bool m_includeDescription{ true };
     bool m_includeTroubleshooting{ true };

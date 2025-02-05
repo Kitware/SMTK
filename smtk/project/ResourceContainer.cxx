@@ -425,13 +425,6 @@ bool ResourceContainer::add(
   // Set the resource's parent to be the project
   resource->setParentResource(m_project);
 
-  // Alert observers that the parent project has been modified.
-  if (m_project->manager())
-  {
-    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
-    observers(*m_project, smtk::project::EventType::MODIFIED);
-  }
-
   return true;
 }
 
@@ -448,13 +441,6 @@ bool ResourceContainer::remove(const smtk::resource::ResourcePtr& resource)
     // Clear the resource's parent to be longer the project
     resource->setParentResource(nullptr);
     return true;
-  }
-
-  // Alert observers that the parent project has been modified.
-  if (m_project->manager())
-  {
-    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
-    observers(*m_project, smtk::project::EventType::MODIFIED);
   }
 
   return false;
