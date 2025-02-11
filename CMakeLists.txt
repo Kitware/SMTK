@@ -321,6 +321,8 @@ if(WIN32 AND MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
   #quiet warnings about truncating decorated name
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
+  #resolve issue with number of sections exceeding object file format limit when compiling in debug.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
   add_definitions(-DBOOST_ALL_NO_LIB)
 endif()
 

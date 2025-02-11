@@ -16,9 +16,10 @@ smtk_install_target(smtk_encode_file)
 # Copy the Boost::filesystem library into our build on windows
 # so this program can be run by the build to generate header files.
 if (WIN32)
-  get_target_property(_bfsLibLoc Boost::filesystem IMPORTED_IMPLIB_RELEASE)
-  if(NOT EXISTS ${_bfsLibLoc})
-  get_target_property(_bfsLibLoc Boost::filesystem IMPORTED_IMPLIB_DEBUG)
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    get_target_property(_bfsLibLoc Boost::filesystem IMPORTED_IMPLIB_DEBUG)
+  else()
+    get_target_property(_bfsLibLoc Boost::filesystem IMPORTED_IMPLIB_RELEASE)
   endif()
   if ("${_bfsLibLoc}" STREQUAL "")
     # If we cannot copy the boost filesystem library into the directory where
@@ -45,6 +46,7 @@ if (WIN32)
     lib
     bin
   NO_DEFAULT_PATH
+  NO_CACHE
   REQUIRED
   )
   file(MAKE_DIRECTORY "${LIBRARY_OUTPUT_PATH}")
