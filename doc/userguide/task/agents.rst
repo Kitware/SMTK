@@ -501,23 +501,36 @@ PortForwardingAgent
 -------------------
 
 The :smtk:`PortForwardingAgent<smtk::task::PortForwardingAgent>`
-copies ObjectsInRoles data from a set of input ports to a set of output ports.
+copies port data from a set of input ports to a set of output ports
+and – if the port data is formatted as :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>` –
+is able to filter what is copied based on role and object type-name.
 
 This agent accepts all the JSON configuration that the base agent class does, plus:
 
-* ``forward``: an _optional_ JSON array of objects specifying information to copy.
+* ``forwards``: an _optional_ JSON array of objects specifying information to copy.
   If no array is provided, the agent will do nothing but will not impede progress.
-  Each object in the ``forward`` array holds a dictionary with:
+  Each object in the ``forwards`` array holds a dictionary with:
+
   * ``input-port``: the name of an input port (internal or external) associated
     to the task from which port data is drawn. This key is _mandatory_.
   * ``output-port``: the name of an output port (internal or external) associated
     to the task to which port data is copied. This key is _mandatory_.
-  * ``roles``: an _optional_ dictionary mapping role names to filters that specify the
-    types of persistent objects to copy. If none is provided, all data from the
+  * ``output-role``: if provided, all matching input objects are broadcast on this
+    role. This item is _optional_ and is only used if the port data is of type
+    :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`.
+  * ``filters``: an _optional_ dictionary mapping role names to an array of filters
+    that specify the types of persistent objects which should be forwarded.
+    If no filters are provided, all data from the
     input port is copied to the output port. An asterisk (``*``) serves as a wildcard
     to accept objects in any role so long as they are of the specified type(s).
     When ``roles`` is not provided, it is identical to passing ``"*": [ ["*", null], ["*", "*"] ]``
     as the role filter.
+    The ``filters`` list is only used if the port data is of type
+    :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`.
+    Rather than passing an array with two filter strings for each role, you may
+    pass dictionaries with "resource" and "component" entries that hold filter strings
+    for resource types and component types. If no "component" entry exists, then only
+    resources match (not components).
 
 Example
 """""""
@@ -527,21 +540,36 @@ Example
    {
      "type": "smtk::task::PortForwardingAgent",
      "forward": [
-       { "input-port": "setup", "output-port": "result" },
+       { "input-port": "setup", "output-port": "result", "output-role": "simulation" },
        { "input-port": "model", "output-port": "parts-of-interest",
          "roles": {
-           "*": [
-             ["smtk::markup::Resource", "smtk::markup::UnstructuredData"],
+           "resource": [
+             { "resource": "smtk::markup::Resource" }
+           ],
+           "images": [
              ["smtk::markup::Resource", "smtk::markup::ImageData"]
-            ]
+           ],
+           "meshes": [
+             {
+               "resource": "smtk::markup::Resource",
+               "component": "smtk::markup::UnstructuredData"
+             }
+           ]
          }
        }
      ]
    }
 
 The JSON above forwards objects from the "setup" input port to the "result"
-output port, regardless of the object type or role.
-It also forwards objects that are :smtk:`smtk::markup::Component` instances
-from the "model" port to the "parts-of-interest" port if they inherit
-either ``UnstructuredData`` or ``ImageData``, regardless of their role on
-the input port. (The objects appear in the same role on the outputp port.
+output port, regardless of the object type or role. Assuming the "setup" input
+data is formatted as :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`, the
+"result" port data will be under the role "simulation" (regardless of its input role).
+
+It also forwards objects
+from the "model" port to the "parts-of-interest" port.
+If the "model" input port is :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`
+then objects are only forwarded if
+(1) they have a role of "meshes" and inherit ``UnstructuredData`` or
+(2) they have a role of "images" and inherit ``ImageData``, or
+(3) they have a role of "resource" and are a markup resource.
+Otherwise, all data on the input port is forwarded without modification.

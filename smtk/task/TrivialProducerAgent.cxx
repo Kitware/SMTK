@@ -163,6 +163,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
   {
     return false;
   }
+  // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const auto& agent : task->agents())
   {
     if (auto* trivialProducer = dynamic_cast<TrivialProducerAgent*>(agent))
@@ -189,6 +190,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
   {
     return false;
   }
+  // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const auto& agent : task->agents())
   {
     if (auto* trivialProducer = dynamic_cast<TrivialProducerAgent*>(agent))

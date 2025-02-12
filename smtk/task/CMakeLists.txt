@@ -11,6 +11,7 @@ set(agents
   Agent
   FillOutAttributesAgent
   GatherObjectsAgent
+  PortForwardingAgent
   SubmitOperationAgent
   TrivialProducerAgent
 )

@@ -193,6 +193,9 @@ public:
   static Access AccessFromLabel(const std::string& label);
   static smtk::string::Token LabelFromAccess(Access ac);
 
+  /// Return an XHTML description of the port and its data.
+  std::string describe() const;
+
 protected:
   /// The unique identifier for this task.
   smtk::common::UUID m_id;

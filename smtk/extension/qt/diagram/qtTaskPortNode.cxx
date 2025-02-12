@@ -58,59 +58,6 @@ namespace smtk
 {
 namespace extension
 {
-namespace
-{
-
-std::string objTypeName(
-  smtk::resource::PersistentObject* obj,
-  std::unordered_map<smtk::string::Token, smtk::string::Token>* typeLabels)
-{
-  smtk::string::Token tn = obj->typeName();
-  if (typeLabels)
-  {
-    auto it = typeLabels->find(tn);
-    if (it != typeLabels->end())
-    {
-      tn = it->second;
-    }
-  }
-  return tn.data();
-}
-
-void summarizePortData(
-  std::ostringstream& ttip,
-  const std::shared_ptr<smtk::task::ObjectsInRoles>& pdata,
-  std::unordered_map<smtk::string::Token, smtk::string::Token>* typeLabels)
-{
-  if (!pdata || pdata->data().empty())
-  {
-    return;
-  }
-
-  ttip << "<ul>";
-  for (const auto& roleEntry : pdata->data())
-  {
-    ttip << "<li><i>" << roleEntry.first.data() << "</i>";
-    if (!roleEntry.second.empty())
-    {
-      ttip << "<ul>";
-      for (const auto& obj : roleEntry.second)
-      {
-        ttip << "<li><b>" << obj->name() << "</b> (" << objTypeName(obj, typeLabels) << ")";
-        if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
-        {
-          ttip << " from " << port->parent()->name();
-        }
-        ttip << "</li>";
-      }
-      ttip << "</ul>";
-    }
-    ttip << "</li>";
-  }
-  ttip << "</ul>";
-}
-
-} // anonymous namespace
 
 qtTaskPortNode::qtTaskPortNode(
   qtDiagramGenerator* generator,
@@ -419,46 +366,9 @@ void qtTaskPortNode::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 
 void qtTaskPortNode::updateToolTip()
 {
-  auto mgrs = this->diagram()->managers();
-  auto rsrcMgr = mgrs ? mgrs->get<smtk::resource::Manager::Ptr>() : nullptr;
-  auto* typeLabels = rsrcMgr ? &rsrcMgr->objectTypeLabels() : nullptr;
-
   if (m_port)
   {
-    std::ostringstream ttip;
-    ttip << "<html><body><h1>" << m_port->name() << "</h1>";
-    if (m_port->direction() == smtk::task::Port::Direction::In && !m_port->connections().empty())
-    {
-      ttip << "<ul>";
-      for (const auto& obj : m_port->connections())
-      {
-        if (obj)
-        {
-          ttip << "<li><b>" << obj->name() << "</b> (" << objTypeName(obj, typeLabels) << ")";
-          if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
-          {
-            ttip << " from " << port->parent()->name();
-            auto pdata =
-              std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(m_port->portData(port));
-            summarizePortData(ttip, pdata, typeLabels);
-          }
-          else
-          {
-            ttip << " as <i>" << m_port->unassignedRole().data() << "</i>";
-          }
-          ttip << "</li>";
-        }
-      }
-      ttip << "</ul>";
-    }
-    else if (m_port->direction() == smtk::task::Port::Direction::Out)
-    {
-      auto pdata =
-        std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(m_port->parent()->portData(m_port));
-      summarizePortData(ttip, pdata, typeLabels);
-    }
-    ttip << "</body></html>";
-    this->setToolTip(QString::fromStdString(ttip.str()));
+    this->setToolTip(QString::fromStdString(m_port->describe()));
   }
 }
 

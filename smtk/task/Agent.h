@@ -73,6 +73,10 @@ public:
   virtual std::shared_ptr<PortData> portData(const Port* port) const;
 
   ///\brief  Tell the agent that the data on \a port has been updated.
+  ///
+  /// This will be called when an input \a port connection is modified upstream
+  /// of this agent, so \a port should always be an input port of this agent's
+  /// parent task.
   virtual void portDataUpdated(const Port* port);
 
   ///\brief Return the agent's parent task
