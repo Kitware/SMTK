@@ -51,6 +51,7 @@ class ValueItemDefinition;
 class SMTKCORE_EXPORT ReferenceItem : public Item
 {
   using PersistentObjectPtr = smtk::resource::PersistentObjectPtr;
+  using value_type = PersistentObjectPtr;
 
 public:
   /**\brief An iterator for references held by a ReferenceItem.

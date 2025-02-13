@@ -11,6 +11,7 @@
 #define smtk_attribute_ResourceItem_h
 
 #include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemConstIteratorTemplate.h"
 
 #include "smtk/resource/Resource.h"
 
@@ -36,6 +37,8 @@ class SMTKCORE_EXPORT ResourceItem : public ReferenceItem
 public:
   using Resource = smtk::resource::Resource;
   using ResourcePtr = smtk::resource::ResourcePtr;
+  using const_iterator = ReferenceItemConstIteratorTemplate<Resource>;
+  using value_type = ResourcePtr;
   smtkTypeMacro(smtk::attribute::ResourceItem);
   smtkSuperclassMacro(ReferenceItem);
 
@@ -65,6 +68,26 @@ public:
   /// Serialize the \a i-th value to a string.
   std::string valueAsString() const override { return this->valueAsString(0); }
   std::string valueAsString(std::size_t i) const override;
+
+  /**\brief Return an iterator to the first value in this item.
+  *
+  */
+  const_iterator begin() const
+  {
+    const_iterator result = const_iterator();
+    result.m_refItemIterator = this->ReferenceItem::begin();
+    return result;
+  }
+
+  /**\brief Return an iterator just past the last value in this item.
+    *
+    */
+  const_iterator end() const
+  {
+    const_iterator result = const_iterator();
+    result.m_refItemIterator = this->ReferenceItem::end();
+    return result;
+  }
 
 protected:
   friend class ResourceItemDefinition;

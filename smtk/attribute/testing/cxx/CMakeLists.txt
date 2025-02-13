@@ -14,6 +14,7 @@ set(attributeTests
   childrenItemsTest
   customIsRelevantTest
   customIsValidTest
+  constIteratorTest
   discreteStringsWithDefaultTest
   expressionTest
   expressionTest2

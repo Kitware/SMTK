@@ -11,6 +11,7 @@
 #define smtk_attribute_ComponentItem_h
 
 #include "smtk/attribute/ReferenceItem.h"
+#include "smtk/attribute/ReferenceItemConstIteratorTemplate.h"
 
 #include "smtk/resource/Component.h"
 
@@ -45,6 +46,10 @@ class SMTKCORE_EXPORT ComponentItem : public ReferenceItem
 public:
   using Component = smtk::resource::Component;
   using ComponentPtr = smtk::resource::ComponentPtr;
+
+  using const_iterator = ReferenceItemConstIteratorTemplate<Component>;
+  using value_type = ComponentPtr;
+
   smtkTypeMacro(smtk::attribute::ComponentItem);
   smtkSuperclassMacro(ReferenceItem);
 
@@ -77,6 +82,26 @@ public:
   /// Serialize the \a i-th value to a string.
   std::string valueAsString() const override { return this->valueAsString(0); }
   std::string valueAsString(std::size_t ii) const override;
+
+  /**\brief Return an iterator to the first value in this item.
+  *
+  */
+  const_iterator begin() const
+  {
+    const_iterator result = const_iterator();
+    result.m_refItemIterator = this->ReferenceItem::begin();
+    return result;
+  }
+
+  /**\brief Return an iterator just past the last value in this item.
+    *
+    */
+  const_iterator end() const
+  {
+    const_iterator result = const_iterator();
+    result.m_refItemIterator = this->ReferenceItem::end();
+    return result;
+  }
 
 protected:
   friend class ComponentItemDefinition;
