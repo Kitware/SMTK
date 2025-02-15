@@ -187,7 +187,8 @@ bool qtResourceDiagram::VisualComparator::operator()(
   // To get here, one vector must be longer than the other and both
   // must have entries that compare as identical for the entire length
   // of the shortest vector.
-  return nn == aa.size(); // If aa is shorter and matches bb its entire length, it comes first.
+  return aa.size() <
+    bb.size(); // If aa is shorter and matches bb its entire length, it comes first.
 }
 
 bool qtResourceDiagram::VisualComparator::nodeLessThan(const qtBaseNode* cc, const qtBaseNode* dd)
