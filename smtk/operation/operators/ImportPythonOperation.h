@@ -43,6 +43,7 @@ public:
 
 protected:
   Result operateInternal() override;
+  void generateSummary(Result&) override;
   Specification createSpecification() override;
 };
 } // namespace operation
