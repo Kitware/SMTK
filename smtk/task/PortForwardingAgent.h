@@ -62,7 +62,7 @@ public:
   smtkTypeMacro(smtk::task::PortForwardingAgent);
 
   PortForwardingAgent(Task* owningTask);
-  virtual ~PortForwardingAgent() = default;
+  ~PortForwardingAgent() override = default;
 
   ///\brief Return the current state of the agent.
   ///

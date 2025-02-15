@@ -34,7 +34,7 @@ public:
   smtkTypeMacro(smtk::task::TrivialProducerAgent);
 
   TrivialProducerAgent(Task* owningTask);
-  virtual ~TrivialProducerAgent() = default;
+  ~TrivialProducerAgent() override = default;
 
   ///\brief Return the current state of the agent.
   ///

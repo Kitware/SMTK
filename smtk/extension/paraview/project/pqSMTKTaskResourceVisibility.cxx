@@ -540,7 +540,7 @@ pqSMTKTaskResourceVisibility::relevantRepresentations(const nlohmann::json& spec
         return representations;
       }
 
-      auto project = dynamic_cast<smtk::project::Project*>(m_currentTaskManager->resource());
+      auto* project = dynamic_cast<smtk::project::Project*>(m_currentTaskManager->resource());
       if (!project)
       {
         return representations;
@@ -618,7 +618,7 @@ pqSMTKTaskResourceVisibility::relevantRepresentations(const nlohmann::json& spec
     {
       pvrsrc = behavior->getPVResource(resource->shared_from_this());
     }
-    else if (auto comp = dynamic_cast<smtk::resource::Component*>(object))
+    else if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
     {
       resource = comp->resource().get();
       pvrsrc = behavior->getPVResource(comp->resource());

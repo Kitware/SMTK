@@ -528,7 +528,7 @@ bool pqSMTKBehavior::showObjects(
             << ". Skipping.");
         continue;
       }
-      for (auto component : entry.second)
+      for (auto* component : entry.second)
       {
         if (!component)
         {
@@ -586,14 +586,14 @@ bool pqSMTKBehavior::showObjects(
     auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
     if (!smap)
     {
-      auto& rsrc(entry.second.m_resource);
+      const auto& rsrc(entry.second.m_resource);
       smtkWarningMacro(
         smtk::io::Logger::instance(),
         "Can not find ParaView pipeline for resource \""
           << rsrc->name() << "\" (" << rsrc->location() << ") " << rsrc->id() << ". Skipping.");
       continue;
     }
-    for (auto component : entry.second.m_components)
+    for (const auto& component : entry.second.m_components)
     {
       if (!component)
       {
