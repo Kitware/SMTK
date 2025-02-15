@@ -146,9 +146,10 @@ bool testMatch(
     }
     else if (const auto* comp = dynamic_cast<const smtk::resource::Component*>(obj))
     {
+      auto* rsrc = comp->parentResource();
       for (const auto& entry : rules)
       {
-        if (entry.first == "*"_token || comp->parentResource()->matchesType(entry.first))
+        if (entry.first == "*"_token || (rsrc && rsrc->matchesType(entry.first)))
         {
           for (const auto& rule : entry.second.componentRules)
           {
@@ -344,7 +345,8 @@ bool qtResourceDiagram::updateParentArc(
     {
       return didModify;
     }
-    auto* rnode = m_diagram->findNode(comp->parentResource()->id());
+    auto* rsrc = comp->parentResource();
+    auto* rnode = rsrc ? m_diagram->findNode(rsrc->id()) : nullptr;
     if (!rnode)
     {
       return didModify;
