@@ -645,7 +645,7 @@ void vtkModelMultiBlockSource::PreparePrototypeOutput(
       bool modelRequiresNormals = false;
       if (ipIter.first.owningModel().hasIntegerProperty("generate normals"))
       {
-        const IntegerList& prop(ipIter.first.owningModel().integerProperty("generate normals"));
+        auto prop(ipIter.first.owningModel().integerProperty("generate normals"));
         if (!prop.empty() && prop[0])
         {
           modelRequiresNormals = true;
@@ -843,7 +843,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     bool modelRequiresNormals = false;
     if (eref.owningModel().hasIntegerProperty("generate normals"))
     {
-      const IntegerList& prop(eref.owningModel().integerProperty("generate normals"));
+      auto prop(eref.owningModel().integerProperty("generate normals"));
       if (!prop.empty() && prop[0])
       {
         modelRequiresNormals = true;
