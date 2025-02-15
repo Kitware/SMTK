@@ -86,6 +86,9 @@ bool qtBaseTaskNode::isActive() const
 
 void qtBaseTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
 {
+  (void)prev;
+  (void)next;
+  (void)active;
   // Update the tool tip with diagnostic information
   smtk::task::Task::InformationOptions opt;
   opt.m_includeTitle = false;
