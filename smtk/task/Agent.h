@@ -60,7 +60,9 @@ public:
   virtual State state() const = 0;
 
   ///\brief Configure the agent based on a provided JSON configuration
-  virtual void configure(const Configuration& config) = 0;
+  ///
+  /// The base implementation will set m_name if provided.
+  virtual void configure(const Configuration& config);
 
   ///\brief Return the agent's configuration.
   virtual Configuration configuration() const;
@@ -71,10 +73,27 @@ public:
   virtual std::shared_ptr<PortData> portData(const Port* port) const;
 
   ///\brief  Tell the agent that the data on \a port has been updated.
+  ///
+  /// This will be called when an input \a port connection is modified upstream
+  /// of this agent, so \a port should always be an input port of this agent's
+  /// parent task.
   virtual void portDataUpdated(const Port* port);
 
   ///\brief Return the agent's parent task
   Task* parent() const { return m_parent; }
+
+  ///\brief Return a description of actions users must take to
+  ///       make the agent's state completable.
+  ///
+  /// Subclasses should override this method.
+  ///
+  /// This should be XHTML text that can be inserted into
+  /// an unordered HTML list (<ul>…</ul>) along with the
+  /// text from other agent instances.
+  ///
+  /// This should be an empty string when the agent's state is either
+  /// completable or completed.
+  virtual std::string troubleshoot() const { return std::string(); }
 
   ///\brief Insert view-related objects into \a configuration.
   ///
@@ -82,6 +101,14 @@ public:
   /// This method should return true when \a configuration is modified
   /// and false otherwise.
   virtual bool getViewData(smtk::common::TypeContainer& configuration) const;
+
+  /// Agents may have a name that can be used to distinguish them.
+  ///
+  /// You are allowed to create multiple instances of an Agent subclass
+  /// assigned to the same task. In order to distinguish them, you may
+  /// assign them names. You are not required to name agents.
+  /// Names must be specified by data passed to Agent::configure().
+  smtk::string::Token name() const { return m_name; }
 
 protected:
   friend class Task; // So that tasks can notify their agents of state changes.
@@ -98,6 +125,9 @@ protected:
   // Agents must have a parent task in order to notify it
   // of state changes.
   smtk::task::Task* m_parent;
+
+  /// A name that can be used to distinguish instances of agents.
+  smtk::string::Token m_name;
 };
 
 } // namespace task

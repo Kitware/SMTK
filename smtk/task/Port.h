@@ -140,7 +140,7 @@ public:
   /// Return PortData for a given object in connections().
   ///
   /// If \a object is *not* a port, the base Port class will either
-  /// (a) construct an ObjectsInRoles instance holding the \a object in the "unassigned" role; or
+  /// (a) construct an ObjectsInRoles instance holding the \a object in the unassignedRole(); or
   /// (b) return a null pointer, depending on whethern ObjectsInRoles
   /// is listed in the set returned by dataTypes().
   ///
@@ -192,6 +192,9 @@ public:
   /// Convert Access enumerants to/from labels.
   static Access AccessFromLabel(const std::string& label);
   static smtk::string::Token LabelFromAccess(Access ac);
+
+  /// Return an XHTML description of the port and its data.
+  std::string describe() const;
 
 protected:
   /// The unique identifier for this task.

@@ -143,6 +143,12 @@ void ResourcePhraseModel::processResource(const Resource::Ptr& resource, bool ad
       return;
     }
 
+    // If resource has a parent resource then skip it since this means its
+    // being managed by a project and therefore should be using the ProjectPhraseModel
+    if (resource->parentResource() != nullptr)
+    {
+      return;
+    }
     const auto& subphrases(m_root->subphrases());
     DescriptivePhrases::const_iterator it;
     for (it = subphrases.begin(); it != subphrases.end(); ++it)

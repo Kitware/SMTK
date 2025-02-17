@@ -172,9 +172,9 @@ public:
   void clear() { m_resources.clear(); }
 
 private:
-  ResourceContainer(const smtk::project::Project*, const std::weak_ptr<smtk::resource::Manager>&);
+  ResourceContainer(smtk::project::Project*, const std::weak_ptr<smtk::resource::Manager>&);
 
-  const smtk::project::Project* m_project;
+  smtk::project::Project* m_project;
   std::weak_ptr<smtk::resource::Manager> m_manager;
   std::set<std::string> m_types;
   Container m_resources;

@@ -66,7 +66,7 @@ Dissociate::Result Dissociate::operateInternal()
     bool success = resource->disassociate(dissociated);
     if (success)
     {
-      result->findResource("resource")->appendValue(resource);
+      result->findResource("resourcesModified")->appendValue(resource);
     }
     else
     {

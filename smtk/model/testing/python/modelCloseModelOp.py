@@ -59,7 +59,7 @@ class TestModelCloseModelOp(unittest.TestCase):
                 int(smtk.operation.Operation.SUCCEEDED),
                 'vtk read operation failed')
             models = smtk.model.Resource.CastTo(
-                result.find('resource').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
+                result.find('resourcesCreated').value(0)).findEntitiesOfType(int(smtk.model.MODEL_ENTITY))
 
         print('Closing %d models.' % len(models))
 

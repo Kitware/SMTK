@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
     }
 
     attResource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-      result->findResource("resource")->value());
+      result->findResource("resourcesCreated")->value());
   }
   else if (attFileInfo.suffix() == "sbt" || attFileInfo.suffix() == "sbi")
   {
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        loadOpResult->findResource("resource"));
+        loadOpResult->findResource("resourcesCreated"));
 
     modelResource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
     if (!modelResource)

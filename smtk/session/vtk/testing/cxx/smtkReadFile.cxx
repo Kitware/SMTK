@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
     // Retrieve the resulting resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        readOpResult->findResource("resource"));
+        readOpResult->findResource("resourcesCreated"));
 
     resource = std::dynamic_pointer_cast<smtk::session::vtk::Resource>(resourceItem->value());
 

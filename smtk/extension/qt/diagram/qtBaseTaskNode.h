@@ -88,7 +88,7 @@ public:
   virtual bool setupContextMenu(QMenu*) { return false; }
 
   /// Deals with state updates
-  virtual void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active) = 0;
+  virtual void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active);
 
   /// Deal with task updates (e.g., name or other configuration change).
   ///
@@ -102,6 +102,9 @@ public:
   /// Note that this does not mean the rounded corners are represented by circular arcs but in
   /// some cases are approximations based on quadratic curves.
   virtual double roundingRadius() { return 0.0; }
+
+  /// Respond to changes in the task node.
+  void dataUpdated() override;
 
 protected:
   smtk::task::Task* m_task{ nullptr };

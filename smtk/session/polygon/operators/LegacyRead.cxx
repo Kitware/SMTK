@@ -53,8 +53,8 @@ LegacyRead::Result LegacyRead::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(rsrc);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(rsrc);
   }
 
   operation::MarkGeometry markGeometry(rsrc);
@@ -80,7 +80,7 @@ smtk::resource::ResourcePtr legacyRead(const std::string& filename)
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 
 } // namespace polygon

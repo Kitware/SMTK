@@ -62,7 +62,7 @@ const std::string& role(const smtk::resource::ResourcePtr& r)
 } // namespace detail
 
 ResourceContainer::ResourceContainer(
-  const smtk::project::Project* project,
+  smtk::project::Project* project,
   const std::weak_ptr<smtk::resource::Manager>& manager)
   : m_project(project)
   , m_manager(manager)
@@ -72,7 +72,14 @@ ResourceContainer::ResourceContainer(
   // an indeterminate state.
 }
 
-ResourceContainer::~ResourceContainer() = default;
+ResourceContainer::~ResourceContainer()
+{
+  // Clear the parent of all resources in the container
+  for (const auto& resource : m_resources)
+  {
+    resource->setParentResource(nullptr);
+  }
+}
 
 bool ResourceContainer::registerResource(const std::string& typeName)
 {
@@ -415,13 +422,8 @@ bool ResourceContainer::add(
 
   // Insert the resource into the project's set of resources
   m_resources.insert(shared);
-
-  // Alert observers that the parent project has been modified.
-  if (m_project->manager())
-  {
-    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
-    observers(*m_project, smtk::project::EventType::MODIFIED);
-  }
+  // Set the resource's parent to be the project
+  resource->setParentResource(m_project);
 
   return true;
 }
@@ -436,14 +438,9 @@ bool ResourceContainer::remove(const smtk::resource::ResourcePtr& resource)
   {
     // Remove it from the project's set of resources
     m_resources.erase(resourceIt);
+    // Clear the resource's parent to be longer the project
+    resource->setParentResource(nullptr);
     return true;
-  }
-
-  // Alert observers that the parent project has been modified.
-  if (m_project->manager())
-  {
-    auto& observers = const_cast<smtk::project::Observers&>(m_project->manager()->observers());
-    observers(*m_project, smtk::project::EventType::MODIFIED);
   }
 
   return false;

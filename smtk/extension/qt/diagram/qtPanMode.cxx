@@ -52,7 +52,7 @@ void qtPanMode::enableSelectionSensitiveActions()
 
 void qtPanMode::zoomToAll()
 {
-  auto bounds = m_diagram->diagramScene()->sceneRect();
+  QRectF bounds = m_diagram->visibleBounds();
   m_diagram->diagramWidget()->centerOn(bounds.center());
   m_diagram->diagramWidget()->fitInView(bounds, Qt::KeepAspectRatio);
 }

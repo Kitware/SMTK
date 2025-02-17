@@ -46,7 +46,7 @@ Create::Result Create::operateInternal()
   }
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   return result;
 }
@@ -58,7 +58,7 @@ const char* Create::xmlDescription() const
 
 void Create::markModifiedResources(Result& result)
 {
-  auto resource = result->findResource("resource")->value();
+  auto resource = result->findResource("resourcesCreated")->value();
   if (resource)
   {
     resource->setClean(true);
@@ -76,7 +76,7 @@ smtk::resource::ResourcePtr create(
   {
     return smtk::resource::ResourcePtr();
   }
-  auto resource = result->findResource("resource")->value();
+  auto resource = result->findResource("resourcesCreated")->value();
   if (resource)
   {
     resource->setId(uid);

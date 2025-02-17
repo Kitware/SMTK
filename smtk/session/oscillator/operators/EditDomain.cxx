@@ -179,7 +179,7 @@ EditDomain::Result EditDomain::operateInternal()
   {
     // Use a resource link to associate ourselves to the identified simulation attribute.
     bool success = sim->associate(resource);
-    // NB: On success, see below where we append sim to the result's "resource" item
+    // NB: On success, see below where we append sim to the result's "resourcesCreated" item
     //     since skipAssociation is false.
     if (!success)
     {
@@ -188,9 +188,10 @@ EditDomain::Result EditDomain::operateInternal()
     }
   }
 
+  if (resource)
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
     if (sim && !skipAssociation)
     {
       created->appendValue(sim);

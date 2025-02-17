@@ -29,11 +29,7 @@
       </ItemDefinitions>
     </AttDef>
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(associate to attribute)" BaseType="result">
-      <ItemDefinitions>
-        <Resource Name="resource" NumberOfRequiredValues="0" Extensible="true"></Resource>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(associate to attribute)" BaseType="result"/>
 
   </Definitions>
 </SMTK_AttributeResource>

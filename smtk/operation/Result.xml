@@ -7,6 +7,8 @@
     <Component Name="created"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
     <Component Name="modified"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
     <Component Name="expunged"  NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
+    <Resource Name="resourcesCreated" NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
+    <Resource Name="resourcesModified" NumberOfRequiredValues="0" Extensible="1" HoldReference="1"/>
     <Resource Name="resourcesToExpunge" NumberOfRequiredValues="0" Extensible="1" HoldReference="1">
       <ChildrenDefinitions>
         <Void Name="removeAssociations" Optional="True" IsEnabledByDefault="false"/>

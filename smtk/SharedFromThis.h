@@ -42,6 +42,10 @@
   }                                                                                                \
   virtual bool matchesType(smtk::string::Token candidate) const                                    \
   {                                                                                                \
+    if (candidate == "*")                                                                          \
+    {                                                                                              \
+      return true;                                                                                 \
+    }                                                                                              \
     static std::unordered_set<smtk::string::Token> baseTypes;                                      \
     if (baseTypes.empty())                                                                         \
     {                                                                                              \
@@ -76,6 +80,10 @@
   }                                                                                                \
   bool matchesType(smtk::string::Token candidate) const override                                   \
   {                                                                                                \
+    if (candidate == "*")                                                                          \
+    {                                                                                              \
+      return true;                                                                                 \
+    }                                                                                              \
     static std::unordered_set<smtk::string::Token> baseTypes;                                      \
     if (baseTypes.empty())                                                                         \
     {                                                                                              \

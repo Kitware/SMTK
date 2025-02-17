@@ -178,7 +178,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
           return 1;
         }
 
-        auto resourceItem = importOpResult->findResource("resource");
+        auto resourceItem = importOpResult->findResource("resourcesCreated");
         project->resources().add(resourceItem->value(), role);
         ++numberOfResources;
       } // for (path)
@@ -267,7 +267,7 @@ int TestProjectReadWrite2(int /*unused*/, char** const /*unused*/)
       return 1;
     }
 
-    project = readOpResult->findResource("resource")->valueAs<smtk::project::Project>();
+    project = readOpResult->findResource("resourcesCreated")->valueAs<smtk::project::Project>();
 
     if (!project)
     {

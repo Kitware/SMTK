@@ -95,6 +95,19 @@ public:
     Child   //!< Visit child tasks.
   };
 
+  /// Options for the information() method.
+  struct InformationOptions
+  {
+    // XXX(clang-tidy): Using InformationOptions() = default triggers a compiler
+    // error in both clang and gcc. See https://github.com/llvm/llvm-project/issues/36032
+    // NOLINTNEXTLINE(modernize-use-equals-default)
+    InformationOptions() {}
+
+    bool m_includeTitle{ true };
+    bool m_includeDescription{ true };
+    bool m_includeTroubleshooting{ true };
+  };
+
   Task();
   Task(
     const Configuration& config,
@@ -137,6 +150,22 @@ public:
   SMTK_DEPRECATED_IN_24_01("Use setName() instead.")
   void setTitle(const std::string& title) { this->setName(title); }
 
+  /// Return user-presentable information about the task in XHTML form.
+  ///
+  /// This is the concatenation of a description (see setDescription())
+  /// along with tips from each configured agent that is incomplete
+  /// or unavailable describing actions users may need to address to
+  /// make the task completable.
+  virtual std::string information(const InformationOptions& opts = InformationOptions()) const;
+
+  /// Set/get a description of the task provided by workflow designers.
+  ///
+  /// The description should be in XHTML form but not include <html> or
+  /// <body> elements as those are added by the information() method.
+  void setDescription(const std::string& description);
+  const std::string& description() const { return m_description; }
+  std::string& description() { return m_description; }
+
   /// Return a set of ports for this task indexed by their function (a descriptive string).
   virtual const std::unordered_map<smtk::string::Token, Port*>& ports() const;
 
@@ -148,7 +177,10 @@ public:
 
   /// Given a port owned by this task, return data to be transmitted over the port.
   ///
-  /// Subclasses that own ports must override this method in order to produce port-data.
+  /// If the \a port is an output port, the task's agents are each given an
+  /// opportunity to produce PortData in turn.
+  /// It the \a port is an input port, the port's connections are queried for
+  /// port data.
   virtual std::shared_ptr<PortData> portData(const Port* port) const;
 
   /// Accept notification that data on the given \a port has been updated.
@@ -174,7 +206,7 @@ public:
   /// A style class specifies how applications should present the task
   /// (e.g., what type of view to provide the user, what rendering mode
   /// to use, what objects to list or exclude).
-  const std::set<smtk::string::Token>& style() const { return m_style; }
+  const std::unordered_set<smtk::string::Token>& style() const { return m_style; }
   bool addStyle(const smtk::string::Token& styleClass);
   bool removeStyle(const smtk::string::Token& styleClass);
   bool clearStyle();
@@ -507,10 +539,18 @@ protected:
   /// Compute the state based on the state of the task's children
   virtual State computeChildrenState() const;
 
+  /// Produce port data for an output port of this task by querying its agents.
+  std::shared_ptr<PortData> outputPortData(const Port* port) const;
+  /// Produce port data for an input port of this task by querying its connections.
+  std::shared_ptr<PortData> inputPortData(const Port* port) const;
+
   /// A task name to present to the user.
   std::string m_name;
+  /// A description of the task provided by a workflow designer.
+  std::string m_description;
+
   /// The set of style classes for this task.
-  std::set<smtk::string::Token> m_style;
+  std::unordered_set<smtk::string::Token> m_style;
   /// Whether the user has marked the task completed or not.
   bool m_completed = false;
   /// A set of dependent tasks and the keys used to observe their
@@ -538,7 +578,6 @@ protected:
   std::unordered_set<Task*> m_children;
   /// The agents of the task
   std::unordered_set<std::unique_ptr<Agent>> m_agents;
-  //std::unordered_set<Agent*> m_agents;
   /// The ports of the Task
   std::unordered_map<smtk::string::Token, Port*> m_ports;
 

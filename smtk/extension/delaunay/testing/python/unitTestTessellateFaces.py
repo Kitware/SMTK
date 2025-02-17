@@ -34,7 +34,7 @@ class UnitTessellateFaces(smtk.testing.TestCase):
 
         # Access the resource
         self.resource = smtk.model.Resource.CastTo(
-            loadRes.find('resource').value())
+            loadRes.find('resourcesCreated').value())
 
     def testMeshing2D(self):
         face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
@@ -42,8 +42,8 @@ class UnitTessellateFaces(smtk.testing.TestCase):
         tessellateFace.parameters().associateEntity(face)
         result = tessellateFace.operate()
         tessellatedFace = face.hasTessellation()
-        assert(len(tessellatedFace.coords()) == 8 * 3)
-        assert(len(tessellatedFace.conn()) == 8 * 4)
+        assert (len(tessellatedFace.coords()) == 8 * 3)
+        assert (len(tessellatedFace.conn()) == 8 * 4)
 
         if self.interactive() and self.haveVTK() and self.haveVTKExtension():
             self.startRenderTest()

@@ -30,13 +30,7 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(copy resources)" BaseType="result">
-      <ItemDefinitions>
-        <Resource Name="resource" HoldReference="true" NumberOfRequiredValues="0" Extensible="true">
-          <Accepts><Resource Name="smtk::resource::Resource"/></Accepts>
-        </Resource>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(copy resources)" BaseType="result"/>
   </Definitions>
 
 </SMTK_AttributeResource>

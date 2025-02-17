@@ -20,17 +20,6 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(import)" BaseType="result">
-      <ItemDefinitions>
-
-        <!-- The model resource created by the operation. -->
-        <Resource Name="resource" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::polygon::Resource"/>
-          </Accepts>
-        </Resource>
-      </ItemDefinitions>
-    </AttDef>
-
+    <AttDef Type="result(import)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

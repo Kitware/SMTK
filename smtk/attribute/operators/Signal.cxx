@@ -47,7 +47,7 @@ Signal::Result Signal::operateInternal()
   auto expOut = result->findComponent("expunged");
   auto updateOut = result->findVoid("update");
   auto categoriesModOut = result->findResource("categoriesModified");
-  auto resourcesAddedOut = result->findResource("resource");
+  auto resourcesAddedOut = result->findResource("resourcesCreated");
 
   // Copy the inputs to the output.
   creOut->setValues(creIn->begin(), creIn->end());

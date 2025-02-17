@@ -26,6 +26,8 @@ namespace smtk
 namespace resource
 {
 
+class Resource;
+
 /**\brief An abstract base class for SMTK resources and their components.
   *
   * Both resources and their components are intended to be accessed via
@@ -51,6 +53,13 @@ public:
   virtual bool setId(const common::UUID& myID) = 0;
   /// Return the name of the object - by default it will return the UUID but that can be overridden
   virtual std::string name() const;
+
+  /**\brief Return a raw (not shared) pointer to the resource that owns this object.
+    *
+    *
+    * Note that not all objects will have an owning resource.
+    */
+  virtual Resource* parentResource() const = 0;
 
   /// Attempt to cast this object to a subclass.
   template<typename T>

@@ -413,7 +413,7 @@ Import::Result Import::operateInternal()
   if (ok)
   {
     m_result->findInt("outcome")->setValue(0, static_cast<int>(Import::Outcome::SUCCEEDED));
-    m_result->findResource("resource")->appendValue(resource);
+    m_result->findResource("resourcesCreated")->appendValue(resource);
   }
   return m_result;
 }
@@ -664,7 +664,7 @@ smtk::resource::ResourcePtr importResource(const std::string& filename)
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace markup
 } // namespace smtk

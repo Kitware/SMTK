@@ -16,10 +16,14 @@ Agent
 
 The base :smtk:`agent <smtk::task::Agent>` class is abstract and may not
 be instantiated, but every concrete subclass of agent must have the
-``type`` JSON configuration parameter:
+``type`` JSON configuration parameter and may have a ``name``:
 
 * ``type``: the type-name of a concrete agent subclass to instantiate (chosen
   from those listed below.
+* ``name``: an arbitrary name that can be used to distinguish agents within
+  the same parent task from one another. Multiple instances of the same type
+  of agent are allowed within the same task. (Presumably they would be
+  configured differently.)
 
 .. _task-fill-out-attributes-agent:
 
@@ -173,9 +177,9 @@ managed by SubmitOperationAgent.
 
   * ``handler``: One of the following values:
 
-    * ``smtk::task::SubmitOperationAgent::PortDataHandler::AddObjects`` (or ``set``):
+    * ``smtk::task::SubmitOperationAgent::PortDataHandler::AddObjects`` (or ``add``):
       Append the objects to the item (or associations) at the given item path.
-    * ``smtk::task::SubmitOperationAgent::PortDataHandler::SetObjects`` (or ``add``):
+    * ``smtk::task::SubmitOperationAgent::PortDataHandler::SetObjects`` (or ``set``):
       Reset the reference-item (or associations) at the given item path to
       the objects on the named port in the named role.
     * ``smtk::task::SubmitOperationAgent::PortDataHandler::AssignFromAttribute`` (or
@@ -451,3 +455,121 @@ Example
 
 The JSON above provides a resource in the "thermal simulation parameters" role
 and two components from within that resource in the "thermal materials" role.
+
+.. _task-trivial-producer-agent:
+
+TrivialProducerAgent
+--------------------
+
+The :smtk:`TrivialProducerAgent<smtk::task::TrivialProducerAgent>` is nearly
+identical to the :smtk:`GatherObjectsAgent<smtk::task::GatherObjectsAgent>`
+but holds the data to be broadcast to its output port in an
+:smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>` instance owned by the agent.
+Use TrivialProducerAgent when you do not wish the overhead of looking up large
+numbers of persistent objects by UUID each time ``portData()`` is called.
+However, be aware that because TrivialProducerAgent holds raw pointers and does
+not monitor operations, you must be sure to remove objects before the pointers
+become invalid.
+
+To add objects to the agent programmatically, you should
+call :smtk:`TrivialProducerAgent::addObjectInRole()<smtk::task::TrivialProducerAgent::addObjectInRole>`,
+:smtk:`TrivialProducerAgent::removeObjectFromRole()<smtk::task::TrivialProducerAgent::removeObjectFromRole>`,
+or :smtk:`TrivialProducerAgent::resetData()<smtk::task::TrivialProducerAgent::resetData>`.
+Note that these methods do *not* call ``portDataUpdated()`` on the agent's output port.
+If you call these methods from within an operation, simply add the modified port to the operation's
+results to indicate port data has been updated.
+
+The following JSON configuration parameters are available for
+this agent:
+
+* ``output-port``: is the name of the parent-task's port on which this agent
+  should broadcast its data.
+* ``objects``: is a map from a role name to an array of persistent-object specifiers.
+  If an object is a resource, each specifier is a tuple holding a UUID and ``null``.
+  If an object is a component, each specified is a tuple holding the UUID of the
+  component's parent resource and the component's UUID.
+
+Example
+"""""""
+
+The GatherObjectsAgent example above may be used identically for TrivialProducerAgent
+by changing the "type" parameter to TrivialProducerAgent.
+
+.. _task-port-forwarding-agent:
+
+PortForwardingAgent
+-------------------
+
+The :smtk:`PortForwardingAgent<smtk::task::PortForwardingAgent>`
+copies port data from a set of input ports to a set of output ports
+and – if the port data is formatted as :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>` –
+is able to filter what is copied based on role and object type-name.
+
+This agent accepts all the JSON configuration that the base agent class does, plus:
+
+* ``forwards``: an _optional_ JSON array of objects specifying information to copy.
+  If no array is provided, the agent will do nothing but will not impede progress.
+  Each object in the ``forwards`` array holds a dictionary with:
+
+  * ``input-port``: the name of an input port (internal or external) associated
+    to the task from which port data is drawn. This key is _mandatory_.
+  * ``output-port``: the name of an output port (internal or external) associated
+    to the task to which port data is copied. This key is _mandatory_.
+  * ``output-role``: if provided, all matching input objects are broadcast on this
+    role. This item is _optional_ and is only used if the port data is of type
+    :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`.
+  * ``filters``: an _optional_ dictionary mapping role names to an array of filters
+    that specify the types of persistent objects which should be forwarded.
+    If no filters are provided, all data from the
+    input port is copied to the output port. An asterisk (``*``) serves as a wildcard
+    to accept objects in any role so long as they are of the specified type(s).
+    When ``roles`` is not provided, it is identical to passing ``"*": [ ["*", null], ["*", "*"] ]``
+    as the role filter.
+    The ``filters`` list is only used if the port data is of type
+    :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`.
+    Rather than passing an array with two filter strings for each role, you may
+    pass dictionaries with "resource" and "component" entries that hold filter strings
+    for resource types and component types. If no "component" entry exists, then only
+    resources match (not components).
+
+Example
+"""""""
+
+.. code:: json
+
+   {
+     "type": "smtk::task::PortForwardingAgent",
+     "forward": [
+       { "input-port": "setup", "output-port": "result", "output-role": "simulation" },
+       { "input-port": "model", "output-port": "parts-of-interest",
+         "roles": {
+           "resource": [
+             { "resource": "smtk::markup::Resource" }
+           ],
+           "images": [
+             ["smtk::markup::Resource", "smtk::markup::ImageData"]
+           ],
+           "meshes": [
+             {
+               "resource": "smtk::markup::Resource",
+               "component": "smtk::markup::UnstructuredData"
+             }
+           ]
+         }
+       }
+     ]
+   }
+
+The JSON above forwards objects from the "setup" input port to the "result"
+output port, regardless of the object type or role. Assuming the "setup" input
+data is formatted as :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`, the
+"result" port data will be under the role "simulation" (regardless of its input role).
+
+It also forwards objects
+from the "model" port to the "parts-of-interest" port.
+If the "model" input port is :smtk:`ObjectsInRoles<smtk::task::ObjectsInRoles>`
+then objects are only forwarded if
+(1) they have a role of "meshes" and inherit ``UnstructuredData`` or
+(2) they have a role of "images" and inherit ``ImageData``, or
+(3) they have a role of "resource" and are a markup resource.
+Otherwise, all data on the input port is forwarded without modification.

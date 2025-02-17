@@ -84,7 +84,7 @@ class TestImportPPG(smtk.testing.TestCase):
 
         # Write to file system
         self.write_model(model_resource, path)
-        del(model_resource)
+        del (model_resource)
 
         # Read from file system
         model_res2 = self.read_model(path)
@@ -103,7 +103,7 @@ class TestImportPPG(smtk.testing.TestCase):
 
         # Write to file system
         self.write_model(model_resource, path)
-        del(model_resource)
+        del (model_resource)
 
         # Read from file system
         model_res2 = self.read_model(path)
@@ -136,7 +136,7 @@ class TestImportPPG(smtk.testing.TestCase):
         self.assertEqual(outcome, OP_SUCCEEDED,
                          'ImportPPG operation failed w/outcome {}'.format(outcome))
 
-        resource = result.findResource('resource').value()
+        resource = result.findResource('resourcesCreated').value()
         model_resource = smtk.model.Resource.CastTo(resource)
         return model_resource
 
@@ -148,7 +148,7 @@ class TestImportPPG(smtk.testing.TestCase):
         self.assertEqual(outcome, OP_SUCCEEDED,
                          'Read operation failed w/outcome {}'.format(outcome))
 
-        resource = result.findResource('resource').value()
+        resource = result.findResource('resourcesCreated').value()
         model_resource = smtk.model.Resource.CastTo(resource)
         return model_resource
 

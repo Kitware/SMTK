@@ -69,7 +69,7 @@ public:
     * implement a fast version if they use smtk::common::CachedWeakPointer
     * to hold a reference to their parent.
     */
-  virtual Resource* parentResource() const { return this->resource().get(); }
+  Resource* parentResource() const override { return this->resource().get(); }
 
   /// This variant of parentResource casts the result to the given \a ResourceType.
   template<typename ResourceType>

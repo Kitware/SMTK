@@ -31,7 +31,7 @@ MarkModified::Result MarkModified::operateInternal()
   auto params = this->parameters();
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   auto modIn = params->associations();
-  auto modOut = result->findResource("resources");
+  auto modOut = result->findResource("resourcesModified");
 
   // Copy the inputs to the output.
   modOut->setValues(modIn->begin(), modIn->end());

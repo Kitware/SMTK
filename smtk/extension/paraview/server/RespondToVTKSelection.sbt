@@ -19,7 +19,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(respond to vtk selection)" BaseType="result">
-    </AttDef>
+    <AttDef Type="result(respond to vtk selection)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

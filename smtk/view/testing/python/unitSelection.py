@@ -43,7 +43,7 @@ class TestSelection(smtk.testing.TestCase):
         if res.find('outcome').value(0) != int(smtk.operation.Operation.SUCCEEDED):
             raise RuntimeError
         self.resource = smtk.model.Resource.CastTo(
-            res.find('resource').value())
+            res.find('resourcesCreated').value())
         self.model = self.resource.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]
 

@@ -56,14 +56,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
-
-        <!-- The model imported from the file. -->
-        <Resource Name="resource" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::mesh::Resource"/>
-          </Accepts>
-        </Resource>
-
         <Component Name="model">
           <Accepts>
             <Resource Name="smtk::session::mesh::Resource" Filter=""/>

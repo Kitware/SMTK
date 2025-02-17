@@ -138,7 +138,7 @@ public:
     smtk::resource::PropertyType ptype,
     const std::string& pname) const;
 
-  /**\brief Get/Set whether entity properties will be skiped for subphrases.
+  /**\brief Get/Set whether entity properties will be skipped for subphrases.
     *
     * For some cases, only model entities are desired in a hierarchy view.
     */
@@ -147,7 +147,7 @@ public:
   virtual bool skipProperties() const;
   ///@}
 
-  /**\brief Get/Set whether entity attributes will be skiped for subphrases.
+  /**\brief Get/Set whether entity attributes will be skipped for subphrases.
     *
     * For some cases, only model entities are desired in a hierarchy view.
     */

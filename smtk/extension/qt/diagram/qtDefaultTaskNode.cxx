@@ -156,7 +156,9 @@ public:
 
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
   {
-    (void)prev;
+    // The superclass updates the tooltip for us.
+    m_node->updateTaskState(prev, next, active);
+
     m_completed->setEnabled(m_node->m_task->editableCompletion());
 
     // Update the checkbox widget without infinite recursion:
@@ -245,8 +247,8 @@ qtDefaultTaskNode::qtDefaultTaskNode(
   smtk::task::Task* task,
   QGraphicsItem* parent)
   : Superclass(generator, task, parent)
-  , m_container(new DefaultTaskNodeWidget(this))
 {
+  m_container = new DefaultTaskNodeWidget(this);
   qtDiagramViewConfiguration& cfg(*this->scene()->configuration());
   // Create a container to hold node contents
   {
@@ -394,7 +396,14 @@ int qtDefaultTaskNode::updateSize()
 
 void qtDefaultTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
 {
-  m_container->updateTaskState(prev, next, active);
+  this->Superclass::updateTaskState(prev, next, active);
+  static bool inUpdate = false;
+  if (m_container && !inUpdate)
+  {
+    inUpdate = true;
+    m_container->updateTaskState(prev, next, active);
+    inUpdate = false;
+  }
 }
 
 void qtDefaultTaskNode::dataUpdated()

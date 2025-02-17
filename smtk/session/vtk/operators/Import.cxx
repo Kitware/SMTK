@@ -493,7 +493,7 @@ Import::Result Import::importExodus(const smtk::session::vtk::Resource::Ptr& res
   }
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
     created->appendValue(resource);
   }
 
@@ -562,8 +562,8 @@ Import::Result Import::importSLAC(const smtk::session::vtk::Resource::Ptr& resou
   }
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   {
@@ -730,7 +730,7 @@ Import::Result Import::importLabelMap(const smtk::session::vtk::Resource::Ptr& r
   }
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
     created->setValue(resource);
   }
 
@@ -756,7 +756,7 @@ smtk::resource::ResourcePtr importResource(const std::string& filename)
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace vtk
 } // namespace session

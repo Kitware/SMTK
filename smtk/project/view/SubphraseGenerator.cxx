@@ -59,6 +59,25 @@ void SubphraseGenerator::childrenOfProject(
   }
   std::sort(result.begin(), result.end(), smtk::view::DescriptivePhrase::compareByTypeThenTitle);
 }
+
+SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
+  const smtk::resource::PersistentObjectPtr& obj,
+  const smtk::view::DescriptivePhrasePtr& actualParent,
+  const Path& parentPath)
+{
+  // In the case of Projects - only the Project's resources should be displayed
+  Path result;
+  auto rsrc = std::dynamic_pointer_cast<smtk::resource::Resource>(obj);
+  if (
+    actualParent && rsrc && actualParent->relatedResource() &&
+    (rsrc->parentResource() == actualParent->relatedResource().get()))
+  {
+    PreparePath(result, parentPath, IndexFromTitle(rsrc->name(), actualParent->subphrases()));
+  }
+
+  return result;
+}
+
 } // namespace view
 } // namespace project
 } // namespace smtk

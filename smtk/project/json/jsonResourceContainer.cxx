@@ -96,7 +96,7 @@ void from_json(const json& j, ResourceContainer& resourceContainer, const Projec
     auto result = reader->operate(*smtk::operation::Helper::instance().key());
     if (smtk::operation::outcome(result) == smtk::operation::Operation::Outcome::SUCCEEDED)
     {
-      resource = result->findAs<smtk::attribute::ResourceItem>("resource")->value();
+      resource = result->findAs<smtk::attribute::ResourceItem>("resourcesCreated")->value();
     }
     else
     {

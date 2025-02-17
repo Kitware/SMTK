@@ -52,7 +52,7 @@ class SnapPointsToSurface(smtk.testing.TestCase):
 
         # Access the resulting resource and model
         self.resource = smtk.session.mesh.Resource.CastTo(
-            res.find('resource').value(0))
+            res.find('resourcesCreated').value(0))
         modelEntity = res.find('created').value(0)
         self.model = smtk.model.Model(
             modelEntity.modelResource(), modelEntity.id())

@@ -65,7 +65,7 @@ MyOperation::Result MyOperation::operateInternal()
 
   // Create a result
   auto result = this->createResult(Outcome::SUCCEEDED);
-  result->findResource("resource")->appendValue(resource);
+  result->findResource("resourcesCreated")->appendValue(resource);
 
   // Add some hints to the result.
   std::set<smtk::resource::Resource::Ptr> hintTargets{ resource };
@@ -88,6 +88,9 @@ MyOperation::Result MyOperation::operateInternal()
     /* ephemeral */ true);
   ::test(!!hint, "Failed to add selection hint.");
 
+  // Add "render visibility hints": one to show and one to hide objects.
+  hint = addRenderVisibilityHint(result, hintTargets, /*show*/ true);
+  hint = addRenderVisibilityHint(result, hintTargets, /*show*/ false);
   return result;
 }
 
@@ -99,12 +102,29 @@ const char* MyOperation::xmlDescription() const
 int hintCount = 0;
 
 std::function<void(const smtk::attribute::ReferenceItem::Ptr&)> printHints(
-  const std::string& hintType)
+  const std::string& hintType,
+  const std::vector<std::string>& itemsToPrint = {})
 {
-  return [hintType](const smtk::attribute::ReferenceItem::Ptr& assoc) {
+  return [hintType, &itemsToPrint](const smtk::attribute::ReferenceItem::Ptr& assoc) {
     ++hintCount;
     std::cout << "  " << hintType << " targets " << assoc << " ("
               << (assoc ? assoc->numberOfValues() : 0) << " object)\n";
+    for (const auto& itemName : itemsToPrint)
+    {
+      auto item = assoc->attribute()->find(itemName);
+      if (!item)
+      {
+        std::cerr << "  " << hintType << " no item \"" << itemName << "\"!\n";
+        hintCount += 100;
+        continue;
+      }
+      std::cout << "    " << itemName << " (" << item->typeName() << ")";
+      if (item->isOptional())
+      {
+        std::cout << " enabled? " << item->isEnabled();
+      }
+      std::cout << "\n";
+    }
   };
 }
 
@@ -142,6 +162,8 @@ int TestHints(int /*unused*/, char** const /*unused*/)
       visitFocusHintsOfType(result, "browser expand hint", printHints("browser expand hint"));
       visitFocusHintsOfType(result, "browser scroll hint", printHints("browser scroll hint"));
       visitFocusHintsOfType(result, "render focus hint", printHints("render focus hint"));
+      visitAssociationHintsOfType(
+        result, "render visibility hint", printHints("render visibility hint", { "show" }));
     });
   std::cout << "Operation " << myOperation.get() << " outcome " << static_cast<int>(outcome)
             << "\n";
@@ -150,7 +172,7 @@ int TestHints(int /*unused*/, char** const /*unused*/)
     "Expected operation to complete successfully.");
 
   std::cout << "Visited " << hintCount << " hints.\n";
-  ::test(hintCount == 5, "Expected to visit 5 hints.");
+  ::test(hintCount == 7, "Expected to visit 7 hints.");
 
   return 0;
 }

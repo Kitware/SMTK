@@ -260,7 +260,7 @@ std::string testReadAndWrite(
   test(ok, "Could not set filename.");
   std::cout << "Reading " << read->parameters()->findFile("filename")->value() << "\n";
   auto result = read->operate();
-  auto resource = result->findResource("resource")->valueAs<smtk::markup::Resource>();
+  auto resource = result->findResource("resourcesCreated")->valueAs<smtk::markup::Resource>();
   std::cout << "Read    " << result->findInt("outcome")->value() << " " << resource << "\n";
 
   // Rename the file we just read to make room for the second generation copy.

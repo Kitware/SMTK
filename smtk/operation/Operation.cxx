@@ -618,38 +618,19 @@ bool Operation::unmanageResources(Operation::Result& result)
       }
       else if (this->managers())
       {
-        // see if this resource is part of a project. If so, don't remove.
-        if (auto projectManager = this->managers()->get<smtk::project::Manager::Ptr>())
+        // see if this resource is parented to another resource - if so give a warning
+        if (resource->parentResource() != nullptr)
         {
-          for (const auto& project : projectManager->projects())
-          {
-            if (project->resources().get(resource->id()))
-            {
-              shouldRemove = false;
-              smtkErrorMacro(
-                this->log(),
-                "Resource belongs to a project, unable to remove: " << resource->name());
-              ret = false;
-              break;
-            }
-          }
+          smtkWarningMacro(
+            this->log(),
+            "Resource (" << resource->name() << ") being closed belongs to another resource: "
+                         << resource->parentResource()->name());
         }
       }
       if (shouldRemove)
       {
         bool rmvRet = removeResource(resource, resourceManager, shouldRemoveLinks);
-        // projects should be removed from their manager.
-        if (project && this->managers())
-        {
-          if (auto projectManager = this->managers()->get<smtk::project::Manager::Ptr>())
-          {
-            ret &= projectManager->remove(project);
-          }
-        }
-        else
-        {
-          ret &= rmvRet;
-        }
+        ret &= rmvRet;
       }
     }
   }

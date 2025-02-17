@@ -37,6 +37,10 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     config["swizzle"] = helper.tasks().swizzleId(task);
     config["type"] = task->typeName();
     config["name"] = task->name();
+    if (!task->description().empty())
+    {
+      config["description"] = task->description();
+    }
     if (!task->style().empty())
     {
       config["style"] = task->style();

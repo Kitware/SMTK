@@ -255,6 +255,9 @@ public:
   ///\brief Return the agent's current configuration.
   Configuration configuration() const override;
 
+  ///\brief Return user-presentable troubleshooting information.
+  std::string troubleshoot() const override;
+
   ///\brief Return port data provided by the agent.
   ///
   /// If the agent is not assigned to \a port, the method returns nullptr.

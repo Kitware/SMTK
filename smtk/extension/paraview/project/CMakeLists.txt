@@ -3,6 +3,7 @@ set(classes
   pqSMTKProjectBrowser
   pqSMTKProjectMenu
   pqSMTKProjectPanel
+  pqSMTKTaskResourceVisibility
   Registrar
 )
 

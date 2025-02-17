@@ -55,6 +55,7 @@ State FillOutAttributesAgent::state() const
 
 void FillOutAttributesAgent::configure(const Configuration& config)
 {
+  this->Superclass::configure(config);
   auto mgrs = m_parent->managers();
   State prev = m_internalState;
   auto isi = config.find("internal-state");

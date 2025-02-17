@@ -153,6 +153,39 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
     : this->createResult(smtk::operation::Operation::Outcome::FAILED);
 }
 
+void ImportPythonOperation::generateSummary(Result& result)
+{
+  std::ostringstream s;
+  if (result)
+  {
+    auto opNameItem = result->findString("unique_name");
+    if (opNameItem)
+    {
+      bool once = true;
+      for (const auto& opName : *opNameItem)
+      {
+        if (once)
+        {
+          once = false;
+        }
+        else
+        {
+          s << "\n";
+        }
+        s << "Imported \"" << opName << "\".";
+      }
+    }
+  }
+  if (outcome(result) == Outcome::SUCCEEDED)
+  {
+    smtkInfoMacro(this->log(), s.str());
+  }
+  else
+  {
+    smtkErrorMacro(this->log(), s.str());
+  }
+}
+
 ImportPythonOperation::Specification ImportPythonOperation::createSpecification()
 {
   Specification spec = this->createBaseSpecification();

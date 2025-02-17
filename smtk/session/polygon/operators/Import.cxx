@@ -475,7 +475,8 @@ Import::Result Import::operateInternal()
 
   // Retrieve the resulting resource
   smtk::attribute::ResourceItemPtr resourceItem =
-    std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(modResult->findResource("resource"));
+    std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
+      modResult->findResource("resourcesCreated"));
 
   smtk::session::polygon::Resource::Ptr resource =
     std::dynamic_pointer_cast<smtk::session::polygon::Resource>(resourceItem->value());
@@ -522,8 +523,8 @@ Import::Result Import::operateInternal()
   }
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   {

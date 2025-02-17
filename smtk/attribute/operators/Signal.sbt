@@ -44,9 +44,6 @@
           <Resource  Name="categoriesModified" Extensible="true" NumberOfRequiredValues="0">
             <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
           </Resource>
-          <Resource Name="resource" HoldReference="true" NumberOfRequiredValues="0" Extensible="true">
-            <Accepts><Resource Name="smtk::attribute::Resource"/></Accepts>
-          </Resource>
         </ItemDefinitions>
     </AttDef>
   </Definitions>

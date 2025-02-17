@@ -93,7 +93,7 @@ int UnitTestPolygonImportPPG(int /*argc*/, char* /*argv*/[])
                                                  << importOp->log().convertToString());
 
   // Get the model resource
-  auto resourceItem = importResult->findResource("resource");
+  auto resourceItem = importResult->findResource("resourcesCreated");
   auto resource = resourceItem->value();
   test(resource != nullptr, "Resource was not found.");
   auto modelResource = std::dynamic_pointer_cast<smtk::model::Resource>(resource);

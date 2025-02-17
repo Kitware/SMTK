@@ -85,7 +85,7 @@ class TestVTKSession(smtk.testing.TestCase):
 
         # Access the resource
         resource = smtk.model.Resource.CastTo(
-            importRes.find('resource').value())
+            importRes.find('resourcesCreated').value())
         self.model = resource.findEntitiesOfType(
             int(smtk.model.MODEL_ENTITY))[0]
 

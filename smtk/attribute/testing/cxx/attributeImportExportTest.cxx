@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
     }
 
     auto resource = std::dynamic_pointer_cast<smtk::attribute::Resource>(
-      result->findResource("resource")->value());
+      result->findResource("resourcesCreated")->value());
 
     smtk::attribute::Export::Ptr exporter = smtk::attribute::Export::create();
     exporter->parameters()->associate(resource);

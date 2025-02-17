@@ -152,7 +152,7 @@ int TestMeshSessionReadWrite(int argc, char* argv[])
     // Retrieve the resulting polygon resource
     smtk::attribute::ResourceItemPtr resourceItem =
       std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-        importOpResult->findResource("resource"));
+        importOpResult->findResource("resourcesCreated"));
     resource = std::dynamic_pointer_cast<smtk::session::mesh::Resource>(resourceItem->value());
 
     // Retrieve the resulting model
@@ -210,7 +210,7 @@ int TestMeshSessionReadWrite(int argc, char* argv[])
 
     smtk::session::mesh::Resource::Ptr resource2 =
       smtk::dynamic_pointer_cast<smtk::session::mesh::Resource>(
-        readOpResult->findResource("resource")->value(0));
+        readOpResult->findResource("resourcesCreated")->value(0));
 
     cleanup(writeFilePath);
 

@@ -48,13 +48,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::vtk::Resource"/>
-          </Accepts>
-        </Resource>
-
         <Component Name="model">
           <Accepts>
             <Resource Name="smtk::session::vtk::Resource" Filter=""/>

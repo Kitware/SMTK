@@ -178,6 +178,7 @@ protected:
   smtk::view::SelectionPtr m_seln;
   smtk::view::ManagerPtr m_viewManager;
   smtk::operation::ManagerPtr m_opManager;
+  smtk::project::ManagerPtr m_projectManager;
   smtk::resource::Observers::Key m_observer;
   pqPropertyLinks m_propertyLinks;
   std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;

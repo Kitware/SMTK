@@ -50,6 +50,9 @@ public:
     smtk::resource::PersistentObject* object,
     smtk::string::Token role = smtk::string::Token::Invalid);
 
+  /// Reset all the data in the role map.
+  bool clear();
+
   bool merge(const PortData* other) override;
 
 protected:

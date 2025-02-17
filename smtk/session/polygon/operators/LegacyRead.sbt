@@ -15,13 +15,6 @@
     <include href="smtk/operation/Result.xml"/>
     <AttDef Type="result(legacy read)" BaseType="result">
       <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true">
-          <Accepts>
-            <Resource Name="smtk::session::polygon::Resource"/>
-          </Accepts>
-        </Resource>
-
         <Void Name="allow camera reset" IsEnabledByDefault="true" AdvanceLevel="11"/>
       </ItemDefinitions>
     </AttDef>

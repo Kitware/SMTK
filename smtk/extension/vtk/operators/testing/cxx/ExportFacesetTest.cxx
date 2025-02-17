@@ -64,7 +64,7 @@ smtk::resource::ResourcePtr ConstructGrid(smtk::operation::Manager::Ptr operatio
     std::cerr << "\"create uniform grid\" operation failed\n";
     return nullptr;
   }
-  return createGridOpResult->findResource("resource")->value(0);
+  return createGridOpResult->findResource("resourcesCreated")->value(0);
 }
 
 void verifySTL(const std::string& filename, const int vertexCount, const int cellCount)

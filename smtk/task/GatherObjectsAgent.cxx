@@ -37,6 +37,7 @@ State GatherObjectsAgent::state() const
 
 void GatherObjectsAgent::configure(const Configuration& config)
 {
+  this->Superclass::configure(config);
   if (config.contains("output-port"))
   {
     m_outputPortName = config.at("output-port").get<smtk::string::Token>();

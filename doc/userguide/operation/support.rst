@@ -236,6 +236,11 @@ named "hints" in the operation's result.
      - The camera will have its aim point adjusted to the center of the
        bounds of all the objects associated to the hint.
 
+   * - render visibility hint
+     - The application should toggle visibility of the associated objects
+       (resources and/or components) on or off as specified by the "show"
+       item.
+
    * - selection hint
      - The selection will be modified according to the hint's "action"
        item (replace, add, subtract) using the "value" from the hint
@@ -253,6 +258,9 @@ named "hints" in the operation's result.
    * - browser expand hint
      - Expand the resource browser tree items to show all occurrences
        of each of the objects associated to the hint.
+
+   * - activate task hint
+     - Make the provided task active upon completion of the operation.
 
 There are several free functions in ``smtk/operation/Hints.h`` that you
 can use to add hints to your operation and inspect hints in your

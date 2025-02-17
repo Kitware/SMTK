@@ -16,9 +16,13 @@
 
 #include "smtk/extension/paraview/appcomponents/pqQtKeywordWrapping.h"
 
+#include "smtk/view/Utility.h" // For smtk::view::{ResourceMap,SharedResourceMap}
+
 #include <QObject>
 
 #include <functional>
+#include <unordered_map>
+#include <unordered_set>
 
 class pqOutputPort;
 class pqPipelineSource;
@@ -123,6 +127,43 @@ public:
     * return a null object.
     */
   void updateWrapperMap();
+
+  /**\brief Show (or hide) the given \a objects.
+    *
+    * If \a show is true, every object in \a objects is made visible
+    * and a render is requested; otherwise, every object in \a objects
+    * is hidden and a render is requested.
+    *
+    * If an entry in \a objects is a resource, any pqRepresentation
+    * corresponding to the pqPipeline is shown/hidden.
+    * If an entry in \a objects is a component, matching pqRepresentation
+    * objects for the component's resource are located. The representation's
+    * visibility is toggled id \a show is true; otherwise it is untouched.
+    * Then the per-block visibility of the component is toggled to match \a show.
+    *
+    * Thus, hiding a component will never modify the resource's visibility
+    * while showing a component may toggle the resources's visibility (as well
+    * as the block matching the component).
+    *
+    * This function returns true if a change was made (i.e., a render() has
+    * been requested).
+    */
+  bool showObjects(
+    bool show,
+    const std::set<smtk::resource::PersistentObject*>& objects,
+    pqView* view = nullptr);
+
+  /**\brief This version of showObjects accepts a \a visibilityMap.
+    *
+    * Because the \a visibilityMap segregates objects into resources and their components,
+    * it is efficient; the resource's visibility is only handled once and all of the block
+    * visibilities that require changing are handled at the same time.
+    */
+  bool showObjects(bool show, const smtk::view::ResourceMap& visibilityMap, pqView* view = nullptr);
+  bool showObjects(
+    bool show,
+    const smtk::view::SharedResourceMap& visibilityMap,
+    pqView* view = nullptr);
 
   /**\brief Register operations from the named module after the event loop starts.
     *

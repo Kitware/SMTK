@@ -1064,6 +1064,10 @@ void vtkSMTKResourceRepresentation::SetColorBy(const char* type)
   {
     this->SetColorBy(FIELD);
   }
+  else if (vtksys::SystemTools::Strucmp(type, "None") == 0)
+  {
+    this->SetColorBy(NONE);
+  }
   else
   {
     vtkErrorMacro("Invalid type: " << type);
@@ -1370,6 +1374,9 @@ void vtkSMTKResourceRepresentation::UpdateColoringParameters(vtkDataObject* data
     case FIELD:
       this->ColorByField();
       break;
+    case NONE:
+      this->ColorByNone();
+      break;
     default:
       this->ColorByEntity(multiBlock);
       break;
@@ -1432,6 +1439,15 @@ void vtkSMTKResourceRepresentation::ColorByField()
     this->GlyphMapper->SetScalarVisibility(0);
     this->GlyphMapper->SelectColorArray(nullptr);
   }
+}
+
+void vtkSMTKResourceRepresentation::ColorByNone()
+{
+  this->EntityMapper->GetCompositeDataDisplayAttributes()->RemoveBlockColors();
+  this->EntityMapper->SetScalarVisibility(0);
+  this->EntityMapper->SelectColorArray(nullptr);
+  this->GlyphMapper->SetScalarVisibility(0);
+  this->GlyphMapper->SelectColorArray(nullptr);
 }
 
 void vtkSMTKResourceRepresentation::ColorByVolume(vtkMultiBlockDataSet* data)

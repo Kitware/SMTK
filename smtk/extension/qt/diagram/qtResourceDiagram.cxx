@@ -146,9 +146,10 @@ bool testMatch(
     }
     else if (const auto* comp = dynamic_cast<const smtk::resource::Component*>(obj))
     {
+      auto* rsrc = comp->parentResource();
       for (const auto& entry : rules)
       {
-        if (entry.first == "*"_token || comp->parentResource()->matchesType(entry.first))
+        if (entry.first == "*"_token || (rsrc && rsrc->matchesType(entry.first)))
         {
           for (const auto& rule : entry.second.componentRules)
           {
@@ -186,7 +187,8 @@ bool qtResourceDiagram::VisualComparator::operator()(
   // To get here, one vector must be longer than the other and both
   // must have entries that compare as identical for the entire length
   // of the shortest vector.
-  return nn == aa.size(); // If aa is shorter and matches bb its entire length, it comes first.
+  return aa.size() <
+    bb.size(); // If aa is shorter and matches bb its entire length, it comes first.
 }
 
 bool qtResourceDiagram::VisualComparator::nodeLessThan(const qtBaseNode* cc, const qtBaseNode* dd)
@@ -344,7 +346,8 @@ bool qtResourceDiagram::updateParentArc(
     {
       return didModify;
     }
-    auto* rnode = m_diagram->findNode(comp->parentResource()->id());
+    auto* rsrc = comp->parentResource();
+    auto* rnode = rsrc ? m_diagram->findNode(rsrc->id()) : nullptr;
     if (!rnode)
     {
       return didModify;

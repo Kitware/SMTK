@@ -67,15 +67,15 @@ pqSMTKResource::pqSMTKResource(
       smtk::operation::Operation::Result result) {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
-        auto effectedResources = smtk::operation::extractResources(result);
-        auto myResource = this->getResource();
-        if (effectedResources.find(myResource) == effectedResources.end())
+        auto affectedResources = smtk::operation::extractResources(result);
+        auto targetResource = this->getResource();
+        if (affectedResources.find(targetResource) == affectedResources.end() || !targetResource)
         {
-          return 0; // My resource is not being effected
+          return 0; // Target resource is not being affected
         }
         // Only provide geometry updates on Signal operations for attribute resources.
         if (
-          myResource->matchesType("smtk::attribute::Resource"_token) ||
+          targetResource->matchesType("smtk::attribute::Resource"_token) ||
           !dynamic_cast<const smtk::attribute::Signal*>(&op))
         {
           Q_EMIT this->operationOccurred(QPrivateSignal());

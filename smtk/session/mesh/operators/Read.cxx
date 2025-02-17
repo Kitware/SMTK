@@ -114,13 +114,13 @@ Read::Result Read::operateInternal()
   // Retrieve the resulting resource
   smtk::attribute::ResourceItemPtr resourceItem =
     std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-      importOpResult->findResource("resource"));
+      importOpResult->findResource("resourcesCreated"));
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resourceItem->value());
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resourceItem->value());
   }
 
   return result;
@@ -133,7 +133,7 @@ const char* Read::xmlDescription() const
 
 void Read::markModifiedResources(Read::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
   for (std::size_t ii = 0; ii < resourceItem->numberOfValues(); ++ii)
   {
     if (resourceItem->isSet(ii))
@@ -158,7 +158,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace mesh
 } // namespace session

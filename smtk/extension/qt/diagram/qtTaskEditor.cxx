@@ -274,7 +274,7 @@ bool qtTaskEditor::updateArcs(
       arc = new qtTaskArc(this, fromTaskNode, toTaskNode, adaptor);
       this->diagram()->addArc(arc);
       diagramModified = true;
-      modBounds = modBounds.united(arc->boundingRect());
+      modBounds = modBounds.united(arc->sceneBoundingRect());
     }
   }
   else if (auto* task = dynamic_cast<smtk::task::Task*>(object))
@@ -317,7 +317,7 @@ bool qtTaskEditor::updateArcs(
           {
             auto* taskArc = dynamic_cast<qtTaskArc*>(arc);
             diagramModified = true;
-            modBounds = modBounds.united(taskArc->boundingRect());
+            modBounds = modBounds.united(taskArc->sceneBoundingRect());
             this->diagram()->removeArc(taskArc);
           }
         }
@@ -347,7 +347,7 @@ bool qtTaskEditor::updateArcs(
         auto* arc = new qtTaskArc(this, depNode, taskNode);
         this->diagram()->addArc(arc);
         diagramModified = true;
-        modBounds = modBounds.united(arc->boundingRect());
+        modBounds = modBounds.united(arc->sceneBoundingRect());
         this->updateArcStatus(arc);
       }
     }
@@ -396,7 +396,7 @@ bool qtTaskEditor::updateArcs(
           {
             auto* portArc = dynamic_cast<qtTaskPortArc*>(arc);
             diagramModified = true;
-            modBounds = modBounds.united(portArc->boundingRect());
+            modBounds = modBounds.united(portArc->sceneBoundingRect());
             this->diagram()->removeArc(portArc);
           }
         }
@@ -431,7 +431,7 @@ bool qtTaskEditor::updateArcs(
         auto* arc = new qtTaskPortArc(this, depNode, portNode);
         this->diagram()->addArc(arc);
         diagramModified = true;
-        modBounds = modBounds.united(arc->boundingRect());
+        modBounds = modBounds.united(arc->sceneBoundingRect());
         this->updateArcStatus(arc);
       }
     }
@@ -546,7 +546,10 @@ void qtTaskEditor::updateSceneNodes(
         QObject::connect(
           tnode, &qtBaseNode::nodeMoved, this, &qtTaskEditor::updateArcsOfSendingNodeRecursive);
         diagramModified = true;
-        modBounds = modBounds.united(tnode->boundingRect());
+        if (tnode->isVisible())
+        {
+          modBounds = modBounds.united(tnode->sceneBoundingRect());
+        }
         for (const auto& pinfo : task->ports())
         {
           // See if we have already built the TaskPortNode for this port
@@ -577,7 +580,10 @@ void qtTaskEditor::updateSceneNodes(
           }
           // Index the port for everyone
           this->diagram()->addNode(pnode);
-          modBounds = modBounds.united(pnode->boundingRect());
+          if (pnode->isVisible())
+          {
+            modBounds = modBounds.united(pnode->sceneBoundingRect());
+          }
         }
       }
     }
@@ -657,7 +663,23 @@ void qtTaskEditor::updateSceneNodes(
       // Index the port for everyone
       this->diagram()->addNode(pnode);
       diagramModified = true;
-      modBounds = modBounds.united(pnode->boundingRect());
+      if (pnode->isVisible())
+      {
+        modBounds = modBounds.united(pnode->sceneBoundingRect());
+      }
+    }
+  }
+
+  // Notify nodes they may need to refresh.
+  // NB: This also notifies scene arcs that have a corresponding persistent object.
+  for (auto* obj : modified)
+  {
+    if (auto* node = m_diagram->findNode(obj->id()))
+    {
+      if (node->generator() == this)
+      {
+        node->dataUpdated();
+      }
     }
   }
 
@@ -739,7 +761,7 @@ void qtTaskEditor::updateSceneArcs(
           }
           for (auto* taskArc : arcsToErase)
           {
-            modBounds = modBounds.united(taskArc->boundingRect());
+            modBounds = modBounds.united(taskArc->sceneBoundingRect());
             diagramModified = true;
             this->diagram()->removeArc(taskArc);
           }
@@ -752,7 +774,10 @@ void qtTaskEditor::updateSceneArcs(
       {
         QRectF nodeBounds = node->boundingRect();
         nodeBounds = nodeBounds.united(node->childrenBoundingRect());
-        modBounds = modBounds.united(node->sceneTransform().mapRect(nodeBounds));
+        if (node->isVisible())
+        {
+          modBounds = modBounds.united(node->sceneTransform().mapRect(nodeBounds));
+        }
         diagramModified = true;
         // Remove all of the task's ports from the diagram before the task.
         // This also forces removal of port-port arcs.
@@ -767,8 +792,10 @@ void qtTaskEditor::updateSceneArcs(
     {
       if (auto* node = this->diagram()->findNode(port->id()))
       {
-        QRectF nodeBounds = node->boundingRect();
-        modBounds = modBounds.united(node->sceneTransform().mapRect(nodeBounds));
+        if (node->isVisible())
+        {
+          modBounds = modBounds.united(node->sceneBoundingRect());
+        }
         diagramModified = true;
         this->diagram()->removeNode(node);
       }

@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 
   smtk::session::polygon::Resource::Ptr modelresource =
     smtk::dynamic_pointer_cast<smtk::session::polygon::Resource>(
-      readOpResult->findResource("resource")->value(0));
+      readOpResult->findResource("resourcesCreated")->value(0));
 
   smtk::model::Models models =
     modelresource->entitiesMatchingFlagsAs<smtk::model::Models>(smtk::model::MODEL_ENTITY, false);

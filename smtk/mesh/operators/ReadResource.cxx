@@ -107,9 +107,8 @@ ReadResource::Result ReadResource::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setNumberOfValues(1);
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   return result;
@@ -122,7 +121,7 @@ const char* ReadResource::xmlDescription() const
 
 void ReadResource::markModifiedResources(ReadResource::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
     if (rit.isSet())
@@ -147,7 +146,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 } // namespace mesh
 } // namespace smtk

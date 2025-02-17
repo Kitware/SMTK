@@ -278,7 +278,7 @@ void qtWorkletModel::workletUpdate(
   auto created = result->findComponent("created");
   auto modified = result->findComponent("modified");
   auto expunged = result->findComponent("expunged");
-  auto createdResources = result->findResource("resource");
+  auto createdResources = result->findResource("resourcesCreated");
   auto expungedResources = result->findResource("resourcesToExpunge");
   int row;
   smtk::string::Token workletTypeName = "smtk::task::Worklet";

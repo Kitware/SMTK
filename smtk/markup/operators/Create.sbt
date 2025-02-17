@@ -13,16 +13,6 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(create)" BaseType="result">
-      <ItemDefinitions>
-
-        <Resource Name="resource" HoldReference="true" Extensible="true" NumberOfRequiredValues="0">
-          <Accepts>
-            <Resource Name="smtk::markup::Resource"/>
-          </Accepts>
-        </Resource>
-
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(create)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeResource>

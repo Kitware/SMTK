@@ -156,7 +156,7 @@ class TestOperationTracing(smtk.testing.TestCase):
         def handler(op, result):
             nonlocal resource, handlerOutcome, modifiedOutcome
             resource = smtk.model.Resource.CastTo(
-                result.find('resource').value())
+                result.find('resourcesCreated').value())
             # Test that smtk.operation wraps outcome() and setOutcome() properly:
             handlerOutcome = smtk.operation.outcome(result)
             smtk.operation.setOutcome(

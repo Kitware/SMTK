@@ -11,10 +11,15 @@
 
 // SMTK
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
 #include "smtk/extension/paraview/server/vtkSMSMTKWrapperProxy.h"
 
 #include "smtk/extension/qt/RedirectOutput.h"
+
+#include "smtk/view/Utility.h"
+
+#include "smtk/geometry/Resource.h"
 
 #include "smtk/io/Logger.h"
 
@@ -50,11 +55,7 @@ class pqSMTKBehavior::Internal
 {
 public:
   std::map<pqServer*, std::pair<vtkSMSMTKWrapperProxy*, pqSMTKWrapper*>> Remotes;
-  std::map<
-    std::weak_ptr<smtk::resource::Resource>,
-    QPointer<pqSMTKResource>,
-    std::owner_less<std::weak_ptr<smtk::resource::Resource>>>
-    ResourceMap;
+  std::map<smtk::common::UUID, QPointer<pqSMTKResource>> ResourceMap;
 };
 
 static pqSMTKBehavior* g_instance = nullptr;
@@ -191,7 +192,11 @@ QPointer<pqSMTKResource> pqSMTKBehavior::getPVResource(
   const smtk::resource::ResourcePtr& resource) const
 {
   QPointer<pqSMTKResource> result = nullptr;
-  auto it = m_p->ResourceMap.find(resource);
+  if (!resource)
+  {
+    return result;
+  }
+  auto it = m_p->ResourceMap.find(resource->id());
   if (it != m_p->ResourceMap.end())
   {
     result = it->second;
@@ -310,7 +315,7 @@ void pqSMTKBehavior::handleNewSMTKProxies(pqProxy* pxy)
     auto rsrc = rsrcPxy->getResource();
     if (rsrc)
     {
-      m_p->ResourceMap[rsrc] = rsrcPxy;
+      m_p->ResourceMap[rsrc->id()] = rsrcPxy;
     }
     // Monitor rsrcPxy so that if its assigned SMTK resource changes, we update it.
     QObject::connect(
@@ -333,7 +338,7 @@ void pqSMTKBehavior::handleOldSMTKProxies(pqPipelineSource* pxy)
   auto* rsrcPxy = dynamic_cast<pqSMTKResource*>(pxy);
   if (rsrcPxy)
   {
-    m_p->ResourceMap.erase(rsrcPxy->getResource());
+    m_p->ResourceMap.erase(rsrcPxy->getResource()->id());
     auto it = m_p->Remotes.find(rsrcPxy->getServer());
     if (it != m_p->Remotes.end())
     {
@@ -349,7 +354,7 @@ void pqSMTKBehavior::updateResourceProxyMap(
   auto* rsrcPxy = dynamic_cast<pqSMTKResource*>(this->sender());
   if (rsrcPxy && resource)
   {
-    m_p->ResourceMap[resource] = rsrcPxy;
+    m_p->ResourceMap[resource->id()] = rsrcPxy;
   }
 }
 
@@ -463,6 +468,149 @@ void pqSMTKBehavior::updateWrapperMap()
     }
   }
   it->Delete();
+}
+
+bool pqSMTKBehavior::showObjects(
+  bool show,
+  const std::set<smtk::resource::PersistentObject*>& objects,
+  pqView* view)
+{
+  // Build a map from resources to components from the set of objects;
+  // this will allow efficient lookup and visibility setting for ParaView since
+  // resources in SMTK map to pipelines in ParaView.
+  auto visibilityMap = smtk::view::objectsToResourceMap(objects);
+  return this->showObjects(show, visibilityMap, view);
+}
+
+bool pqSMTKBehavior::showObjects(
+  bool show,
+  const smtk::view::ResourceMap& visibilityMap,
+  pqView* view)
+{
+  bool didModify = false;
+
+  // Use the active view if none is provided.
+  if (!view)
+  {
+    view = pqActiveObjects::instance().activeView();
+  }
+  if (!view)
+  {
+    return didModify;
+  }
+
+  for (const auto& entry : visibilityMap)
+  {
+    if (auto* geomRsrc = dynamic_cast<smtk::geometry::Resource*>(entry.first))
+    {
+      auto pvrc = this->getPVResource(geomRsrc->shared_from_this());
+      pqRepresentation* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+      bool didModifyThisPipeline = false;
+
+      // Set the visibility of the resource if requested.
+      if (entry.second.find(nullptr) != entry.second.end())
+      {
+        if (mapr->isVisible() != show)
+        {
+          didModifyThisPipeline |= true;
+          mapr->setVisible(show);
+        }
+      }
+
+      // Set block visibility of each mentioned component.
+      auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+      if (!smap)
+      {
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "Can not find ParaView pipeline for resource \""
+            << geomRsrc->name() << "\" (" << geomRsrc->location() << ") " << geomRsrc->id()
+            << ". Skipping.");
+        continue;
+      }
+      for (auto* component : entry.second)
+      {
+        if (!component)
+        {
+          continue;
+        }
+        didModifyThisPipeline |= smap->setVisibility(component->shared_from_this(), show);
+      }
+
+      // If either the resource or a component visibility was changed, redraw.
+      if (didModifyThisPipeline)
+      {
+        didModify = true;
+        smap->renderViewEventually();
+      }
+    }
+  }
+
+  return didModify;
+}
+
+bool pqSMTKBehavior::showObjects(
+  bool show,
+  const smtk::view::SharedResourceMap& visibilityMap,
+  pqView* view)
+{
+  bool didModify = false;
+
+  // Use the active view if none is provided.
+  if (!view)
+  {
+    view = pqActiveObjects::instance().activeView();
+  }
+  if (!view)
+  {
+    return didModify;
+  }
+
+  for (const auto& entry : visibilityMap)
+  {
+    auto pvrc = this->getPVResource(entry.second.m_resource);
+    pqRepresentation* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
+    bool didModifyThisPipeline = false;
+
+    // Set the visibility of the resource if requested.
+    if (entry.second.m_components.find(nullptr) != entry.second.m_components.end())
+    {
+      if (mapr->isVisible() != show)
+      {
+        didModifyThisPipeline |= true;
+        mapr->setVisible(show);
+      }
+    }
+
+    // Set block visibility of each mentioned component.
+    auto* smap = dynamic_cast<pqSMTKResourceRepresentation*>(mapr);
+    if (!smap)
+    {
+      const auto& rsrc(entry.second.m_resource);
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Can not find ParaView pipeline for resource \""
+          << rsrc->name() << "\" (" << rsrc->location() << ") " << rsrc->id() << ". Skipping.");
+      continue;
+    }
+    for (const auto& component : entry.second.m_components)
+    {
+      if (!component)
+      {
+        continue;
+      }
+      didModifyThisPipeline |= smap->setVisibility(component, show);
+    }
+
+    // If either the resource or a component visibility was changed, redraw.
+    if (didModifyThisPipeline)
+    {
+      didModify = true;
+      smap->renderViewEventually();
+    }
+  }
+
+  return didModify;
 }
 
 void pqSMTKBehavior::importPythonOperationsForModule(

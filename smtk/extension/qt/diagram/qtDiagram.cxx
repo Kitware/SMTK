@@ -1280,6 +1280,35 @@ QWidget* qtDiagram::sidebar() const
   return m_p->m_sidebarInner;
 }
 
+QRectF qtDiagram::visibleBounds() const
+{
+  QRectF bounds;
+  for (const auto& entry : m_p->m_nodeIndex)
+  {
+    if (entry.second->isVisible())
+    {
+      bounds = bounds.united(entry.second->sceneBoundingRect());
+    }
+  }
+  for (const auto& entry : m_p->m_arcIndex)
+  {
+    for (const auto& arcSetMap : entry.second)
+    {
+      for (const auto& arcSet : arcSetMap.second)
+      {
+        for (const auto& arc : arcSet.second)
+        {
+          if (arc->isVisible())
+          {
+            bounds = bounds.united(arc->sceneBoundingRect());
+          }
+        }
+      }
+    }
+  }
+  return bounds;
+}
+
 void qtDiagram::modeChangeRequested(QAction* modeAction)
 {
   smtk::string::Token mode = (modeAction ? modeAction->objectName().toStdString() : "default");

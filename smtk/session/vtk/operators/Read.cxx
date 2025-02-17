@@ -107,8 +107,8 @@ Read::Result Read::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   return result;
@@ -121,7 +121,7 @@ const char* Read::xmlDescription() const
 
 void Read::markModifiedResources(Read::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
 
   // Special case, if loaded from project, resource item is not set
   // Reason is not known, but this serves as a workaround
@@ -151,7 +151,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 
 } // namespace vtk

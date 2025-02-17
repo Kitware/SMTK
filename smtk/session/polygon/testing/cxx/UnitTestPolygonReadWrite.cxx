@@ -149,7 +149,7 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
   // Retrieve the resulting polygon resource
   smtk::attribute::ResourceItemPtr resourceItem =
     std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
-      importOpResult->findResource("resource"));
+      importOpResult->findResource("resourcesCreated"));
   smtk::session::polygon::Resource::Ptr polygonResource =
     std::dynamic_pointer_cast<smtk::session::polygon::Resource>(resourceItem->value());
 
@@ -199,7 +199,7 @@ int UnitTestPolygonReadWrite(int argc, char* argv[])
 
     smtk::session::polygon::Resource::Ptr polygonResource2 =
       smtk::dynamic_pointer_cast<smtk::session::polygon::Resource>(
-        readOpResult->findResource("resource")->value(0));
+        readOpResult->findResource("resourcesCreated")->value(0));
 
     cleanup(writeFilePath);
 

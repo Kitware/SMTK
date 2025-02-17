@@ -15,6 +15,8 @@
 #include "smtk/string/json/jsonToken.h"
 #include "smtk/task/json/Helper.h"
 
+#include "smtk/resource/Manager.h"
+
 #include "smtk/io/Logger.h"
 
 #include "smtk/common/StringUtil.h"
@@ -28,6 +30,59 @@ namespace smtk
 {
 namespace task
 {
+namespace
+{
+
+std::string objTypeName(
+  smtk::resource::PersistentObject* obj,
+  std::unordered_map<smtk::string::Token, smtk::string::Token>* typeLabels)
+{
+  smtk::string::Token tn = obj->typeName();
+  if (typeLabels)
+  {
+    auto it = typeLabels->find(tn);
+    if (it != typeLabels->end())
+    {
+      tn = it->second;
+    }
+  }
+  return tn.data();
+}
+
+void summarizePortData(
+  std::ostringstream& ttip,
+  const std::shared_ptr<smtk::task::ObjectsInRoles>& pdata,
+  std::unordered_map<smtk::string::Token, smtk::string::Token>* typeLabels)
+{
+  if (!pdata || pdata->data().empty())
+  {
+    return;
+  }
+
+  ttip << "<ul>\n";
+  for (const auto& roleEntry : pdata->data())
+  {
+    ttip << "  <li><i>" << roleEntry.first.data() << "</i>";
+    if (!roleEntry.second.empty())
+    {
+      ttip << "\n  <ul>\n";
+      for (const auto& obj : roleEntry.second)
+      {
+        ttip << "    <li><b>" << obj->name() << "</b> (" << objTypeName(obj, typeLabels) << ")";
+        if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
+        {
+          ttip << " from " << port->parent()->name();
+        }
+        ttip << "</li>\n";
+      }
+      ttip << "  </ul>\n";
+    }
+    ttip << "</li>\n";
+  }
+  ttip << "</ul>\n";
+}
+
+} // anonymous namespace
 
 // constexpr const char* const Port::type_name;
 
@@ -344,6 +399,47 @@ smtk::string::Token Port::LabelFromAccess(Access a)
     case Internal:
       return "internal";
   }
+}
+
+std::string Port::describe() const
+{
+  auto* rsrc = this->parentResource();
+  auto rsrcMgr = rsrc ? rsrc->manager() : nullptr;
+  auto* typeLabels = rsrcMgr ? &rsrcMgr->objectTypeLabels() : nullptr;
+
+  std::ostringstream ttip;
+  ttip << "<html><body>\n<h1>" << this->name() << "</h1>\n";
+  if (this->direction() == smtk::task::Port::Direction::In && !this->connections().empty())
+  {
+    ttip << "<ul>\n";
+    for (const auto& obj : this->connections())
+    {
+      if (obj)
+      {
+        ttip << "  <li><b>" << obj->name() << "</b> (" << objTypeName(obj, typeLabels) << ")";
+        if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
+        {
+          ttip << " from " << port->parent()->name();
+          auto pdata = std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(this->portData(port));
+          summarizePortData(ttip, pdata, typeLabels);
+        }
+        else
+        {
+          ttip << " as <i>" << this->unassignedRole().data() << "</i>";
+        }
+        ttip << "</li>\n";
+      }
+    }
+    ttip << "</ul>\n";
+  }
+  else if (this->direction() == smtk::task::Port::Direction::Out)
+  {
+    auto pdata =
+      std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(this->parent()->portData(this));
+    summarizePortData(ttip, pdata, typeLabels);
+  }
+  ttip << "</body></html>";
+  return ttip.str();
 }
 
 } // namespace task

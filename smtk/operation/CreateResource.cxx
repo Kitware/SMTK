@@ -42,7 +42,7 @@ smtk::operation::Operation::Result CreateResource::operateInternal()
   }
 
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-  smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
+  smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
 
   for (auto typeIt = typeItem->begin(); typeIt != typeItem->end(); ++typeIt)
   {

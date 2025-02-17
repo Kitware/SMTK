@@ -71,7 +71,7 @@ class TestReadReferenceItem(unittest.TestCase):
         outcome = result.findInt('outcome')
         self.assertEqual(outcome.value(), OPERATION_SUCCEEDED)
 
-        resource_item = result.findResource("resource")
+        resource_item = result.findResource("resourcesCreated")
         resource = resource_item.value()
         self.assertIsNotNone(resource)
         return resource

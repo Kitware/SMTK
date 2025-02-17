@@ -11,7 +11,9 @@ set(agents
   Agent
   FillOutAttributesAgent
   GatherObjectsAgent
+  PortForwardingAgent
   SubmitOperationAgent
+  TrivialProducerAgent
 )
 
 set(adaptors
@@ -45,6 +47,7 @@ set(taskSrcs
   json/Helper.cxx
   json/jsonAdaptor.cxx
   json/jsonManager.cxx
+  json/jsonObjectsInRoles.cxx
   json/jsonPort.cxx
   json/jsonWorklet.cxx
 )
@@ -70,6 +73,7 @@ set(taskHeaders
   json/Helper.h
   json/jsonAdaptor.h
   json/jsonManager.h
+  json/jsonObjectsInRoles.h
   json/jsonPort.h
   json/jsonWorklet.h
 )

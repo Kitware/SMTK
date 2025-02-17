@@ -63,6 +63,13 @@ bool ObjectsInRoles::removeObject(
   return numRemoved > 0;
 }
 
+bool ObjectsInRoles::clear()
+{
+  bool didRemove = !m_data.empty();
+  m_data.clear();
+  return didRemove;
+}
+
 bool ObjectsInRoles::merge(const PortData* other)
 {
   if (const auto* objectData = dynamic_cast<const ObjectsInRoles*>(other))

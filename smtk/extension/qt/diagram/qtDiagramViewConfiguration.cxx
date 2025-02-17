@@ -89,22 +89,35 @@ qtDiagramViewConfiguration::qtDiagramViewConfiguration(const smtk::view::Configu
   int cpindex = styleComp.findChild("ColorPalettes");
   if (cpindex >= 0)
   {
+    std::string label;
+    std::string color;
+
     int dpindex = styleComp.child(cpindex).findChild("Dark");
     if (dpindex >= 0)
     {
       const auto& dpalette = styleComp.child(cpindex).child(dpindex);
-      for (const auto& entry : dpalette.attributes())
+      for (const auto& entry : dpalette.children())
       {
-        m_darkPalette[entry.first] = QColor(QString::fromStdString(entry.second));
+        label = entry.attributeAsString("Label");
+        color = entry.attributeAsString("Color");
+        if (!(label.empty() || color.empty()))
+        {
+          m_darkPalette[label] = QColor(QString::fromStdString(color));
+        }
       }
     }
     int lpindex = styleComp.child(cpindex).findChild("Light");
     if (lpindex >= 0)
     {
       const auto& lpalette = styleComp.child(cpindex).child(lpindex);
-      for (const auto& entry : lpalette.attributes())
+      for (const auto& entry : lpalette.children())
       {
-        m_lightPalette[entry.first] = QColor(QString::fromStdString(entry.second));
+        label = entry.attributeAsString("Label");
+        color = entry.attributeAsString("Color");
+        if (!(label.empty() || color.empty()))
+        {
+          m_lightPalette[label] = QColor(QString::fromStdString(color));
+        }
       }
     }
   }

@@ -73,7 +73,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             cm.parameters().find('feature size').setValue(featureSize)
         self.res = cm.operate()
         self.resource = smtk.model.Resource.CastTo(
-            self.res.find('resource').value(0))
+            self.res.find('resourcesCreated').value(0))
         return self.resource.findEntitiesOfType(int(smtk.model.MODEL_ENTITY))[0]
 
     def createVertices(self, pt, model, **kwargs):
@@ -417,7 +417,8 @@ class TestPolygonCreation(smtk.testing.TestCase):
             created = self.res.find('created')
             print('created ', created.numberOfValues(), ' faces')
             self.imageComparison(mod, created, [
-                                 'baseline', 'smtk', 'polygon', 'createFacesB{:1}.png'.format(t)], False)  # or p[6])
+                                 # or p[6])
+                                 'baseline', 'smtk', 'polygon', 'createFacesB{:1}.png'.format(t)], False)
 
     def imageComparison(self, mod, created, imagePath, doInteract):
         if self.haveVTK() and self.haveVTKExtension():
@@ -426,7 +427,7 @@ class TestPolygonCreation(smtk.testing.TestCase):
             self.startRenderTest()
 
             # mod = smtk.model.Model(mod)
-            #[mod.addCell(x) for x in self.resource.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
+            # [mod.addCell(x) for x in self.resource.findEntitiesOfType(smtk.model.CELL_ENTITY, False)]
 
             # Color faces but not edges or vertices
             flist = [created.value(i) for i in range(created.numberOfValues())]

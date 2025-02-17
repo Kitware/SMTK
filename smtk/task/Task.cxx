@@ -181,11 +181,15 @@ void Task::configure(const Configuration& config)
   {
     this->setName(config.at("title").get<std::string>());
   }
+  if (config.contains("description"))
+  {
+    this->setDescription(config.at("description").get<std::string>());
+  }
   if (config.contains("style"))
   {
     try
     {
-      m_style = config.at("style").get<std::set<smtk::string::Token>>();
+      m_style = config.at("style").get<std::unordered_set<smtk::string::Token>>();
     }
     catch (nlohmann::json::exception&)
     {
@@ -317,6 +321,38 @@ const std::shared_ptr<resource::Resource> Task::resource() const
   return rsrc;
 }
 
+std::string Task::information(const InformationOptions& opts) const
+{
+  std::ostringstream result;
+  if (opts.m_includeTitle)
+  {
+    result << "<h1>" << this->name() << "</h1>\n";
+  }
+  if (opts.m_includeDescription)
+  {
+    result << m_description;
+  }
+
+  if (opts.m_includeTroubleshooting)
+  {
+    std::string troubleshooting;
+    for (const auto& agent : m_agents)
+    {
+      troubleshooting += agent->troubleshoot();
+    }
+    if (!troubleshooting.empty())
+    {
+      result << "<h2>Diagnostics</h2>\n<ul>\n" << troubleshooting << "\n</ul>";
+    }
+  }
+  return result.str();
+}
+
+void Task::setDescription(const std::string& description)
+{
+  m_description = description;
+}
+
 const std::unordered_map<smtk::string::Token, Port*>& Task::ports() const
 {
   return m_ports;
@@ -350,26 +386,16 @@ bool Task::changePortName(Port* port, const std::string& newName, std::function<
 
 std::shared_ptr<PortData> Task::portData(const Port* port) const
 {
-  std::shared_ptr<PortData> result;
-  // Find agents that are using the port and fetch their data.
-  // If more than one agent is involved then merge the results.
-  for (const auto& agent : m_agents)
+  if (!port || port->parent() != this)
   {
-    auto pd = agent->portData(port);
-    if (!pd)
-    {
-      continue;
-    }
-    if (result)
-    {
-      result->merge(pd.get());
-    }
-    else
-    {
-      result = pd;
-    }
+    return nullptr;
   }
-  return result;
+
+  if (port->direction() == Port::Direction::In)
+  {
+    return this->inputPortData(port);
+  }
+  return this->outputPortData(port);
 }
 
 void Task::portDataUpdated(const Port* port)
@@ -550,6 +576,75 @@ bool Task::removeDependency(const std::shared_ptr<Task>& dependency)
   return false;
 }
 
+State Task::state() const
+{
+  if (m_dependencyState == State::Unavailable)
+  {
+    return State::Unavailable;
+  }
+
+  if (
+    ((m_childrenState > State::Unavailable) && (m_childrenState < State::Completed)) ||
+    (m_agentState == State::Incomplete))
+  {
+    return State::Incomplete;
+  }
+
+  State internalState;
+
+  if ((m_agentState == m_childrenState) || (m_agentState == State::Irrelevant))
+  {
+    internalState = m_childrenState;
+  }
+  else if (m_childrenState == State::Irrelevant)
+  {
+    internalState = m_agentState;
+  }
+  else if ((m_agentState == State::Completable) && (m_childrenState == State::Completed))
+  {
+    internalState = State::Completable;
+  }
+  else
+  {
+    // The states are not the same and at least one is less
+    // than Completable
+    return State::Incomplete;
+  }
+  // In the case where the children states are Completed and
+  // there are no relevant agents, the task's internal state is
+  // considered Completable instead of Completed
+  if (internalState == State::Completed)
+  {
+    internalState = State::Completable;
+  }
+  if (internalState == State::Completable && m_completed)
+  {
+    return State::Completed;
+  }
+  return internalState;
+}
+
+std::unordered_set<const Task*> Task::ancestors() const
+{
+  std::unordered_set<const Task*> result;
+  for (const Task* p = this; p != nullptr; p = p->m_parent)
+  {
+    result.insert(p);
+  }
+  return result;
+}
+
+std::vector<Task*> Task::lineage() const
+{
+  std::vector<Task*> result;
+  for (Task* p = m_parent; p != nullptr; p = p->m_parent)
+  {
+    result.push_back(p);
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
 smtk::common::Visit Task::visit(RelatedTasks relation, Visitor visitor) const
 {
   smtk::common::Visit status = smtk::common::Visit::Continue;
@@ -583,6 +678,214 @@ smtk::common::Visit Task::visit(RelatedTasks relation, Visitor visitor) const
       break;
   }
   return status;
+}
+
+bool Task::canAddChild(const std::shared_ptr<Task>& child) const
+{
+  if (child->m_parent != nullptr)
+  {
+    // task is already a child to a task
+    return false;
+  }
+  auto taskSet = this->ancestors();
+  return checkDescendants(child.get(), taskSet);
+}
+
+bool Task::addChild(const std::shared_ptr<Task>& child)
+{
+  auto taskSet = this->ancestors();
+  return this->addChild(child, taskSet);
+}
+
+bool Task::removeChild(const std::shared_ptr<Task>& child)
+{
+  if (child && (child->m_parent == this))
+  {
+    auto it = m_children.find(child.get());
+    if (it != m_children.end())
+    {
+      m_children.erase(it);
+      child->m_parent = nullptr;
+      // Compute new task child state if needed
+      this->updateChildrenState(child.get(), child->state(), State::Irrelevant);
+      return true;
+    }
+  }
+  return false;
+}
+
+std::unordered_set<Agent*> Task::agents() const
+{
+  std::unordered_set<Agent*> aset;
+  for (const auto& agent : m_agents)
+  {
+    aset.insert(agent.get());
+  }
+  return aset;
+}
+
+bool Task::updateAgentState(const Agent* agent, State prev, State next, bool signal)
+{
+  (void)prev; // Not needed by the base class
+  if ((m_agentState == next) || (agent->parent() != this))
+  {
+    return false;
+  }
+
+  State newAgentState = this->computeAgentState();
+  if (m_agentState == newAgentState)
+  {
+    return false; // no change in agent state
+  }
+
+  State currentTaskState = this->state();
+  m_agentState = newAgentState;
+  State newTaskState = this->state();
+
+  if (currentTaskState == newTaskState || !signal)
+  {
+    return false;
+  }
+
+  this->changeState(currentTaskState, newTaskState);
+  return true;
+}
+
+std::shared_ptr<smtk::common::Managers> Task::managers() const
+{
+  if (auto* taskMgr = this->manager())
+  {
+    return taskMgr->managers();
+  }
+  return nullptr;
+}
+
+bool Task::changeState(State previous, State next)
+{
+  if (previous == next)
+  {
+    return false;
+  }
+
+  State statePriorToAgentNotification = next;
+  // Notify the agents that the Task state has changed
+  for (const auto& agent : m_agents)
+  {
+    agent->taskStateChanged(previous, next);
+    // Any agent may alter "next".
+    //
+    // For example, SubmitOperationAgent will downgrade Completable to Incomplete
+    // when a task transitions away from Completed (since now the operation must
+    // re-run). If this occurs, we should not continue since the agent will call
+    // Task::updateAgentState() which calles changeState() before returning here.
+    if (next != statePriorToAgentNotification)
+    {
+      return false;
+    }
+  }
+
+  m_completed = next == State::Completed;
+
+  // Let the task's parent know about the change
+  if (m_parent)
+  {
+    m_parent->updateChildrenState(this, previous, next);
+  }
+  m_observers(*this, previous, next);
+  return true;
+}
+
+bool Task::addChild(
+  const std::shared_ptr<Task>& child,
+  const std::unordered_set<const Task*>& taskSet)
+{
+  // Is this child already parented?
+  if (child->m_parent != nullptr)
+  {
+    return false;
+  }
+  if (child && checkDescendants(child.get(), taskSet))
+  {
+    m_children.insert(child.get());
+    child->m_parent = this;
+    // Compute new task child state if needed
+    this->updateChildrenState(child.get(), State::Irrelevant, child->state());
+    return true;
+  }
+  return false;
+}
+
+bool Task::updateDependencyState(Task& dependency, State prev, State next)
+{
+  (void)dependency; // the base class doesn't need it.
+
+  // If the new state is the same as the current dependency state then
+  // then the task state will not change
+  if (next == m_dependencyState)
+  {
+    return false;
+  }
+  // If a dependent task becomes blocking or non-blocking,
+  // check other tasks and see if we should change our state
+  State limit = m_strictDependencies ? State::Completed : State::Completable;
+  bool dependencyNowUnblocked = (prev < limit && next >= limit);
+  bool dependencyNowBlocking = (((prev == State::Irrelevant) || (prev >= limit)) && next < limit);
+
+  // No significant change to our dependency.
+  if (!dependencyNowUnblocked && !dependencyNowBlocking)
+  {
+    return false;
+  }
+
+  if (dependencyNowUnblocked && dependencyNowBlocking)
+  {
+    throw std::logic_error("Impossible state.");
+  }
+
+  State newDepState = this->computeDependencyState();
+  if (m_dependencyState == newDepState)
+  {
+    return false; // the dependency state hasn't changed
+  }
+
+  State currentTaskState = this->state();
+  m_dependencyState = newDepState;
+  State newTaskState = this->state();
+
+  if (currentTaskState == newTaskState)
+  {
+    return false;
+  }
+
+  this->changeState(currentTaskState, newTaskState);
+  return true;
+}
+
+bool Task::updateChildrenState(const Task* child, State prev, State next)
+{
+  (void)prev; // Not needed by the base class
+  if ((m_childrenState == next) || (child->parent() != this))
+  {
+    return false;
+  }
+
+  State newChildrenState = this->computeChildrenState();
+  if (m_childrenState == newChildrenState)
+  {
+    return false; // no change in children state
+  }
+
+  State currentTaskState = this->state();
+  m_childrenState = newChildrenState;
+  State newTaskState = this->state();
+
+  if (currentTaskState == newTaskState)
+  {
+    return false;
+  }
+
+  this->changeState(currentTaskState, newTaskState);
+  return true;
 }
 
 State Task::computeDependencyState() const
@@ -676,281 +979,50 @@ State Task::computeChildrenState() const
   return s;
 }
 
-State Task::state() const
+std::shared_ptr<PortData> Task::outputPortData(const Port* port) const
 {
-  if (m_dependencyState == State::Unavailable)
-  {
-    return State::Unavailable;
-  }
-
-  if (
-    ((m_childrenState > State::Unavailable) && (m_childrenState < State::Completed)) ||
-    (m_agentState == State::Incomplete))
-  {
-    return State::Incomplete;
-  }
-
-  State internalState;
-
-  if ((m_agentState == m_childrenState) || (m_agentState == State::Irrelevant))
-  {
-    internalState = m_childrenState;
-  }
-  else if (m_childrenState == State::Irrelevant)
-  {
-    internalState = m_agentState;
-  }
-  else if ((m_agentState == State::Completable) && (m_childrenState == State::Completed))
-  {
-    internalState = State::Completable;
-  }
-  else
-  {
-    // The states are not the same and at least one is less
-    // than Completable
-    return State::Incomplete;
-  }
-  // In the case where the children states are Completed and
-  // there are no relevant agents, the task's internal state is
-  // considered Completable instead of Completed
-  if (internalState == State::Completed)
-  {
-    internalState = State::Completable;
-  }
-  if (internalState == State::Completable && m_completed)
-  {
-    return State::Completed;
-  }
-  return internalState;
-}
-
-bool Task::changeState(State previous, State next)
-{
-  if (previous == next)
-  {
-    return false;
-  }
-
-  State statePriorToAgentNotification = next;
-  // Notify the agents that the Task state has changed
+  std::shared_ptr<PortData> result;
+  // Find agents that are using the port and fetch their data.
+  // If more than one agent is involved then merge the results.
   for (const auto& agent : m_agents)
   {
-    agent->taskStateChanged(previous, next);
-    // Any agent may alter "next".
-    //
-    // For example, SubmitOperationAgent will downgrade Completable to Incomplete
-    // when a task transitions away from Completed (since now the operation must
-    // re-run). If this occurs, we should not continue since the agent will call
-    // Task::updateAgentState() which calles changeState() before returning here.
-    if (next != statePriorToAgentNotification)
+    auto pd = agent->portData(port);
+    if (!pd)
     {
-      return false;
+      continue;
     }
-  }
-
-  m_completed = next == State::Completed;
-
-  // Let the task's parent know about the change
-  if (m_parent)
-  {
-    m_parent->updateChildrenState(this, previous, next);
-  }
-  m_observers(*this, previous, next);
-  return true;
-}
-
-bool Task::updateDependencyState(Task& dependency, State prev, State next)
-{
-  (void)dependency; // the base class doesn't need it.
-
-  // If the new state is the same as the current dependency state then
-  // then the task state will not change
-  if (next == m_dependencyState)
-  {
-    return false;
-  }
-  // If a dependent task becomes blocking or non-blocking,
-  // check other tasks and see if we should change our state
-  State limit = m_strictDependencies ? State::Completed : State::Completable;
-  bool dependencyNowUnblocked = (prev < limit && next >= limit);
-  bool dependencyNowBlocking = (((prev == State::Irrelevant) || (prev >= limit)) && next < limit);
-
-  // No significant change to our dependency.
-  if (!dependencyNowUnblocked && !dependencyNowBlocking)
-  {
-    return false;
-  }
-
-  if (dependencyNowUnblocked && dependencyNowBlocking)
-  {
-    throw std::logic_error("Impossible state.");
-  }
-
-  State newDepState = this->computeDependencyState();
-  if (m_dependencyState == newDepState)
-  {
-    return false; // the dependency state hasn't changed
-  }
-
-  State currentTaskState = this->state();
-  m_dependencyState = newDepState;
-  State newTaskState = this->state();
-
-  if (currentTaskState == newTaskState)
-  {
-    return false;
-  }
-
-  this->changeState(currentTaskState, newTaskState);
-  return true;
-}
-
-bool Task::updateAgentState(const Agent* agent, State prev, State next, bool signal)
-{
-  (void)prev; // Not needed by the base class
-  if ((m_agentState == next) || (agent->parent() != this))
-  {
-    return false;
-  }
-
-  State newAgentState = this->computeAgentState();
-  if (m_agentState == newAgentState)
-  {
-    return false; // no change in agent state
-  }
-
-  State currentTaskState = this->state();
-  m_agentState = newAgentState;
-  State newTaskState = this->state();
-
-  if (currentTaskState == newTaskState || !signal)
-  {
-    return false;
-  }
-
-  this->changeState(currentTaskState, newTaskState);
-  return true;
-}
-
-std::shared_ptr<smtk::common::Managers> Task::managers() const
-{
-  if (auto* taskMgr = this->manager())
-  {
-    return taskMgr->managers();
-  }
-  return nullptr;
-}
-
-bool Task::updateChildrenState(const Task* child, State prev, State next)
-{
-  (void)prev; // Not needed by the base class
-  if ((m_childrenState == next) || (child->parent() != this))
-  {
-    return false;
-  }
-
-  State newChildrenState = this->computeChildrenState();
-  if (m_childrenState == newChildrenState)
-  {
-    return false; // no change in children state
-  }
-
-  State currentTaskState = this->state();
-  m_childrenState = newChildrenState;
-  State newTaskState = this->state();
-
-  if (currentTaskState == newTaskState)
-  {
-    return false;
-  }
-
-  this->changeState(currentTaskState, newTaskState);
-  return true;
-}
-
-std::unordered_set<Agent*> Task::agents() const
-{
-  std::unordered_set<Agent*> aset;
-  for (const auto& agent : m_agents)
-  {
-    aset.insert(agent.get());
-  }
-  return aset;
-}
-
-std::vector<Task*> Task::lineage() const
-{
-  std::vector<Task*> result;
-  for (Task* p = m_parent; p != nullptr; p = p->m_parent)
-  {
-    result.push_back(p);
-  }
-  std::reverse(result.begin(), result.end());
-  return result;
-}
-
-std::unordered_set<const Task*> Task::ancestors() const
-{
-  std::unordered_set<const Task*> result;
-  for (const Task* p = this; p != nullptr; p = p->m_parent)
-  {
-    result.insert(p);
+    if (result)
+    {
+      result->merge(pd.get());
+    }
+    else
+    {
+      result = pd;
+    }
   }
   return result;
 }
 
-bool Task::canAddChild(const std::shared_ptr<Task>& child) const
+std::shared_ptr<PortData> Task::inputPortData(const Port* port) const
 {
-  if (child->m_parent != nullptr)
+  std::shared_ptr<PortData> data;
+  for (const auto& conn : port->connections())
   {
-    // task is already a child to a task
-    return false;
-  }
-  auto taskSet = this->ancestors();
-  return checkDescendants(child.get(), taskSet);
-}
-
-bool Task::addChild(const std::shared_ptr<Task>& child)
-{
-  auto taskSet = this->ancestors();
-  return this->addChild(child, taskSet);
-}
-
-bool Task::addChild(
-  const std::shared_ptr<Task>& child,
-  const std::unordered_set<const Task*>& taskSet)
-{
-  // Is this child already parented?
-  if (child->m_parent != nullptr)
-  {
-    return false;
-  }
-  if (child && checkDescendants(child.get(), taskSet))
-  {
-    m_children.insert(child.get());
-    child->m_parent = this;
-    // Compute new task child state if needed
-    this->updateChildrenState(child.get(), State::Irrelevant, child->state());
-    return true;
-  }
-  return false;
-}
-
-bool Task::removeChild(const std::shared_ptr<Task>& child)
-{
-  if (child && (child->m_parent == this))
-  {
-    auto it = m_children.find(child.get());
-    if (it != m_children.end())
+    // Ask the port to produce data for its connection:
+    auto connData = port->portData(conn);
+    if (connData)
     {
-      m_children.erase(it);
-      child->m_parent = nullptr;
-      // Compute new task child state if needed
-      this->updateChildrenState(child.get(), child->state(), State::Irrelevant);
-      return true;
+      if (data)
+      {
+        data->merge(connData.get());
+      }
+      else
+      {
+        data = connData;
+      }
     }
   }
-  return false;
+  return data;
 }
 
 } // namespace task

@@ -131,8 +131,9 @@ public:
 
   void updateTaskState(smtk::task::State prev, smtk::task::State next, bool active)
   {
-    (void)prev;
-    (void)active;
+    // The node's superclass updates the tooltip for us.
+    m_node->updateTaskState(prev, next, active);
+
     auto& cfg = *m_node->scene()->configuration();
     QPalette p = this->palette();
     QColor newStateColor;

@@ -33,6 +33,7 @@
 #include "pqApplicationCore.h"
 
 #include <QAbstractProxyModel>
+#include <QTimer>
 #include <QTreeView>
 
 namespace
@@ -238,7 +239,20 @@ int pqSMTKOperationHintsBehavior::processHints(
   }
 
   // III. Process render view hints.
-  // TODO.
+  smtk::operation::visitAssociationHintsOfType(
+    result, "render visibility hint", [&](const smtk::attribute::ReferenceItem::Ptr& associations) {
+      auto showItem = associations->attribute()->find("show");
+      bool show = showItem ? showItem->isEnabled() : false;
+      std::set<smtk::resource::PersistentObject*> objects;
+      for (const auto& object : *associations)
+      {
+        objects.insert(object.get());
+      }
+      auto visibilityMap = smtk::view::objectsToSharedResourceMap(objects);
+      QTimer::singleShot(0, [show, visibilityMap]() {
+        pqSMTKBehavior::instance()->showObjects(show, visibilityMap);
+      });
+    });
 
   // IV. Process task hints.
   smtk::operation::visitTaskHintsOfType(

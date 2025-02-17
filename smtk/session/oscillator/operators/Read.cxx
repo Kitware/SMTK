@@ -83,8 +83,8 @@ Read::Result Read::operateInternal()
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
   {
-    smtk::attribute::ResourceItem::Ptr created = result->findResource("resource");
-    created->setValue(resource);
+    smtk::attribute::ResourceItem::Ptr created = result->findResource("resourcesCreated");
+    created->appendValue(resource);
   }
 
   return result;
@@ -97,7 +97,7 @@ const char* Read::xmlDescription() const
 
 void Read::markModifiedResources(Read::Result& res)
 {
-  auto resourceItem = res->findResource("resource");
+  auto resourceItem = res->findResource("resourcesCreated");
   for (auto rit = resourceItem->begin(); rit != resourceItem->end(); ++rit)
   {
     auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(*rit);
@@ -119,7 +119,7 @@ smtk::resource::ResourcePtr read(
   {
     return smtk::resource::ResourcePtr();
   }
-  return result->findResource("resource")->value();
+  return result->findResource("resourcesCreated")->value();
 }
 
 } // namespace oscillator

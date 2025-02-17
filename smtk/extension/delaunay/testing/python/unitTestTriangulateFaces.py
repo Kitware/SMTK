@@ -35,7 +35,7 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
 
         # Access the resource
         self.resource = smtk.model.Resource.CastTo(
-            loadRes.find('resource').value())
+            loadRes.find('resourcesCreated').value())
 
     def testMeshing2D(self):
         face = self.resource.findEntitiesOfType(int(smtk.model.FACE))[0]
@@ -43,8 +43,8 @@ class UnitTriangulateFaces(smtk.testing.TestCase):
         triangulateFace.parameters().associateEntity(face)
         result = triangulateFace.operate()
         triangulatedFace = result.find("meshresource").value()
-        assert(triangulatedFace.points().size() == 8)
-        assert(triangulatedFace.cells().size() == 8)
+        assert (triangulatedFace.points().size() == 8)
+        assert (triangulatedFace.cells().size() == 8)
 
         if self.interactive() and self.haveVTK() and self.haveVTKExtension():
             self.startRenderTest()

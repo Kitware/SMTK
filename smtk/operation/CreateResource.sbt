@@ -18,11 +18,7 @@
 
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
-    <AttDef Type="result(create resource)" BaseType="result">
-      <ItemDefinitions>
-        <Resource Name="resource" IsEnabledByDefault="true" HoldReference="true"></Resource>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(create resource)" BaseType="result"/>
   </Definitions>
 
 </SMTK_AttributeResource>
