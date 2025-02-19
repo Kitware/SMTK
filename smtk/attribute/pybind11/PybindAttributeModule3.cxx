@@ -22,7 +22,6 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindAttribute.h"
-#include "PybindCategories.h"
 #include "PybindComponentItem.h"
 #include "PybindComponentItemDefinition.h"
 #include "PybindDateTimeItem.h"
@@ -73,6 +72,5 @@ void attributePart3(py::module& attribute)
   PySharedPtrClass< smtk::attribute::ModelEntityItem, smtk::attribute::ComponentItem > smtk_attribute_ModelEntityItem = pybind11_init_smtk_attribute_ModelEntityItem(attribute);
   PySharedPtrClass< smtk::attribute::ModelEntityItemDefinition, smtk::attribute::ComponentItemDefinition > smtk_attribute_ModelEntityItemDefinition = pybind11_init_smtk_attribute_ModelEntityItemDefinition(attribute);
 
-  py::class_< smtk::attribute::Categories > smtk_attribute_Categories = pybind11_init_smtk_attribute_Categories(attribute);
   py::class_< smtk::attribute::Registrar > smtk_attribute_Registrar = pybind11_init_smtk_attribute_Registrar(attribute);
 }

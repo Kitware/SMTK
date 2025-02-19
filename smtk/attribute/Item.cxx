@@ -240,7 +240,7 @@ bool Item::isEnabled() const
   return m_owningItem->isEnabled();
 }
 
-const smtk::attribute::Categories& Item::categories() const
+const smtk::common::Categories& Item::categories() const
 {
   return this->definition()->categories();
 }

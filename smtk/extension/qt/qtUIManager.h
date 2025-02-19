@@ -10,7 +10,6 @@
 #ifndef smtk_extension_qtUIManager_h
 #define smtk_extension_qtUIManager_h
 
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
 
 #include "smtk/common/Deprecation.h"

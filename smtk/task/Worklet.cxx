@@ -110,6 +110,12 @@ void Worklet::configure(const Configuration& config, Manager& taskManager)
   {
     m_description.clear();
   }
+
+  it = config.find("categories");
+  if (it != config.end())
+  {
+    m_categories = *it;
+  }
 }
 
 const std::shared_ptr<resource::Resource> Worklet::resource() const
@@ -151,6 +157,12 @@ void Worklet::setName(const std::string& newName)
 {
   m_name = newName;
   m_configuration["name"] = newName;
+}
+
+void Worklet::setCategories(const std::set<std::string>& cats)
+{
+  m_categories = cats;
+  m_configuration["categories"] = cats;
 }
 
 } // namespace task

@@ -193,6 +193,45 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
         }
       }
     }
+    auto result = jj.find("toplevel-accepts-worklets-expression");
+    if (result != jj.end())
+    {
+      if (!taskManager.toplevelExpression().setExpression(*result))
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not set top-level category expression to: " << *result << ".");
+        taskManager.toplevelExpression().setAllPass();
+      }
+    }
+    else
+    {
+      result = jj.find("toplevel-accepts-worklets");
+      if (result != jj.end())
+      {
+        if (*result == "all")
+        {
+          taskManager.toplevelExpression().setAllPass();
+        }
+        else if (*result == "none")
+        {
+          taskManager.toplevelExpression().setAllReject();
+        }
+        else
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Found invalid toplevel-accepts-worklets: "
+              << *result << " - should be set to either All or None.");
+          taskManager.toplevelExpression().setAllPass();
+        }
+      }
+      else
+      {
+        // There is no top-level category expression - allow all worklets to be top-level
+        taskManager.toplevelExpression().setAllPass();
+      }
+    }
   }
   catch (std::exception& e)
   {
@@ -262,6 +301,24 @@ void to_json(nlohmann::json& jj, const Manager& manager)
       worklets.push_back(workletInfo.second);
     }
     jj["gallery"] = worklets;
+  }
+  if (manager.toplevelExpression().isSet())
+  {
+    if (manager.toplevelExpression().expression().empty())
+    {
+      if (manager.toplevelExpression().allPass())
+      {
+        jj["toplevel-accepts-worklets"] = "all";
+      }
+      else
+      {
+        jj["toplevel-accepts-worklets"] = "none";
+      }
+    }
+    else
+    {
+      jj["toplevel-accepts-worklets-expression"] = manager.toplevelExpression().expression();
+    }
   }
 }
 

@@ -18,6 +18,12 @@
       </AssociationsDef>
 
       <ItemDefinitions>
+        <Component Name="parentTask" LockType="Write" NumberOfRequiredValues="1" Optional="true">
+          <Accepts><Resource Name="smtk::project::Project" Filter="smtk::task::Task"/></Accepts>
+          <BriefDescription>
+            An input port that consumes configuration data from upstream.
+          </BriefDescription>
+        </Component>
         <Double Name="location" NumberOfRequiredValues="2">
           <BriefDescription>
             The (x,y) canvas coordinates describing where the center of the worklet's

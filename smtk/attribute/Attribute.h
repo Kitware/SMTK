@@ -23,6 +23,7 @@
 #include "smtk/attribute/SearchStyle.h"
 #include "smtk/attribute/ValueItem.h"
 
+#include "smtk/common/Categories.h"
 #include "smtk/common/Deprecation.h"
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
@@ -337,7 +338,7 @@ public:
 
   ///\brief The categories that the attribute applies to. Typically
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
-  const smtk::attribute::Categories& categories() const;
+  const smtk::common::Categories& categories() const;
 
   ///@{
   ///\brief Returns true if the attribute is valid.

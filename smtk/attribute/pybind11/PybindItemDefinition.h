@@ -33,7 +33,7 @@ inline PySharedPtrClass< smtk::attribute::ItemDefinition > pybind11_init_smtk_at
     // NOTE that the Python form of this method is returning a copy since Python
     // doesn't support const references - oly non-const method of localCategories supported
     .def("categories", &smtk::attribute::ItemDefinition::categories)
-    .def("localCategories", (smtk::attribute::Categories::Expression& (smtk::attribute::ItemDefinition::*)()) &smtk::attribute::ItemDefinition::localCategories, py::return_value_policy::reference)
+    .def("localCategories", (smtk::common::Categories::Expression& (smtk::attribute::ItemDefinition::*)()) &smtk::attribute::ItemDefinition::localCategories, py::return_value_policy::reference)
     .def("setLocalCategories", &smtk::attribute::ItemDefinition::setLocalCategories, py::arg("catExpression"))
     .def("createCopy", &smtk::attribute::ItemDefinition::createCopy, py::arg("info"))
     .def("detailedDescription", &smtk::attribute::ItemDefinition::detailedDescription)

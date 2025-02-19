@@ -164,6 +164,14 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
   // objects do not have their UUIDs mapped.
   taskHelper.setMapUUIDs(false);
 
+  // See if the created tasks are to be children
+  smtk::task::TaskPtr parentTask;
+  auto parentTaskItem = this->parameters()->findComponent("parentTask");
+  if (parentTaskItem->isEnabled())
+  {
+    parentTask = std::dynamic_pointer_cast<smtk::task::Task>(parentTaskItem->value());
+  }
+
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
   {
     auto created = result->findComponent("created");
@@ -177,6 +185,30 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
     {
       auto sharedTask = task->shared_from_this();
       sharedTasks.push_back(sharedTask);
+    }
+    if (parentTask)
+    {
+      if (!parentTask->acceptsChildCategories(worklet->categories()))
+      {
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "Worklet: " << worklet->name() << "'s categories did not pass Task: "
+                      << parentTask->name() << "'s category constraints.\n");
+      }
+      for (const auto& task : sharedTasks)
+      {
+        parentTask->addChild(std::dynamic_pointer_cast<smtk::task::Task>(task));
+      }
+      auto modified = result->findComponent("modified");
+      modified->appendValue(parentTask);
+    }
+    else if (!project->taskManager().toplevelExpression().passes(worklet->categories()))
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Worklet: "
+          << worklet->name()
+          << "'s categories did not pass the workflow's top-level category expression.\n");
     }
     created->appendValues(sharedTasks.begin(), sharedTasks.end());
 

@@ -56,7 +56,7 @@ Definition::Definition(
   m_rootName = m_type;
   m_includeIndex = 0;
   m_prerequisiteUsageCount = 0;
-  m_combinationMode = Categories::CombinationMode::And;
+  m_combinationMode = smtk::common::Categories::CombinationMode::And;
   if (myBaseDef)
   {
     m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
@@ -794,9 +794,9 @@ std::set<AttributePtr> Definition::attributes(
   return atts;
 }
 
-void Definition::applyCategories(smtk::attribute::Categories::Stack inherited)
+void Definition::applyCategories(smtk::common::Categories::Stack inherited)
 {
-  smtk::attribute::Categories inheritedFromItems;
+  smtk::common::Categories inheritedFromItems;
   m_categories.reset();
 
   // First append the definition's local category info to
@@ -805,7 +805,8 @@ void Definition::applyCategories(smtk::attribute::Categories::Stack inherited)
   inherited.append(m_combinationMode, m_localCategories);
 
   // Next append the def's categories to those we have inherited (if we are not only considering local Only)
-  if (m_baseDefinition && (m_combinationMode != Categories::CombinationMode::LocalOnly))
+  if (
+    m_baseDefinition && (m_combinationMode != smtk::common::Categories::CombinationMode::LocalOnly))
   {
     m_categories.insert(m_baseDefinition->m_categories);
   }
@@ -820,7 +821,8 @@ void Definition::applyCategories(smtk::attribute::Categories::Stack inherited)
   // We start with all of the categories associated with the def's
   // base definition - note that we assume that the inherited set passed
   // in is contained within the base's categories
-  if (m_baseDefinition && (m_combinationMode != Categories::CombinationMode::LocalOnly))
+  if (
+    m_baseDefinition && (m_combinationMode != smtk::common::Categories::CombinationMode::LocalOnly))
   {
   }
   m_categories.insert(inherited);

@@ -21,6 +21,7 @@ using namespace pugi;
 #include "smtk/io/XmlPropertyParsingHelper.txx"
 
 using namespace smtk::attribute;
+using namespace smtk::common;
 using namespace smtk::io;
 using namespace smtk;
 

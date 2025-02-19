@@ -11,6 +11,7 @@
 #include "smtk/attribute/ItemDefinition.h"
 #include <iostream>
 using namespace smtk::attribute;
+using namespace smtk::common;
 
 ItemDefinition::ItemDefinition(const std::string& myName)
   : m_name(myName)
@@ -27,8 +28,8 @@ ItemDefinition::ItemDefinition(const std::string& myName)
 ItemDefinition::~ItemDefinition() = default;
 
 void ItemDefinition::applyCategories(
-  const smtk::attribute::Categories::Stack& inheritedFromParent,
-  smtk::attribute::Categories& inheritedToParent)
+  const smtk::common::Categories::Stack& inheritedFromParent,
+  smtk::common::Categories& inheritedToParent)
 {
   Categories::Stack myCats = inheritedFromParent;
   myCats.append(m_combinationMode, m_localCategories);

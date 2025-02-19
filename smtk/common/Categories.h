@@ -8,13 +8,13 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef smtk_attribute_Categories_h
-#define smtk_attribute_Categories_h
+#ifndef smtk_common_Categories_h
+#define smtk_common_Categories_h
 
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h" // quiet dll-interface warnings on windows
 
-#include "smtk/attribute/categories/Evaluators.h"
+#include "smtk/common/categories/Evaluators.h"
 #include <set>
 #include <string>
 #include <utility>
@@ -22,10 +22,10 @@
 
 namespace smtk
 {
-namespace attribute
+namespace common
 {
-///\brief Represents the category constraints associated with an Attribute, Attribute Definition,
-/// Item or Item Definition
+///\brief Represents the category constraints associated with smtk objects such as
+/// Attributes, Attribute Definitions, Attribute Items, Attribute Item Definitions, Tasks and Task Worklets
 ///
 /// Categories is composed of a set of Category Sets.  Each set represents a single category constraint.
 /// The overall category constraint represented by Categories "or's" the result from its constraint sets.
@@ -271,6 +271,6 @@ public:
 private:
   std::set<Stack> m_stacks;
 };
-} // namespace attribute
+} // namespace common
 } // namespace smtk
 #endif

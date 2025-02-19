@@ -36,6 +36,8 @@
 
 #include "smtk/attribute/filter/GrammarInfo.h"
 
+#include "smtk/common/Categories.h"
+
 #include "smtk/string/Token.h"
 
 #include "smtk/view/Configuration.h"
@@ -265,8 +267,8 @@ public:
   const std::set<std::string>& activeCategories() const { return m_activeCategories; }
   ///@}
 
-  bool passActiveCategoryCheck(const smtk::attribute::Categories::Expression& cats) const;
-  bool passActiveCategoryCheck(const smtk::attribute::Categories& cats) const;
+  bool passActiveCategoryCheck(const smtk::common::Categories::Expression& cats) const;
+  bool passActiveCategoryCheck(const smtk::common::Categories& cats) const;
 
   void addView(smtk::view::ConfigurationPtr);
   smtk::view::ConfigurationPtr findView(const std::string& name) const;

@@ -15,6 +15,7 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#include "smtk/common/Categories.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeName.h"
 #include "smtk/operation/Manager.h"
@@ -135,6 +136,11 @@ public:
   Gallery& gallery() { return m_gallery; }
   const Gallery& gallery() const { return m_gallery; }
 
+  /// Return the category expression constraint for placing worklets at the top-level
+  /// of the workflow
+  smtk::common::Categories::Expression& toplevelExpression() { return m_expression; }
+  const smtk::common::Categories::Expression& toplevelExpression() const { return m_expression; }
+
   /// Return the set of observers of task events (so you can insert/remove an observer).
   TaskManagerTaskObservers& taskObservers() { return m_taskEvents; }
   /// Return the set of observers of adaptor events (so you can insert/remove an observer).
@@ -207,6 +213,8 @@ private:
   TaskManagerAdaptorObservers m_adaptorEvents;
   /// Observers to notify when a workflow is created/destroyed/modified by an operation.
   TaskManagerWorkflowObservers m_workflowEvents;
+  // Expression constraint for placing worklets at the toplevel of a workflow.
+  smtk::common::Categories::Expression m_expression;
 };
 } // namespace task
 } // namespace smtk

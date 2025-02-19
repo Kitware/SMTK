@@ -13,13 +13,14 @@
 #include "smtk/attribute//filter/Grammar.h"
 #include "smtk/attribute//filter/GrammarInfoActions.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/attribute/queries/SelectionFootprint.h"
+
+#include "smtk/common/Categories.h"
 
 #include "smtk/io/Logger.h"
 #include "smtk/model/Resource.h"
@@ -539,7 +540,7 @@ void Resource::finalizeDefinitions()
   // We need to process the definitions that don't have
   // a base definition
   std::vector<DefinitionPtr> baseDefs;
-  smtk::attribute::Categories::Stack initialCats;
+  smtk::common::Categories::Stack initialCats;
   this->findBaseDefinitions(baseDefs);
   // Lets apply their categories and their item definitions' categories
   for (auto& def : baseDefs)
@@ -1528,7 +1529,7 @@ void Resource::setActiveCategories(const std::set<std::string>& cats)
   m_activeCategories = cats;
 }
 
-bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories::Expression& cats) const
+bool Resource::passActiveCategoryCheck(const smtk::common::Categories::Expression& cats) const
 {
   if (!m_activeCategoriesEnabled)
   {
@@ -1537,7 +1538,7 @@ bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories::Expres
   return cats.passes(m_activeCategories);
 }
 
-bool Resource::passActiveCategoryCheck(const smtk::attribute::Categories& cats) const
+bool Resource::passActiveCategoryCheck(const smtk::common::Categories& cats) const
 {
   if (!m_activeCategoriesEnabled)
   {

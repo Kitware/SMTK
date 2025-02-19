@@ -57,8 +57,7 @@ static void processDerivedValueDefToJson(json& j, ItemDefType defPtr)
       enumName = defPtr->discreteEnum(i);
       // Check conditional items
       conditionalItems = defPtr->conditionalItems(enumName);
-      const smtk::attribute::Categories::Expression& categoryValues =
-        defPtr->enumCategories(enumName);
+      const smtk::common::Categories::Expression& categoryValues = defPtr->enumCategories(enumName);
       json valueJson, structureJson, resultJson;
       if (!conditionalItems.empty() || categoryValues.isSet())
       {
@@ -200,7 +199,7 @@ static void processDerivedValueDefFromJson(
           }
           if (catExp != structure->end())
           {
-            attribute::Categories::Expression localExp;
+            common::Categories::Expression localExp;
             auto catExpression = catExp->find("Expression");
             auto catPassMode = catExp->find("PassMode");
             if (catExpression != catExp->end())
@@ -231,13 +230,13 @@ static void processDerivedValueDefFromJson(
           }
           else if (catInfo != structure->end())
           {
-            attribute::Categories::Expression localCats;
+            common::Categories::Expression localCats;
             auto combineMode = catInfo->find("Combination");
-            smtk::attribute::Categories::CombinationMode cmode;
+            smtk::common::Categories::CombinationMode cmode;
             // If Combination is not specified - assume the default value;
             if (combineMode != catInfo->end())
             {
-              if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+              if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
               {
                 localCats.setCombinationMode(cmode);
               }
@@ -254,7 +253,7 @@ static void processDerivedValueDefFromJson(
             combineMode = catInfo->find("InclusionCombination");
             if (combineMode != catInfo->end())
             {
-              if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+              if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
               {
                 localCats.setInclusionMode(cmode);
               }
@@ -279,7 +278,7 @@ static void processDerivedValueDefFromJson(
             combineMode = catInfo->find("ExclusionCombination");
             if (combineMode != catInfo->end())
             {
-              if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+              if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
               {
                 localCats.setExclusionMode(cmode);
               }
@@ -304,14 +303,14 @@ static void processDerivedValueDefFromJson(
           }
           else if (catsValue != structure->end()) // Old Deprecated Format
           {
-            smtk::attribute::Categories::Expression localCats;
+            smtk::common::Categories::Expression localCats;
             auto ccm = structure->find("categoryCheckMode");
-            smtk::attribute::Categories::CombinationMode mode =
-              smtk::attribute::Categories::CombinationMode::Or;
+            smtk::common::Categories::CombinationMode mode =
+              smtk::common::Categories::CombinationMode::Or;
             // If categoryCheckMode is not specified - assume the default value;
             if (ccm != structure->end())
             {
-              if (!smtk::attribute::Categories::combinationModeFromString(*ccm, mode))
+              if (!smtk::common::Categories::combinationModeFromString(*ccm, mode))
               {
                 smtkErrorMacro(
                   smtk::io::Logger::instance(),

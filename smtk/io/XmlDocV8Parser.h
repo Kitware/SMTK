@@ -35,8 +35,8 @@ protected:
   smtk::attribute::AttributePtr processAttribute(pugi::xml_node& attNode) override;
   void processCategoryExpressionNode(
     pugi::xml_node& node,
-    attribute::Categories::Expression& catExp,
-    attribute::Categories::CombinationMode& inheritanceMode);
+    common::Categories::Expression& catExp,
+    common::Categories::CombinationMode& inheritanceMode);
   void processDefinitionAtts(pugi::xml_node& node, smtk::attribute::DefinitionPtr& def) override;
   void processDefinitionChildNode(pugi::xml_node& defNode, smtk::attribute::DefinitionPtr& def)
     override;

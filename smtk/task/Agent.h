@@ -48,6 +48,14 @@ class Task;
 class SMTKCORE_EXPORT Agent
 {
 public:
+  /// The set of values that an agent's acceptChildCategories method can return.
+  enum class CategoryEvaluation
+  {
+    Pass, //!< The agent would allow tasks with those categories to be children of the agent's task
+    Reject, //!< The agent would disallow tasks with those categories to be children of the agent's task.
+    Neutral //!< The agent would neither allow or disallow.
+  };
+
   using State = smtk::task::State;
   using Configuration = nlohmann::json;
   smtkTypeMacroBase(smtk::task::Agent);
@@ -109,6 +117,11 @@ public:
   /// assign them names. You are not required to name agents.
   /// Names must be specified by data passed to Agent::configure().
   smtk::string::Token name() const { return m_name; }
+
+  ///\brief Evaluates a set of categories that are associated with potential children
+  /// tasks.
+
+  virtual CategoryEvaluation acceptsChildCategories(const std::set<std::string>& cats) const;
 
 protected:
   friend class Task; // So that tasks can notify their agents of state changes.

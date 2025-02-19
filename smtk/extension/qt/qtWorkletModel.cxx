@@ -36,16 +36,6 @@
 
 using smtk::extension::qtOperationLauncher;
 
-qtWorkletModel::Item::Item(const std::shared_ptr<smtk::task::Worklet>& worklet)
-  : m_worklet(worklet)
-{
-}
-
-bool qtWorkletModel::Item::operator<(const Item& other) const
-{
-  return m_worklet->name() < other.m_worklet->name();
-}
-
 qtWorkletModel::qtWorkletModel(const smtk::view::Information& info, QObject* parent)
   : QAbstractListModel(parent)
 {
@@ -65,6 +55,11 @@ qtWorkletModel::qtWorkletModel(const smtk::view::Information& info, QObject* par
   {
     return;
   }
+
+  // Set the expression to accept all worklets to be em-placed as
+  // top-level tasks by default.
+  m_topLevelExpression.setAllPass();
+
   m_operationObserverKey = m_operationManager->observers().insert(
     [this](
       const smtk::operation::Operation& op,
@@ -149,7 +144,7 @@ int qtWorkletModel::rowCount(const QModelIndex& parent) const
 {
   (void)parent;
   assert(!parent.isValid());
-  return static_cast<int>(m_worklets.size());
+  return static_cast<int>(m_appropriateWorklets.size());
 }
 
 int qtWorkletModel::columnCount(const QModelIndex& parent) const
@@ -166,7 +161,7 @@ QVariant qtWorkletModel::data(const QModelIndex& index, int role) const
 
   int row = index.row();
   int col = index.column();
-  if (row < 0 || row >= static_cast<int>(m_worklets.size()))
+  if (row < 0 || row >= static_cast<int>(m_appropriateWorklets.size()))
   {
     return value;
   }
@@ -179,17 +174,17 @@ QVariant qtWorkletModel::data(const QModelIndex& index, int role) const
     return value;
   }
 
-  std::string name = m_worklets[row].m_worklet->name();
+  std::string name = m_appropriateWorklets[row]->name();
   switch (static_cast<Column>(col))
   {
     case Column::Label:
-      value = QString::fromStdString(m_worklets[row].m_worklet->name());
+      value = QString::fromStdString(m_appropriateWorklets[row]->name());
       break;
     case Column::WorkletOp:
-      value = QString::fromStdString(m_worklets[row].m_worklet->operationName());
+      value = QString::fromStdString(m_appropriateWorklets[row]->operationName());
       break;
     case Column::Description:
-      value = QString::fromStdString(m_worklets[row].m_worklet->description());
+      value = QString::fromStdString(m_appropriateWorklets[row]->description());
       break;
     default:
       break;
@@ -259,10 +254,10 @@ QMimeData* qtWorkletModel::mimeData(const QModelIndexList& indexes) const
 
 QModelIndex qtWorkletModel::findByName(smtk::string::Token label) const
 {
-  std::size_t sz = m_worklets.size() - 1;
+  std::size_t sz = m_appropriateWorklets.size() - 1;
   for (std::size_t ii = 0; ii <= sz; ++ii)
   {
-    if (m_worklets[ii].m_worklet->name() == label)
+    if (m_appropriateWorklets[ii]->name() == label)
     {
       return this->index(static_cast<int>(ii), 0);
     }
@@ -293,7 +288,19 @@ void qtWorkletModel::workletUpdate(
       if (comp->matchesType(workletTypeName))
       {
         auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp);
-        workletsToBeInserted.insert(worklet);
+        m_worklets.push_back(worklet);
+        // Lets see if the worklet should be presented?
+        if (m_parentTask)
+        {
+          if (m_parentTask->acceptsChildCategories(worklet->categories()))
+          {
+            workletsToBeInserted.insert(worklet);
+          }
+        }
+        else if (m_topLevelExpression.passes(worklet->categories()))
+        {
+          workletsToBeInserted.insert(worklet);
+        }
       }
     };
   if (createdResources)
@@ -317,18 +324,30 @@ void qtWorkletModel::workletUpdate(
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
     {
-      workletsToBeInserted.insert(worklet);
+      m_worklets.push_back(worklet);
+      // Lets see if the worklet should be presented?
+      if (m_parentTask)
+      {
+        if (m_parentTask->acceptsChildCategories(worklet->categories()))
+        {
+          workletsToBeInserted.insert(worklet);
+        }
+      }
+      else if (m_topLevelExpression.passes(worklet->categories()))
+      {
+        workletsToBeInserted.insert(worklet);
+      }
     }
   }
 
   // Insert new worklets
   if (!workletsToBeInserted.empty())
   {
-    row = static_cast<int>(m_worklets.size());
+    row = static_cast<int>(m_appropriateWorklets.size());
     this->beginInsertRows(QModelIndex(), row, row + workletsToBeInserted.size() - 1);
     for (const auto& worklet : workletsToBeInserted)
     {
-      m_worklets.emplace_back(worklet);
+      m_appropriateWorklets.emplace_back(worklet);
     }
     this->endInsertRows();
   }
@@ -339,9 +358,9 @@ void qtWorkletModel::workletUpdate(
     {
       // The worklet name may have changed, so just iterate until we
       // find a matching component:
-      for (row = 0; row < static_cast<int>(m_worklets.size()); ++row)
+      for (row = 0; row < static_cast<int>(m_appropriateWorklets.size()); ++row)
       {
-        if (m_worklets[row].m_worklet == worklet)
+        if (m_appropriateWorklets[row] == worklet)
         {
           auto idx = this->index(row, 0);
           this->dataChanged(idx, idx);
@@ -353,15 +372,30 @@ void qtWorkletModel::workletUpdate(
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
     {
-      // Just iterate until we find a matching component:
-      for (row = 0; row < static_cast<int>(m_worklets.size()); ++row)
+      // Remove it from the main list and then see if it is also being displayed
+      bool found = false;
+      for (std::size_t i = 0; i < m_worklets.size(); i++)
       {
-        if (m_worklets[row].m_worklet == worklet)
+        if (m_worklets[i] == worklet)
         {
-          this->beginRemoveRows(QModelIndex(), row, row);
-          m_worklets.erase(m_worklets.begin() + row);
-          this->endRemoveRows();
+          m_worklets.erase(m_worklets.begin() + i);
+          found = true;
           break;
+        }
+      }
+      // If we found it in the master list then check to see if its being displayed
+      if (found)
+      {
+        // Just iterate until we find a matching component:
+        for (row = 0; row < static_cast<int>(m_appropriateWorklets.size()); ++row)
+        {
+          if (m_appropriateWorklets[row] == worklet)
+          {
+            this->beginRemoveRows(QModelIndex(), row, row);
+            m_appropriateWorklets.erase(m_appropriateWorklets.begin() + row);
+            this->endRemoveRows();
+            break;
+          }
         }
       }
     }
@@ -376,12 +410,24 @@ void qtWorkletModel::workletUpdate(
         continue;
       }
       // Look at all of the worklets and remove those that are owned by the project being removed
-      for (row = 0; row < static_cast<int>(m_worklets.size());)
+      for (std::size_t i = 0; i < m_worklets.size();)
       {
-        if (m_worklets[row].m_worklet->resource() == res)
+        if (m_worklets[i]->resource() == res)
+        {
+          m_worklets.erase(m_worklets.begin() + i);
+        }
+        else
+        {
+          ++i;
+        }
+      }
+
+      for (row = 0; row < static_cast<int>(m_appropriateWorklets.size());)
+      {
+        if (m_appropriateWorklets[row]->resource() == res)
         {
           this->beginRemoveRows(QModelIndex(), row, row);
-          m_worklets.erase(m_worklets.begin() + row);
+          m_appropriateWorklets.erase(m_appropriateWorklets.begin() + row);
           this->endRemoveRows();
         }
         else
@@ -391,4 +437,52 @@ void qtWorkletModel::workletUpdate(
       }
     }
   }
+}
+
+void qtWorkletModel::setToplevelCatagoryExpression(const smtk::common::Categories::Expression& exp)
+{
+  m_topLevelExpression = exp;
+  // If we are filtering based on placing worklets at the top-level then rebuild the model
+  if (m_parentTask == nullptr)
+  {
+    this->rebulidModel();
+  }
+}
+
+void qtWorkletModel::setParentTask(const smtk::task::TaskPtr& task)
+{
+  if (task != m_parentTask)
+  {
+    m_parentTask = task;
+    this->rebulidModel();
+  }
+}
+
+void qtWorkletModel::rebulidModel()
+{
+  // We need to reevaluate the category based constraints
+  this->beginResetModel();
+  m_appropriateWorklets.clear();
+  // Are we dealing with a parent task or top-level constraints?
+  if (m_parentTask)
+  {
+    for (auto& worklet : m_worklets)
+    {
+      if (m_parentTask->acceptsChildCategories(worklet->categories()))
+      {
+        m_appropriateWorklets.push_back(worklet);
+      }
+    }
+  }
+  else
+  {
+    for (auto& worklet : m_worklets)
+    {
+      if (m_topLevelExpression.passes(worklet->categories()))
+      {
+        m_appropriateWorklets.push_back(worklet);
+      }
+    }
+  }
+  this->endResetModel();
 }

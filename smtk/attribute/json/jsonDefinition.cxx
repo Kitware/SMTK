@@ -107,7 +107,7 @@ SMTKCORE_EXPORT void to_json(nlohmann::json& j, const smtk::attribute::Definitio
 
   // Inheritance Option - This is always needed
   j["CategoryExpression"]["InheritanceMode"] =
-    smtk::attribute::Categories::combinationModeAsString(defPtr->categoryInheritanceMode());
+    smtk::common::Categories::combinationModeAsString(defPtr->categoryInheritanceMode());
 
   // Save Color Information
   if (defPtr->isNotApplicableColorSet())
@@ -267,7 +267,7 @@ SMTKCORE_EXPORT void from_json(
   }
 
   // Process Category Info ()
-  smtk::attribute::Categories::CombinationMode cmode;
+  smtk::common::Categories::CombinationMode cmode;
   auto catExp = j.find("CategoryExpression"); // Current Form
   auto catInfo = j.find("CategoryInfo");      // Old Form since 05/24
   auto categories = j.find("Categories");     // Old Deprecated Form
@@ -277,7 +277,7 @@ SMTKCORE_EXPORT void from_json(
     auto inheritanceMode = catExp->find("InheritanceMode");
     if (inheritanceMode != catExp->end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*inheritanceMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*inheritanceMode, cmode))
       {
         defPtr->setCategoryInheritanceMode(cmode);
       }
@@ -317,7 +317,7 @@ SMTKCORE_EXPORT void from_json(
     auto inheritanceMode = catInfo->find("InheritanceMode");
     if (inheritanceMode != catInfo->end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*inheritanceMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*inheritanceMode, cmode))
       {
         defPtr->setCategoryInheritanceMode(cmode);
       }
@@ -337,21 +337,20 @@ SMTKCORE_EXPORT void from_json(
       {
         if (*okToInherit)
         {
-          defPtr->setCategoryInheritanceMode(smtk::attribute::Categories::CombinationMode::Or);
+          defPtr->setCategoryInheritanceMode(smtk::common::Categories::CombinationMode::Or);
         }
         else
         {
-          defPtr->setCategoryInheritanceMode(
-            smtk::attribute::Categories::CombinationMode::LocalOnly);
+          defPtr->setCategoryInheritanceMode(smtk::common::Categories::CombinationMode::LocalOnly);
         }
       }
     }
-    attribute::Categories::Set& localCats = defPtr->localCategories();
+    common::Categories::Set& localCats = defPtr->localCategories();
     auto combineMode = catInfo->find("Combination");
     // If Combination is not specified - assume the default value;
     if (combineMode != catInfo->end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
       {
         localCats.setCombinationMode(cmode);
       }
@@ -367,7 +366,7 @@ SMTKCORE_EXPORT void from_json(
     combineMode = catInfo->find("InclusionCombination");
     if (combineMode != catInfo->end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
       {
         localCats.setInclusionMode(cmode);
       }
@@ -391,7 +390,7 @@ SMTKCORE_EXPORT void from_json(
     combineMode = catInfo->find("ExclusionCombination");
     if (combineMode != catInfo->end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*combineMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*combineMode, cmode))
       {
         localCats.setExclusionMode(cmode);
       }
@@ -414,13 +413,13 @@ SMTKCORE_EXPORT void from_json(
   }
   else if (categories != j.end()) // Deprecated
   {
-    attribute::Categories::Set& localCats = defPtr->localCategories();
-    smtk::attribute::Categories::CombinationMode cmode;
+    common::Categories::Set& localCats = defPtr->localCategories();
+    smtk::common::Categories::CombinationMode cmode;
     auto categoryCheckMode = j.find("categoryCheckMode");
     // If categoryCheckMode is not specified - assume the default value;
     if (categoryCheckMode != j.end())
     {
-      if (smtk::attribute::Categories::combinationModeFromString(*categoryCheckMode, cmode))
+      if (smtk::common::Categories::combinationModeFromString(*categoryCheckMode, cmode))
       {
         localCats.setInclusionMode(cmode);
       }

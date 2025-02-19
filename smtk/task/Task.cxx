@@ -1025,5 +1025,31 @@ std::shared_ptr<PortData> Task::inputPortData(const Port* port) const
   return data;
 }
 
+bool Task::acceptsChildCategories(const std::set<std::string>& cats) const
+{
+  bool result = false;
+  for (const auto& agent : m_agents)
+  {
+    auto eval = agent->acceptsChildCategories(cats);
+    if (eval == smtk::task::Agent::CategoryEvaluation::Reject)
+    {
+      return false;
+    }
+    else if (eval == smtk::task::Agent::CategoryEvaluation::Pass)
+    {
+      result = true;
+    }
+  }
+  return result;
+}
+
+bool Task::hasInternalPorts() const
+{
+  return std::any_of(
+    m_ports.begin(), m_ports.end(), [](const std::pair<smtk::string::Token, Port*>& info) {
+      return (info.second->access() == Port::Access::Internal);
+    });
+}
+
 } // namespace task
 } // namespace smtk

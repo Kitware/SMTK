@@ -17,9 +17,10 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacroBase.
 
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Tag.h"
+
+#include "smtk/common/Categories.h"
 
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
@@ -156,27 +157,30 @@ public:
   ///
   /// The categories that the attribute applies to. Typically
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
-  const smtk::attribute::Categories& categories() const { return m_categories; }
+  const smtk::common::Categories& categories() const { return m_categories; }
 
   ///\brief Determines how the Definition should combine its local category Set with the
   /// category constraints being inherited from it's Base Definition (if one exists)
   ///@{
-  Categories::CombinationMode categoryInheritanceMode() const { return m_combinationMode; }
-  void setCategoryInheritanceMode(Categories::CombinationMode mode) { m_combinationMode = mode; }
+  smtk::common::Categories::CombinationMode categoryInheritanceMode() const
+  {
+    return m_combinationMode;
+  }
+  void setCategoryInheritanceMode(smtk::common::Categories::CombinationMode mode)
+  {
+    m_combinationMode = mode;
+  }
   ///@}
 
   ///\brief Returns the category expression explicitly assigned to the Definition
-  smtk::attribute::Categories::Expression& localCategories() { return m_localCategories; }
-  const smtk::attribute::Categories::Expression& localCategories() const
-  {
-    return m_localCategories;
-  }
+  smtk::common::Categories::Expression& localCategories() { return m_localCategories; }
+  const smtk::common::Categories::Expression& localCategories() const { return m_localCategories; }
 
   ///\brief Sets the local categories.
   ///
   /// This method is intended for use by Python applications, because Python code cannot
   /// manipulate the reference returned by the localCategories() method.
-  void setLocalCategories(const smtk::attribute::Categories::Expression& catExp)
+  void setLocalCategories(const smtk::common::Categories::Expression& catExp)
   {
     m_localCategories = catExp;
   }
@@ -492,7 +496,7 @@ protected:
 
   ///\brief apply the local categories of the definition and its items.
   /// inherited is an initial set passed down from the definition's base.
-  void applyCategories(smtk::attribute::Categories::Stack inherited);
+  void applyCategories(smtk::common::Categories::Stack inherited);
 
   /// This method updates derived definitions when this
   /// definition's items have been changed
@@ -516,8 +520,8 @@ protected:
   std::string m_type;
   std::string m_label;
   bool m_isNodal;
-  attribute::Categories::Expression m_localCategories;
-  attribute::Categories m_categories;
+  common::Categories::Expression m_localCategories;
+  common::Categories m_categories;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
@@ -544,7 +548,7 @@ protected:
   std::string m_rootName;
   Tags m_tags;
   std::size_t m_includeIndex;
-  Categories::CombinationMode m_combinationMode;
+  smtk::common::Categories::CombinationMode m_combinationMode;
   std::string m_localUnits;
 
 private:

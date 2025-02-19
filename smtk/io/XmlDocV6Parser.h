@@ -40,12 +40,12 @@ public:
 protected:
   void processCategoryAtts(
     pugi::xml_node& node,
-    attribute::Categories::Expression& catExp,
-    attribute::Categories::CombinationMode& inheritanceMode) override;
+    common::Categories::Expression& catExp,
+    common::Categories::CombinationMode& inheritanceMode) override;
   void processCategoryInfoNode(
     pugi::xml_node& node,
-    attribute::Categories::Expression& catExp,
-    attribute::Categories::CombinationMode& inheritanceMode) override;
+    common::Categories::Expression& catExp,
+    common::Categories::CombinationMode& inheritanceMode) override;
 };
 } // namespace io
 } // namespace smtk

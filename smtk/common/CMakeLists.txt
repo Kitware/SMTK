@@ -1,6 +1,7 @@
 # set up sources to build
 set(commonSrcs
   Archive.cxx
+  Categories.cxx
   Color.cxx
   DateTime.cxx
   DateTimeZonePair.cxx
@@ -27,6 +28,7 @@ set(commonSrcs
 
 set(commonHeaders
   Archive.h
+  Categories.h
   Color.h
   CompilerInformation.h
   DateTime.h
@@ -67,6 +69,9 @@ set(commonHeaders
   VersionMacros.h
   Visit.h
   WeakReferenceWrapper.h
+  categories/Actions.h
+  categories/Evaluators.h
+  categories/Grammar.h
   json/Helper.h
   json/jsonLinks.h
   json/jsonTypeMap.h

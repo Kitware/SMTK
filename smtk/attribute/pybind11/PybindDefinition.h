@@ -46,7 +46,7 @@ inline PySharedPtrClass< smtk::attribute::Definition > pybind11_init_smtk_attrib
     .def("categoryInheritanceMode", &smtk::attribute::Definition::categoryInheritanceMode)
     .def("setCategoryInheritanceMode", &smtk::attribute::Definition::setCategoryInheritanceMode, py::arg("categoryInheritanceModeValue"))
     .def("categories", &smtk::attribute::Definition::categories)
-    .def("localCategories", (smtk::attribute::Categories::Expression& (smtk::attribute::Definition::*)()) &smtk::attribute::Definition::localCategories)
+    .def("localCategories", (smtk::common::Categories::Expression& (smtk::attribute::Definition::*)()) &smtk::attribute::Definition::localCategories)
     .def("setLocalCategories", &smtk::attribute::Definition::setLocalCategories, py::arg("catExpression"))
     .def("advanceLevel", &smtk::attribute::Definition::advanceLevel, py::arg("mode") = 0)
     .def("setLocalAdvanceLevel", (void (smtk::attribute::Definition::*)(int, unsigned int)) &smtk::attribute::Definition::setLocalAdvanceLevel, py::arg("mode"), py::arg("level"))

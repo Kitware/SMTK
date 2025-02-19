@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_attribute_categories_Grammar_h
-#define smtk_attribute_categories_Grammar_h
+#ifndef smtk_common_categories_Grammar_h
+#define smtk_common_categories_Grammar_h
 
 #include "tao/pegtl.hpp"
 
@@ -18,7 +18,7 @@ using namespace tao::pegtl;
 
 namespace smtk
 {
-namespace attribute
+namespace common
 {
 namespace categories
 {
@@ -95,7 +95,7 @@ struct SMTKCORE_EXPORT ExpressionGrammar
 // clang-format on
 
 } // namespace categories
-} // namespace attribute
+} // namespace common
 } // namespace smtk
 
 #endif

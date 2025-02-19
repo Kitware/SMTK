@@ -476,6 +476,15 @@ public:
   /// internal state, pass false to \a signal.
   virtual bool updateAgentState(const Agent* agent, State prev, State next, bool signal = true);
 
+  ///\brief Evaluates a set of categories that are associated with a potential child
+  /// task and return true if the the categories pass the task's agent check.
+  ///
+  /// This method will go through the task's agents and call their acceptChildCategories method.
+  /// If any return **Reject**, then this method will return false.  Else if at least one of the agents returns
+  /// **Pass** then this method will return true.  If none returns **Pass** then this method will return false.
+  /// Note that this is just a check and does not effect the task's addChild/addChildren methods.
+  bool acceptsChildCategories(const std::set<std::string>& cats) const;
+
   /// Return the tasks's manager (or null if unmanaged).
   Manager* manager() const { return m_manager.lock().get(); }
 
@@ -483,6 +492,9 @@ public:
   ///
   /// This will return null if the task has no task::Manager.
   std::shared_ptr<smtk::common::Managers> managers() const;
+
+  /// Returns true if the task contains any internal ports
+  bool hasInternalPorts() const;
 
 protected:
   friend SMTKCORE_EXPORT void

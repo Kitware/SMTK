@@ -57,9 +57,10 @@
 #include "smtk/resource/ResourceLinks.h"
 
 using namespace pugi;
-using namespace smtk::io;
-using namespace smtk::attribute;
 using namespace smtk;
+using namespace smtk::attribute;
+using namespace smtk::common;
+using namespace smtk::io;
 
 namespace
 {
