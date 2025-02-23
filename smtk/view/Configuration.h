@@ -63,7 +63,7 @@ public:
     /// is t or true, false if attribute is f or false and not set otherwise
     /// set value to the attribute's values.  Else it returns false
     bool attributeAsBool(const std::string& attname, bool& value) const;
-    /// Returns true if the component has an attribute called name and if it's value is
+    /// Returns true if the component has an attribute called name and if its value is
     /// either t or true (ignoring case).  Else it returns false.
     bool attributeAsBool(const std::string& attname) const;
 
