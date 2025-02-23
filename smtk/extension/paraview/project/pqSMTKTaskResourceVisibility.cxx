@@ -318,7 +318,7 @@ void pqSMTKTaskResourceVisibility::handleTaskEvent(
     auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
-      if (auto* panel = dynamic_cast<pqSMTKDiagramPanel*>(pqCore->manager("smtk task diagram")))
+      if (auto* panel = dynamic_cast<pqSMTKDiagramPanel*>(pqCore->manager("smtk task panel")))
       {
         for (const auto& generatorEntry : panel->diagram()->generators())
         {

@@ -4,6 +4,7 @@ set(classes
   pqSMTKProjectMenu
   pqSMTKProjectPanel
   pqSMTKTaskResourceVisibility
+  pqTaskControlView
   Registrar
 )
 

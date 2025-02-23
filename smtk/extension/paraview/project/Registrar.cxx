@@ -12,6 +12,7 @@
 #include "smtk/extension/paraview/project/Registrar.h"
 
 #include "smtk/extension/paraview/project/pqSMTKProjectBrowser.h"
+#include "smtk/extension/paraview/project/pqTaskControlView.h"
 
 namespace smtk
 {
@@ -21,6 +22,9 @@ namespace paraview
 {
 namespace project
 {
+
+using ViewWidgetList = std::tuple<pqSMTKProjectBrowser, pqTaskControlView>;
+
 void Registrar::registerTo(const smtk::project::Manager::Ptr& projectManager)
 {
   projectManager->registerProject("basic");
@@ -34,13 +38,14 @@ void Registrar::unregisterFrom(const smtk::project::Manager::Ptr& projectManager
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
 {
   (void)viewManager;
-  viewManager->viewWidgetFactory().registerType<pqSMTKProjectBrowser>();
+  viewManager->viewWidgetFactory().registerTypes<ViewWidgetList>();
+  viewManager->viewWidgetFactory().addAlias<pqTaskControlView>("TaskControl");
 }
 
 void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
 {
   (void)viewManager;
-  viewManager->viewWidgetFactory().unregisterType<pqSMTKProjectBrowser>();
+  viewManager->viewWidgetFactory().unregisterTypes<ViewWidgetList>();
 }
 } // namespace project
 } // namespace paraview

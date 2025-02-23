@@ -91,7 +91,7 @@ void qtBaseTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State n
   (void)active;
   // Update the tool tip with diagnostic information
   smtk::task::Task::InformationOptions opt;
-  opt.m_includeTitle = false;
+  opt.m_includeTitle = true;
   this->setToolTip(QString::fromStdString(m_task->information(opt)));
 }
 
@@ -101,7 +101,7 @@ void qtBaseTaskNode::dataUpdated()
 
   // Update the tool tip with diagnostic information
   smtk::task::Task::InformationOptions opt;
-  opt.m_includeTitle = false;
+  opt.m_includeTitle = true;
   this->setToolTip(QString::fromStdString(m_task->information(opt)));
 }
 
