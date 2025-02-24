@@ -332,7 +332,7 @@ void qtDateTimeItem::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
 }
 

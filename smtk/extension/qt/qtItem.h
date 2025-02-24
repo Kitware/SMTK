@@ -114,12 +114,8 @@ public Q_SLOTS:
 Q_SIGNALS:
   /// Signal indicates that the underlying widget's size has been modified
   void widgetSizeChanged();
-  /// Signal indicates that the underlying item has been modified
-  void modified();
-  /// <summary>
-  /// Signal indicates that the child from the underlying item has been modified
-  /// </summary>
-  void childModified(qtItem* item);
+  /// Signal indicates that the underlying item (or one that it owns) has been modified
+  void modified(qtItem* item);
 
   /** \brief Indicates editing widget changed
   *

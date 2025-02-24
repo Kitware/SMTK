@@ -256,7 +256,7 @@ void qtGroupItem::setEnabledState(int state)
   if (enabled != item->localEnabledState())
   {
     item->setIsEnabled(enabled);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
     if (iview)
     {
       iview->valueChanged(item);
@@ -375,7 +375,7 @@ void qtGroupItem::onAddSubGroup()
     {
       this->addItemsToTable(0);
       Q_EMIT this->widgetSizeChanged();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
   else
@@ -392,7 +392,7 @@ void qtGroupItem::onAddSubGroup()
         this->addSubGroup(subIdx);
       }
       Q_EMIT this->widgetSizeChanged();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
 }
@@ -476,7 +476,11 @@ void qtGroupItem::addSubGroup(int i)
 
       // Make unique to prevent this connection from being made more than once upon updating the gui.
       connect(
-        childItem, SIGNAL(modified()), this, SLOT(onChildItemModified()), Qt::UniqueConnection);
+        childItem,
+        &qtItem::modified,
+        this,
+        &qtGroupItem::onChildItemModified,
+        Qt::UniqueConnection);
     }
   }
   this->calculateTableHeight();
@@ -530,7 +534,7 @@ void qtGroupItem::onRemoveSubGroup()
   delete minusButton;
   this->calculateTableHeight();
   this->updateExtensibleState();
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtGroupItem::updateExtensibleState()
@@ -670,16 +674,16 @@ void qtGroupItem::addItemsToTable(int index)
 
       connect(
         childItem,
-        SIGNAL(widgetSizeChanged()),
+        &qtItem::widgetSizeChanged,
         this,
-        SLOT(onChildWidgetSizeChanged()),
+        &qtGroupItem::onChildWidgetSizeChanged,
         Qt::QueuedConnection);
       added++;
       connect(
         childItem,
-        SIGNAL(modified()),
+        &qtItem::modified,
         this,
-        SLOT(onChildItemModified()),
+        &qtGroupItem::onChildItemModified,
         static_cast<Qt::ConnectionType>(Qt::AutoConnection | Qt::UniqueConnection));
     } // if (childItem)
   }   // for (j)
@@ -743,16 +747,12 @@ void qtGroupItem::onChildWidgetSizeChanged()
 }
 
 /* Slot for properly emitting signals when an attribute's item is modified */
-void qtGroupItem::onChildItemModified()
+void qtGroupItem::onChildItemModified(qtItem* child)
 {
   this->updateValidityStatus();
-  //Get the qtItem that sent the signal
-  qtItem* item = qobject_cast<qtItem*>(this->sender());
-
-  if (item != nullptr)
+  if (child)
   {
-    Q_EMIT this->childModified(item);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(child);
   }
 }
 
@@ -821,7 +821,7 @@ void qtGroupItem::onImportFromFile()
     if (smtk::io::importFromCSV(*item, fname.toStdString(), logger, false, sep, comment))
     {
       this->updateItemData();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
   else if (format == "double")
@@ -829,7 +829,7 @@ void qtGroupItem::onImportFromFile()
     if (smtk::io::importFromDoubleFile(*item, fname.toStdString(), logger, false, sep, comment))
     {
       this->updateItemData();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
   else

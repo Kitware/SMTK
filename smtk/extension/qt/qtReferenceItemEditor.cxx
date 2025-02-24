@@ -588,7 +588,7 @@ void qtReferenceItemEditor::selectItem(int index)
     {
       item->unset();
       this->updateContents();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
   // Are we dealing with the create new option
@@ -603,7 +603,7 @@ void qtReferenceItemEditor::selectItem(int index)
     {
       item->setValue(selectedObject);
       this->updateContents();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
 
@@ -724,7 +724,7 @@ void qtReferenceItemEditor::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
 }
 
@@ -854,8 +854,9 @@ void qtReferenceItemEditor::updateContents()
     {
       clayout->addWidget(childItem->widget());
       m_internals->m_childItems.push_back(childItem);
-      connect(childItem, SIGNAL(modified()), this, SIGNAL(modified()));
-      connect(childItem, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
+      connect(childItem, &qtItem::modified, this, &qtItem::modified);
+      connect(
+        childItem, &qtItem::widgetSizeChanged, this, &qtReferenceItemEditor::widgetSizeChanged);
       hasVisibleChildren = true;
     }
   }

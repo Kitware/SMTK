@@ -463,8 +463,12 @@ void qtDiscreteValueEditor::updateContents()
         clayout->addWidget(childItem->widget());
         this->Internals->m_childItems.push_back(childItem);
         connect(
-          childItem, SIGNAL(modified()), this->Internals->m_inputItem, SLOT(onChildItemModified()));
-        connect(childItem, SIGNAL(widgetSizeChanged()), this, SIGNAL(widgetSizeChanged()));
+          childItem,
+          &qtItem::modified,
+          this->Internals->m_inputItem,
+          &qtInputsItem::onChildItemModified);
+        connect(
+          childItem, &qtItem::widgetSizeChanged, this, &qtDiscreteValueEditor::widgetSizeChanged);
         hasVisibleChildren = true;
       }
     }

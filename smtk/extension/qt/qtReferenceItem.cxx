@@ -225,7 +225,7 @@ void qtReferenceItem::setOutputOptional(int state)
   if (itm && (itm->localEnabledState() != optionalVal))
   {
     itm->setIsEnabled(optionalVal);
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     if (auto* iview = m_itemInfo.baseView())
     {
       iview->valueChanged(itm);
@@ -330,7 +330,7 @@ void qtReferenceItem::copyFromSelection()
       {
         this->updateSynopsisLabels();
         this->linkHover(true);
-        Q_EMIT modified();
+        Q_EMIT modified(this);
         if (auto* iview = m_itemInfo.baseView())
         {
           iview->valueChanged(m_itemInfo.item());
@@ -368,7 +368,7 @@ void qtReferenceItem::clearItem()
   {
     this->updateSynopsisLabels();
     this->linkHover(true);
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     if (auto* iview = m_itemInfo.baseView())
     {
       iview->valueChanged(m_itemInfo.item());
@@ -971,7 +971,7 @@ bool qtReferenceItem::synchronize(UpdateSource src)
           ++idx;
         }
       }
-      Q_EMIT modified();
+      Q_EMIT modified(this);
       if (auto* iview = m_itemInfo.baseView())
       {
         iview->valueChanged(m_itemInfo.item());

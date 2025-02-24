@@ -185,8 +185,7 @@ void pqSMTKCoordinateFrameItemWidget::onParentModified()
   //   to update.
   if (m_parentItemWidget)
   {
-    Q_EMIT this->childModified(m_parentItemWidget);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(m_parentItemWidget);
   }
 }
 

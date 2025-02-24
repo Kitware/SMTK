@@ -87,7 +87,6 @@ protected:
   QPointer<QWidget> m_widget;
 
 protected Q_SLOTS:
-  void onItemModified();
   void onUnitsChanged(QString);
 
 private:

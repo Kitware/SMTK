@@ -43,7 +43,7 @@ protected Q_SLOTS:
   virtual void onAddSubGroup();
   virtual void onRemoveSubGroup();
   void onChildWidgetSizeChanged() override;
-  virtual void onChildItemModified();
+  virtual void onChildItemModified(qtItem* child);
   void onImportFromFile();
   void onEditingWidgetChanged();
 
