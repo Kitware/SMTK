@@ -14,9 +14,9 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/SearchStyle.h"
+#include "smtk/common/Categories.h"
 #include "smtk/common/Status.h"
 #include <algorithm>
 #include <map>
@@ -243,7 +243,7 @@ public:
   /// @}
 
   ///\brief return the categories associated with the item (via its Definition)
-  const smtk::attribute::Categories& categories() const;
+  const smtk::common::Categories& categories() const;
 
   /// \brief Get the item 's advance level
   ///

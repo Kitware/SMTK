@@ -12,6 +12,7 @@
 #include "smtk/task/Registrar.h"
 
 #include "smtk/task/Adaptor.h"
+#include "smtk/task/ChildCategoriesAgent.h"
 #include "smtk/task/FillOutAttributes.h"
 #include "smtk/task/FillOutAttributesAgent.h"
 #include "smtk/task/GatherObjectsAgent.h"
@@ -68,6 +69,7 @@ using PortList = std::tuple<Port>;
 using PortJSON = std::tuple<json::jsonPort>;
 
 using AgentList = std::tuple<
+  ChildCategoriesAgent,
   FillOutAttributesAgent,
   GatherObjectsAgent,
   PortForwardingAgent,

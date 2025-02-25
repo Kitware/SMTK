@@ -90,7 +90,6 @@ set(attributeHeaders
   AssociationRuleManager.h
   AssociationRules.h
   Attribute.h
-  Categories.h
   ComponentItem.h
   ComponentItemDefinition.h
   CopyAssignmentOptions.h
@@ -142,9 +141,6 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-  categories/Actions.h
-  categories/Evaluators.h
-  categories/Grammar.h
   filter/Action.h
   filter/Attribute.h
   filter/FloatingPointActions.h
@@ -166,7 +162,6 @@ set(attributeSrcs
   AssociationRuleManager.cxx
   AssociationRules.cxx
   Attribute.cxx
-  Categories.cxx
   ComponentItem.cxx
   ComponentItemDefinition.cxx
   CopyAssignmentOptions.cxx

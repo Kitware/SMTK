@@ -75,15 +75,15 @@ void GroupItemDefinition::buildGroup(GroupItem* groupItem, int subGroupPosition)
 }
 
 void GroupItemDefinition::applyCategories(
-  const smtk::attribute::Categories::Stack& inheritedFromParent,
-  smtk::attribute::Categories& inheritedToParent)
+  const smtk::common::Categories::Stack& inheritedFromParent,
+  smtk::common::Categories& inheritedToParent)
 {
-  Categories::Stack myCats = inheritedFromParent;
+  smtk::common::Categories::Stack myCats = inheritedFromParent;
 
   myCats.append(m_combinationMode, m_localCategories);
   m_categories.reset();
 
-  smtk::attribute::Categories myChildrenCats;
+  smtk::common::Categories myChildrenCats;
   for (auto& item : m_itemDefs)
   {
     item->applyCategories(myCats, myChildrenCats);

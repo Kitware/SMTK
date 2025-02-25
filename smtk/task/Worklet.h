@@ -86,6 +86,18 @@ public:
   /// Return the description of the worklet
   const std::string& description() const { return m_description; }
 
+  ///@{
+  ///\brief Set/Get the categories associated with this worklet
+  ///
+  /// These categories are used by category expressions associated with a task's agents
+  /// to see if the tasks generated from the worklet would be appropriate children tasks,
+  /// or with the task manager to see if the generated tasks would be appropriate top-level
+  /// tasks.
+
+  void setCategories(const std::set<std::string>& cats);
+  const std::set<std::string>& categories() const { return m_categories; }
+  ///@}
+
   /// Return the Task Manager managing the worklet
   std::shared_ptr<Manager> manager() const;
 
@@ -109,6 +121,8 @@ protected:
   std::weak_ptr<smtk::task::Manager> m_manager;
   /// The JSON configuration of the worklet
   Configuration m_configuration;
+  /// Categories associated with the worklet
+  std::set<std::string> m_categories;
 };
 
 } // namespace task

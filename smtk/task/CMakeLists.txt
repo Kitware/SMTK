@@ -9,6 +9,7 @@ set(tasks
 
 set(agents
   Agent
+  ChildCategoriesAgent
   FillOutAttributesAgent
   GatherObjectsAgent
   PortForwardingAgent

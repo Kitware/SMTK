@@ -189,9 +189,10 @@ void qtTaskPath::setActiveTask(smtk::task::Task* task)
     }
     return;
   }
-  // Simple check 1 - see if the active task is tail of the path
+  // Simple check 1 - see if the active task is tail of the path and that it still accepts/has children
+  // or has internal ports
   auto* lt = this->lastTask();
-  if (lt == task)
+  if ((lt == task) && this->includeInPath(task))
   {
     auto* lastButton = dynamic_cast<qtTaskToolButton*>(m_mainLayout->itemAt(pathSize)->widget());
     lastButton->blockSignals(true);
@@ -210,8 +211,8 @@ void qtTaskPath::setActiveTask(smtk::task::Task* task)
   // Simple check 2 - see if the active task is a child of the last task
   if (lt == task->parent())
   {
-    // If this new task has children we need to add it to the path
-    if (task->hasChildren())
+    // If this new task accepts/has children or has internal ports we need to add it to the path
+    if (this->includeInPath(task))
     {
       auto* tb = this->addTask(task);
       tb->blockSignals(true);
@@ -228,7 +229,7 @@ void qtTaskPath::setActiveTask(smtk::task::Task* task)
   {
     this->addTask(lineage[j]);
   }
-  if (task->hasChildren())
+  if (this->includeInPath(task))
   {
     auto* tb = this->addTask(task);
     tb->blockSignals(true);
@@ -281,5 +282,22 @@ void qtTaskPath::updateActiveTask(bool makeActive)
     m_editor->manager()->active().switchTo(tb->task());
   }
 }
+
+bool qtTaskPath::canAcceptWorklets(const smtk::task::Task* task) const
+{
+  auto worklets = m_editor->manager()->gallery().worklets();
+  return std::any_of(
+    worklets.begin(),
+    worklets.end(),
+    [task](std::pair<const smtk::string::Token, std::shared_ptr<smtk::task::Worklet>>& info) {
+      return task->acceptsChildCategories(info.second->categories());
+    });
+}
+
+bool qtTaskPath::includeInPath(const smtk::task::Task* task) const
+{
+  return (task->hasChildren() || task->hasInternalPorts() || this->canAcceptWorklets(task));
+}
+
 } // namespace extension
 } // namespace smtk

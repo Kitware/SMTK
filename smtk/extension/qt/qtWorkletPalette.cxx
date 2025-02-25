@@ -71,6 +71,17 @@ qtWorkletPalette::qtWorkletPalette(const smtk::view::Information& info)
 
 qtWorkletPalette::~qtWorkletPalette() = default;
 
+void qtWorkletPalette::setToplevelCatagoryExpression(
+  const smtk::common::Categories::Expression& exp)
+{
+  m_model->setToplevelCatagoryExpression(exp);
+}
+
+void qtWorkletPalette::setParentTask(const smtk::task::TaskPtr& task)
+{
+  m_model->setParentTask(task);
+}
+
 bool qtWorkletPalette::isEmpty() const
 {
   // If the user is (1) not searching and (2) not limiting by selection and

@@ -23,8 +23,9 @@
 // For storing Template Definition Info
 #include "smtk/io/TemplateInfo.h"
 
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Resource.h"
+
+#include "smtk/common/Categories.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -90,7 +91,7 @@ public:
   void setIncludeFileIndex(std::size_t index) { m_includeIndex = index; }
   static bool getCategoryComboMode(
     pugi::xml_attribute& xmlAtt,
-    smtk::attribute::Categories::Set::CombinationMode& val);
+    smtk::common::Categories::Set::CombinationMode& val);
 
 protected:
   void processAttributeInformation(pugi::xml_node& root);
@@ -104,18 +105,18 @@ protected:
 
   virtual void processCategoryAtts(
     pugi::xml_node& node,
-    attribute::Categories::Expression& catExp,
-    attribute::Categories::CombinationMode& inheritanceMode);
+    common::Categories::Expression& catExp,
+    common::Categories::CombinationMode& inheritanceMode);
   void processOldStyleCategoryNode(
     pugi::xml_node& node,
-    smtk::attribute::Categories::Expression& catExp);
+    smtk::common::Categories::Expression& catExp);
   void processItemDefCategoryInfoNode(
     pugi::xml_node& node,
     smtk::attribute::ItemDefinitionPtr idef);
   virtual void processCategoryInfoNode(
     pugi::xml_node& node,
-    attribute::Categories::Expression& catExp,
-    attribute::Categories::CombinationMode& inheritanceMode);
+    common::Categories::Expression& catExp,
+    common::Categories::CombinationMode& inheritanceMode);
 
   virtual void processDefinitionInformation(pugi::xml_node& defNode);
   void processDefinitionInformationChildren(pugi::xml_node& node);

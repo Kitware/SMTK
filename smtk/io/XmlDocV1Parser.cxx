@@ -17,7 +17,6 @@
 #include "smtk/io/ItemDefinitionsHelper.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/ComponentItemDefinition.h"
 #include "smtk/attribute/CustomItem.h"
@@ -179,7 +178,7 @@ bool processDerivedValueDefChildNode(pugi::xml_node& node, const ItemDefType& id
 {
   xml_node child;
   xml_attribute xatt;
-  attribute::Categories::Set::CombinationMode catMode;
+  common::Categories::Set::CombinationMode catMode;
 
   std::string nodeName = node.name();
   // Is this discrete information?
@@ -1200,7 +1199,7 @@ void XmlDocV1Parser::processCategoryAtts(
   Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
-  attribute::Categories::Set::CombinationMode catMode;
+  common::Categories::Set::CombinationMode catMode;
   // The default inheritance mode is Or
   inheritanceMode = Categories::CombinationMode::Or;
 
@@ -1237,7 +1236,7 @@ void XmlDocV1Parser::processCategoryInfoNode(
   Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
-  attribute::Categories::Set::CombinationMode catMode;
+  common::Categories::Set::CombinationMode catMode;
   xml_node child;
   xml_attribute xatt;
 
@@ -3101,12 +3100,12 @@ smtk::model::BitFlags XmlDocV1Parser::decodeModelEntityMask(const std::string& s
 
 bool XmlDocV1Parser::getCategoryComboMode(
   pugi::xml_attribute& xmlAtt,
-  smtk::attribute::Categories::Set::CombinationMode& mode)
+  smtk::common::Categories::Set::CombinationMode& mode)
 {
   if (xmlAtt)
   {
     std::string val = xmlAtt.value();
-    if (smtk::attribute::Categories::combinationModeFromString(val, mode))
+    if (smtk::common::Categories::combinationModeFromString(val, mode))
     {
       return true;
     }

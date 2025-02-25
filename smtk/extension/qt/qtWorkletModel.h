@@ -66,24 +66,32 @@ public:
   /// Return the index of the row with the given operation type-index.
   QModelIndex findByName(smtk::string::Token workletName) const;
 
+  /// Set the category expression to be used to determine worklets that can be placed
+  /// at the top-level of a workflow
+  void setToplevelCatagoryExpression(const smtk::common::Categories::Expression& exp);
+
+  /// Set the task to be the potential parent of em-placed worklets.
+  ///
+  /// Note that \a task can be null indicating that the worklet would be em-placed at
+  /// the workflow's top-level
+  void setParentTask(const smtk::task::TaskPtr& task);
+
 protected:
-  /**\brief A row in the model's table.
-    */
-  struct Item
-  {
-    Item(const std::shared_ptr<smtk::task::Worklet>& worklet);
-    Item(const Item&) = default;
-    bool operator<(const Item& other) const;
-
-    std::shared_ptr<smtk::task::Worklet> m_worklet;
-  };
-
   /// Invoked when a worklet is added or removed.
   void workletUpdate(
     const smtk::operation::Operation& operation,
     smtk::operation::Operation::Result result);
 
-  std::vector<Item> m_worklets;
+  // Invoked when either the top-level expression or the parent task
+  // is changed.
+  void rebulidModel();
+
+  // List of available worklets
+  std::vector<std::shared_ptr<smtk::task::Worklet>> m_worklets;
+  // List of worklets that can be em-placed based on the
+  // current constraints imposed either by the top-level expression
+  // or by the current parent task
+  std::vector<std::shared_ptr<smtk::task::Worklet>> m_appropriateWorklets;
   std::shared_ptr<smtk::operation::Manager> m_operationManager;
   std::shared_ptr<smtk::view::Manager> m_viewManager;
 
@@ -91,6 +99,9 @@ protected:
   std::string m_secondaryColor{ "#ffffff" };
 
   smtk::extension::qtOperationLauncher* m_launcher{ nullptr };
+
+  smtk::task::TaskPtr m_parentTask;
+  smtk::common::Categories::Expression m_topLevelExpression;
 
 private:
   Q_DISABLE_COPY(qtWorkletModel);

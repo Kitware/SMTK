@@ -21,6 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindCategories.h"
 #include "PybindCompilerInformation.h"
 #include "PybindEnvironment.h"
 #include "PybindFileLocation.h"
@@ -34,6 +35,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #else
 #include "PybindPathsHelperWindows.h"
 #endif
+#include "PybindCategories.h"
 #include "PybindColor.h"
 #include "PybindDateTime.h"
 #include "PybindDateTimeZonePair.h"
@@ -54,6 +56,7 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
+  py::class_< smtk::common::Categories > smtk_common_Categories = pybind11_init_smtk_common_Categories(common);
   py::class_< smtk::common::Managers > smtk_common_Managers = pybind11_init_smtk_common_Managers(common);
   py::class_< smtk::common::Color > smtk_common_Color = pybind11_init_smtk_common_Color(common);
   py::class_< smtk::common::DateTime > smtk_common_DateTime = pybind11_init_smtk_common_DateTime(common);

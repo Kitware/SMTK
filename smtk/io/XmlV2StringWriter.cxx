@@ -55,6 +55,7 @@
 using namespace pugi;
 using namespace smtk;
 using namespace smtk::attribute;
+using namespace smtk::common;
 
 // Some helper functions
 namespace

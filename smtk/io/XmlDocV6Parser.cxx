@@ -17,9 +17,10 @@
 #include "pugixml/src/pugixml.cpp"
 
 using namespace pugi;
-using namespace smtk::attribute;
-using namespace smtk::io;
 using namespace smtk;
+using namespace smtk::attribute;
+using namespace smtk::common;
+using namespace smtk::io;
 
 XmlDocV6Parser::XmlDocV6Parser(smtk::attribute::ResourcePtr myResource, smtk::io::Logger& logger)
   : XmlDocV5Parser(myResource, logger)
@@ -97,7 +98,7 @@ void XmlDocV6Parser::processCategoryAtts(
   Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
-  attribute::Categories::Set::CombinationMode catMode;
+  common::Categories::Set::CombinationMode catMode;
 
   // The default inheritance mode is And
   inheritanceMode = Categories::CombinationMode::And;
@@ -120,7 +121,7 @@ void XmlDocV6Parser::processCategoryInfoNode(
   Categories::Expression& catExp,
   Categories::CombinationMode& inheritanceMode)
 {
-  attribute::Categories::Set::CombinationMode catMode;
+  common::Categories::Set::CombinationMode catMode;
   xml_node child;
   xml_attribute xatt;
 

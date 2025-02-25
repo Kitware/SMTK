@@ -262,8 +262,8 @@ protected:
   bool checkCategories(const smtk::resource::Component* comp) const;
 
   void applyCategories(
-    const smtk::attribute::Categories::Stack& inheritedFromParent,
-    smtk::attribute::Categories& inheritedToParent) override;
+    const smtk::common::Categories::Stack& inheritedFromParent,
+    smtk::common::Categories& inheritedToParent) override;
 
   void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
 

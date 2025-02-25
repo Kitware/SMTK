@@ -59,5 +59,11 @@ void Agent::taskStateChanged(State, State&) {}
 
 void Agent::taskStateChanged(Task*, State, State) {}
 
+Agent::CategoryEvaluation Agent::acceptsChildCategories(const std::set<std::string>& cats) const
+{
+  (void)cats;
+  return Agent::CategoryEvaluation::Neutral;
+}
+
 } // namespace task
 } // namespace smtk

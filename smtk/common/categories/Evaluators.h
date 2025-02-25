@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_attribute_categories_Evaluators_h
-#define smtk_attribute_categories_Evaluators_h
+#ifndef smtk_common_categories_Evaluators_h
+#define smtk_common_categories_Evaluators_h
 
 #include "smtk/io/Logger.h"
 
@@ -19,7 +19,7 @@
 
 namespace smtk
 {
-namespace attribute
+namespace common
 {
 namespace categories
 {
@@ -172,7 +172,7 @@ private:
   std::set<std::string> m_categoryNames;
 };
 } // namespace categories
-} // namespace attribute
+} // namespace common
 } // namespace smtk
 
 #endif

@@ -14,6 +14,8 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
+#include "smtk/common/Categories.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtWidgets/QLayout>
@@ -100,6 +102,16 @@ public:
 
   /// Return the search-bar widget (if configured) or null (otherwise).
   QLineEdit* searchTextWidget() const;
+
+  /// Set the category expression to be used to determine worklets that can be placed
+  /// at the top-level of a workflow
+  void setToplevelCatagoryExpression(const smtk::common::Categories::Expression& exp);
+
+  /// Set the task to be the potential parent of em-placed worklets.
+  ///
+  /// Note that \a task can be null indicating that the worklet would be em-placed at
+  /// the workflow's top-level
+  void setParentTask(const smtk::task::TaskPtr& task);
 
 Q_SIGNALS:
   void emplaceWorklet(const std::string& workletName, const std::array<double, 2>& location);

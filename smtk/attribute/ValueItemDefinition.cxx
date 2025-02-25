@@ -278,17 +278,17 @@ std::vector<std::string> ValueItemDefinition::conditionalItems(const std::string
 }
 
 void ValueItemDefinition::applyCategories(
-  const smtk::attribute::Categories::Stack& inheritedFromParent,
-  smtk::attribute::Categories& inheritedToParent)
+  const smtk::common::Categories::Stack& inheritedFromParent,
+  smtk::common::Categories& inheritedToParent)
 {
   // Lets first determine the set of categories this item definition could inherit
   m_categories.reset();
-  Categories::Stack myCats = inheritedFromParent;
+  smtk::common::Categories::Stack myCats = inheritedFromParent;
   myCats.append(m_combinationMode, m_localCategories);
   // Lets insert the combination of this Item's categories with those that were inherited
   m_categories.insert(myCats);
 
-  smtk::attribute::Categories myChildrenCats;
+  smtk::common::Categories myChildrenCats;
 
   // Now process the children item defs - this will also assembly the categories
   // this item def will inherit from its children based on their local categories
@@ -439,7 +439,7 @@ bool ValueItemDefinition::getEnumIndex(const std::string& enumVal, std::size_t& 
 
 void ValueItemDefinition::setEnumCategories(
   const std::string& enumValue,
-  const smtk::attribute::Categories::Expression& exp)
+  const smtk::common::Categories::Expression& exp)
 {
   if (
     std::find(m_discreteValueEnums.begin(), m_discreteValueEnums.end(), enumValue) ==
@@ -463,10 +463,10 @@ void ValueItemDefinition::addEnumCategory(const std::string& enumValue, const st
   m_valueToCategoryAssociations[enumValue].setExpression(expString);
 }
 
-const smtk::attribute::Categories::Expression& ValueItemDefinition::enumCategories(
+const smtk::common::Categories::Expression& ValueItemDefinition::enumCategories(
   const std::string& enumValue) const
 {
-  static smtk::attribute::Categories::Expression dummy;
+  static smtk::common::Categories::Expression dummy;
   dummy.setAllPass();
   auto result = m_valueToCategoryAssociations.find(enumValue);
   if (result == m_valueToCategoryAssociations.end())

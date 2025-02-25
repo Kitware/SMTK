@@ -433,7 +433,7 @@ void setupAttributeResource(attribute::ResourcePtr& attRes)
   StringItemDefinitionPtr sItemDef3 = A->addItemDefinition<StringItemDefinition>("s3");
   sItemDef3->addDiscreteValue("a", "e1");
   sItemDef3->addDiscreteValue("b", "e2");
-  smtk::attribute::Categories::Expression es;
+  smtk::common::Categories::Expression es;
   es.insertInclusion("a");
   es.insertInclusion("b");
   es.setInclusionMode(Categories::Set::CombinationMode::And);

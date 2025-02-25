@@ -16,6 +16,7 @@
 #include "smtk/task/Manager.h"
 #include "smtk/view/Configuration.h"
 
+#include "smtk/common/Categories.h"
 #include "smtk/common/Managers.h"
 #include "smtk/common/TypeContainer.h"
 

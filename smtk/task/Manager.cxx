@@ -57,6 +57,8 @@ Manager::Manager()
     observer(workflows, WorkflowEvent::Resuming, nullptr);
   })
 {
+  // By default allow all worklets to be placed at the top level
+  m_expression.setAllPass();
 }
 
 Manager::Manager(smtk::resource::Resource* parent)
@@ -90,6 +92,8 @@ Manager::Manager(smtk::resource::Resource* parent)
     observer(workflows, WorkflowEvent::Resuming, nullptr);
   })
 {
+  // By default allow all worklets to be placed at the top level
+  m_expression.setAllPass();
 }
 
 Manager::~Manager() = default;

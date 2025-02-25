@@ -272,7 +272,7 @@ Attribute::itemAtPath(const std::string& path, const std::string& sep, bool acti
     constSelf.itemAtPath(path, sep, activeOnly));
 }
 
-const smtk::attribute::Categories& Attribute::categories() const
+const smtk::common::Categories& Attribute::categories() const
 {
   return m_definition->categories();
 }

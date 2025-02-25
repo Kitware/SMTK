@@ -20,9 +20,9 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h" // For smtkTypeMacro.
-#include "smtk/attribute/Categories.h"
 #include "smtk/attribute/Item.h" // For Item Types.
 #include "smtk/attribute/Tag.h"
+#include "smtk/common/Categories.h"
 
 #include <queue>
 #include <set>
@@ -92,20 +92,17 @@ public:
   ///
   /// The categories that the attribute applies to. Typically
   /// a category will be a simulation type like heat transfer, fluid flow, etc.
-  const smtk::attribute::Categories& categories() const { return m_categories; }
+  const smtk::common::Categories& categories() const { return m_categories; }
 
   ///\brief Returns the categories::Expression explicitly assigned to the Items Definition
-  smtk::attribute::Categories::Expression& localCategories() { return m_localCategories; }
-  const smtk::attribute::Categories::Expression& localCategories() const
-  {
-    return m_localCategories;
-  }
+  smtk::common::Categories::Expression& localCategories() { return m_localCategories; }
+  const smtk::common::Categories::Expression& localCategories() const { return m_localCategories; }
 
   ///\brief Sets the local categories.
   ///
   /// This method is intended for use by Python applications, because Python code cannot
   /// manipulate the reference returned by the localCategories() method.
-  void setLocalCategories(const smtk::attribute::Categories::Expression& catExp)
+  void setLocalCategories(const smtk::common::Categories::Expression& catExp)
   {
     m_localCategories = catExp;
   }
@@ -113,8 +110,14 @@ public:
   ///\brief Determines how the Definition should combine its local category Set with the
   /// category constraints being inherited from it's owning Attribute or Item Definition
   ///@{
-  Categories::CombinationMode categoryInheritanceMode() const { return m_combinationMode; }
-  void setCategoryInheritanceMode(Categories::CombinationMode mode) { m_combinationMode = mode; }
+  smtk::common::Categories::CombinationMode categoryInheritanceMode() const
+  {
+    return m_combinationMode;
+  }
+  void setCategoryInheritanceMode(smtk::common::Categories::CombinationMode mode)
+  {
+    m_combinationMode = mode;
+  }
   ///@}
 
   //Get the item definition's advance level:
@@ -180,8 +183,8 @@ protected:
   ItemDefinition(const std::string& myname);
   void copyTo(ItemDefinitionPtr def) const;
   virtual void applyCategories(
-    const smtk::attribute::Categories::Stack& inheritedFromParent,
-    smtk::attribute::Categories& inheritedToParent);
+    const smtk::common::Categories::Stack& inheritedFromParent,
+    smtk::common::Categories& inheritedToParent);
   virtual void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent);
@@ -195,15 +198,15 @@ protected:
   bool m_isOptional;
   bool m_isEnabledByDefault;
   std::string m_label;
-  attribute::Categories::Expression m_localCategories;
-  attribute::Categories m_categories;
+  common::Categories::Expression m_localCategories;
+  common::Categories m_categories;
   std::string m_detailedDescription;
   std::string m_briefDescription;
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   unsigned int m_advanceLevel[2];
   attribute::Tags m_tags;
-  Categories::CombinationMode m_combinationMode;
+  smtk::common::Categories::CombinationMode m_combinationMode;
   std::shared_ptr<units::System> m_unitsSystem;
 
 private:

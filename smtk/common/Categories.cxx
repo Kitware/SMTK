@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Categories.h"
+#include "smtk/common/Categories.h"
 
-#include "smtk/attribute/categories/Actions.h"
-#include "smtk/attribute/categories/Evaluators.h"
-#include "smtk/attribute/categories/Grammar.h"
+#include "smtk/common/categories/Actions.h"
+#include "smtk/common/categories/Evaluators.h"
+#include "smtk/common/categories/Grammar.h"
 
 #include "smtk/io/Logger.h"
 #include <algorithm>
@@ -45,7 +45,7 @@ std::string assembleSubExpression(const std::set<std::string>& cats, const std::
   return exp;
 }
 } // namespace
-using namespace smtk::attribute;
+using namespace smtk::common;
 
 Categories::Expression::Expression()
 {
@@ -114,11 +114,11 @@ bool Categories::Expression::buildEvaluator()
   }
   // Ok we have a non-empty expression string to evaluate
   tao::pegtl::string_input<> in(m_expression, "(expression grammar)");
-  smtk::attribute::categories::Evaluators evals;
+  smtk::common::categories::Evaluators evals;
   try
   {
     tao::pegtl::
-      parse<smtk::attribute::categories::ExpressionGrammar, smtk::attribute::categories::Action>(
+      parse<smtk::common::categories::ExpressionGrammar, smtk::common::categories::Action>(
         in, evals);
   }
   catch (tao::pegtl::parse_error& err)
@@ -127,15 +127,15 @@ bool Categories::Expression::buildEvaluator()
 #if TAO_PEGTL_VERSION_MAJOR <= 2 && TAO_PEGTL_VERSION_MINOR <= 7
     smtkErrorMacro(
       smtk::io::Logger::instance(),
-      "smtk::attribute::Categories::Expression: " << err.what() << "\n"
-                                                  << in.line_as_string(p) << "\n"
-                                                  << std::string(p.byte_in_line, ' ') << "^\n");
+      "smtk::common::Categories::Expression: " << err.what() << "\n"
+                                               << in.line_as_string(p) << "\n"
+                                               << std::string(p.byte_in_line, ' ') << "^\n");
 #else
     smtkErrorMacro(
       smtk::io::Logger::instance(),
-      "smtk::attribute::Categories::Expression: " << err.what() << "\n"
-                                                  << in.line_at(p) << "\n"
-                                                  << std::string(p.byte_in_line, ' ') << "^\n");
+      "smtk::common::Categories::Expression: " << err.what() << "\n"
+                                               << in.line_at(p) << "\n"
+                                               << std::string(p.byte_in_line, ' ') << "^\n");
 #endif
     return false;
   }
