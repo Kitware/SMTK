@@ -371,7 +371,17 @@ public:
     auto* task = m_node->task();
     if (task)
     {
-      this->setHtml(task->name().c_str());
+      std::string s;
+      if (task->hasChildren())
+      {
+        s = s_hasChildrenSymbol;
+      }
+      else if (task->hasInternalPorts() || task->canAcceptWorklets())
+      {
+        s = s_canHaveChildrenSymbol;
+      }
+      s.append(task->name());
+      this->setHtml(s.c_str());
     }
     // See if we need to adjust the text width based on the configuration
     double textWidth = this->boundingRect().width();
@@ -438,6 +448,25 @@ public:
         taskManager->active().switchTo(nullptr);
         m_node->update();
       }
+    }
+  }
+
+  void dataUpdated()
+  {
+    auto* task = m_node->task();
+    if (task)
+    {
+      std::string s;
+      if (task->hasChildren())
+      {
+        s = s_hasChildrenSymbol;
+      }
+      else if (task->hasInternalPorts() || task->canAcceptWorklets())
+      {
+        s = s_canHaveChildrenSymbol;
+      }
+      s.append(task->name());
+      this->setHtml(s.c_str());
     }
   }
 
@@ -523,7 +552,18 @@ protected:
   }
   qtTaskNode* m_node;
   QTimer* m_timer;
+  /// Unicode character used to indicate that the task contains children
+  static const std::string s_hasChildrenSymbol;
+  /// Unicode character used to indicate that the task can accept tasks
+  /// generated from at least one worklet in the manager or the task
+  /// contains internal ports.
+  static const std::string s_canHaveChildrenSymbol;
 };
+
+const std::string qtTaskNameItem::s_hasChildrenSymbol =
+  "<b><span style=\"font-family:Font Awesome 6 Free\">&#x1f4c1;</span></b>&nbsp;";
+const std::string qtTaskNameItem::s_canHaveChildrenSymbol =
+  "<span style=\"font-family:Font Awesome 6 Free\">&#x1f4c1;</span>&nbsp;";
 
 qtTaskNode::qtTaskNode(qtDiagramGenerator* generator, smtk::task::Task* task, QGraphicsItem* parent)
   : Superclass(generator, task, parent)
@@ -656,6 +696,12 @@ void qtTaskNode::updateTaskState(smtk::task::State prev, smtk::task::State next,
   (void)prev;
   (void)next;
   (void)active;
+  this->update();
+}
+
+void qtTaskNode::dataUpdated()
+{
+  m_textItem->dataUpdated();
   this->update();
 }
 

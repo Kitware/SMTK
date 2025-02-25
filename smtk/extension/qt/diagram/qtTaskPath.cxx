@@ -283,20 +283,9 @@ void qtTaskPath::updateActiveTask(bool makeActive)
   }
 }
 
-bool qtTaskPath::canAcceptWorklets(const smtk::task::Task* task) const
-{
-  auto worklets = m_editor->manager()->gallery().worklets();
-  return std::any_of(
-    worklets.begin(),
-    worklets.end(),
-    [task](std::pair<const smtk::string::Token, std::shared_ptr<smtk::task::Worklet>>& info) {
-      return task->acceptsChildCategories(info.second->categories());
-    });
-}
-
 bool qtTaskPath::includeInPath(const smtk::task::Task* task) const
 {
-  return (task->hasChildren() || task->hasInternalPorts() || this->canAcceptWorklets(task));
+  return (task->hasChildren() || task->hasInternalPorts() || task->canAcceptWorklets());
 }
 
 } // namespace extension

@@ -65,8 +65,6 @@ public:
   void updateActiveTask(bool makeActive);
   /// Return the task editor
   qtTaskEditor* editor() const { return m_editor; }
-  /// Return true if the task can accept any worklets
-  bool canAcceptWorklets(const smtk::task::Task* task) const;
   /// Returns true if the task should be included in the path
   ///
   /// This is based on whether the task has/can have children or if it has

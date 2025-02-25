@@ -496,6 +496,9 @@ public:
   /// Returns true if the task contains any internal ports
   bool hasInternalPorts() const;
 
+  /// Return true if the task can accept any worklets
+  bool canAcceptWorklets() const;
+
 protected:
   friend SMTKCORE_EXPORT void
   workflowsOfTask(Task*, std::set<smtk::task::Task*>&, std::set<smtk::task::Task*>&);
