@@ -159,7 +159,7 @@ void qtInfixExpressionEditor::onInputValueChanged(const QString& text, int eleme
     {
       baseView->valueChanged(theItem);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
 
   // Set the widget color of the editBox on this row using |baseView|'s
@@ -450,7 +450,7 @@ void qtInfixExpressionEditor::onAddNewValue()
   {
     this->addInputEditor(static_cast<int>(theItem->numberOfValues()) - 1);
   }
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtInfixExpressionEditor::onRemoveValue()
@@ -475,7 +475,7 @@ void qtInfixExpressionEditor::onRemoveValue()
 
   this->clearChildWidgets();
   this->loadInputValues();
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 } // namespace extension

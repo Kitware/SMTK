@@ -71,7 +71,7 @@ protected Q_SLOTS:
   virtual void onAddNewValue();
   virtual void onRemoveValue();
   void displayExpressionWidget(bool checkstate);
-  virtual void onChildItemModified();
+  virtual void onChildItemModified(qtItem*);
   void onFilterChanged(const QString& keywords);
   void displayExpressionFilter(bool checkstate);
 

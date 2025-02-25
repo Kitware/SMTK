@@ -208,12 +208,27 @@ void qtAttribute::addItem(qtItem* child)
   {
     m_internals->m_items.append(child);
     // When the item is modified so is the attribute that uses it
-    connect(child, SIGNAL(modified()), this, SLOT(onItemModified()));
-    connect(child, &qtItem::childModified, [this](qtItem* item) {
+    connect(child, &qtItem::modified, [this](qtItem* item) {
       if (item != nullptr)
       {
         Q_EMIT this->itemModified(item);
-        Q_EMIT this->modified();
+        // make sure this object is still valid after the above signal is processed
+        if (m_internals != nullptr)
+        {
+          Q_EMIT this->modified();
+        }
+        return;
+      }
+      // See if the sender itself is from a qtItem and if so return that item
+      auto* iobject = qobject_cast<smtk::extension::qtItem*>(this->sender());
+      if (iobject)
+      {
+        Q_EMIT this->itemModified(iobject);
+        // make sure this object is still valid after the above signal is processed
+        if (m_internals != nullptr)
+        {
+          Q_EMIT this->modified();
+        }
       }
     });
   }
@@ -353,28 +368,6 @@ smtk::attribute::AttributePtr qtAttribute::attribute() const
 QWidget* qtAttribute::parentWidget()
 {
   return m_internals->m_parentWidget;
-}
-
-/* Slot for properly emitting signals when an attribute's item is modified */
-void qtAttribute::onItemModified()
-{
-  // are we here due to a signal?
-  QObject* sobject = this->sender();
-  if (sobject == nullptr)
-  {
-    return;
-  }
-  auto* iobject = qobject_cast<smtk::extension::qtItem*>(sobject);
-  if (iobject == nullptr)
-  {
-    return;
-  }
-  Q_EMIT this->itemModified(iobject);
-  if (m_internals == nullptr)
-  {
-    return;
-  }
-  Q_EMIT this->modified();
 }
 
 bool qtAttribute::isEmpty() const

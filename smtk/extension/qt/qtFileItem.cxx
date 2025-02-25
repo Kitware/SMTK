@@ -511,7 +511,7 @@ void qtFileItem::updateItemValue(int elementIdx)
       return; // value hasn't changed
     }
     item->setValue(elementIdx, value);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
 
     if (comboBox && !this->isDirectory() && this->updateRecentValues(editBox->text().toStdString()))
     {
@@ -551,7 +551,7 @@ void qtFileItem::updateItemValue(int elementIdx)
     }
     item->unset(elementIdx);
     m_itemInfo.uiManager()->setWidgetColorToInvalid(editBox);
-    Q_EMIT(modified());
+    Q_EMIT(modified(this));
   }
 }
 
@@ -721,7 +721,7 @@ bool qtFileItem::onLaunchFileBrowser()
             ii + valueIndex, *item, *item->definitionAs<FileSystemItemDefinition>());
           this->setInputValue(valueIndex + ii, files[ii]);
         }
-        Q_EMIT(modified());
+        Q_EMIT(modified(this));
       }
       else
       {
@@ -1071,7 +1071,7 @@ void qtFileItem::setOutputOptional(int state)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -1091,7 +1091,7 @@ void qtFileItem::onAddNewValue()
   if (item->setNumberOfValues(item->numberOfValues() + 1))
   {
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1, *item, *itemDef);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
 }
 
@@ -1124,7 +1124,7 @@ void qtFileItem::onRemoveValue()
   m_internals->MinusButtonIndices.removeAt(bindex);
 
   item->removeValue(eindex);
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtFileItem::clearChildWidgets()

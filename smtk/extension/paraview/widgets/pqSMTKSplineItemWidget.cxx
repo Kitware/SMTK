@@ -125,7 +125,7 @@ bool pqSMTKSplineItemWidget::createProxyAndWidget(
     widgetProxy->GetProperty("HandlePositions"),
     vtkCommand::ModifiedEvent,
     this,
-    SIGNAL(modified()));
+    SIGNAL(modified(this)));
 
   return widget != nullptr;
 }

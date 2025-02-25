@@ -273,7 +273,7 @@ void qtOntologyItem::modelEntryChosen(const QModelIndex& index)
   addGroupItem->findAs<StringItem>(tt, "name")->setValue(nameValue);
   addGroupItem->findAs<StringItem>(tt, "url")->setValue(urlValue);
   addGroupItem->findAs<StringItem>(tt, "ontology")->setValue(m_p->m_ontologyName);
-  Q_EMIT modified();
+  Q_EMIT modified(this);
   if (auto* iview = m_itemInfo.baseView())
   {
     iview->valueChanged(addGroupItem);
@@ -341,7 +341,7 @@ void qtOntologyItem::removeSelectedTags()
   }
   if (didRemove)
   {
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     if (auto* iview = m_itemInfo.baseView())
     {
       iview->valueChanged(addGroup);
@@ -692,7 +692,7 @@ void qtOntologyItem::setItemEnabled(int checkState)
   if (enable != item->localEnabledState())
   {
     item->setIsEnabled(enable);
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {

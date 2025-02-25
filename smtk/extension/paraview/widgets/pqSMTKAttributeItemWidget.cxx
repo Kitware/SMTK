@@ -239,7 +239,7 @@ void pqSMTKAttributeItemWidget::updateItemFromWidget()
     m_p->m_state = Internal::State::UpdatingFromAttribute;
     if (this->updateItemFromWidgetInternal())
     {
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
     m_p->m_state = Internal::State::Idle;
   }
@@ -285,7 +285,7 @@ void pqSMTKAttributeItemWidget::setOutputOptional(int optionEnabled)
     m_p->m_pvwidget->deselect();
     m_p->m_pvwidget->hide();
   }
-  Q_EMIT modified();
+  Q_EMIT modified(this);
 }
 
 void pqSMTKAttributeItemWidget::renderViewEventually() const

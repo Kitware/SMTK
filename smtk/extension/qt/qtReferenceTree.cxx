@@ -199,7 +199,7 @@ void qtReferenceTree::setOutputOptional(int state)
   if (itm && (itm->localEnabledState() != optionalVal))
   {
     itm->setIsEnabled(optionalVal);
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     if (auto* iview = m_itemInfo.baseView())
     {
       iview->valueChanged(itm);
@@ -268,7 +268,7 @@ void qtReferenceTree::copyFromSelection()
         {
           this->linkHover(true);
         }
-        Q_EMIT modified();
+        Q_EMIT modified(this);
         if (auto* iview = m_itemInfo.baseView())
         {
           iview->valueChanged(m_itemInfo.item());
@@ -308,7 +308,7 @@ void qtReferenceTree::clearItem()
     {
       this->linkHover(true);
     }
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     if (auto* iview = m_itemInfo.baseView())
     {
       iview->valueChanged(m_itemInfo.item());
@@ -896,7 +896,7 @@ bool qtReferenceTree::synchronize(UpdateSource src)
       }
       if (didChange)
       {
-        Q_EMIT modified();
+        Q_EMIT modified(this);
         if (auto* iview = m_itemInfo.baseView())
         {
           iview->valueChanged(m_itemInfo.item());

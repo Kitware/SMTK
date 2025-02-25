@@ -332,7 +332,7 @@ void qtInputsItem::unsetValue(int elementIndex)
   if (item->isSet(elementIndex))
   {
     item->unset(elementIndex);
-    Q_EMIT modified();
+    Q_EMIT modified(this);
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -354,7 +354,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
   }
   else if (item->setDiscreteIndex(elementIndex, discreteValIndex))
   {
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
     auto* iview = m_itemInfo.baseView();
     if (iview)
     {
@@ -368,7 +368,7 @@ bool qtInputsItem::setDiscreteValue(int elementIndex, int discreteValIndex)
 void qtInputsItem::forceUpdate()
 {
   auto item = m_itemInfo.itemAs<ValueItem>();
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
   auto* iview = m_itemInfo.baseView();
   if (iview)
   {
@@ -1138,7 +1138,7 @@ void qtInputsItem::setOutputOptional(int state)
     {
       iview->valueChanged(item);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
 }
 
@@ -1155,7 +1155,7 @@ void qtInputsItem::onAddNewValue()
     //      m_internals->EntryFrame->layout());
     this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
   }
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtInputsItem::onRemoveValue()
@@ -1206,7 +1206,7 @@ void qtInputsItem::onRemoveValue()
   }
   this->clearChildWidgets();
   this->loadInputValues();
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtInputsItem::updateExtensibleState()
@@ -1494,7 +1494,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
             hideExpressionResultWidgets();
           }
 
-          Q_EMIT this->modified();
+          Q_EMIT this->modified(this);
         }
       }
     }
@@ -1504,7 +1504,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     {
       inputitem->setExpression(nullptr);
       index = 0; // Go back to please select option
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
     m_internals->m_expressionCombo->setCurrentIndex(index);
     m_internals->m_expressionCombo->blockSignals(false);
@@ -1529,7 +1529,7 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
       // they are correct.
       this->clearChildWidgets();
       this->loadInputValues();
-      Q_EMIT this->modified();
+      Q_EMIT this->modified(this);
     }
   }
 
@@ -1689,7 +1689,7 @@ void qtInputsItem::onExpressionReferenceChanged()
   {
     iview->valueChanged(inputitem->shared_from_this());
   }
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(this);
 }
 
 void qtInputsItem::displayExpressionFilter(bool checkstate)
@@ -2243,7 +2243,7 @@ void qtInputsItem::showContextMenu(const QPoint& pt, int elementIdx)
           {
             textEdit->setText(item->valueAsString(elementIdx).c_str());
           }
-          Q_EMIT self->modified();
+          Q_EMIT self->modified(self);
         }
       });
   }
@@ -2292,7 +2292,7 @@ bool qtInputsItem::eventFilter(QObject* filterObj, QEvent* ev)
                 {
                   item->setToDefault(elementIdx);
                   intBox->setValue(item->value(elementIdx));
-                  Q_EMIT self->modified();
+                  Q_EMIT self->modified(self);
                   return;
                 }
                 auto ditem = self->m_itemInfo.itemAs<DoubleItem>();
@@ -2301,7 +2301,7 @@ bool qtInputsItem::eventFilter(QObject* filterObj, QEvent* ev)
                 {
                   ditem->setToDefault(elementIdx);
                   dblBox->setValue(ditem->value(elementIdx));
-                  Q_EMIT self->modified();
+                  Q_EMIT self->modified(self);
                   return;
                 }
               });
@@ -2379,7 +2379,7 @@ void qtInputsItem::doubleValueChanged(double newVal)
     {
       iview->valueChanged(ditem);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
   if (iview)
   {
@@ -2421,7 +2421,7 @@ void qtInputsItem::intValueChanged(int newVal)
     {
       iview->valueChanged(iitem);
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
   if (iview)
   {
@@ -2561,7 +2561,7 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
     {
       iview->valueChanged(rawitem->shared_from_this());
     }
-    Q_EMIT this->modified();
+    Q_EMIT this->modified(this);
   }
   if (iview)
   {
@@ -2572,9 +2572,9 @@ void qtInputsItem::onInputValueChanged(QObject* obj)
   }
 }
 
-void qtInputsItem::onChildItemModified()
+void qtInputsItem::onChildItemModified(qtItem* child)
 {
-  Q_EMIT this->modified();
+  Q_EMIT this->modified(child);
 }
 
 bool qtInputsItem::isFixedWidth() const
