@@ -281,6 +281,7 @@ add_library(smtkQtExt
   qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
   diagram/qtDiagramIcons.qrc
+  qtFonts.qrc
   ${rpJsonHeader}
   ${tpXmlHeader}
 )

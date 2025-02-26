@@ -1043,6 +1043,22 @@ bool Task::acceptsChildCategories(const std::set<std::string>& cats) const
   return result;
 }
 
+bool Task::canAcceptWorklets() const
+{
+  auto myManager = m_manager.lock();
+  if (myManager == nullptr)
+  {
+    return false;
+  }
+  auto worklets = myManager->gallery().worklets();
+  return std::any_of(
+    worklets.begin(),
+    worklets.end(),
+    [this](std::pair<const smtk::string::Token, std::shared_ptr<smtk::task::Worklet>>& info) {
+      return this->acceptsChildCategories(info.second->categories());
+    });
+}
+
 bool Task::hasInternalPorts() const
 {
   return std::any_of(

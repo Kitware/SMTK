@@ -9,10 +9,10 @@
 *.h     our-c-style
 *.mm    our-c-style
 *.txx   our-c-style
-
 *.py    our-py-style
-
 *.rst   our-rst-style
+
+*.otf	lfs
 
 thirdparty/**  -format.clang-format -format.autopep8
 **/pybind11/*  -format.clang-format

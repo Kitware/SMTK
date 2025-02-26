@@ -52,7 +52,10 @@
 #endif
 
 #include <QApplication>
+#include <QCoreApplication>
+#include <QFontDatabase>
 #include <QTimer>
+#include <QtDebug>
 
 namespace smtk
 {
@@ -122,6 +125,20 @@ void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
   qtMgr->diagramGeneratorFactory().registerTypes<DiagramGeneratorList>();
   qtMgr->taskNodeFactory().registerTypes<TaskNodeList>();
   qtMgr->objectNodeFactory().registerTypes<ObjectNodeList>();
+
+  // If there is a Qt Application initialized then we need to add some additional
+  // fonts that are used by classes such as qtTaskNode
+  if (QCoreApplication::instance())
+  {
+    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeRegular.otf") < 0)
+    {
+      qWarning() << "FontAwesomeRegular cannot be loaded !";
+    }
+    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeSolid.otf") < 0)
+    {
+      qWarning() << "FontAwesomeSolid cannot be loaded !";
+    }
+  }
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::extension::qtManager::Ptr& qtMgr)

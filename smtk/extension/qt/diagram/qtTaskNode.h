@@ -87,6 +87,9 @@ public:
   /// some cases are approximations based on quadratic curves.
   double roundingRadius() override { return m_roundingRadius; }
 
+  /// Handle renames, etc.
+  void dataUpdated() override;
+
 protected:
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
