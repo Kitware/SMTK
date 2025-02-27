@@ -62,10 +62,13 @@ misc-*,\
 -misc-use-anonymous-namespace,\
 -misc-use-internal-linkage,\
 modernize-*,\
+-modernize-avoid-bind,\
 -modernize-avoid-c-arrays,\
+-modernize-concat-nested-namespaces,\
 -modernize-loop-convert,\
 -modernize-macro-to-enum,\
 -modernize-make-shared,\
+-modernize-make-unique,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\
 -modernize-return-braced-init-list,\
@@ -75,6 +78,7 @@ modernize-*,\
 -modernize-use-emplace,\
 -modernize-use-equals-default,\
 -modernize-use-equals-delete,\
+-modernize-use-nodiscard,\
 -modernize-use-noexcept,\
 -modernize-use-nullptr,\
 -modernize-use-override,\
@@ -122,6 +126,7 @@ readability-*,\
 -readability-redundant-access-specifiers,\
 -readability-redundant-casting,\
 -readability-redundant-control-flow,\
+-readability-redundant-declaration,\
 -readability-redundant-inline-specifier,\
 -readability-redundant-member-init,\
 -readability-redundant-smartptr-get,\
