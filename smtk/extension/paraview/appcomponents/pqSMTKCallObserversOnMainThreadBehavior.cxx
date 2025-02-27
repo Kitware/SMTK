@@ -30,7 +30,7 @@ pqSMTKCallObserversOnMainThreadBehavior::pqSMTKCallObserversOnMainThreadBehavior
   // thread.
   QObject::connect(
     pqSMTKBehavior::instance(),
-    (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
+    (void(pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
     this,
     &pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThread);
 }
@@ -87,7 +87,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   std::weak_ptr<smtk::resource::Manager> resourceManager = wrapper->smtkResourceManager();
   QObject::connect(
     this,
-    (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QPrivateSignal)) &
+    (void(pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::resourceEvent,
     this,
     [this, resourceManager](QString resourceId, int event) {
@@ -135,7 +135,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // functors.
   QObject::connect(
     this,
-    (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QString, QPrivateSignal)) &
+    (void(pqSMTKCallObserversOnMainThreadBehavior::*)(QString, int, QString, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::operationEvent,
     this,
     [this](QString operationId, int event, QString resultName) {
@@ -171,7 +171,7 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
   // functors.
   QObject::connect(
     this,
-    (void (pqSMTKCallObserversOnMainThreadBehavior::*)(QString, QString, QPrivateSignal)) &
+    (void(pqSMTKCallObserversOnMainThreadBehavior::*)(QString, QString, QPrivateSignal)) &
       pqSMTKCallObserversOnMainThreadBehavior::selectionEvent,
     this,
     [this](QString selectionId, QString qstr) {

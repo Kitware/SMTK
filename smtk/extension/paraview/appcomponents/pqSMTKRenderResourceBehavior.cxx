@@ -112,7 +112,7 @@ pqSMTKRenderResourceBehavior::pqSMTKRenderResourceBehavior(QObject* parent)
 
   QObject::connect(
     pqSMTKBehavior::instance(),
-    (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
+    (void(pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
     onAddedManagerOnServer);
 }
 

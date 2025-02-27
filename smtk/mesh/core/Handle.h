@@ -44,8 +44,8 @@ namespace mesh
 typedef boost::icl::closed_interval<Handle> HandleInterval;
 typedef boost::icl::interval_set<Handle, std::less, HandleInterval> HandleRange;
 
-typedef decltype(
-  boost::icl::elements_begin(std::declval<const HandleRange>())) const_element_iterator;
+typedef decltype(boost::icl::elements_begin(
+  std::declval<const HandleRange>())) const_element_iterator;
 
 /// Return an iterator to the first element in the range
 SMTKCORE_EXPORT const_element_iterator rangeElementsBegin(const HandleRange&);

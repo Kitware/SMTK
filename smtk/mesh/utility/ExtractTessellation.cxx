@@ -351,7 +351,7 @@ void extractTessellationInternal(
   //we are using VTK style connectivity or a compacted connectivity format.
 
   //determine the function pointer to use for the connectivity array
-  std::size_t (*addCellLen)(std::int64_t & conn, std::size_t index, int numPts) =
+  std::size_t (*addCellLen)(std::int64_t& conn, std::size_t index, int numPts) =
     detail::smtkToSMTKConn;
   if (tess.m_useVTKConnectivity)
   {

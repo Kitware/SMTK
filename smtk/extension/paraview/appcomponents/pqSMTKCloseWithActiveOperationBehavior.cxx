@@ -54,7 +54,7 @@ pqSMTKCloseWithActiveOperationBehavior::pqSMTKCloseWithActiveOperationBehavior(Q
   // tracks the number of active operations.
   QObject::connect(
     pqSMTKBehavior::instance(),
-    (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
+    (void(pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
     this,
     &pqSMTKCloseWithActiveOperationBehavior::trackActiveOperations);
 

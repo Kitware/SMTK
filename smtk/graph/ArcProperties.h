@@ -377,7 +377,7 @@ public:
 template<typename T>
 constexpr
   typename std::enable_if<std::is_integral<decltype(T::MaxOutDegree)>::value, std::size_t>::type
-    maxOutDegree(std::size_t)
+  maxOutDegree(std::size_t)
 {
   return T::MaxOutDegree;
 }
@@ -394,7 +394,7 @@ constexpr std::size_t maxOutDegree(...)
 template<typename T>
 constexpr
   typename std::enable_if<std::is_integral<decltype(T::MaxInDegree)>::value, std::size_t>::type
-    maxInDegree(std::size_t)
+  maxInDegree(std::size_t)
 {
   return T::MaxInDegree;
 }
@@ -411,7 +411,7 @@ constexpr std::size_t maxInDegree(...)
 template<typename T>
 constexpr
   typename std::enable_if<std::is_integral<decltype(T::MinOutDegree)>::value, std::size_t>::type
-    minOutDegree(std::size_t)
+  minOutDegree(std::size_t)
 {
   return T::MinOutDegree;
 }
@@ -428,7 +428,7 @@ constexpr std::size_t minOutDegree(...)
 template<typename T>
 constexpr
   typename std::enable_if<std::is_integral<decltype(T::MinInDegree)>::value, std::size_t>::type
-    minInDegree(std::size_t)
+  minInDegree(std::size_t)
 {
   return T::MinInDegree;
 }

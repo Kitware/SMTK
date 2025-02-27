@@ -186,7 +186,7 @@ void pqSMTKAppComponentsAutoStart::observeWrapper(pqSMTKWrapper* wrapper, pqServ
     [this](
       const smtk::operation::Operation& op,
       smtk::operation::EventType event,
-      smtk::operation::Operation::Result const &
+      smtk::operation::Operation::Result const&
       /*result*/) -> int {
       (void)op;
       if (event == smtk::operation::EventType::WILL_OPERATE)

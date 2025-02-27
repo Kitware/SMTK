@@ -90,7 +90,7 @@ void ObjectGroupPhraseContent::children(DescriptivePhrases& container) const
       const smtk::resource::ManagerPtr& rsrcMgr,
       const smtk::operation::ManagerPtr& /*unused*/,
       const smtk::view::ManagerPtr& /*unused*/,
-      const smtk::view::SelectionPtr &
+      const smtk::view::SelectionPtr&
       /*unused*/) -> smtk::common::Visit {
       if (!rsrcMgr)
       {
@@ -142,7 +142,7 @@ bool ObjectGroupPhraseContent::hasChildren() const
       const smtk::resource::ManagerPtr& rsrcMgr,
       const smtk::operation::ManagerPtr& /*unused*/,
       const smtk::view::ManagerPtr& /*unused*/,
-      const smtk::view::SelectionPtr &
+      const smtk::view::SelectionPtr&
       /*unused*/) -> smtk::common::Visit {
       if (!rsrcMgr)
       {

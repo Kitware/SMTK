@@ -25,10 +25,16 @@
 #endif                          //Windows specific stuff
 
 #define SMTK_BASE_TYPE(thisclass)                                                                  \
-  virtual const char* classname() const { return #thisclass; }
+  virtual const char* classname() const                                                            \
+  {                                                                                                \
+    return #thisclass;                                                                             \
+  }
 
 #define SMTK_DERIVED_TYPE(thisclass, superclass)                                                   \
   typedef superclass Superclass;                                                                   \
-  const char* classname() const override { return #thisclass; }
+  const char* classname() const override                                                           \
+  {                                                                                                \
+    return #thisclass;                                                                             \
+  }
 
 #endif //__smtk_SystemConfig_h

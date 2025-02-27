@@ -166,7 +166,7 @@ int TestScalability(int argc, char* argv[])
   for (const auto& node : resource->nodes())
   {
     std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
-      [&](const Node * /* to */) -> smtk::common::Visit { return nooptimize; });
+      [&](const Node* /* to */) -> smtk::common::Visit { return nooptimize; });
   }
   timer.toc();
   std::cout << "Visited " << num_node * degree_node << " arc(s) in " << timer.elapsed() << "("
@@ -193,7 +193,7 @@ int TestScalability(int argc, char* argv[])
   for (const auto& node : resource->nodes())
   {
     std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
-      [&](const Node * /* to */) -> smtk::common::Visit {
+      [&](const Node* /* to */) -> smtk::common::Visit {
         narc++;
         return nooptimize;
       });
@@ -207,7 +207,7 @@ int TestScalability(int argc, char* argv[])
   for (const auto& node : resource->nodes())
   {
     std::dynamic_pointer_cast<Node>(node)->outgoing<Adjacent>().visit(
-      [&](const Node * /* to */) -> smtk::common::Visit {
+      [&](const Node* /* to */) -> smtk::common::Visit {
         narc++;
         return nooptimize;
       });

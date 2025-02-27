@@ -175,7 +175,7 @@ pqSMTKRegisterImportersBehavior::pqSMTKRegisterImportersBehavior(QObject* parent
 {
   QObject::connect(
     pqSMTKBehavior::instance(),
-    (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
+    (void(pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) & pqSMTKBehavior::addedManagerOnServer,
     this,
     &pqSMTKRegisterImportersBehavior::constructImporters);
 }
