@@ -1,13 +1,31 @@
 ---
-# This configuration requires clang-format 9.0 or higher.
+# This configuration requires clang-format 16 or higher.
 BasedOnStyle: Mozilla
 AlignAfterOpenBracket: AlwaysBreak
 AlignOperands: false
 AlwaysBreakAfterReturnType: None
 AlwaysBreakAfterDefinitionReturnType: None
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 ColumnLimit: 100
-Standard: Cpp11
+Standard: c++17
 FixNamespaceComments: true
 ReflowComments: false
 ...

@@ -1,5 +1,5 @@
 # Attributes used for formatting.
-[attr]our-c-style   whitespace=tab-in-indent  format.clang-format=9
+[attr]our-c-style   whitespace=tab-in-indent  format.clang-format=16
 [attr]our-py-style  whitespace=tab-in-indent  format.autopep8
 [attr]our-rst-style conflict-marker-size=100
 # Attributes for binary and/or large files
