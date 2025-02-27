@@ -12,4 +12,4 @@ set(SMTK_PLUGIN_CONTRACT_FILE_URLS
   "https://gitlab.kitware.com/cmb/plugins/cmb-2d/-/raw/master/cmake/cmb-2d.cmake"
   CACHE STRING "")
 
-include("${CMAKE_CURRENT_LIST_DIR}/configure_fedora33.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/configure_fedora41.cmake")
