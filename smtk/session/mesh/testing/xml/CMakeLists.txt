@@ -37,4 +37,6 @@ smtk_add_client_tests(
   DATA_DIRECTORY ${PROJECT_SOURCE_DIR}/data
   BASELINE_DIR ${PROJECT_SOURCE_DIR}/data/baseline/smtk/mesh
   )
+
+  smtk_test_apply_sanitizer(pv.OpenExodusFile)
 endif ()
