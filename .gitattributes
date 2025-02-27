@@ -12,7 +12,7 @@
 *.py    our-py-style
 *.rst   our-rst-style
 
-*.otf	lfs
+*.otf   lfs
 
 thirdparty/**  -format.clang-format -format.autopep8
 **/pybind11/*  -format.clang-format
