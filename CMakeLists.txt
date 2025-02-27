@@ -39,6 +39,9 @@ include(SMTKPluginMacros)
 # and also provides helpers around create_test_sourcelist
 include(CMake/SMTKTestingMacros.cmake)
 
+# Add warning flags.
+include(CMake/SMTKWarnings.cmake)
+
 # Add options for performing code coverage tests.
 include(CMake/SMTKCoverage.cmake)
 
