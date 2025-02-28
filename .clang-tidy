@@ -73,7 +73,6 @@ modernize-*,\
 -modernize-type-traits,\
 -modernize-use-auto,\
 -modernize-use-nodiscard,\
--modernize-use-nullptr,\
 -modernize-use-override,\
 -modernize-use-trailing-return-type,\
 -modernize-use-using,\
