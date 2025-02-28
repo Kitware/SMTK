@@ -64,8 +64,6 @@ qtTaskPortNode::qtTaskPortNode(
   smtk::resource::PersistentObject* obj,
   QGraphicsItem* parent)
   : Superclass(generator, obj, parent)
-  , m_length(20)
-  , m_angle(90)
   , m_port(dynamic_cast<smtk::task::Port*>(obj))
 {
   // If the port is external then it must have a qtBaseTaskNode as its parent.

@@ -489,17 +489,17 @@ protected:
   std::vector<smtk::attribute::ItemPtr> m_items;
   ReferenceItemPtr m_associatedObjects;
   smtk::attribute::DefinitionPtr m_definition;
-  bool m_appliesToBoundaryNodes;
-  bool m_appliesToInteriorNodes;
-  bool m_isColorSet;
+  bool m_appliesToBoundaryNodes{ false };
+  bool m_appliesToInteriorNodes{ false };
+  bool m_isColorSet{ false };
   std::map<std::string, smtk::simulation::UserDataPtr> m_userData;
   // We need something to indicate that the attribute is in process of
   // being deleted - this is used skip certain clean up steps that
   // would need to be done otherwise
-  bool m_aboutToBeDeleted;
+  bool m_aboutToBeDeleted{ false };
   double m_color[4];
   smtk::common::UUID m_id;
-  std::size_t m_includeIndex;
+  std::size_t m_includeIndex{ 0 };
   bool m_hasLocalAdvanceLevelInfo[2];
   unsigned int m_localAdvanceLevel[2];
   std::string m_localUnits;

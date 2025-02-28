@@ -72,7 +72,6 @@ modernize-*,\
 -modernize-return-braced-init-list,\
 -modernize-type-traits,\
 -modernize-use-auto,\
--modernize-use-default-member-init,\
 -modernize-use-emplace,\
 -modernize-use-equals-default,\
 -modernize-use-equals-delete,\

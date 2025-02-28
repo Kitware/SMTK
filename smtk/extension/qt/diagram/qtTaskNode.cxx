@@ -174,7 +174,6 @@ public:
   qtTaskCompletionCheckBoxItem(double size, qtTaskNode* node, QGraphicsItem* parent)
     : QGraphicsItem(parent)
     , m_node(node)
-    , m_checked(false)
     , m_size(size)
   {
     this->setCursor(Qt::ArrowCursor);
@@ -219,7 +218,7 @@ public:
 
 private:
   qtTaskNode* m_node;
-  bool m_checked;
+  bool m_checked{ false };
   double m_size;
 };
 

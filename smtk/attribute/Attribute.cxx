@@ -53,12 +53,7 @@ Attribute::Attribute(
   const smtk::common::UUID& myId)
   : m_name(myName)
   , m_definition(myDefinition)
-  , m_appliesToBoundaryNodes(false)
-  , m_appliesToInteriorNodes(false)
-  , m_isColorSet(false)
-  , m_aboutToBeDeleted(false)
   , m_id(myId)
-  , m_includeIndex(0)
 {
   m_hasLocalAdvanceLevelInfo[0] = false;
   m_hasLocalAdvanceLevelInfo[1] = false;
