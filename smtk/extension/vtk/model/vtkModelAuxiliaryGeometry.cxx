@@ -168,7 +168,7 @@ int vtkModelAuxiliaryGeometry::RequestData(
     std::vector<double> bbox;
     if (this->AuxGeomHelper->canHandleAuxiliaryGeometry(auxGeoEntity, bbox))
     {
-      auxRep = this->AuxGeomHelper->fetchCachedGeometry(auxGeoEntity);
+      auxRep = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(auxGeoEntity);
     }
     if (auxRep.GetPointer())
     {

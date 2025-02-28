@@ -52,7 +52,7 @@ int UnitTestRedirectOutput(int /*unused*/, char** const /*unused*/)
   myVTKObject->NormalMessage();
   myVTKObject->ErrorMessage();
   myVTKObject->WarningMessage();
-  myVTKObject->GenericWarningMessage();
+  vtkMyObject::GenericWarningMessage();
   myVTKObject->DebugMessage();
 
   // Then create a logger and redirect VTK's output to it
@@ -63,7 +63,7 @@ int UnitTestRedirectOutput(int /*unused*/, char** const /*unused*/)
     myVTKObject->NormalMessage();
     myVTKObject->ErrorMessage();
     myVTKObject->WarningMessage();
-    myVTKObject->GenericWarningMessage();
+    vtkMyObject::GenericWarningMessage();
     myVTKObject->DebugMessage();
 
     // Check that the logger received the output
@@ -97,7 +97,7 @@ int UnitTestRedirectOutput(int /*unused*/, char** const /*unused*/)
   myVTKObject->NormalMessage();
   myVTKObject->ErrorMessage();
   myVTKObject->WarningMessage();
-  myVTKObject->GenericWarningMessage();
+  vtkMyObject::GenericWarningMessage();
   myVTKObject->DebugMessage();
 
   return 0;

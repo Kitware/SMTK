@@ -164,7 +164,7 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
     for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTypes(); ++ii)
     {
       int cellType = cellTypes->GetCellType(ii);
-      int dim = cellTypes->GetDimension(cellType);
+      int dim = vtkCellTypes::GetDimension(cellType);
       if (dim > result)
       {
         result = dim;

@@ -63,7 +63,8 @@ smtk::mesh::StructuredGrid StructuredGridFromVTKAuxiliaryGeometry::operator()(
 
   if (loader && loader->canHandleAuxiliaryGeometry(nonConstAuxGeom, bbox))
   {
-    externalData = vtkDataSet::SafeDownCast(loader->fetchCachedGeometry(auxGeom));
+    externalData =
+      vtkDataSet::SafeDownCast(vtkAuxiliaryGeometryExtension::fetchCachedGeometry(auxGeom));
   }
 
   if (!externalData)

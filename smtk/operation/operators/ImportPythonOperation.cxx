@@ -129,7 +129,7 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
 
   // Load the python source file into our embedded interpreter
   bool success =
-    smtk::common::PythonInterpreter::instance().loadPythonSourceFile(fileItem->value(), moduleName);
+    common::PythonInterpreter::instance().loadPythonSourceFile(fileItem->value(), moduleName);
 
   if (!success)
   {
@@ -137,7 +137,7 @@ ImportPythonOperation::Result ImportPythonOperation::operateInternal()
   }
 
   std::vector<std::string> typeNames =
-    this->importOperationsFromModule(moduleName, *(m_manager.lock()));
+    ImportPythonOperation::importOperationsFromModule(moduleName, *(m_manager.lock()));
 
   Result result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 

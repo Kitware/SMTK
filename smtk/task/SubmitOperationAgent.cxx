@@ -338,7 +338,7 @@ void SubmitOperationAgent::configure(const Configuration& config)
             helper->setLeftPlaceholderId(m_operation->specification()->id());
             helper->setRightPlaceholderId(m_operation->specification()->id());
             m_operation->specification()->links().data() = *result;
-            helper->deactivate();
+            smtk::common::Helper<>::deactivate();
           }
           catch (std::exception& e)
           {
@@ -431,7 +431,7 @@ Agent::Configuration SubmitOperationAgent::configuration() const
     helper->setLeftPlaceholderId(m_operation->specification()->id());
     helper->setRightPlaceholderId(m_operation->specification()->id());
     config["op-links"] = m_operation->specification()->links().data();
-    helper->deactivate();
+    smtk::common::Helper<>::deactivate();
   }
   config["parameters"] = m_parameterSpecs;
   if (!m_watching.empty())
