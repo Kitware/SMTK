@@ -61,11 +61,7 @@ protected:
 
     std::unique_ptr<Wrapper> clone() const override
     {
-#ifdef SMTK_HAVE_CXX_14
       return std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(*value));
-#else
-      return std::unique_ptr<Wrapper>(new WrapperFor<Type>(new Type(*value)));
-#endif
     }
     smtk::string::Token objectType() const override { return m_objectType; }
 
@@ -139,13 +135,7 @@ public:
   {
     return m_container
       .emplace(std::make_pair(
-        this->keyId<Type>(),
-#ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))
-#else
-        std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type((value)))))
-#endif
-          ))
+        this->keyId<Type>(), std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(value))))
       .second;
   }
 
@@ -175,13 +165,7 @@ public:
     return m_container
       .emplace(std::make_pair(
         this->keyId<Type>(),
-#ifdef SMTK_HAVE_CXX_14
-        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))
-#else
-        std::unique_ptr<Wrapper>(
-          new WrapperFor<Type>(std::unique_ptr<Type>(new Type(std::forward<Args>(args)...))))
-#endif
-          ))
+        std::make_unique<WrapperFor<Type>>(std::make_unique<Type>(std::forward<Args>(args)...))))
       .second;
   }
 
@@ -206,16 +190,11 @@ public:
     auto search = m_container.find(this->keyId<Type>());
     if (search == m_container.end())
     {
-      search = m_container
-                 .emplace(std::make_pair(
-                   this->keyId<Type>(),
-#ifdef SMTK_HAVE_CXX_14
-                   std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())
-#else
-                   std::unique_ptr<Wrapper>(new WrapperFor<Type>(std::unique_ptr<Type>(new Type)))
-#endif
-                     ))
-                 .first;
+      search =
+        m_container
+          .emplace(std::make_pair(
+            this->keyId<Type>(), std::make_unique<WrapperFor<Type>>(std::make_unique<Type>())))
+          .first;
     }
 
     return *(static_cast<WrapperFor<Type>*>(search->second.get()))->value;
