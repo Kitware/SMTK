@@ -270,14 +270,10 @@ class smtkCoordinateTransformView::Internals : public Ui::smtkCoordinateTransfor
 {
 public:
   Internals(::smtkCoordinateTransformView* opView, const smtk::view::Information& info)
-    : m_setUp(false)
-    , m_currentOp(std::dynamic_pointer_cast<smtk::operation::CoordinateTransform>(
+    : m_currentOp(std::dynamic_pointer_cast<smtk::operation::CoordinateTransform>(
         info.get<smtk::operation::Operation::Ptr>()))
-    , m_frameProxy(nullptr)
     // , m_previewProxy(nullptr)
     , m_opView(opView)
-    , m_fromUsingLandmark(false)
-    , m_toUsingLandmark(false)
   {
     const auto* viewConfig = info.configuration();
     if (viewConfig)
@@ -744,7 +740,7 @@ public:
     return false;
   }
 
-  bool m_setUp;
+  bool m_setUp{ false };
   QPointer<QHBoxLayout> m_editorLayout;
   std::shared_ptr<smtk::operation::CoordinateTransform> m_currentOp;
   smtk::view::SelectionObservers::Key m_selectionObserver;
@@ -753,7 +749,7 @@ public:
   std::shared_ptr<smtk::extension::qtReferenceItem> m_coordinateSystemParentWidget;
   smtk::attribute::GroupItemPtr m_widgetCoordinateFrameGroupItem = nullptr;
   smtk::attribute::ReferenceItemPtr m_coordinateSystemParent = nullptr;
-  vtkSMProxy* m_frameProxy; // The proxy representing landmark coordinate frames.
+  vtkSMProxy* m_frameProxy{ nullptr }; // The proxy representing landmark coordinate frames.
   // vtkSMProxy* m_previewProxy; // The proxy representing preview geometry
   std::map<std::string, qtAttributeItemInfo> m_itemViewMap;
   ::smtkCoordinateTransformView* m_opView;
@@ -761,10 +757,10 @@ public:
   QPointer<qtItem> m_assocItemWidget;
   QPointer<QVBoxLayout> m_fromItemLayout;
   QPointer<qtItem> m_fromItemWidget;
-  bool m_fromUsingLandmark;
+  bool m_fromUsingLandmark{ false };
   QPointer<QVBoxLayout> m_toItemLayout;
   QPointer<qtItem> m_toItemWidget;
-  bool m_toUsingLandmark;
+  bool m_toUsingLandmark{ false };
   smtk::operation::Observers::Key m_operationObserver;
 };
 

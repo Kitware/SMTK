@@ -75,8 +75,7 @@ class smtkEditPropertiesView::Internals : public Ui::smtkEditPropertiesView
 {
 public:
   Internals(const std::shared_ptr<smtk::operation::Operation>& op)
-    : m_setUp(false)
-    , m_currentOp(std::dynamic_pointer_cast<smtk::operation::EditProperties>(op))
+    : m_currentOp(std::dynamic_pointer_cast<smtk::operation::EditProperties>(op))
   {
     m_attributeValueTable = nullptr;
     if (m_currentOp)
@@ -479,7 +478,7 @@ public:
     return false;
   }
 
-  bool m_setUp;
+  bool m_setUp{ false };
   QPointer<QHBoxLayout> m_editorLayout;
   std::shared_ptr<smtk::operation::EditProperties> m_currentOp;
   smtk::view::SelectionObservers::Key m_selectionObserver;
