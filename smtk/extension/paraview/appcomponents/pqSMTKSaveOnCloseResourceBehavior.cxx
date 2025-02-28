@@ -60,7 +60,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
       pqObjectBuilder* builder = pqCore->getObjectBuilder();
       QObject::connect(
         builder,
-        (void (pqObjectBuilder::*)(pqPipelineSource*)) & pqObjectBuilder::destroying,
+        (void(pqObjectBuilder::*)(pqPipelineSource*)) & pqObjectBuilder::destroying,
         [](pqPipelineSource* source) {
           pqSMTKResource* smtkResource = dynamic_cast<pqSMTKResource*>(source);
           if (smtkResource == nullptr)
@@ -124,7 +124,7 @@ pqSMTKSaveOnCloseResourceBehavior::pqSMTKSaveOnCloseResourceBehavior(QObject* pa
 
       QObject::connect(
         pqSMTKBehavior::instance(),
-        (void (pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) &
+        (void(pqSMTKBehavior::*)(pqSMTKWrapper*, pqServer*)) &
           pqSMTKBehavior::removingManagerFromServer,
         onRemovingManagerFromServer);
 

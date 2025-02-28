@@ -158,7 +158,7 @@ void qtDiscreteValueEditor::createWidget()
   QPointer<qtDiscreteValueEditor> guardedObject(this);
   QObject::connect(
     combo,
-    (void (QComboBox::*)(int)) & QComboBox::currentIndexChanged,
+    (void(QComboBox::*)(int)) & QComboBox::currentIndexChanged,
     this,
     [guardedObject]() {
       if (guardedObject)

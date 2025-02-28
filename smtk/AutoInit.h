@@ -47,9 +47,15 @@
   smtkAutoInitComponentMacro(C) static struct C##_ComponentInit                                    \
   {                                                                                                \
     /* Call <mod>_AutoInit_Construct during initialization.  */                                    \
-    C##_ComponentInit() { smtkAutoInitConstructMacro(C) }                                          \
+    C##_ComponentInit()                                                                            \
+    {                                                                                              \
+      smtkAutoInitConstructMacro(C)                                                                \
+    }                                                                                              \
     /* Call <mod>_AutoInit_Destruct during finalization.  */                                       \
-    ~C##_ComponentInit() { smtkAutoInitDestructMacro(C) }                                          \
+    ~C##_ComponentInit()                                                                           \
+    {                                                                                              \
+      smtkAutoInitDestructMacro(C)                                                                 \
+    }                                                                                              \
   } C##_ComponentInit_Instance;
 
 #endif // smtk_AutoInit_h

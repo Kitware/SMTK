@@ -125,7 +125,8 @@ public:
       this->get();
     }
     // Use this union to avoid strict-aliasing warnings about type-punned pointers:
-    union {
+    union
+    {
       Type* const* cache_ptr;
       const size_t* hash_ptr;
     } data;

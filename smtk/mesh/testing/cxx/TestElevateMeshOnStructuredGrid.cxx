@@ -93,10 +93,10 @@ public:
          ++i, counter += 3)
     {
       std::size_t bin = xyz[counter + m_coord] < m_min ? 0
-                                                       : xyz[counter + m_coord] >= m_max
-          ? m_hist.size() - 1
-          : static_cast<std::size_t>(
-              (xyz[counter + m_coord] - m_min) / (m_max - m_min) * m_hist.size());
+        : xyz[counter + m_coord] >= m_max
+        ? m_hist.size() - 1
+        : static_cast<std::size_t>(
+            (xyz[counter + m_coord] - m_min) / (m_max - m_min) * m_hist.size());
       ++m_hist[bin];
     }
   }

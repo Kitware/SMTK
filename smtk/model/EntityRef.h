@@ -60,7 +60,10 @@ class MeshSet;
     }                                                                                              \
   }                                                                                                \
   ~thisclass() override = default; /* Avoid warnings about non-virtual destructor */               \
-  bool isValid() const { return this->EntityRef::isValid(); }                                      \
+  bool isValid() const                                                                             \
+  {                                                                                                \
+    return this->EntityRef::isValid();                                                             \
+  }                                                                                                \
   bool isValid(EntityPtr* entRec) const override                                                   \
   {                                                                                                \
     EntityPtr er;                                                                                  \

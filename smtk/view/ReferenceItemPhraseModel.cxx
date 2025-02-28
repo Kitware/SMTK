@@ -68,7 +68,7 @@ void ReferenceItemPhraseModel::populateRoot()
       const smtk::resource::ManagerPtr& rsrcMgr,
       const smtk::operation::ManagerPtr& /*unused*/,
       const smtk::view::ManagerPtr& /*unused*/,
-      const smtk::view::SelectionPtr &
+      const smtk::view::SelectionPtr&
       /*unused*/) -> smtk::common::Visit {
       if (rsrcMgr)
       {

@@ -575,13 +575,13 @@ void qtOntologyItem::updateUI()
   // When user chooses an identifier, update the labels and item values.
   QObject::connect(
     m_p->m_completer,
-    (void (QCompleter::*)(const QModelIndex&)) & QCompleter::activated,
+    (void(QCompleter::*)(const QModelIndex&)) & QCompleter::activated,
     this,
     &qtOntologyItem::modelEntryChosen);
   // When the user hovers over an identifier, update the labels (but not the item values).
   QObject::connect(
     m_p->m_completer,
-    (void (QCompleter::*)(const QModelIndex&)) & QCompleter::highlighted,
+    (void(QCompleter::*)(const QModelIndex&)) & QCompleter::highlighted,
     this,
     &qtOntologyItem::modelEntryHighlighted);
   // Clear label text when the user enters a non-match

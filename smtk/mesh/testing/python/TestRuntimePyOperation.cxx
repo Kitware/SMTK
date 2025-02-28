@@ -84,9 +84,9 @@ public:
     for (c_it i = pointIds.begin(); i != pointIds.end(); ++i, counter += 3)
     {
       std::size_t bin = xyz[counter + 2] < m_min ? 0
-                                                 : xyz[counter + 2] > m_max
-          ? m_hist.size() - 1
-          : static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());
+        : xyz[counter + 2] > m_max
+        ? m_hist.size() - 1
+        : static_cast<std::size_t>((xyz[counter + 2] - m_min) / (m_max - m_min) * m_hist.size());
       ++m_hist[bin];
     }
   }
