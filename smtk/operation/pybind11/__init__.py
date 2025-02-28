@@ -143,7 +143,7 @@ def configureAttribute(attr, config):
             resourceMap[rsrc.name()] = rsrc
     # build_attribute expects the resource map as an arg.
     if config.get("resources") is not None:
-        del(config["resources"])
+        del (config["resources"])
     if config.get("resourceManager") is not None:
-        del(config["resourceManager"])
+        del (config["resourceManager"])
     builder.build_attribute(attr, config, resourceMap)

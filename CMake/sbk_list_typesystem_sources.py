@@ -61,7 +61,7 @@ class typesystem_parser(xml.sax.ContentHandler):
             generate = True
             if ('generate' in attrs):
                 generate = (attrs['generate'].lower() == "yes")
-            if(generate):
+            if (generate):
                 self.printWrapperFiles(self.current_namespace)
 
         elif name in class_types:
@@ -72,7 +72,7 @@ class typesystem_parser(xml.sax.ContentHandler):
             generate = True
             if ('generate' in attrs):
                 generate = (attrs['generate'].lower() == "yes")
-            if(generate):
+            if (generate):
                 self.printWrapperFiles(self.current_namespace)
 
     def endElement(self, name):

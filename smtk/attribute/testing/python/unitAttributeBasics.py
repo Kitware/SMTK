@@ -103,41 +103,41 @@ if __name__ == '__main__':
     att.setUserData("dataString", dataS)
     data = att.userData("bar")
     if data is not None:
-        print ("Should not have found user data bar.\n")
+        print("Should not have found user data bar.\n")
         status = -1
     data = att.userData("dataInt")
     if data is None:
-        print ("Can not find user data dataInt.\n")
+        print("Can not find user data dataInt.\n")
         status = -1
     else:
         if data.value() != 10:
-            print ("dataInt is not 10.\n")
+            print("dataInt is not 10.\n")
             status = -1
     data = att.userData("dataString")
     if data is None:
-        print ("Can not find user data dataString.\n")
+        print("Can not find user data dataString.\n")
         status = -1
     else:
         if data.value() != "foo":
-            print ("dataString is not foo.\n")
+            print("dataString is not foo.\n")
             status = -1
     att.clearUserData("dataInt")
     data = att.userData("dataInt")
     if data is not None:
-        print ("Found user data dataInt after trying to clear it.\n")
+        print("Found user data dataInt after trying to clear it.\n")
         status = -1
     data = att.userData("dataString")
     if data is None:
-        print (
+        print(
             "Can not find user data dataString after removing dataInt from user data.\n")
         status = -1
     att.clearAllUserData()
     data = att.userData("dataString")
     if data is not None:
-        print ("Found user data dataString after removing all user data.\n")
+        print("Found user data dataString after removing all user data.\n")
         status = -1
     if status == 0:
-        print ("Passed all User Data Tests.\n")
+        print("Passed all User Data Tests.\n")
 #    if att.resource() is not None:
 #       print("Should not be null.\n")
 #       status = -1

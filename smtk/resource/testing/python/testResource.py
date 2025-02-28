@@ -82,7 +82,7 @@ def test_python_resource():
     myComponent = myResource.newComponent()
     alsoMyComponent = myResource.find(myComponent.id())
 
-    assert(myComponent == alsoMyComponent)
+    assert (myComponent == alsoMyComponent)
 
 
 if __name__ == '__main__':
