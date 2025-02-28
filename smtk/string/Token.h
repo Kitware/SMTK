@@ -35,7 +35,7 @@ public:
   Token(const std::string& data);
   /// Construct a token given its hash value.
   /// NOTE: This will NOT insert a string into the manager as other constructors do.
-  inline constexpr Token(Hash tokenId) noexcept
+  constexpr Token(Hash tokenId) noexcept
     : m_id(tokenId)
   {
   }
@@ -80,7 +80,7 @@ protected:
   // Unlike the original, this version handles embedded null characters so that
   // unicode multi-byte sequences can be hashed.
   template<typename T>
-  inline static constexpr typename std::enable_if<sizeof(T) == 4, T>::type
+  static constexpr typename std::enable_if<sizeof(T) == 4, T>::type
   hash_fnv1a_const(const char* str, std::size_t size, T value) noexcept
   {
     return (!str || size <= 0)
@@ -89,15 +89,14 @@ protected:
   }
 
   template<typename T>
-  inline static constexpr typename std::enable_if<sizeof(T) == 4, std::size_t>::type
-  hash_fnv1a_seed()
+  static constexpr typename std::enable_if<sizeof(T) == 4, std::size_t>::type hash_fnv1a_seed()
   {
     return hash32a_const;
   }
 
   // Compute a 64-bit hash of a string.
   template<typename T>
-  inline static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type
+  static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type
   hash_fnv1a_const(const char* str, std::size_t size, uint64_t value) noexcept
   {
     return (!str || size <= 0)
@@ -106,8 +105,7 @@ protected:
   }
 
   template<typename T>
-  inline static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type
-  hash_fnv1a_seed()
+  static constexpr typename std::enable_if<sizeof(T) == 8, std::size_t>::type hash_fnv1a_seed()
   {
     return hash64a_const;
   }
@@ -115,7 +113,7 @@ protected:
 public:
   /// Return the hash of a string
   /// This is used internally but also by the ""_token() literal operator
-  inline static constexpr Hash stringHash(const char* data, std::size_t size) noexcept
+  static constexpr Hash stringHash(const char* data, std::size_t size) noexcept
   {
     return Token::hash_fnv1a_const<std::size_t>(data, size, Token::hash_fnv1a_seed<std::size_t>());
   }
@@ -144,7 +142,7 @@ inline Token operator""_token(const char* data, std::size_t size)
   return Token{ data, size };
 }
 
-inline constexpr Hash operator""_hash(const char* data, std::size_t size)
+constexpr Hash operator""_hash(const char* data, std::size_t size)
 {
   return Token::stringHash(data, size);
 }

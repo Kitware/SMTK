@@ -312,14 +312,14 @@ protected:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertTypes()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertTypes()
   {
     this->insertType<typename std::tuple_element<I, Tuple>::type>();
     TypeMap::insertTypes<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertTypes()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertTypes()
   {
   }
 };

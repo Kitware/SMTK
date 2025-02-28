@@ -50,7 +50,7 @@ public:
   const std::shared_ptr<smtk::resource::PersistentObject>& operator()(
     const std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
   {
-    return persistentObject;
+    return persistentObject; // bugprone-return-const-ref-from-parameter
   }
 
   std::shared_ptr<smtk::resource::PersistentObject> operator()(

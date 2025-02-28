@@ -481,24 +481,24 @@ private:
 
   // Helper methods for walking the types in a tuple.
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerTypes()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerTypes()
   {
     bool registered = this->registerType<typename std::tuple_element<I, Tuple>::type>();
     return registered && registerTypes<I + 1, Tuple>();
   }
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerTypes()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerTypes()
   {
     return true;
   }
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     bool unregistered = this->unregisterType<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && unregisterTypes<I + 1, Tuple>();
   }
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterTypes()
   {
     return true;
   }

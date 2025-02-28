@@ -339,7 +339,7 @@ public:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
     const std::shared_ptr<Manager>& manager,
     const std::shared_ptr<T>&... managers)
   {
@@ -350,7 +350,7 @@ private:
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
     const std::shared_ptr<Manager>&,
     const std::shared_ptr<T>&...)
   {
@@ -397,7 +397,7 @@ public:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type registerDependencies(
     const std::shared_ptr<Manager>& manager,
     const std::shared_ptr<T>&... managers)
   {
@@ -408,7 +408,7 @@ private:
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type registerDependencies(
     const std::shared_ptr<Manager>&,
     const std::shared_ptr<T>&...)
   {

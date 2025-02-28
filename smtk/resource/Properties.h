@@ -300,14 +300,14 @@ public:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertPropertyTypes()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertPropertyTypes()
   {
     this->insertPropertyType<typename std::tuple_element<I, Tuple>::type>();
     Properties::insertPropertyTypes<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertPropertyTypes()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertPropertyTypes()
   {
   }
 };
@@ -655,7 +655,7 @@ private:
 
   // const versions
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
     Args&&... args) const
   {
     this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
@@ -668,8 +668,7 @@ private:
 
   // non-const version
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
-    Args&&... args)
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(Args&&... args)
   {
     this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
       // First argument is always PropertiesOfType<tuple_element<I, Tuple>>:
@@ -681,8 +680,7 @@ private:
 
   // This only needs a const version.
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type invokeFunctors(
-    Args&&...) const
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type invokeFunctors(Args&&...) const
   {
   }
 

@@ -300,22 +300,20 @@ protected:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type
-  insertArcImplementations()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type insertArcImplementations()
   {
     this->insertArcImplementation<typename std::tuple_element<I, Tuple>::type>();
     ArcMap::insertArcImplementations<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type
-  insertArcImplementations()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type insertArcImplementations()
   {
   }
 
   // const versions
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
     Args&&... args) const
   {
     this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(args...);
@@ -324,8 +322,7 @@ private:
 
   // non-const version
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
-    Args&&... args)
+  typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(Args&&... args)
   {
     this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(args...);
     ArcMap::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
@@ -333,8 +330,7 @@ private:
 
   // This only needs a const version.
   template<std::size_t I, typename Tuple, typename Functor, typename... Args>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value>::type invokeFunctors(
-    Args&&...) const
+  typename std::enable_if<I == std::tuple_size<Tuple>::value>::type invokeFunctors(Args&&...) const
   {
   }
 

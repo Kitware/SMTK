@@ -153,27 +153,27 @@ public:
 
 private:
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerQueries()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerQueries()
   {
     bool registered = this->registerQuery<typename std::tuple_element<I, Tuple>::type>();
     return registered && registerQueries<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerQueries()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerQueries()
   {
     return true;
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     bool unregistered = this->unregisterQuery<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && unregisterQueries<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterQueries()
   {
     return true;
   }

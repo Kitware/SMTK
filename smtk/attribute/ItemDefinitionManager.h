@@ -182,31 +182,27 @@ protected:
   ItemDefinitionManager(const std::shared_ptr<smtk::resource::Manager>&);
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  registerDefinitions()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerDefinitions()
   {
     bool registered = this->registerDefinition<typename std::tuple_element<I, Tuple>::type>();
     return registered && ItemDefinitionManager::registerDefinitions<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  registerDefinitions()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerDefinitions()
   {
     return true;
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  unregisterDefinitions()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterDefinitions()
   {
     bool unregistered = this->unregisterDefinition<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && ItemDefinitionManager::unregisterDefinitions<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  unregisterDefinitions()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterDefinitions()
   {
     return true;
   }
