@@ -96,7 +96,7 @@ public:
     }
   }
 
-  const std::vector<std::size_t>& histogram() const { return m_hist; }
+  [[nodiscard]] const std::vector<std::size_t>& histogram() const { return m_hist; }
 
 private:
   std::vector<std::size_t> m_hist;

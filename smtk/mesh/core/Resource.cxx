@@ -39,9 +39,9 @@ public:
   {
   }
 
-  const smtk::mesh::InterfacePtr& mesh_iface() const { return this->Interface; }
+  [[nodiscard]] const smtk::mesh::InterfacePtr& mesh_iface() const { return this->Interface; }
 
-  smtk::mesh::Handle mesh_root_handle() const { return this->Interface->getRoot(); }
+  [[nodiscard]] smtk::mesh::Handle mesh_root_handle() const { return this->Interface->getRoot(); }
 
 private:
   smtk::mesh::InterfacePtr Interface;

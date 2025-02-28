@@ -51,7 +51,7 @@ struct Base
   Base& operator=(const Base&) = default;
   bool operator==(const Base& other) { return m_data == other.m_data; }
   std::string m_data;
-  virtual std::string name() const { return "Base" + m_data; }
+  [[nodiscard]] virtual std::string name() const { return "Base" + m_data; }
 };
 
 struct Derived : public Base
@@ -64,7 +64,7 @@ struct Derived : public Base
   Derived(const Derived&) = default;
   Derived(Derived&&) = default;
   Derived& operator=(const Derived&) = default;
-  std::string name() const override { return "Derived" + m_data; }
+  [[nodiscard]] std::string name() const override { return "Derived" + m_data; }
 };
 
 struct Derived2 : public Derived
@@ -77,7 +77,7 @@ struct Derived2 : public Derived
   Derived2(const Derived2&) = default;
   Derived2(Derived2&&) = default;
   Derived2& operator=(const Derived2&) = default;
-  std::string name() const override { return "Derived2" + m_data; }
+  [[nodiscard]] std::string name() const override { return "Derived2" + m_data; }
 };
 
 } // namespace

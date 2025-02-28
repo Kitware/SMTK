@@ -145,7 +145,7 @@ public:
   {
     if (ManagerCount::instance().operator[]<Registrar, Manager>(manager.get())++ == 0)
     {
-      Registrar().registerTo(m_Manager);
+      (void)Registrar().registerTo(m_Manager);
     }
   }
 
@@ -154,7 +154,7 @@ public:
     if (
       m_Manager && --ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager.get()) == 0)
     {
-      Registrar().unregisterFrom(m_Manager);
+      (void)Registrar().unregisterFrom(m_Manager);
     }
   }
 

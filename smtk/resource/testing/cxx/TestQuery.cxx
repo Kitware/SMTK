@@ -23,23 +23,23 @@ constexpr double EPSILON = 1.e-8;
 struct QueryA : smtk::resource::query::DerivedFrom<QueryA, smtk::resource::query::Query>
 {
   ~QueryA() override = default;
-  virtual double foo() const { return 2.; }
+  [[nodiscard]] virtual double foo() const { return 2.; }
 };
 
 struct QueryB : smtk::resource::query::DerivedFrom<QueryB, QueryA>
 {
-  double foo() const override { return 3.; }
-  int bar() const { return 3; }
+  [[nodiscard]] double foo() const override { return 3.; }
+  [[nodiscard]] int bar() const { return 3; }
 };
 
 struct QueryC : smtk::resource::query::DerivedFrom<QueryC, QueryA>
 {
-  double foo() const override { return 4.; }
+  [[nodiscard]] double foo() const override { return 4.; }
 };
 
 struct QueryD : smtk::resource::query::DerivedFrom<QueryD, QueryC>
 {
-  double foo() const override { return 6.; }
+  [[nodiscard]] double foo() const override { return 6.; }
 };
 } // namespace
 

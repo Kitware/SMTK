@@ -140,7 +140,8 @@ class qtComponentAttributeViewInternals
 public:
   ~qtComponentAttributeViewInternals() { delete this->CurrentAtt; }
 
-  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const ResourcePtr& attResource) const
+  [[nodiscard]] const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    const ResourcePtr& attResource) const
   {
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
@@ -170,7 +171,8 @@ public:
     return defs;
   }
 
-  smtk::attribute::AttributePtr getAttribute(const smtk::resource::PersistentObjectPtr obj) const
+  [[nodiscard]] smtk::attribute::AttributePtr getAttribute(
+    const smtk::resource::PersistentObjectPtr obj) const
   {
     // Check against all our definitions; should only find 1 attribute at the most
     auto iter = this->m_attDefinitions.cbegin();

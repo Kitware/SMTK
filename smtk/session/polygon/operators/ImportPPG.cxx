@@ -198,7 +198,7 @@ public:
     }
   }
 
-  smtk::model::ResourcePtr resource() const { return m_resource; }
+  [[nodiscard]] smtk::model::ResourcePtr resource() const { return m_resource; }
 
 protected:
   bool parsePPGVertex(const std::vector<std::string>& symbols, unsigned lineNum);

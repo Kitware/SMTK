@@ -52,15 +52,15 @@ public:
 
   void toc() { _toc = clock::now(); }
 
-  typename duration::rep elapsed() const { return this->elapsed(duration()); }
+  [[nodiscard]] typename duration::rep elapsed() const { return this->elapsed(duration()); }
 
   template<class D>
-  typename D::rep elapsed(const D&) const
+  [[nodiscard]] typename D::rep elapsed(const D&) const
   {
     return std::chrono::duration_cast<D>(_toc - _tic).count();
   }
 
-  std::string units() const { return duration_units<duration>::str(); }
+  [[nodiscard]] std::string units() const { return duration_units<duration>::str(); }
 
 private:
   typename clock::time_point _tic, _toc;

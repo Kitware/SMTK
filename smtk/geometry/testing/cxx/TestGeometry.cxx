@@ -54,7 +54,7 @@ public:
   Backend1() = default;
   ~Backend1() override = default;
 
-  std::string name() const override { return "Backend1"; }
+  [[nodiscard]] std::string name() const override { return "Backend1"; }
 };
 
 class Backend2 : public smtk::geometry::Backend
@@ -63,7 +63,7 @@ public:
   Backend2() = default;
   ~Backend2() override = default;
 
-  std::string name() const override { return "Backend2"; }
+  [[nodiscard]] std::string name() const override { return "Backend2"; }
 
   template<typename Geometry>
   int geometry(const Geometry& p, const smtk::resource::PersistentObject::Ptr& obj)
@@ -237,7 +237,7 @@ public:
 class RegisterResourceABackend2 : public smtk::geometry::Supplier<RegisterResourceABackend2>
 {
 public:
-  bool valid(const smtk::geometry::Specification& in) const override
+  [[nodiscard]] bool valid(const smtk::geometry::Specification& in) const override
   {
     Backend2 backend;
     return std::get<1>(in).index() == backend.index();

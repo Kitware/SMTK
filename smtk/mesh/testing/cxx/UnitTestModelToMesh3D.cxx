@@ -52,10 +52,10 @@ public:
       smtk::mesh::HandleInterval(*this->pointIds(), *(this->pointIds() + numPts - 1)));
   }
 
-  int numberOCellsVisited() const { return numCellsVisited; }
-  int numberOPointsSeen() const { return numPointsSeen; }
+  [[nodiscard]] int numberOCellsVisited() const { return numCellsVisited; }
+  [[nodiscard]] int numberOPointsSeen() const { return numPointsSeen; }
 
-  smtk::mesh::HandleRange points() const { return pointsSeen; }
+  [[nodiscard]] smtk::mesh::HandleRange points() const { return pointsSeen; }
 };
 
 std::size_t numTetsInModel = 4;

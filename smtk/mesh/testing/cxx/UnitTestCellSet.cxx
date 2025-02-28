@@ -563,13 +563,13 @@ public:
     this->cellTypesSeen[static_cast<int>(cellType)] = true;
   }
 
-  int numberOCellsVisited() const { return numCellsVisited; }
-  int numberOPointsSeen() const { return numPointsSeen; }
+  [[nodiscard]] int numberOCellsVisited() const { return numCellsVisited; }
+  [[nodiscard]] int numberOPointsSeen() const { return numPointsSeen; }
 
-  smtk::mesh::HandleRange points() const { return pointsSeen; }
-  smtk::mesh::HandleRange cells() const { return cellsSeen; }
+  [[nodiscard]] smtk::mesh::HandleRange points() const { return pointsSeen; }
+  [[nodiscard]] smtk::mesh::HandleRange cells() const { return cellsSeen; }
 
-  smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
+  [[nodiscard]] smtk::mesh::CellTypes cellTypes() const { return cellTypesSeen; }
 };
 
 void verify_cellset_for_each(const smtk::mesh::ResourcePtr& mr)

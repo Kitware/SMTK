@@ -126,9 +126,9 @@ public:
   FrameTreeItem(const FrameTreeItem&) = default;
   FrameTreeItem& operator=(const FrameTreeItem&) = default;
 
-  smtk::resource::Resource* resource() const { return m_resource; }
-  smtk::resource::PersistentObject* object() const { return m_object; }
-  std::string propertyName() const { return m_propertyName; }
+  [[nodiscard]] smtk::resource::Resource* resource() const { return m_resource; }
+  [[nodiscard]] smtk::resource::PersistentObject* object() const { return m_object; }
+  [[nodiscard]] std::string propertyName() const { return m_propertyName; }
 
   bool operator<(const FrameTreeItem* other) const
   {

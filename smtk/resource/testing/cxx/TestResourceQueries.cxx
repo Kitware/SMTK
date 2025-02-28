@@ -110,7 +110,7 @@ enum QueryResult
 class Query : public smtk::resource::query::Query
 {
 public:
-  int performQuery(const smtk::resource::ComponentPtr& component) const
+  [[nodiscard]] int performQuery(const smtk::resource::ComponentPtr& component) const
   {
     // Access the query artifact from the resource
     smtk::resource::Resource::Ptr resource = component->resource();

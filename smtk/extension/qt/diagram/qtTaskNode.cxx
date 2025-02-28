@@ -62,7 +62,7 @@ public:
   {
   }
 
-  QRectF boundingRect() const override
+  [[nodiscard]] QRectF boundingRect() const override
   {
     auto cbounds = m_node->contentBoundingRect();
     return QRectF(0.0, 0.0, m_node->sideTotalWidth(), cbounds.height());
@@ -179,7 +179,7 @@ public:
     this->setCursor(Qt::ArrowCursor);
   }
 
-  QRectF boundingRect() const override
+  [[nodiscard]] QRectF boundingRect() const override
   {
     auto myBounds = QRectF(0, 0, m_size, m_size);
     auto pBounds = this->parentItem()->boundingRect();
@@ -235,7 +235,7 @@ public:
     m_checkbox = new qtTaskCompletionCheckBoxItem(height * 0.3, node, this);
   }
 
-  QRectF boundingRect() const override
+  [[nodiscard]] QRectF boundingRect() const override
   {
     auto cbounds = m_node->contentBoundingRect();
     double height = cbounds.height();

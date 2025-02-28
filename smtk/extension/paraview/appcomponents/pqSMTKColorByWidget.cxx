@@ -93,7 +93,7 @@ public:
     return (idx != -1);
   }
 
-  const QString& colorByText() const { return this->ColorByText; }
+  [[nodiscard]] const QString& colorByText() const { return this->ColorByText; }
 };
 
 //-----------------------------------------------------------------------------

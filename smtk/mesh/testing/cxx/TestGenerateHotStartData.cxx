@@ -85,7 +85,7 @@ public:
     m_hist.resize(nBins, 0);
   }
 
-  const std::vector<std::size_t>& histogram() const { return m_hist; }
+  [[nodiscard]] const std::vector<std::size_t>& histogram() const { return m_hist; }
 
 protected:
   std::vector<std::size_t> m_hist;

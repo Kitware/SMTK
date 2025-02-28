@@ -22,7 +22,7 @@ class ConstExprNamed
 public:
   static constexpr const char* const type_name = "ConstExprNamed";
 
-  std::string typeName() const { return "Should not return this"; }
+  [[nodiscard]] std::string typeName() const { return "Should not return this"; }
 
   static std::shared_ptr<ConstExprNamed> create()
   {

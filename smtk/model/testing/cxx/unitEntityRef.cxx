@@ -79,7 +79,7 @@ public:
   TestBackend() = default;
   ~TestBackend() override = default;
 
-  std::string name() const override { return "TestBackend"; }
+  [[nodiscard]] std::string name() const override { return "TestBackend"; }
 };
 
 class TestGeometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>>
@@ -128,7 +128,7 @@ public:
 class RegisterTestResourceToBackend : public smtk::geometry::Supplier<RegisterTestResourceToBackend>
 {
 public:
-  bool valid(const smtk::geometry::Specification& in) const override
+  [[nodiscard]] bool valid(const smtk::geometry::Specification& in) const override
   {
     TestBackend backend;
     auto rsrc = std::dynamic_pointer_cast<TestResource>(std::get<0>(in));

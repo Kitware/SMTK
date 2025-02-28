@@ -394,9 +394,9 @@ public:
     this->cellsSeen.append(mesh.cells());
   }
 
-  int numberOfMeshesVisited() const { return numMeshesIteratedOver; }
+  [[nodiscard]] int numberOfMeshesVisited() const { return numMeshesIteratedOver; }
 
-  smtk::mesh::CellSet cells() const { return cellsSeen; }
+  [[nodiscard]] smtk::mesh::CellSet cells() const { return cellsSeen; }
 };
 
 void verify_meshset_for_each(const smtk::mesh::ResourcePtr& mr)

@@ -42,7 +42,10 @@ namespace
 {
 class ProjectIconConstructor : public smtk::view::SVGIconConstructor
 {
-  std::string svg(const smtk::resource::PersistentObject&) const override { return project_svg; }
+  [[nodiscard]] std::string svg(const smtk::resource::PersistentObject&) const override
+  {
+    return project_svg;
+  }
 };
 
 typedef std::tuple<Add, Create, Define, Print, Read, Remove, Write> OperationList;
