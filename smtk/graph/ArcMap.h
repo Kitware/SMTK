@@ -162,7 +162,7 @@ public:
     {
       for (const auto& arcTypeName : this->runtimeTypeNames(baseArc))
       {
-        f(arcTypeName, *this->at<ArcImplementationBase>(arcTypeName), std::forward<Args>(args)...);
+        f(arcTypeName, *this->at<ArcImplementationBase>(arcTypeName), args...);
       }
     }
   }
@@ -176,7 +176,7 @@ public:
     {
       for (const auto& arcTypeName : this->runtimeTypeNames(baseArc))
       {
-        f(arcTypeName, *this->at<ArcImplementationBase>(arcTypeName), std::forward<Args>(args)...);
+        f(arcTypeName, *this->at<ArcImplementationBase>(arcTypeName), args...);
       }
     }
   }
@@ -318,8 +318,7 @@ private:
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
     Args&&... args) const
   {
-    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
-      std::forward<Args>(args)...);
+    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(args...);
     ArcMap::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
   }
 
@@ -328,8 +327,7 @@ private:
   inline typename std::enable_if<I != std::tuple_size<Tuple>::value>::type invokeFunctors(
     Args&&... args)
   {
-    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(
-      std::forward<Args>(args)...);
+    this->invokeFunctor<typename std::tuple_element<I, Tuple>::type, Functor>(args...);
     ArcMap::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
   }
 

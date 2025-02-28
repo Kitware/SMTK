@@ -675,7 +675,7 @@ private:
       // First argument is always PropertiesOfType<tuple_element<I, Tuple>>:
       this->template get<typename std::tuple_element<I, Tuple>::type>(),
       // Subsequent arguments are whatever is passed in:
-      std::forward<Args>(args)...);
+      args...);
     smtk::resource::Properties::invokeFunctors<I + 1, Tuple, Functor>(std::forward<Args>(args)...);
   }
 

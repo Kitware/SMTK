@@ -118,7 +118,7 @@ public:
     Key& operator=(const Key&) = delete;
 
     Key(Key&& key) noexcept
-      : InternalKey(std::move(key))
+      : InternalKey(key)
       , m_observers(std::move(key.m_observers))
     {
       if (m_observers)
@@ -247,7 +247,7 @@ public:
         }
         if (entry.first.assigned())
         {
-          result |= entry.second(std::forward<Types>(args)...);
+          result |= entry.second(args...);
         }
       }
       else if (DebugObservers)
@@ -299,7 +299,7 @@ public:
         }
         if (entry.first.assigned())
         {
-          entry.second(std::forward<Types>(args)...);
+          entry.second(args...);
         }
       }
       else if (DebugObservers)
