@@ -184,7 +184,7 @@ public:
                        .emplace(
                          declaredType.id(),
                          std::make_unique<WrapperFor<RuntimeType>>(
-                           std::make_unique<RuntimeType>(std::forward<Args>(args)...))
+                           std::make_unique<RuntimeType>(std::forward<Args>(args)...)))
                        .second;
     if (didInsert)
     {

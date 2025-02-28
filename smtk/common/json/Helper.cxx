@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/common/json/Helper.h"
 
+#include <memory>
+
 namespace smtk
 {
 namespace common
@@ -35,7 +37,7 @@ Helper<UUID, UUID>* Helper<UUID, UUID>::activate()
   {
     throw std::logic_error("Nested link helpers are disallowed. Perhaps you forgot to deactivate?");
   }
-  s_instance = std::unique_ptr<IDHelper>(new IDHelper);
+  s_instance = std::make_unique<IDHelper>();
   return s_instance.get();
 }
 

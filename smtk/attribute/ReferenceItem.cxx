@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <sstream>
 
 namespace smtk
@@ -89,7 +90,8 @@ ReferenceItem::const_iterator::~const_iterator() = default;
 ReferenceItem::const_iterator& ReferenceItem::const_iterator::operator=(
   const ReferenceItem::const_iterator& it)
 {
-  m_cacheIterator.reset(new ReferenceItem::const_iterator::CacheIterator(*(it.m_cacheIterator)));
+  m_cacheIterator =
+    std::make_unique<ReferenceItem::const_iterator::CacheIterator>(*(it.m_cacheIterator));
   return *this;
 }
 
@@ -239,7 +241,7 @@ ReferenceItem& ReferenceItem::operator=(const ReferenceItem& referenceItem)
 {
   Item::operator=(referenceItem);
   m_referencedAttribute = referenceItem.m_referencedAttribute;
-  m_cache.reset(new ReferenceItem::Cache(*(referenceItem.m_cache)));
+  m_cache = std::make_unique<ReferenceItem::Cache>(*(referenceItem.m_cache));
   m_nextUnsetPos = referenceItem.m_nextUnsetPos;
   return *this;
 }

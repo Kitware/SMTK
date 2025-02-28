@@ -17,6 +17,8 @@
 #include "smtk/mesh/moab/Interface.h"
 #include "smtk/mesh/moab/PointLocatorCache.h"
 
+#include <memory>
+
 namespace smtk
 {
 namespace mesh
@@ -72,8 +74,8 @@ std::array<double, 3> ClosestPoint::operator()(
         pointLocatorCache.m_caches
           .emplace(
             meshset.id(),
-            std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
-              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions)))
+            std::make_unique<PointLocatorCache::CacheForIndex>(
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))
           .first;
     }
 
