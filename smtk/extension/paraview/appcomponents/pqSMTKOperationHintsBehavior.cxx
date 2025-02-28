@@ -426,7 +426,7 @@ void pqSMTKOperationHintsBehavior::observeWrapper(pqSMTKWrapper* wrapper, pqServ
           selection->observers().insert(
             [this](
               const std::string& selectionSource, const smtk::view::Selection::Ptr& selection) {
-              return this->removeEphemera(selectionSource, selection);
+              this->removeEphemera(selectionSource, selection);
             }))
         .second;
     if (!didInsert)

@@ -67,7 +67,7 @@ void notifyRecursive(
 void notify(PhraseModel::Observer obs, DescriptivePhrasePtr parent)
 {
   std::vector<int> parentIdx;
-  return notifyRecursive(obs, parent, parentIdx);
+  notifyRecursive(obs, parent, parentIdx);
 }
 } // namespace
 

@@ -32,7 +32,7 @@ inline py::class_< smtk::resource::Observers > pybind11_init_smtk_resource_Obser
   py::class_< smtk::resource::Observers > instance(m, "Observers");
   instance
     .def(py::init<>())
-    .def("__call__", [](smtk::resource::Observers& observers, const smtk::resource::Resource& rsrc, ::smtk::resource::EventType eventType) { return observers(rsrc, eventType); })
+    .def("__call__", [](smtk::resource::Observers& observers, const smtk::resource::Resource& rsrc, ::smtk::resource::EventType eventType) { observers(rsrc, eventType); })
     .def("__len__", &smtk::resource::Observers::size)
     .def("erase", (std::size_t (smtk::resource::Observers::*)(smtk::resource::Observers::Key&)) &smtk::resource::Observers::erase)
     .def("insert", (smtk::resource::Observers::Key (smtk::resource::Observers::*)(smtk::resource::Observer, std::string)) &smtk::resource::Observers::insert, pybind11::keep_alive<1, 2>())

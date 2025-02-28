@@ -2104,7 +2104,7 @@ void Interface::pointForEach(const HandleRange& points, smtk::mesh::PointForEach
 {
   HandleRange pts = points;
   std::vector<double> coords;
-  return pointForEachRecursive(pts, coords, filter);
+  pointForEachRecursive(pts, coords, filter);
 }
 
 void Interface::pointForEachRecursive(
@@ -2176,7 +2176,7 @@ void Interface::pointForEachRecursive(
 
   points -= toSubtract;
 
-  return pointForEachRecursive(points, coords, filter);
+  pointForEachRecursive(points, coords, filter);
 }
 
 void Interface::cellForEach(

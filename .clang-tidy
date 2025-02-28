@@ -89,7 +89,6 @@ performance-*,\
 portability-*,\
 readability-*,\
 -readability-avoid-nested-conditional-operator,\
--readability-avoid-return-with-void-value,\
 -readability-avoid-unconditional-preprocessor-if,\
 -readability-braces-around-statements,\
 -readability-const-return-type,\

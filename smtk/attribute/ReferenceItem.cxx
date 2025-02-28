@@ -1241,7 +1241,7 @@ void ReferenceItem::appendToCache(const PersistentObjectPtr& obj) const
 {
   std::size_t i = m_cache->size();
   m_cache->push_back(Cache::value_type());
-  return assignToCache(i, obj);
+  assignToCache(i, obj);
 }
 
 bool ReferenceItem::removeInvalidValues()
