@@ -19,8 +19,6 @@ namespace smtk
 namespace string
 {
 
-constexpr Hash Manager::Invalid;
-
 std::shared_ptr<Manager> Manager::create()
 {
   auto manager = std::make_shared<Manager>();

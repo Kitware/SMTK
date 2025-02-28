@@ -45,9 +45,6 @@
 
 using namespace smtk::attribute;
 
-constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
-constexpr smtk::resource::Links::RoleType Resource::ReferenceRole;
-
 namespace
 {
 using QueryList = std::tuple<SelectionFootprint>;

@@ -66,9 +66,6 @@ namespace smtk
 namespace model
 {
 
-constexpr smtk::resource::Links::RoleType Resource::AssociationRole;
-constexpr smtk::resource::Links::RoleType Resource::TessellationRole;
-
 namespace
 {
 using QueryList = std::tuple<SelectionFootprint>;

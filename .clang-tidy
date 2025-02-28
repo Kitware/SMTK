@@ -106,7 +106,6 @@ readability-*,\
 -readability-qualified-auto,\
 -readability-redundant-access-specifiers,\
 -readability-redundant-control-flow,\
--readability-redundant-declaration,\
 -readability-simplify-boolean-expr,\
 -readability-suspicious-call-argument,\
 -readability-uppercase-literal-suffix,\
