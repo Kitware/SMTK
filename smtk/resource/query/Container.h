@@ -15,6 +15,7 @@
 
 #include "smtk/resource/query/BadTypeError.h"
 
+#include <memory>
 #include <typeinfo>
 #include <unordered_map>
 
@@ -61,7 +62,7 @@ public:
     if (search == m_container.end())
     {
       search =
-        m_container.emplace(std::make_pair(typeid(Type).hash_code(), std::unique_ptr<T>(new Type)))
+        m_container.emplace(std::make_pair(typeid(Type).hash_code(), std::make_unique<Type>()))
           .first;
     }
 
