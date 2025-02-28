@@ -35,7 +35,6 @@
 #include "smtk/extension/qt/diagram/qtDisconnectMode.h"
 #include "smtk/extension/qt/diagram/qtPanMode.h"
 #include "smtk/extension/qt/diagram/qtSelectMode.h"
-#include "smtk/extension/qt/diagram/qtTaskPath.h"
 
 #include "smtk/view/Configuration.h"
 #include "smtk/view/json/jsonView.h"

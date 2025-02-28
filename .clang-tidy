@@ -93,7 +93,6 @@ readability-*,\
 -readability-braces-around-statements,\
 -readability-const-return-type,\
 -readability-convert-member-functions-to-static,\
--readability-duplicate-include,\
 -readability-else-after-return,\
 -readability-enum-initial-value,\
 -readability-function-cognitive-complexity,\
