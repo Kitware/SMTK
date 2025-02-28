@@ -66,7 +66,6 @@ modernize-*,\
 -modernize-concat-nested-namespaces,\
 -modernize-loop-convert,\
 -modernize-macro-to-enum,\
--modernize-make-shared,\
 -modernize-make-unique,\
 -modernize-pass-by-value,\
 -modernize-raw-string-literal,\

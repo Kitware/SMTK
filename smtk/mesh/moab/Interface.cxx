@@ -241,9 +241,9 @@ smtk::mesh::moab::InterfacePtr extract_interface(const smtk::mesh::ResourcePtr& 
 Interface::Interface()
   : m_iface(new ::moab::Core())
 {
-  m_alloc.reset(new smtk::mesh::moab::Allocator(m_iface.get()));
-  m_bcAlloc.reset(new smtk::mesh::moab::BufferedCellAllocator(m_iface.get()));
-  m_iAlloc.reset(new smtk::mesh::moab::IncrementalAllocator(m_iface.get()));
+  m_alloc = std::make_shared<smtk::mesh::moab::Allocator>(m_iface.get());
+  m_bcAlloc = std::make_shared<smtk::mesh::moab::BufferedCellAllocator>(m_iface.get());
+  m_iAlloc = std::make_shared<smtk::mesh::moab::IncrementalAllocator>(m_iface.get());
 
   // Moab has become increasingly verbose. For now, let's make it quiet.
   //
