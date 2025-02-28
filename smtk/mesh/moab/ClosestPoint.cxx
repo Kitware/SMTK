@@ -70,10 +70,10 @@ std::array<double, 3> ClosestPoint::operator()(
 
       search =
         pointLocatorCache.m_caches
-          .emplace(std::make_pair(
+          .emplace(
             meshset.id(),
             std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
-              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions)))
           .first;
     }
 

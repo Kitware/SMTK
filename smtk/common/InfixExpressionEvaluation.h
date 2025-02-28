@@ -108,7 +108,7 @@ public:
   {
     // The result of this StackLevel is itself unless |m_functionForNextOpen|
     // is set before the next call to open().
-    m_stacks.emplace_back(StackLevel(EvaluationStack(), m_functionForNextOpen));
+    m_stacks.emplace_back(EvaluationStack(), m_functionForNextOpen);
     m_functionForNextOpen = [](double d) { return d; };
   }
 

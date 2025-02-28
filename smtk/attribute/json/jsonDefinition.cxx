@@ -533,14 +533,14 @@ SMTKCORE_EXPORT void from_json(
   if (result != j.end())
   {
     attResource->associationRules().associationRulesForDefinitions().emplace(
-      std::make_pair(defPtr->type(), result->get<std::string>()));
+      defPtr->type(), result->get<std::string>());
   }
 
   result = j.find("DissociationRule");
   if (result != j.end())
   {
     attResource->associationRules().dissociationRulesForDefinitions().emplace(
-      std::make_pair(defPtr->type(), result->get<std::string>()));
+      defPtr->type(), result->get<std::string>());
   }
 }
 } // namespace attribute

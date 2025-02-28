@@ -660,7 +660,7 @@ void qtInputsItem::updateExpressionRefWidgetForEvaluation(
   for (int i = 0; i < static_cast<int>(logs.size()); ++i)
   {
     if (logs[i].hasErrors())
-      logsWithErrors.emplace_back(std::make_pair(i, std::move(logs[i])));
+      logsWithErrors.emplace_back(i, std::move(logs[i]));
   }
 
   if (!logsWithErrors.empty())

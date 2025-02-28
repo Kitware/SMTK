@@ -24,7 +24,7 @@ RuntimeTypeContainer& RuntimeTypeContainer::operator=(const RuntimeTypeContainer
 {
   for (const auto& entry : other.m_container)
   {
-    m_container.emplace(std::make_pair(entry.first, entry.second->clone()));
+    m_container.emplace(entry.first, entry.second->clone());
   }
   m_runtimeObjects = other.m_runtimeObjects;
 

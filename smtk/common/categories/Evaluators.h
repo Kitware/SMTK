@@ -99,7 +99,8 @@ public:
           {
             auto e = m_evalStack.top();
             m_evalStack.pop();
-            m_evalStack.push([e](const std::set<std::string>& catNames) { return !e(catNames); });
+            m_evalStack.emplace(
+              [e](const std::set<std::string>& catNames) { return !e(catNames); });
           }
           break;
         case '&':
@@ -116,7 +117,7 @@ public:
             m_evalStack.pop();
             auto b = m_evalStack.top();
             m_evalStack.pop();
-            m_evalStack.push([a, b](const std::set<std::string>& catNames) {
+            m_evalStack.emplace([a, b](const std::set<std::string>& catNames) {
               return (a(catNames) && b(catNames));
             });
           }
@@ -135,7 +136,7 @@ public:
             m_evalStack.pop();
             auto b = m_evalStack.top();
             m_evalStack.pop();
-            m_evalStack.push([a, b](const std::set<std::string>& catNames) {
+            m_evalStack.emplace([a, b](const std::set<std::string>& catNames) {
               return (a(catNames) || b(catNames));
             });
           }

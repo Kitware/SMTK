@@ -454,7 +454,7 @@ Agent::Configuration SubmitOperationAgent::configuration() const
     {
       if (auto rsrc = weakRsrc.lock())
       {
-        portRsrcs.push_back(rsrc->id());
+        portRsrcs.emplace_back(rsrc->id());
       }
     }
     if (!portRsrcs.empty())

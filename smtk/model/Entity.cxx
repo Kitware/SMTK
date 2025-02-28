@@ -1704,7 +1704,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
               (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                  dualEntityId, dualKind, this->id())) >= 0)
             {
-              duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+              duals.emplace_back(dualEntityId, dualKind, dualIndex);
               return true;
             }
           }
@@ -1719,7 +1719,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
               if (
                 (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                    dualEntityId, dualKind, this->id())) >= 0)
-                duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+                duals.emplace_back(dualEntityId, dualKind, dualIndex);
             }
             if (!duals.empty())
               return true;
@@ -1757,7 +1757,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
           (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
              dualEntityId, dualKind, this->id())) >= 0)
         {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          duals.emplace_back(dualEntityId, dualKind, dualIndex);
           return true;
         }
       }
@@ -1776,7 +1776,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
           (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
              dualEntityId, dualKind, this->id())) >= 0)
         {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          duals.emplace_back(dualEntityId, dualKind, dualIndex);
           return true;
         }
       }
@@ -1795,7 +1795,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
           (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
              dualEntityId, dualKind, this->id())) >= 0)
         {
-          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          duals.emplace_back(dualEntityId, dualKind, dualIndex);
           return true;
         }
       }
@@ -1819,7 +1819,7 @@ bool Entity::findDualArrangements(ArrangementKind kind, int index, ArrangementRe
             (dualIndex = this->modelResource()->findArrangementInvolvingEntity(
                dualEntityId, dualKind, this->id())) >= 0)
           {
-            duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+            duals.emplace_back(dualEntityId, dualKind, dualIndex);
             return true;
           }
         }

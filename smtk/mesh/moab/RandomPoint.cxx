@@ -108,10 +108,10 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
 
       search =
         pointLocatorCache.m_caches
-          .emplace(std::make_pair(
+          .emplace(
             meshset.id(),
             std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
-              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))))
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions)))
           .first;
     }
 

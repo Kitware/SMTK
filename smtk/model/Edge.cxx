@@ -75,7 +75,7 @@ smtk::model::Faces Edge::faces() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isFace())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
   return result;
 }
@@ -98,7 +98,7 @@ smtk::model::Vertices Edge::vertices() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isVertex())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
 
   // Now attempt to get the order correct for cases we can handle.

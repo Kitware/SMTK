@@ -301,7 +301,7 @@ bool MeshSet::modelEntities(smtk::model::EntityRefArray& array) const
   smtk::model::ResourcePtr resource = m_parent->modelResource();
   smtk::common::UUIDArray uids = this->modelEntityIds();
   for (smtk::common::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
-    array.push_back(smtk::model::EntityRef(resource, *it));
+    array.emplace_back(resource, *it);
   return (resource != nullptr);
 }
 

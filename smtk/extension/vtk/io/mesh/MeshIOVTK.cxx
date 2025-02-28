@@ -55,7 +55,7 @@ MeshIOVTK::MeshIOVTK()
     std::vector<std::string> extensionVector;
     for (const auto& ext : format.Extensions)
     {
-      extensionVector.push_back("." + ext);
+      extensionVector.emplace_back("." + ext);
     }
     this->Formats.emplace_back(format.Name, extensionVector, smtk::io::mesh::Format::Import);
   }

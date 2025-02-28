@@ -120,8 +120,7 @@ void XmlDocV4Parser::processDefinitionChildNode(
       }
       else
       {
-        m_resource->associationRules().associationRulesForDefinitions().emplace(
-          std::make_pair(def->type(), name));
+        m_resource->associationRules().associationRulesForDefinitions().emplace(def->type(), name);
       }
     }
     else
@@ -148,8 +147,7 @@ void XmlDocV4Parser::processDefinitionChildNode(
       }
       else
       {
-        m_resource->associationRules().dissociationRulesForDefinitions().emplace(
-          std::make_pair(def->type(), name));
+        m_resource->associationRules().dissociationRulesForDefinitions().emplace(def->type(), name);
       }
     }
     else

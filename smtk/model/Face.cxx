@@ -27,7 +27,7 @@ smtk::model::Edges Face::edges() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isEdge())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
   return result;
 }
@@ -39,7 +39,7 @@ smtk::model::Volumes Face::volumes() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isVolume())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
   return result;
 }
