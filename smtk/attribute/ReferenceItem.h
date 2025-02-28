@@ -375,12 +375,12 @@ public:
     */
   smtk::attribute::ItemPtr activeChildItem(std::size_t i) const
   {
-    if (static_cast<std::size_t>(i) >= m_activeChildrenItems.size())
+    if (i >= m_activeChildrenItems.size())
     {
       smtk::attribute::ItemPtr item;
       return item;
     }
-    return m_activeChildrenItems[static_cast<std::size_t>(i)];
+    return m_activeChildrenItems[i];
   }
 
   /**\brief  Return the index of the current active conditional.
