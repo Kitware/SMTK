@@ -331,6 +331,7 @@ void Resource::definitions(std::vector<smtk::attribute::DefinitionPtr>& result, 
     return;
   }
   std::vector<std::string> keys;
+  keys.reserve(m_definitions.size());
   for (const auto& info : m_definitions)
   {
     keys.push_back(info.first);

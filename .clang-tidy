@@ -81,7 +81,6 @@ performance-*,\
 -performance-avoid-endl,\
 -performance-enum-size,\
 -performance-inefficient-string-concatenation,\
--performance-inefficient-vector-operation,\
 -performance-move-const-arg,\
 -performance-noexcept-move-constructor,\
 -performance-noexcept-swap,\
