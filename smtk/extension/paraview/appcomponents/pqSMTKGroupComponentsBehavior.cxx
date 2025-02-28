@@ -130,7 +130,7 @@ void pqGroupComponentsReaction::groupSelectedComponents()
   }
   // NB: We could be more thorough by ensuring an operation that can associate
   //     *all* of the selected objects exists in the GroupingGroup.
-  auto opIndex = groupingGroup.matchingOperation(*(selected.begin()->get()));
+  auto opIndex = groupingGroup.matchingOperation(**selected.begin());
   auto groupOp = opMgr->create(opIndex);
   if (!groupOp)
   {
@@ -164,7 +164,7 @@ void pqGroupComponentsReaction::ungroupSelectedComponents()
   }
   // NB: We could be more thorough by ensuring an operation that can associate
   //     *all* of the selected objects exists in the UngroupingGroup.
-  auto opIndex = ungroupingGroup.matchingOperation(*(selected.begin()->get()));
+  auto opIndex = ungroupingGroup.matchingOperation(**selected.begin());
   auto ungroupOp = opMgr->create(opIndex);
   if (!ungroupOp)
   {
