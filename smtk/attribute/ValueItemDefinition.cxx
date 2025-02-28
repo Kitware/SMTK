@@ -153,7 +153,7 @@ std::string ValueItemDefinition::expressionType() const
   // if there are are any rejected entries.
   if (
     (m_expressionInformation->acceptableEntries().size() != 1) ||
-    (m_expressionInformation->rejectedEntries().size()))
+    (!m_expressionInformation->rejectedEntries().empty()))
   {
     return std::string();
   }
