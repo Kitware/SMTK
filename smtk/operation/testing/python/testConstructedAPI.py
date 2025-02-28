@@ -22,19 +22,19 @@ class TestConstructedAPI(smtk.testing.TestCase):
     def testConstructedAPI(self):
         op = smtk.operation.WriteResource.create()
         parameters = op.parameters()
-        assert(hasattr(parameters, 'setFilename'))
-        assert(hasattr(parameters, 'filename'))
+        assert (hasattr(parameters, 'setFilename'))
+        assert (hasattr(parameters, 'filename'))
         filename = 'foo.smtk'
         parameters.setFilename(filename)
-        assert(parameters.filename() == filename)
-        assert(hasattr(parameters, 'setDebugLevel'))
-        assert(hasattr(parameters, 'debugLevel'))
-        assert(hasattr(parameters, 'enableDebugLevel'))
-        assert(hasattr(parameters, 'debugLevelEnabled'))
+        assert (parameters.filename() == filename)
+        assert (hasattr(parameters, 'setDebugLevel'))
+        assert (hasattr(parameters, 'debugLevel'))
+        assert (hasattr(parameters, 'enableDebugLevel'))
+        assert (hasattr(parameters, 'debugLevelEnabled'))
         parameters.enableDebugLevel(True)
-        assert(parameters.debugLevelEnabled() == True)
+        assert (parameters.debugLevelEnabled() == True)
         parameters.setDebugLevel(3)
-        assert(parameters.debugLevel() == 3)
+        assert (parameters.debugLevel() == 3)
 
 
 if __name__ == '__main__':

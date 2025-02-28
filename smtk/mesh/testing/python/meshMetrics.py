@@ -34,15 +34,15 @@ def test_mesh_metrics():
     tolerance = 1.e-8
     for i in range(0, 6):
         if i % 2 == 0:
-            assert(abs(ext[i] + .5) < tolerance)
+            assert (abs(ext[i] + .5) < tolerance)
         else:
-            assert(abs(ext[i] - .5) < tolerance)
+            assert (abs(ext[i] - .5) < tolerance)
 
     dim = smtk.mesh.highestDimension(mr.meshes())
-    assert(dim == smtk.mesh.Dims3)
+    assert (dim == smtk.mesh.Dims3)
 
     euler_characteristic = smtk.mesh.eulerCharacteristic(mr.meshes())
-    assert(euler_characteristic == 0)
+    assert (euler_characteristic == 0)
 
 
 if __name__ == '__main__':

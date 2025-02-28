@@ -444,7 +444,7 @@ class AttributeBuilder:
                 return att_list[0]
 
         # (else)
-        raise('failed to find attribute with spec {}'.format(spec))
+        raise ('failed to find attribute with spec {}'.format(spec))
 
     def _is_reference_item(self, item):
         """"""

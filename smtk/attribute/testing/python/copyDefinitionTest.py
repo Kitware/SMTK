@@ -92,28 +92,28 @@ if __name__ == '__main__':
 
     # Add explicit test for conditional children
     defn = test_resource.findDefinition('SecondConcrete')
-    assert(defn is not None)
+    assert (defn is not None)
 
     # First selection list
     i = defn.findItemPosition('SelectionList')
-    assert(i >= 0)
+    assert (i >= 0)
     select_item_def = defn.itemDefinition(i)
-    assert(select_item_def.name() == 'SelectionList')
-    assert(select_item_def.isDiscrete())
-    assert(not select_item_def.hasDefault())
+    assert (select_item_def.name() == 'SelectionList')
+    assert (select_item_def.isDiscrete())
+    assert (not select_item_def.hasDefault())
 
     # Second selection list (with conditional children)
     i = defn.findItemPosition('ConditionalSelectionList')
-    assert(i >= 0)
+    assert (i >= 0)
     cond_item_def = defn.itemDefinition(i)
-    assert(cond_item_def is not None)
-    assert(cond_item_def.hasDefault())
+    assert (cond_item_def is not None)
+    assert (cond_item_def.hasDefault())
 
     list_one = cond_item_def.conditionalItems('One')
-    assert(len(list_one) == 1)
+    assert (len(list_one) == 1)
 
     list_two = cond_item_def.conditionalItems('Two')
-    assert(len(list_two) == 3)
+    assert (len(list_two) == 3)
 
     # Note there is ALOT more that could & should be verified here
     logging.debug('Writing resource')

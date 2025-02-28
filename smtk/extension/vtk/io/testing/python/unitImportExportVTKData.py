@@ -95,8 +95,8 @@ def make_MixedVolUGrid():
 
 def test_same_datasets(ds, ds2):
     EPSILON = 1.e-6
-    assert(ds.GetNumberOfPoints() == ds2.GetNumberOfPoints())
-    assert(ds.GetNumberOfCells() == ds2.GetNumberOfCells())
+    assert (ds.GetNumberOfPoints() == ds2.GetNumberOfPoints())
+    assert (ds.GetNumberOfCells() == ds2.GetNumberOfCells())
 
     it = ds.NewCellIterator()
     it2 = ds2.NewCellIterator()
@@ -105,8 +105,8 @@ def test_same_datasets(ds, ds2):
     while True:
         if it.IsDoneWithTraversal() or it2.IsDoneWithTraversal():
             break
-        assert(it.GetCellType() == it2.GetCellType())
-        assert(it.GetNumberOfPoints() == it2.GetNumberOfPoints())
+        assert (it.GetCellType() == it2.GetCellType())
+        assert (it.GetNumberOfPoints() == it2.GetNumberOfPoints())
         points = it.GetPoints()
         points2 = it2.GetPoints()
         xyz = [0., 0., 0.]
@@ -115,7 +115,7 @@ def test_same_datasets(ds, ds2):
             points.GetPoint(i, xyz)
             points2.GetPoint(i, xyz2)
             for j in range(3):
-                assert(abs(xyz[j] - xyz2[j]) < EPSILON)
+                assert (abs(xyz[j] - xyz2[j]) < EPSILON)
         it.GoToNextCell()
         it2.GoToNextCell()
 
