@@ -267,7 +267,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
           }
         }
         fileExtCombo->setMinimumContentsLength(8);
-        fileExtCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+        fileExtCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
       }
     }
   }
@@ -300,10 +300,7 @@ QWidget* qtFileItem::createFileBrowseWidget(
     fileCombo->lineEdit()->setAlignment(Qt::AlignRight);
     fileCombo->setMinimumContentsLength(10);
 
-    // http://doc.qt.io/qt-5/qcombobox.html#sizeAdjustPolicy-prop
-    // Recommends using QComboBox::AdjustToContents, but that does not seem to
-    // work on Linux.
-    fileCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
+    fileCombo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
   }
   else
   {
