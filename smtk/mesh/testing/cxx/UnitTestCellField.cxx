@@ -167,7 +167,7 @@ void verify_duplicate_cellfields()
     fieldValuesForCellField1[i] = static_cast<double>(i) * 2;
   }
   auto cf1 = one.createCellField(
-    "field data", 1, smtk::mesh::FieldType::Double, &fieldValuesForCellField1[0]);
+    "field data", 1, smtk::mesh::FieldType::Double, fieldValuesForCellField1.data());
   test(cf1.isValid());
 
   // Verify that the field values have been updated to the new values.
@@ -201,12 +201,12 @@ void verify_duplicate_cellfields()
     fieldValuesForCellField2[i] = static_cast<double>(i);
   }
   auto cf2 = two.createCellField(
-    "field data", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
+    "field data", 3, smtk::mesh::FieldType::Double, fieldValuesForCellField2.data());
   test(!cf2.isValid());
 
   // Try again, but change the name (should succeed).
   cf2 = two.createCellField(
-    "field data 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForCellField2[0]);
+    "field data 2", 3, smtk::mesh::FieldType::Double, fieldValuesForCellField2.data());
   test(cf2.isValid());
 }
 
