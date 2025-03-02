@@ -111,21 +111,6 @@ namespace model
 {
 }
 
-/**\brief Mesh representation, classification, and manipulation.
-  *
-  */
-namespace mesh
-{
-/// moab is an external meshing library.
-namespace moab
-{
-}
-/// json serialization.
-namespace json
-{
-}
-} // namespace mesh
-
 /**\brief Projects organize a user workspace.
   *
   */
@@ -220,12 +205,6 @@ namespace polygon
 namespace extension
 {
 
-/**\brief A simple mesh generator.
-  *
-  */
-namespace delaunay
-{
-}
 /**\brief matplotlib.
   *
   */

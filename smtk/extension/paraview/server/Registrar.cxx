@@ -16,9 +16,6 @@
 
 #include "smtk/operation/groups/InternalGroup.h"
 
-#include "smtk/mesh/core/Resource.h"
-// #include "smtk/session/mesh/Resource.h"
-
 namespace smtk
 {
 namespace extension

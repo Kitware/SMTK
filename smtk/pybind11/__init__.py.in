@@ -18,7 +18,7 @@ import site
 import sys
 
 __all__ = ('common', 'attribute', 'extension', 'model',
-           'mesh', 'io', 'project', 'session', 'simulation', 'task')
+           'io', 'project', 'session', 'simulation', 'task')
 
 appContext = None
 
@@ -68,7 +68,6 @@ def shufflePlugins(pluginList):
         'smtkAttributePlugin': 3,
         'smtkOperationPlugin': 4,
 
-        'smtkMeshPlugin': 5,
         'smtkModelPlugin': 6,
         'smtkTaskPlugin': 7,
         'smtkProjectPlugin': 8,
@@ -78,9 +77,7 @@ def shufflePlugins(pluginList):
         'smtkReadWriteResourceManagerStatePlugin': 11,
 
         'smtkOpencascadeSessionPlugin': 12,
-        'smtkDelaunayPlugin': 13,
         'smtkPolygonSessionPlugin': 14,
-        'smtkMeshSessionPlugin': 15,
         'smtkVTKOperationsPlugin': 16,
         'smtkVTKSessionPlugin': 17,
 
@@ -89,7 +86,6 @@ def shufflePlugins(pluginList):
 
         'smtkQtPlugin': 20,
         'smtkPVServerExtPlugin': 21,
-        'smtkPVMeshExtPlugin': 22,
         'smtkPVModelExtPlugin': 23,
         'smtkPQComponentsPlugin': 24,
         'smtkPQReadersPlugin': 25,

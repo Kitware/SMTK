@@ -146,5 +146,4 @@ smtk_unit_tests(
   LIBRARIES
     smtkCore
     ${extra_libs}
-    MOAB
 )

@@ -4,11 +4,6 @@ set(headers)
 set(classes
   ImportAsVTKData
   RedirectOutput
-  mesh/ExportVTKData
-  mesh/ImportVTKData
-  mesh/MeshIOVTK
-  mesh/PointCloudFromVTKFile
-  mesh/StructuredGridFromVTKFile
   vtkLIDARPtsWriter # For terrain extraction
   vtkMedHelper
   vtkMedReader
@@ -34,7 +29,6 @@ target_link_libraries(smtkIOVTK
     VTK::CommonCore
     VTK::IOCore
   LINK_PRIVATE
-    MOAB
     VTK::CommonDataModel
     VTK::CommonExecutionModel
     VTK::FiltersCore
@@ -92,10 +86,6 @@ set(PROJECT_NAME_save "${PROJECT_NAME}")
 set(PROJECT_NAME SMTKVTKModules)
 smtk_install_library(smtkIOVTK)
 set(PROJECT_NAME "${PROJECT_NAME_save}")
-
-if (SMTK_ENABLE_PYTHON_WRAPPING)
-  add_subdirectory(pybind11)
-endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)

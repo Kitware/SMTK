@@ -64,11 +64,6 @@ class SMTKCORE_EXPORT AttributeIconConstructor : public SVGIconConstructor
   std::string svg(const smtk::resource::PersistentObject&) const override;
 };
 
-class SMTKCORE_EXPORT MeshIconConstructor : public SVGIconConstructor
-{
-  std::string svg(const smtk::resource::PersistentObject&) const override;
-};
-
 class SMTKCORE_EXPORT ModelIconConstructor : public SVGIconConstructor
 {
   std::string svg(const smtk::resource::PersistentObject&) const override;

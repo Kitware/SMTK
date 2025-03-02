@@ -15,8 +15,6 @@
 
 #include "smtk/attribute/Registrar.h"
 #include "smtk/extension/vtk/geometry/Registrar.h"
-#include "smtk/extension/vtk/mesh/Registrar.h"
-#include "smtk/mesh/resource/Registrar.h"
 #include "smtk/model/Registrar.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"

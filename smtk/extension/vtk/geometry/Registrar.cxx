@@ -15,8 +15,6 @@
 
 #include "smtk/geometry/Generator.h"
 
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/extension/vtk/geometry/BoundingBox.h"
 #include "smtk/extension/vtk/geometry/ClosestPoint.h"
 #include "smtk/extension/vtk/geometry/DistanceTo.h"

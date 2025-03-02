@@ -1,9 +1,6 @@
 set(classes
   ModelEntityPointLocator
-  PointCloudFromVTKAuxiliaryGeometry
-  SourceFromMesh
   SourceFromModel
-  StructuredGridFromVTKAuxiliaryGeometry
   vtkAttributeMultiBlockSource
   vtkCmbLayeredConeSource
   vtkConeFrustum

@@ -32,7 +32,6 @@ set(_smtk_packages
   nlohmann_json
   pegtl
   LibArchive
-  MOAB
   Qt5
   ParaView
   Python3

@@ -7,24 +7,18 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __ModelViewer_h
-#define __ModelViewer_h
 
-#include <QWidget>
+#include "smtk/geometry/queries/BoundingBox.h"
 
-class QTreeView;
-class QModelIndex;
-
-class ModelViewer : public QWidget
+namespace smtk
 {
-  Q_OBJECT
-public:
-  ModelViewer(QWidget* parent = nullptr);
-  ~ModelViewer() override;
+namespace geometry
+{
 
-protected:
-  class Internals;
-  Internals* m_p;
-};
+std::array<double, 6> BoundingBox::operator()(const smtk::resource::PersistentObject::Ptr&) const
+{
+  return { { 1., 0., 1., 0., 1., 0. } };
+}
 
-#endif
+} // namespace geometry
+} // namespace smtk

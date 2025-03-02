@@ -59,7 +59,6 @@ set(unit_tests_which_require_data
 set(_extra_libraries
   ${Boost_LIBRARIES}
   Threads::Threads
-  MOAB
 )
 
 smtk_unit_tests(

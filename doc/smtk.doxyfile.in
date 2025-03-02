@@ -681,15 +681,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/markup/queries" \
   "@smtk_SOURCE_DIR@/smtk/markup/ontology" \
   "@smtk_SOURCE_DIR@/smtk/markup/operators" \
-  "@smtk_SOURCE_DIR@/smtk/mesh" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/core" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/core/queries" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/operators" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/plugin" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/moab" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/resource" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/interpolation" \
-  "@smtk_SOURCE_DIR@/smtk/mesh/utility" \
   "@smtk_SOURCE_DIR@/smtk/operation" \
   "@smtk_SOURCE_DIR@/smtk/operation/operators" \
   "@smtk_SOURCE_DIR@/smtk/operation/plugin" \
@@ -721,9 +712,7 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/geometry" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/io" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/io/mesh" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/markup" \
-  "@smtk_SOURCE_DIR@/smtk/extension/vtk/mesh" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/model" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators" \
   "@smtk_SOURCE_DIR@/smtk/extension/vtk/operators/plugin" \
@@ -738,7 +727,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/attribute/queries" \
   "@smtk_SOURCE_DIR@/smtk/attribute/utility" \
   "@smtk_SOURCE_DIR@/smtk/io" \
-  "@smtk_SOURCE_DIR@/smtk/io/mesh" \
   "@smtk_SOURCE_DIR@/smtk/graph" \
   "@smtk_SOURCE_DIR@/smtk/graph/detail" \
   "@smtk_SOURCE_DIR@/smtk/graph/evaluators" \
@@ -768,11 +756,6 @@ INPUT                  = \
   "@smtk_SOURCE_DIR@/smtk/resource/properties" \
   "@smtk_SOURCE_DIR@/smtk/resource/query" \
   "@smtk_SOURCE_DIR@/smtk/session" \
-  "@smtk_SOURCE_DIR@/smtk/session/mesh" \
-  "@smtk_SOURCE_DIR@/smtk/session/mesh/operators" \
-  "@smtk_SOURCE_DIR@/smtk/session/mesh/plugin" \
-  "@smtk_SOURCE_DIR@/smtk/session/mesh/queries" \
-  "@smtk_SOURCE_DIR@/smtk/session/mesh/vtk" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/operators" \
   "@smtk_SOURCE_DIR@/smtk/session/polygon/plugin" \
@@ -788,15 +771,6 @@ INPUT                  = \
   \
   "@smtk_BINARY_DIR@/smtk" \
   "@smtk_BINARY_DIR@/smtk/markup" \
-  "@smtk_BINARY_DIR@/smtk/mesh" \
-  "@smtk_BINARY_DIR@/smtk/mesh/core" \
-  "@smtk_BINARY_DIR@/smtk/mesh/core/queries" \
-  "@smtk_BINARY_DIR@/smtk/mesh/operators" \
-  "@smtk_BINARY_DIR@/smtk/mesh/plugin" \
-  "@smtk_BINARY_DIR@/smtk/mesh/moab" \
-  "@smtk_BINARY_DIR@/smtk/mesh/resource" \
-  "@smtk_BINARY_DIR@/smtk/mesh/interpolation" \
-  "@smtk_BINARY_DIR@/smtk/mesh/utility" \
   "@smtk_BINARY_DIR@/smtk/operation" \
   "@smtk_BINARY_DIR@/smtk/operation/operators" \
   "@smtk_BINARY_DIR@/smtk/operation/plugin" \
@@ -826,12 +800,10 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/extension/delaunay/io" \
   "@smtk_BINARY_DIR@/smtk/extension/delaunay/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk" \
-  "@smtk_BINARY_DIR@/smtk/extension/vtk/mesh" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/operators" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/operators/plugin" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/source" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/io" \
-  "@smtk_BINARY_DIR@/smtk/extension/vtk/io/mesh" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/model" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/geometry" \
   "@smtk_BINARY_DIR@/smtk/extension/vtk/filter" \
@@ -844,7 +816,6 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/attribute/queries" \
   "@smtk_BINARY_DIR@/smtk/attribute/utility" \
   "@smtk_BINARY_DIR@/smtk/io" \
-  "@smtk_BINARY_DIR@/smtk/io/mesh" \
   "@smtk_BINARY_DIR@/smtk/graph" \
   "@smtk_BINARY_DIR@/smtk/graph/detail" \
   "@smtk_BINARY_DIR@/smtk/graph/evaluators" \
@@ -873,11 +844,6 @@ INPUT                  = \
   "@smtk_BINARY_DIR@/smtk/resource/properties" \
   "@smtk_BINARY_DIR@/smtk/resource/query" \
   "@smtk_BINARY_DIR@/smtk/session" \
-  "@smtk_BINARY_DIR@/smtk/session/mesh" \
-  "@smtk_BINARY_DIR@/smtk/session/mesh/operators" \
-  "@smtk_BINARY_DIR@/smtk/session/mesh/plugin" \
-  "@smtk_BINARY_DIR@/smtk/session/mesh/queries" \
-  "@smtk_BINARY_DIR@/smtk/session/mesh/vtk" \
   "@smtk_BINARY_DIR@/smtk/session/polygon" \
   "@smtk_BINARY_DIR@/smtk/session/polygon/operators" \
   "@smtk_BINARY_DIR@/smtk/session/polygon/plugin" \

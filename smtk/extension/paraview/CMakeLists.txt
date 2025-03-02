@@ -3,7 +3,6 @@
 ################################################################################
 set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/appcomponents/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/project/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
@@ -42,7 +41,6 @@ if (TARGET ParaView::pqApplicationComponents)
   list(APPEND core_plugin_files
     appcomponents/plugin-core/paraview.plugin
     appcomponents/plugin-readers/paraview.plugin
-    mesh/plugin/paraview.plugin
     model/plugin/paraview.plugin
     project/plugin-core/paraview.plugin
   )

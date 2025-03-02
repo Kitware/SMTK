@@ -20,11 +20,6 @@
 
 #include "smtk/graph/Component.h"
 
-#include "smtk/mesh/core/CellSet.h"
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/MeshSet.h"
-#include "smtk/mesh/operators/SetMeshName.h"
-
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 
@@ -89,10 +84,9 @@ bool ComponentPhraseContent::editable(ContentType contentType) const
       if (auto component = m_component.lock())
       {
         auto modelComponent = dynamic_pointer_cast<smtk::model::Entity>(component);
-        auto meshComponent = dynamic_pointer_cast<smtk::mesh::Component>(component);
         auto graphComponent = dynamic_pointer_cast<smtk::graph::Component>(component);
-        // Models, meshes and graphs may be assigned a name.
-        return !!modelComponent || !!meshComponent || !!graphComponent;
+        // Models and graphs may be assigned a name.
+        return !!modelComponent || !!graphComponent;
       }
     }
   }
@@ -126,17 +120,6 @@ std::string ComponentPhraseContent::stringValue(ContentType contentType) const
           return attributeComponent->type();
         }
 
-        auto meshComponent = component->as<smtk::mesh::Component>();
-        if (meshComponent)
-        {
-          std::ostringstream meshSummary;
-          auto mesh = meshComponent->mesh();
-          if (mesh.isValid())
-          {
-            meshSummary << mesh.cells().size() << " cells";
-          }
-          return meshSummary.str();
-        }
         return std::string();
       }
       break;

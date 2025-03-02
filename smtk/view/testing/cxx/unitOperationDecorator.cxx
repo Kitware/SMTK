@@ -18,21 +18,6 @@
 #include "smtk/attribute/operators/Dissociate.h"
 #include "smtk/attribute/operators/Export.h"
 #include "smtk/attribute/operators/Import.h"
-#include "smtk/mesh/operators/DeleteMesh.h"
-#include "smtk/mesh/operators/ElevateMesh.h"
-#include "smtk/mesh/operators/Export.h"
-#include "smtk/mesh/operators/ExtractAdjacency.h"
-#include "smtk/mesh/operators/ExtractByDihedralAngle.h"
-#include "smtk/mesh/operators/ExtractSkin.h"
-#include "smtk/mesh/operators/Import.h"
-#include "smtk/mesh/operators/InterpolateOntoMesh.h"
-#include "smtk/mesh/operators/MergeCoincidentPoints.h"
-#include "smtk/mesh/operators/PrintMeshInformation.h"
-#include "smtk/mesh/operators/SelectCells.h"
-#include "smtk/mesh/operators/SetMeshName.h"
-#include "smtk/mesh/operators/Subtract.h"
-#include "smtk/mesh/operators/Transform.h"
-#include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
 #include "smtk/model/operators/CompositeAuxiliaryGeometry.h"
@@ -73,21 +58,6 @@ void testInitializerListCtor()
       wrap<smtk::model::DivideInstance>(),
       wrap<smtk::model::MergeInstances>(),
       wrap<smtk::model::SetInstancePrototype>(),
-      wrap<smtk::mesh::DeleteMesh>(),
-      wrap<smtk::mesh::ElevateMesh>(),
-      wrap<smtk::mesh::Export>(),
-      wrap<smtk::mesh::ExtractAdjacency>(),
-      wrap<smtk::mesh::ExtractByDihedralAngle>(),
-      wrap<smtk::mesh::ExtractSkin>(),
-      wrap<smtk::mesh::Import>(),
-      wrap<smtk::mesh::InterpolateOntoMesh>(),
-      wrap<smtk::mesh::MergeCoincidentPoints>(),
-      wrap<smtk::mesh::PrintMeshInformation>(),
-      wrap<smtk::mesh::SelectCells>(),
-      wrap<smtk::mesh::SetMeshName>(),
-      wrap<smtk::mesh::Subtract>(),
-      wrap<smtk::mesh::Transform>(),
-      wrap<smtk::mesh::UndoElevateMesh>(),
       wrap<smtk::operation::SetProperty>(),
       wrap<smtk::attribute::Associate>(),
       wrap<smtk::attribute::Dissociate>(),
@@ -101,7 +71,7 @@ void testInitializerListCtor()
   std::cout << "  " << bar.m_toolTip.c_str() << "\n  " << bar.m_buttonLabel.c_str() << "\n";
   test(foo.first, "Expected to find operation.");
   test(bar.m_label == "edit group", "Failed to override name.");
-  test(decorator.size() == 31, "Expected to register 31 operations.");
+  test(decorator.size() == 16, "Expected to register 16 operations.");
   decorator.dump();
 
   std::cout << std::type_index(typeid(smtk::operation::Operation)).hash_code()
@@ -115,19 +85,6 @@ void testConfigurationCtor()
   // Operations we'll register with an operation manager:
   using OperationList = std::tuple<
     smtk::operation::AssignColors,
-    smtk::mesh::Export,
-    smtk::mesh::ExtractAdjacency,
-    smtk::mesh::ExtractByDihedralAngle,
-    smtk::mesh::ExtractSkin,
-    smtk::mesh::Import,
-    smtk::mesh::InterpolateOntoMesh,
-    smtk::mesh::MergeCoincidentPoints,
-    smtk::mesh::PrintMeshInformation,
-    smtk::mesh::SelectCells,
-    smtk::mesh::SetMeshName,
-    smtk::mesh::Subtract,
-    smtk::mesh::Transform,
-    smtk::mesh::UndoElevateMesh,
     smtk::operation::SetProperty,
     smtk::attribute::Associate,
     smtk::attribute::Dissociate,
@@ -141,7 +98,7 @@ void testConfigurationCtor()
   std::string content(R"xml(
   <View Name="Test" Type="Model" Autorun="true">
     <OperationDecorator>
-      <Operation TypeRegex="smtk::mesh::.*"/>
+      <Operation TypeRegex="smtk::attribute::.*"/>
       <Operation Type="smtk::operation::AssignColors">
         <Label>choose a color</Label>
         <ButtonLabel>choose color</ButtonLabel>
@@ -161,7 +118,7 @@ void testConfigurationCtor()
   // Test that the decorator was properly constructed.
   std::cout << "Configured " << decorator.size() << " operations.\n";
   decorator.dump();
-  test(decorator.size() == 14, "Expected 14 whitelisted operations.");
+  test(decorator.size() == 5, "Expected 5 whitelisted operations.");
 
   // Test that our override took effect.
   {
@@ -173,15 +130,8 @@ void testConfigurationCtor()
 
   // Test that operations present but undecorated are filtered out:
   {
-    const auto& entry = decorator.at<smtk::attribute::Associate>();
+    const auto& entry = decorator.at<smtk::model::AddImage>();
     test(!entry.first, "Found an operation that should be omitted.");
-  }
-
-  // Test that the regex included operations we expect.
-  {
-    const auto& entry = decorator.at<smtk::mesh::Transform>();
-    test(entry.first, "Expected to find mesh-transform operation.");
-    test(entry.second.get().m_label.empty(), "Expected empty overridde label.");
   }
 }
 

@@ -50,12 +50,11 @@ protected Q_SLOTS:
   virtual void unfilterSelectionOnServer(vtkSMSMTKWrapperProxy* mgr, pqServer* server);
 
 protected:
-  /// Install a filter on the selection using current flags (m_modelFilterMask and m_acceptMeshes).
+  /// Install a filter on the selection using current flags (m_modelFilterMask).
   void installFilter();
 
   class pqInternal;
   pqInternal* m_p;
-  bool m_acceptMeshes;
   smtk::model::BitFlags m_modelFilterMask;
   smtk::view::SelectionPtr m_selection;
 

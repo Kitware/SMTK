@@ -1,7 +1,6 @@
 set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/filter/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/geometry/vtk.module"
-  "${CMAKE_CURRENT_SOURCE_DIR}/mesh/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/operators/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/source/vtk.module"

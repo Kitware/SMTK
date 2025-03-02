@@ -31,7 +31,7 @@ namespace extension
   *
   * By calling setPhraseModel(), you identify the toplevel
   * description you wish to present; it may cover any set
-  * of model, mesh, and attribute resources.
+  * of model and attribute resources.
   *
   * The smtk::view::PhraseModel uses an smtk::view::SubphraseGenerator
   * instance to create a hierarchy of smtk::view::DescriptivePhrase

@@ -27,8 +27,6 @@
 #include "smtk/view/icons/checkbox_visible_cpp.h"
 
 #include "smtk/common/Color.h"
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityIterator.h"

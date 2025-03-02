@@ -21,9 +21,6 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/mesh/core/Resource.h"
-#include "smtk/mesh/json/Interface.h"
-#include "smtk/mesh/json/jsonHandleRange.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 #include "smtk/model/Resource.h"
@@ -404,35 +401,6 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node& node, attribute::Com
   else
   {
     smtkErrorMacro(m_logger, "XML Node Values is missing for Item: " << item->name());
-  }
-}
-
-void XmlDocV2Parser::processMeshEntityDef(
-  pugi::xml_node& node,
-  attribute::ComponentItemDefinitionPtr idef)
-{
-  xml_node child;
-  xml_attribute xatt;
-
-  idef->setAcceptsEntries(smtk::common::typeName<mesh::Resource>(), "meshset", true);
-
-  this->processItemDef(node, idef);
-
-  xatt = node.attribute("NumberOfRequiredValues");
-  if (xatt)
-  {
-    idef->setNumberOfRequiredValues(xatt.as_int());
-  }
-
-  xatt = node.attribute("Extensible");
-  if (xatt)
-  {
-    idef->setIsExtensible(xatt.as_bool());
-    xatt = node.attribute("MaxNumberOfValues");
-    if (xatt)
-    {
-      idef->setMaxNumberOfValues(xatt.as_uint());
-    }
   }
 }
 

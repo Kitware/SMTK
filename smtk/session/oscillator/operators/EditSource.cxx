@@ -12,8 +12,6 @@
 #include "smtk/session/oscillator/Resource.h"
 #include "smtk/session/oscillator/operators/EditSource_xml.h"
 
-#include "smtk/session/mesh/operators/CreateUniformGrid.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"

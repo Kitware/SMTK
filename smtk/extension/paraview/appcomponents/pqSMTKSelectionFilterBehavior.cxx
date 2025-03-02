@@ -21,8 +21,6 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/mesh/core/Component.h"
-
 #include "smtk/model/Edge.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
@@ -63,7 +61,7 @@
 
 using namespace smtk;
 
-#define NUM_ACTIONS 8
+#define NUM_ACTIONS 7
 
 #define DEBUG_FILTER 0
 
@@ -109,14 +107,13 @@ pqSMTKSelectionFilterBehavior::pqSMTKSelectionFilterBehavior(QObject* parent)
   m_p = new pqInternal;
   m_p->Actions.setupUi(&m_p->ActionsOwner);
 
-  m_p->ActionArray[0] = m_p->Actions.actionSelnAcceptMeshSets;
-  m_p->ActionArray[1] = m_p->Actions.actionSelnAcceptModels;
-  m_p->ActionArray[2] = m_p->Actions.actionSelnAcceptModelVolumes;
-  m_p->ActionArray[3] = m_p->Actions.actionSelnAcceptModelFaces;
-  m_p->ActionArray[4] = m_p->Actions.actionSelnAcceptModelEdges;
-  m_p->ActionArray[5] = m_p->Actions.actionSelnAcceptModelVertices;
-  m_p->ActionArray[6] = m_p->Actions.actionSelnAcceptModelAuxGeoms;
-  m_p->ActionArray[7] = m_p->Actions.actionSelnAcceptModelInstances;
+  m_p->ActionArray[0] = m_p->Actions.actionSelnAcceptModels;
+  m_p->ActionArray[1] = m_p->Actions.actionSelnAcceptModelVolumes;
+  m_p->ActionArray[2] = m_p->Actions.actionSelnAcceptModelFaces;
+  m_p->ActionArray[3] = m_p->Actions.actionSelnAcceptModelEdges;
+  m_p->ActionArray[4] = m_p->Actions.actionSelnAcceptModelVertices;
+  m_p->ActionArray[5] = m_p->Actions.actionSelnAcceptModelAuxGeoms;
+  m_p->ActionArray[6] = m_p->Actions.actionSelnAcceptModelInstances;
 
   if (!s_selectionFilter)
   {
@@ -183,14 +180,11 @@ void pqSMTKSelectionFilterBehavior::setSelection(smtk::view::SelectionPtr selnMg
 void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
 {
   // Update all action toggle states to be consistent
-  bool acceptMesh = false;
   smtk::model::BitFlags modelFlags = 0;
   if (
-    (a == m_p->Actions.actionSelnAcceptMeshSets && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModels && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelVolumes && a->isChecked()))
-  { // model-volume and mesh-set selection do not allow other types to be selected at the same time.
-    acceptMesh = m_p->Actions.actionSelnAcceptMeshSets->isChecked();
+  { // model-volume selection does not allow other types to be selected at the same time.
     // Force other model entity buttons off:
     for (int ii = 0; ii < NUM_ACTIONS; ++ii)
     {
@@ -208,10 +202,8 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
     (a == m_p->Actions.actionSelnAcceptModelAuxGeoms && a->isChecked()) ||
     (a == m_p->Actions.actionSelnAcceptModelInstances && a->isChecked()))
   {
-    m_p->Actions.actionSelnAcceptMeshSets->setChecked(false);
     m_p->Actions.actionSelnAcceptModels->setChecked(false);
     m_p->Actions.actionSelnAcceptModelVolumes->setChecked(false);
-    acceptMesh = false;
     modelFlags = (m_p->Actions.actionSelnAcceptModelVertices->isChecked() ? smtk::model::VERTEX
                                                                           : smtk::model::NOTHING) |
       (m_p->Actions.actionSelnAcceptModelEdges->isChecked() ? smtk::model::EDGE
@@ -225,7 +217,6 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
   }
   else
   { // Something was turned off, which will not require us to deactivate any other buttons
-    acceptMesh = m_p->Actions.actionSelnAcceptMeshSets->isChecked();
     modelFlags = (m_p->Actions.actionSelnAcceptModels->isChecked() ? smtk::model::MODEL_ENTITY
                                                                    : smtk::model::NOTHING) |
       (m_p->Actions.actionSelnAcceptModelVolumes->isChecked() ? smtk::model::VOLUME
@@ -241,7 +232,6 @@ void pqSMTKSelectionFilterBehavior::onFilterChanged(QAction* a)
   }
   // Rebuild the selection filter
   m_modelFilterMask = modelFlags;
-  m_acceptMeshes = acceptMesh;
   this->installFilter();
 }
 
@@ -342,21 +332,12 @@ void pqSMTKSelectionFilterBehavior::installFilter()
     return;
   }
 
-  bool acceptMeshes = m_acceptMeshes;
   smtk::model::BitFlags modelFlags = m_modelFilterMask;
 
-  m_selection->setFilter([acceptMeshes, modelFlags](
+  m_selection->setFilter([modelFlags](
                            smtk::resource::PersistentObjectPtr comp,
                            int value,
                            smtk::view::Selection::SelectionMap& suggestions) {
-    if (acceptMeshes)
-    {
-      auto mesh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
-      if (mesh != nullptr)
-      {
-        return true;
-      }
-    }
     if (modelFlags)
     {
       auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);

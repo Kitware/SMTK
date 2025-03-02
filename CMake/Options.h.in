@@ -21,18 +21,11 @@
 // Was SMTK built with the markup resource? If so, the smtkMarkup library will exist.
 #cmakedefine01 SMTK_ENABLE_MARKUP
 
-// Was SMTK built with mesh session? If true,
-// the SMTKMeshSession library will exist.
-#cmakedefine SMTK_ENABLE_MESH_SESSION
-
 // Was SMTK built with python bindings?
 #cmakedefine01 SMTK_ENABLE_PYTHON_WRAPPING
 
 // Was SMTK built with Qt? If true, smtkQtExt library will exist.
 #cmakedefine SMTK_ENABLE_QT_SUPPORT
-
-// Was SMTK built with Remus? If true, smtkRemoteSession library will exist.
-#cmakedefine SMTK_ENABLE_REMUS_SUPPORT
 
 // Was SMTK built with VTK? If true, the smtkVTKExt library will exist.
 #cmakedefine SMTK_ENABLE_VTK_SUPPORT

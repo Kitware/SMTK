@@ -11,7 +11,7 @@
 #=============================================================================
 
 # Our only test here requires the mesh session.
-if (SMTK_ENABLE_MESH_SESSION)
+if (SMTK_ENABLE_MARKUP)
   set(smtkExtensionVTKSourcePythonDataTests
     iterateMultiBlockModel
   )

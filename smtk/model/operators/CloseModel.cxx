@@ -14,8 +14,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/Session.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/resource/Component.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -64,17 +62,6 @@ CloseModel::Result CloseModel::operateInternal()
     for (AuxiliaryGeometries::iterator ait = auxs.begin(); ait != auxs.end(); ++ait)
     {
       expunged.insert(ait->component());
-    }
-
-    // Similarly, meshes must be added to the "mesh_expunged" attribute.
-    auto associatedMeshes = resource->links().linkedFrom(smtk::mesh::Resource::ClassificationRole);
-    for (const auto& cit : associatedMeshes)
-    {
-      auto meshResource = std::dynamic_pointer_cast<smtk::resource::Resource>(cit);
-      smtk::resource::Component::Visitor temp = [&](const smtk::resource::ComponentPtr& c) {
-        expunged.insert(c);
-      };
-      meshResource->visit(temp);
     }
 
     if (!resource->eraseModel(model))

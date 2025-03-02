@@ -24,7 +24,6 @@ smtk_add_client_tests(
     smtkAttributePlugin
     smtkDefaultConfigurationPlugin
     smtkGeometryPlugin
-    smtkMeshPlugin
     smtkModelPlugin
     smtkOperationPlugin
     smtkProjectPlugin
@@ -35,7 +34,6 @@ smtk_add_client_tests(
     smtkVTKOperationsPlugin
 
     # Load server-side plugins, esp. PVServerExt:
-    smtkPVMeshExtPlugin
     smtkPVModelExtPlugin
     smtkPVServerExtPlugin
 
@@ -53,7 +51,6 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkAttributePlugin>/..
     $<TARGET_FILE_DIR:smtkDefaultConfigurationPlugin>/..
     $<TARGET_FILE_DIR:smtkGeometryPlugin>/..
-    $<TARGET_FILE_DIR:smtkMeshPlugin>/..
     $<TARGET_FILE_DIR:smtkModelPlugin>/..
     $<TARGET_FILE_DIR:smtkOperationPlugin>/..
     $<TARGET_FILE_DIR:smtkPQComponentsPlugin>/..
@@ -66,7 +63,6 @@ smtk_add_client_tests(
     $<TARGET_FILE_DIR:smtkPQReadersPlugin>/..
     $<TARGET_FILE_DIR:smtkPQWidgetsPlugin>/..
     $<TARGET_FILE_DIR:smtkProjectPlugin>/..
-    $<TARGET_FILE_DIR:smtkPVMeshExtPlugin>/..
     $<TARGET_FILE_DIR:smtkPVModelExtPlugin>/..
     $<TARGET_FILE_DIR:smtkPVServerExtPlugin>/..
     $<TARGET_FILE_DIR:smtkQtPlugin>/..

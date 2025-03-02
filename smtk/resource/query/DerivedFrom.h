@@ -48,7 +48,7 @@ protected:
   /// Return the number of generations from this instance to the type index of
   /// a parent, or return a large negative number if the two types are
   /// unrelated.
-  static int numberOfGenerationsFromType(const std::size_t index)
+  static int numberOfGenerationsFromType(std::size_t index)
   {
     return (
       DerivedFrom<SelfType, Parent>::typeIndex() == index

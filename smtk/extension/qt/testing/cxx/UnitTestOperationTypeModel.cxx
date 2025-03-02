@@ -37,21 +37,6 @@
 #include "smtk/attribute/operators/Dissociate.h"
 #include "smtk/attribute/operators/Export.h"
 #include "smtk/attribute/operators/Import.h"
-#include "smtk/mesh/operators/DeleteMesh.h"
-#include "smtk/mesh/operators/ElevateMesh.h"
-#include "smtk/mesh/operators/Export.h"
-#include "smtk/mesh/operators/ExtractAdjacency.h"
-#include "smtk/mesh/operators/ExtractByDihedralAngle.h"
-#include "smtk/mesh/operators/ExtractSkin.h"
-#include "smtk/mesh/operators/Import.h"
-#include "smtk/mesh/operators/InterpolateOntoMesh.h"
-#include "smtk/mesh/operators/MergeCoincidentPoints.h"
-#include "smtk/mesh/operators/PrintMeshInformation.h"
-#include "smtk/mesh/operators/SelectCells.h"
-#include "smtk/mesh/operators/SetMeshName.h"
-#include "smtk/mesh/operators/Subtract.h"
-#include "smtk/mesh/operators/Transform.h"
-#include "smtk/mesh/operators/UndoElevateMesh.h"
 #include "smtk/model/operators/AddAuxiliaryGeometry.h"
 #include "smtk/model/operators/AddImage.h"
 #include "smtk/model/operators/CompositeAuxiliaryGeometry.h"
@@ -144,21 +129,6 @@ int UnitTestOperationTypeModel(int argc, char** const argv)
       wrap<smtk::model::DivideInstance>(),
       wrap<smtk::model::MergeInstances>(),
       wrap<smtk::model::SetInstancePrototype>(),
-      wrap<smtk::mesh::DeleteMesh>(),
-      wrap<smtk::mesh::ElevateMesh>(),
-      wrap<smtk::mesh::Export>(),
-      wrap<smtk::mesh::ExtractAdjacency>(),
-      wrap<smtk::mesh::ExtractByDihedralAngle>(),
-      wrap<smtk::mesh::ExtractSkin>(),
-      wrap<smtk::mesh::Import>(),
-      wrap<smtk::mesh::InterpolateOntoMesh>(),
-      wrap<smtk::mesh::MergeCoincidentPoints>(),
-      wrap<smtk::mesh::PrintMeshInformation>(),
-      wrap<smtk::mesh::SelectCells>(),
-      wrap<smtk::mesh::SetMeshName>(),
-      wrap<smtk::mesh::Subtract>(),
-      wrap<smtk::mesh::Transform>(),
-      wrap<smtk::mesh::UndoElevateMesh>(),
       wrap<smtk::operation::SetProperty>(),
       wrap<smtk::attribute::Associate>(),
       wrap<smtk::attribute::Dissociate>(),

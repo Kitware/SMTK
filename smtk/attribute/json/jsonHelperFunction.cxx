@@ -168,14 +168,6 @@ void processItemDef(
         smtk::attribute::from_json(itemDef, temp);
       }
       break;
-    case smtk::attribute::Item::MeshEntityType:
-      if ((cidef =
-             idef->template addItemDefinition<smtk::attribute::ComponentItemDefinition>(citemName)))
-      {
-        auto temp = smtk::dynamic_pointer_cast<smtk::attribute::ComponentItemDefinition>(cidef);
-        smtk::attribute::processFromMeshItemDef(itemDef, temp);
-      }
-      break;
     case smtk::attribute::Item::DateTimeType:
       if ((cidef =
              idef->template addItemDefinition<smtk::attribute::DateTimeItemDefinition>(citemName)))

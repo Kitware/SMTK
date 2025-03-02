@@ -26,8 +26,6 @@
 #include "smtk/extension/paraview/appcomponents/resources/pqEyeball_cpp.h"
 
 #include "smtk/common/Color.h"
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityIterator.h"
@@ -136,15 +134,6 @@ int UpdateVisibilityForFootprint(
           visible; // Should we set here or wait until we hear back from smap?
         didUpdate = true;
       }
-    }
-  }
-  else if (auto meshComponent = std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
-  {
-    rval |= smap ? (smap->setVisibility(comp, visible != 0) ? 1 : 0) : 1;
-    if (rval)
-    {
-      visibleThings[comp->id()] = visible;
-      didUpdate = true;
     }
   }
   else if (comp)
@@ -280,11 +269,6 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
   smtk::model::ResourcePtr modelRsrc =
     ent ? ent->modelResource() : std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
 
-  smtk::mesh::ComponentPtr msh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
-  smtk::mesh::ResourcePtr meshRsrc = msh
-    ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
-    : std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
-
   smtk::geometry::ResourcePtr geomRsrc = std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
 
   auto* smtkBehavior = pqSMTKBehavior::instance();
@@ -300,7 +284,7 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
     return true; // pipeline hasn't been created yet; the default is visible.
   }
 
-  if (ent || msh)
+  if (ent)
   {
     auto valIt = m_visibleThings.find(comp->id());
     if (valIt != m_visibleThings.end())
@@ -309,7 +293,7 @@ bool VisibilityBadge::phraseVisibility(const DescriptivePhrase* phrase) const
     }
     return true; // visibility is assumed if there is no entry.
   }
-  else if (modelRsrc || meshRsrc || (geomRsrc && !comp))
+  else if (modelRsrc || (geomRsrc && !comp))
   {
     auto* view = pqActiveObjects::instance().activeView();
     auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;
@@ -355,17 +339,12 @@ void VisibilityBadge::setPhraseVisibility(const DescriptivePhrase* phrase, int v
       smtk::model::ResourcePtr modelRsrc =
         ent ? ent->modelResource() : std::dynamic_pointer_cast<smtk::model::Resource>(rsrc);
 
-      smtk::mesh::ComponentPtr msh = std::dynamic_pointer_cast<smtk::mesh::Component>(comp);
-      smtk::mesh::ResourcePtr meshRsrc = msh
-        ? std::dynamic_pointer_cast<smtk::mesh::Resource>(msh->resource())
-        : std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
-
       smtk::geometry::ResourcePtr geomRsrc =
         std::dynamic_pointer_cast<smtk::geometry::Resource>(rsrc);
       if (smtkBehavior)
       {
         auto pvrc = smtkBehavior->getPVResource(rsrc);
-        if (ent || msh || (comp && geomRsrc))
+        if (ent || (comp && geomRsrc))
         { // Find the mapper in the active view for the related resource, then set the visibility.
           auto* view = pqActiveObjects::instance().activeView();
           auto* mapr = pvrc ? pvrc->getRepresentation(view) : nullptr;

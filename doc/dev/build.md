@@ -29,10 +29,6 @@ We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 These components are provided by the CMB superbuild, and are mostly optional:
 
 + [Boost](http://boost.org) 1.60.0 or newer (required)
-+ [MOAB](https://bitbucket.org/fathomteam/moab),
-  (optionally built with
-  [Netcdf](http://www.unidata.ucar.edu/software/netcdf/),
-  for importing and exporting mesh files).
 + [OpenCascade](http://opencascade.org/) 7.4.0 or newer for importing CAD models;
 + [Python](http://python.org) version 2.7.3 or newer and
   [Pybind11](http://github.com/pybind/pybind11), for Python wrappings of

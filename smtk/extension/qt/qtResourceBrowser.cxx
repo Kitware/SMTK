@@ -28,9 +28,6 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/operation/Manager.h"
 
 #include "smtk/attribute/Attribute.h"

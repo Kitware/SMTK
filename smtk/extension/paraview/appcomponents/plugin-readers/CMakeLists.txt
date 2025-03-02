@@ -51,7 +51,6 @@ target_link_libraries(smtkPQReadersPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
-    vtkSMTKMeshExt
     vtkSMTKSourceExt
     vtkSMTKOperationsExt
 )

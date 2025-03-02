@@ -18,10 +18,17 @@ namespace resource
 {
 namespace query
 {
+
 std::size_t Query::typeIndex()
 {
   return std::type_index(typeid(Query)).hash_code();
 }
+
+int Query::numberOfGenerationsFromType(std::size_t index)
+{
+  return (Query::typeIndex() == index ? 0 : std::numeric_limits<int>::lowest());
+}
+
 } // namespace query
 } // namespace resource
 } // namespace smtk

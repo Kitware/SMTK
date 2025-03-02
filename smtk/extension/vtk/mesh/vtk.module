@@ -1,7 +1,0 @@
-NAME
-  vtkSMTKMeshExt
-DEPENDS
-  VTK::CommonCore
-  VTK::CommonDataModel
-  VTK::FiltersGeometry
-  vtkSMTKGeometryExt

@@ -32,9 +32,6 @@
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Resource.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Resource.h"
 

@@ -121,7 +121,6 @@ cmake_dependent_option(
   SMTK_ENABLE_OPERATION_THREADS "Run operations in asynchronous threads" ON SMTK_ENABLE_QT_SUPPORT OFF)
 mark_as_advanced(SMTK_ENABLE_OPERATION_THREADS)
 option(SMTK_ENABLE_VTK_SUPPORT "Build VTK component" ON)
-option(SMTK_ENABLE_REMUS_SUPPORT "Build Remus components" OFF)
 cmake_dependent_option(SMTK_ENABLE_PARAVIEW_SUPPORT "Build paraview plugins for model sessions" OFF
   "SMTK_ENABLE_VTK_SUPPORT;SMTK_ENABLE_QT_SUPPORT" OFF)
 
@@ -205,19 +204,6 @@ if (SMTK_ENABLE_TESTING)
       )
   endif()
   # -- contract-example --
-
-  # Build an example application (Windows is not yet supported)
-  if (NOT WIN32)
-    if (SMTK_ENABLE_EXAMPLES AND SMTK_ENABLE_MESH_SESSION AND
-        SMTK_ENABLE_VTK_SUPPORT AND SMTK_ENABLE_QT_SUPPORT)
-      configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/applications/ModelViewer/model-viewer.cmake.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/applications/ModelViewer/model-viewer.cmake"
-        @ONLY)
-      list(APPEND SMTK_PLUGIN_CONTRACT_FILE_URLS
-        "file://${CMAKE_CURRENT_BINARY_DIR}/applications/ModelViewer/model-viewer.cmake")
-    endif()
-  endif()
 
   set(SMTK_COVERAGE_ENABLED OFF)
   if(SMTK_ENABLE_COVERAGE)
@@ -370,15 +356,6 @@ find_package(units REQUIRED)
 find_package(fmt REQUIRED)
 
 ################################################################################
-# Moab Related Settings
-################################################################################
-
-# Moab is required for building smtk::mesh, as it is the default storage
-# format for meshes.
-find_package(MOAB REQUIRED)
-
-
-################################################################################
 # Qt Related Settings
 ################################################################################
 
@@ -413,14 +390,6 @@ if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
       "SMTK with Python and VTK support requires that VTK also be built with "
       "Python support.")
   endif ()
-endif()
-
-################################################################################
-# Remus related settings
-################################################################################
-
-if (SMTK_ENABLE_REMUS_SUPPORT)
-  find_package(Remus REQUIRED)
 endif()
 
 ################################################################################
@@ -662,8 +631,7 @@ export(EXPORT ${PROJECT_NAME} FILE "${PROJECT_BINARY_DIR}/${SMTK_INSTALL_CONFIG_
 # Create a build directory package configuration file
 #
 # Setup the config file for exports that stores what other thirdparty
-# packages we need to search for ( MOAB, Remus, etc ) for when using the
-# build version of smtk
+# packages we need to search for when using the build version of smtk
 #
 # Required to happen before we include the docs directory
 
@@ -696,8 +664,7 @@ configure_file(
 # Create an install package configuration file
 #
 # Setup the config file for exports that stores what other thirdparty
-# packages we need to search for ( MOAB, Remus, etc ) for when using the
-# install version of smtk
+# packages we need to search for when using the install version of smtk
 
 # If we are performing a relocatable install, we must erase the hard-coded
 # install paths we set in smtk_prefix_path before constructing the install

@@ -14,7 +14,7 @@ foreach (test ${smtkTaskPythonTests})
   smtk_add_test_python(${test}Py ${test}.py --temp-dir=${CMAKE_BINARY_DIR}/Testing/Temporary)
 endforeach()
 
-#only run these tests if we have a valid data directory and we have a moab
+#only run these tests if we have a valid data directory
 #built with hdf5
 if (SMTK_DATA_DIR)
   foreach (test ${smtkTaskPythonDataTests})

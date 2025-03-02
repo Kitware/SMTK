@@ -14,18 +14,10 @@ set(unit_tests
   UnitTestRedirectOutput.cxx
   )
 
-set(unit_tests_which_require_data
-  TestImportSTL.cxx
-  UnitTestImportExportVTKData.cxx
-  UnitTestMeshIOVTK.cxx
-  ImportExportMeshWithCellField.cxx
-  )
-
 set(unit_test_libs)
 
 smtk_unit_tests(LABELS "VTK"
                 SOURCES ${unit_tests}
-                SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
                 LIBRARIES smtkIOVTK smtkCoreModelTesting
                 VTK::CommonComputationalGeometry
                 VTK::CommonCore
@@ -37,26 +29,3 @@ smtk_unit_tests(LABELS "VTK"
                 ${unit_test_libs}
                 # TODO: Use Boost:: imported targets
                 ${Boost_LIBRARIES})
-
-add_executable(MultiScaleConverter MultiScaleConverter.cxx)
-target_link_libraries(MultiScaleConverter
-                      LINK_PUBLIC smtkIOVTK
-                                  VTK::CommonComputationalGeometry
-                                  VTK::CommonCore
-                                  VTK::CommonDataModel
-                                  VTK::FiltersSources
-                                  VTK::IOXML
-                                  VTK::vtksys
-                      LINK_PRIVATE MOAB)
-
-add_executable(SurfacePerMaterialExtraction SurfacePerMaterialExtraction.cxx)
-
-target_link_libraries(SurfacePerMaterialExtraction
-                      LINK_PUBLIC smtkIOVTK
-                                  VTK::CommonComputationalGeometry
-                                  VTK::CommonCore
-                                  VTK::CommonDataModel
-                                  VTK::FiltersSources
-                                  VTK::IOXML
-                                  VTK::vtksys
-                      LINK_PRIVATE MOAB)

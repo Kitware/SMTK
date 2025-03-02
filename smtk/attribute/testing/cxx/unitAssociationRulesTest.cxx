@@ -24,8 +24,9 @@
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
-#include "smtk/mesh/core/Resource.h"
-#include "smtk/mesh/utility/Create.h"
+#include "smtk/model/Entity.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
 
 //force to use filesystem version 3
 #define BOOST_FILESYSTEM_VERSION 3
@@ -63,23 +64,20 @@ int testAssociationRule(const smtk::attribute::AttributePtr& attribute)
   }
 
   // Test if the attribute instance with a custom association rule can be
-  // associated with a mesh component (it should).
+  // associated with a markup component (it should).
   {
-    // Create a new mesh mesh resource
-    smtk::mesh::ResourcePtr meshResource = smtk::mesh::Resource::create();
+    // Create a new model resource
+    smtk::model::ResourcePtr modelResource = smtk::model::Resource::create();
 
-    // Construct a uniform grid
-    std::array<std::size_t, 3> discretization = { { 2, 2, 2 } };
-    std::function<std::array<double, 3>(std::array<double, 3>)> transform =
-      [](std::array<double, 3> x) { return x; };
-    auto meshes = smtk::mesh::utility::createUniformGrid(meshResource, discretization, transform);
-    auto meshComponent = smtk::mesh::Component::create(meshes[0]);
+    // Construct a uniform model
+    auto mmodel = modelResource->addModel();
+    auto modelComponent = mmodel.component();
 
     // Test whether the attribute resource can be associated to the newly
-    // created mesh component.
-    if (!attribute->canBeAssociated(meshComponent))
+    // created model component.
+    if (!attribute->canBeAssociated(modelComponent))
     {
-      std::cerr << "Custom Python rule should accept mesh components\n";
+      std::cerr << "Custom Python rule should accept model components\n";
       std::cerr << smtk::io::Logger::instance().convertToString();
       return -2;
     }
@@ -89,11 +87,11 @@ int testAssociationRule(const smtk::attribute::AttributePtr& attribute)
 }
 
 const char* testPy = R"python(
-import smtk.mesh
+import smtk.model
 
 def mySpecialAssociationRule(object, attribute):
-    meshComponent = smtk.mesh.Component.CastTo(object)
-    return meshComponent != None
+    modelComponent = smtk.model.Entity.CastTo(object)
+    return modelComponent != None
 )python";
 
 const char* testInput = R"xml(
