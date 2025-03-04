@@ -24,8 +24,8 @@ inline py::class_< smtk::extension::vtk::io::mesh::ExportVTKData > pybind11_init
     .def(py::init<>())
     .def("__call__", (bool (smtk::extension::vtk::io::mesh::ExportVTKData::*)(::std::string const &, ::smtk::mesh::ResourcePtr, ::std::string) const) &smtk::extension::vtk::io::mesh::ExportVTKData::operator(), py::arg("filename"), py::arg("resource"), py::arg("domainPropertyName") = "")
     .def("__call__", (bool (smtk::extension::vtk::io::mesh::ExportVTKData::*)(::std::string const &, ::smtk::mesh::MeshSet const &, ::std::string) const) &smtk::extension::vtk::io::mesh::ExportVTKData::operator(), py::arg("filename"), py::arg("meshset"), py::arg("domainPropertyName") = "")
-    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ExportVTKData& exportData, ::smtk::mesh::MeshSet const & ms, ::vtkDataSet* ds){ if (auto *pd = vtkPolyData::SafeDownCast(ds)){ return exportData(ms, pd);} else if (auto *ug = vtkUnstructuredGrid::SafeDownCast(ds)){ return exportData(ms, ug);}})
-    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ExportVTKData& exportData, ::smtk::mesh::MeshSet const & ms, ::vtkDataSet* ds, const std::string& domain){ if (auto *pd = vtkPolyData::SafeDownCast(ds)){ return exportData(ms, pd, domain);} else if (auto *ug = vtkUnstructuredGrid::SafeDownCast(ds)){ return exportData(ms, ug, domain);}})
+    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ExportVTKData& exportData, ::smtk::mesh::MeshSet const & ms, ::vtkDataSet* ds){ if (auto *pd = vtkPolyData::SafeDownCast(ds)){ exportData(ms, pd);} else if (auto *ug = vtkUnstructuredGrid::SafeDownCast(ds)){ exportData(ms, ug);}})
+    .def("__call__", [&](const smtk::extension::vtk::io::mesh::ExportVTKData& exportData, ::smtk::mesh::MeshSet const & ms, ::vtkDataSet* ds, const std::string& domain){ if (auto *pd = vtkPolyData::SafeDownCast(ds)){ exportData(ms, pd, domain);} else if (auto *ug = vtkUnstructuredGrid::SafeDownCast(ds)){ exportData(ms, ug, domain);}})
     ;
   return instance;
 }

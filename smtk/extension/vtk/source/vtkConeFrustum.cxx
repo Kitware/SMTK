@@ -30,9 +30,7 @@
 vtkStandardNewMacro(vtkConeFrustum);
 
 vtkConeFrustum::vtkConeFrustum(int res)
-  : BottomPoint{ 0, 0, 0 }
-  , TopPoint{ 0, 0, 1 }
-  , Resolution(res <= 3 ? 3 : res)
+  : Resolution(res <= 3 ? 3 : res)
 {
   this->SetNumberOfInputPorts(0);
   this->SetNumberOfOutputPorts(NumberOfOutputs);

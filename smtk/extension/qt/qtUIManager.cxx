@@ -959,16 +959,12 @@ qtBaseView* qtUIManager::createView(const smtk::view::Information& info)
   if (viewManager->viewWidgetFactory().contains(viewType))
   {
     qtView = dynamic_cast<qtBaseView*>(
-      viewManager->viewWidgetFactory()
-        .createFromName(viewType, static_cast<const smtk::view::Information&>(info))
-        .release());
+      viewManager->viewWidgetFactory().createFromName(viewType, info).release());
   }
   else if (viewManager->viewWidgetFactory().containsAlias(viewType))
   {
     qtView = dynamic_cast<qtBaseView*>(
-      viewManager->viewWidgetFactory()
-        .createFromAlias(viewType, static_cast<const smtk::view::Information&>(info))
-        .release());
+      viewManager->viewWidgetFactory().createFromAlias(viewType, info).release());
   }
   if (!qtView)
   {

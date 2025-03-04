@@ -24,7 +24,7 @@ public:
 
 private:
   virtual ~Singleton() = default;
-  inline explicit Singleton() = default;
+  explicit Singleton() = default;
 };
 
 template<typename T>

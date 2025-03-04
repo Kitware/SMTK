@@ -97,7 +97,7 @@ public:
           if (
             !intersect.is_empty() && intersect.size() == cellsOfDimension.subset(i).cells().size())
           {
-            m_shells->push_back(std::make_pair(cellsOfDimension.subset(i), element));
+            m_shells->emplace_back(cellsOfDimension.subset(i), element);
             shellCells = smtk::mesh::set_difference(shellCells, intersect);
           }
         }
@@ -105,8 +105,7 @@ public:
         // whatever remains is also an entity.
         if (!shellCells.is_empty())
         {
-          m_shells->push_back(
-            std::make_pair(m_topology->m_resource->createMesh(shellCells), element));
+          m_shells->emplace_back(m_topology->m_resource->createMesh(shellCells), element);
         }
         m_topology->m_resource->removeMeshes(shell);
       }
@@ -201,7 +200,7 @@ struct AddBoundElements
           element->m_parents.insert(parents.begin(), parents.end());
           if (m_shells)
           {
-            m_shells->push_back(std::make_pair(m.extractShell(), element));
+            m_shells->emplace_back(m.extractShell(), element);
           }
         }
         if (activeShells.size() == 1)

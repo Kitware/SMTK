@@ -105,7 +105,7 @@ template<typename Class>
 struct parentClasses<Class, false>
 {
   template<typename Functor>
-  inline static void enumerate(Functor& ff)
+  static void enumerate(Functor& ff)
   {
     ff.template operator()<Class>();
   }
@@ -115,7 +115,7 @@ template<typename Class>
 struct parentClasses<Class, true>
 {
   template<typename Functor>
-  inline static void enumerate(Functor& ff)
+  static void enumerate(Functor& ff)
   {
     if (ff.template operator()<Class>())
     {

@@ -89,7 +89,7 @@ public:
     }
   }
 
-  smtk::mesh::HandleRange cells() const { return m_cells; }
+  [[nodiscard]] smtk::mesh::HandleRange cells() const { return m_cells; }
 
 private:
   smtk::mesh::HandleRange m_cells;

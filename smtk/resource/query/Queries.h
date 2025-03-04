@@ -117,7 +117,7 @@ public:
       {
         throw;
       }
-      auto inserted = queries.emplace(std::make_pair(index, std::move(query))).first;
+      auto inserted = queries.emplace(index, std::move(query)).first;
       return static_cast<QueryType&>(*(inserted->second));
     }
   }

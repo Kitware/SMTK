@@ -32,7 +32,7 @@ smtk::model::Edges VertexUse::edges() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isEdge())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
   return result;
 }

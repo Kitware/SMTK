@@ -467,10 +467,7 @@ void qtOntologyItem::updateUI()
     return;
   }
 
-  if (m_widget)
-  {
-    delete m_widget;
-  }
+  delete m_widget;
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
   m_widget->setObjectName(item->name().c_str());

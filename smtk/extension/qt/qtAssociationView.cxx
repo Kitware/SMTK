@@ -38,7 +38,8 @@ using namespace smtk::extension;
 class qtAssociationViewInternals : public Ui::qtAssociationView
 {
 public:
-  QList<smtk::attribute::DefinitionPtr> getCurrentDefs(const ResourcePtr& attResource) const
+  [[nodiscard]] QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    const ResourcePtr& attResource) const
   {
     if (!(attResource && attResource->activeCategoriesEnabled()))
     {
@@ -66,7 +67,7 @@ public:
     return defs;
   }
 
-  bool currentDefsIsEmpty(const ResourcePtr& attResource) const
+  [[nodiscard]] bool currentDefsIsEmpty(const ResourcePtr& attResource) const
   {
     if (attResource && attResource->activeCategoriesEnabled())
     {

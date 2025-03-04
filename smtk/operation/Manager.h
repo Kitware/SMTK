@@ -158,22 +158,20 @@ private:
   Manager();
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  registerOperations()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerOperations()
   {
     bool registered = this->registerOperation<typename std::tuple_element<I, Tuple>::type>();
     return registered && Manager::registerOperations<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  registerOperations()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerOperations()
   {
     return true;
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerOperations(
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type registerOperations(
     const std::array<std::string, std::tuple_size<Tuple>::value>& typeNames)
   {
     bool registered =
@@ -182,23 +180,21 @@ private:
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerOperations(
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type registerOperations(
     const std::array<std::string, std::tuple_size<Tuple>::value>&)
   {
     return true;
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type
-  unregisterOperations()
+  typename std::enable_if<I != std::tuple_size<Tuple>::value, bool>::type unregisterOperations()
   {
     bool unregistered = this->unregisterOperation<typename std::tuple_element<I, Tuple>::type>();
     return unregistered && Manager::unregisterOperations<I + 1, Tuple>();
   }
 
   template<std::size_t I, typename Tuple>
-  inline typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type
-  unregisterOperations()
+  typename std::enable_if<I == std::tuple_size<Tuple>::value, bool>::type unregisterOperations()
   {
     return true;
   }

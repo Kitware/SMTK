@@ -95,7 +95,7 @@ public:
     coordinatesModified = true; //mark we are going to modify the points
   }
 
-  const std::vector<double>& data() const { return m_data; }
+  [[nodiscard]] const std::vector<double>& data() const { return m_data; }
 };
 
 class UndoWarpPoints : public smtk::mesh::PointForEach
@@ -188,7 +188,7 @@ public:
     }
   }
 
-  const std::vector<double>& data() const { return m_data; }
+  [[nodiscard]] const std::vector<double>& data() const { return m_data; }
 };
 } // namespace
 
@@ -237,7 +237,7 @@ public:
     m_data[m_counter++] = m_mapping(std::array<double, 3>({ { xyz[0], xyz[1], xyz[2] } }));
   }
 
-  const std::vector<double>& data() const { return m_data; }
+  [[nodiscard]] const std::vector<double>& data() const { return m_data; }
 };
 } // namespace
 
@@ -292,7 +292,7 @@ public:
     }
   }
 
-  const std::vector<double>& data() const { return m_data; }
+  [[nodiscard]] const std::vector<double>& data() const { return m_data; }
 };
 } // namespace
 
@@ -345,7 +345,7 @@ public:
     m_counter += 3;
   }
 
-  const std::vector<double>& data() const { return m_data; }
+  [[nodiscard]] const std::vector<double>& data() const { return m_data; }
 };
 } // namespace
 

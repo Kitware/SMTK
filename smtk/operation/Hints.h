@@ -110,7 +110,7 @@ SMTK_ALWAYS_EXPORT inline smtk::attribute::Attribute::Ptr addSelectionHint(
     return hint;
   }
   hint->findInt("action")->setValue(static_cast<int>(selectionAction));
-  hint->findInt("value")->setValue(static_cast<int>(selectionValue));
+  hint->findInt("value")->setValue(selectionValue);
   hint->findVoid("bitwise")->setIsEnabled(bitwise);
   hint->findVoid("ephemeral")->setIsEnabled(ephemeral);
   return hint;

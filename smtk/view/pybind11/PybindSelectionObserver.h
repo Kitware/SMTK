@@ -24,7 +24,7 @@ inline py::class_< smtk::view::SelectionObservers > pybind11_init_smtk_view_Sele
   py::class_< smtk::view::SelectionObservers > instance(m, "SelectionObservers");
   instance
     .def(py::init<>())
-    .def("__call__", [](smtk::view::SelectionObservers& observers, const std::string& str, smtk::view::SelectionPtr sel) { return observers(str, sel); })
+    .def("__call__", [](smtk::view::SelectionObservers& observers, const std::string& str, smtk::view::SelectionPtr sel) { observers(str, sel); })
     .def("__len__", &smtk::view::SelectionObservers::size)
     .def("erase", (std::size_t (smtk::view::SelectionObservers::*)(smtk::view::SelectionObservers::Key&)) &smtk::view::SelectionObservers::erase)
     .def("insert", (smtk::view::SelectionObservers::Key (smtk::view::SelectionObservers::*)(smtk::view::SelectionObserver, std::string)) &smtk::view::SelectionObservers::insert, pybind11::keep_alive<1, 2>())

@@ -66,7 +66,7 @@ public:
         "\") has not been released from memory. Use count is " + std::to_string(useCount))
   {
   }
-  const char* what() const noexcept override { return message.c_str(); }
+  [[nodiscard]] const char* what() const noexcept override { return message.c_str(); }
 
 private:
   std::string message;

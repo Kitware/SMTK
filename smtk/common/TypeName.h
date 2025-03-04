@@ -127,8 +127,7 @@ struct name<std::tuple<Types...>>
   }
 
   template<std::size_t I, typename Tuple>
-  inline static typename std::enable_if<I != std::tuple_size<Tuple>::value, std::string>::type
-  subType()
+  static typename std::enable_if<I != std::tuple_size<Tuple>::value, std::string>::type subType()
   {
     typedef typename std::tuple_element<I, Tuple>::type Type;
     std::string subtype = name<Type>::value();
@@ -137,8 +136,7 @@ struct name<std::tuple<Types...>>
   }
 
   template<std::size_t I, typename Tuple>
-  inline static typename std::enable_if<I == std::tuple_size<Tuple>::value, std::string>::type
-  subType()
+  static typename std::enable_if<I == std::tuple_size<Tuple>::value, std::string>::type subType()
   {
     return std::string();
   }

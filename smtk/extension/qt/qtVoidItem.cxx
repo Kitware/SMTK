@@ -105,7 +105,7 @@ void qtVoidItem::createWidget()
     {
       optionalCheck->setFont(m_itemInfo.uiManager()->advancedFont());
     }
-    if (dataObj->definition()->briefDescription().length())
+    if (!dataObj->definition()->briefDescription().empty())
     {
       optionalCheck->setToolTip(dataObj->definition()->briefDescription().c_str());
     }
@@ -130,7 +130,7 @@ void qtVoidItem::createWidget()
     {
       label->setFont(m_itemInfo.uiManager()->advancedFont());
     }
-    if (dataObj->definition()->briefDescription().length())
+    if (!dataObj->definition()->briefDescription().empty())
     {
       label->setToolTip(dataObj->definition()->briefDescription().c_str());
     }

@@ -197,7 +197,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
   std::vector<std::thread> ts;
   for (int i = 1; i < 100; ++i)
   {
-    ts.emplace_back(std::thread([&resourceManager, i]() {
+    ts.emplace_back([&resourceManager, i]() {
       if (i % 2 == 0)
       {
         auto rsrc = resourceManager->create<ResourceB>();
@@ -208,7 +208,7 @@ int TestResourceManager(int /*unused*/, char** const /*unused*/)
         auto rsrc = resourceManager->create<ResourceA>();
         resourceManager->remove(rsrc);
       }
-    }));
+    });
   }
   for (auto& t : ts)
   {

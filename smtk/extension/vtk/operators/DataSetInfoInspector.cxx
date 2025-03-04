@@ -115,7 +115,7 @@ void createSummary(
             auto data = vtkGeom.data(comp);
             if (data)
             {
-              summaries.emplace(DataSetInfo(comp, data));
+              summaries.emplace(comp, data);
             }
           }
         }

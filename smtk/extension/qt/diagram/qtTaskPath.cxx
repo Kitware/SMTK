@@ -92,7 +92,7 @@ public:
       m_task->observers().erase(m_key);
     }
   }
-  smtk::task::Task* task() const { return m_task; }
+  [[nodiscard]] smtk::task::Task* task() const { return m_task; }
 
 protected:
   smtk::task::Task* m_task;

@@ -176,7 +176,7 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
         // Now create the matching SMTK edge
         smtk::model::Edge modelEdge =
           pmodel->createModelEdgeFromPoints(resource, polypts.begin(), polypts.end(), false);
-        outerLoopEdges.push_back(std::make_pair(modelEdge, true));
+        outerLoopEdges.emplace_back(modelEdge, true);
       }
       else
       {
@@ -212,7 +212,7 @@ smtk::operation::Operation::Result ForceCreateFace::operateInternal()
         // Now create the matching SMTK edge
         smtk::model::Edge modelEdge =
           pmodel->createModelEdgeFromPoints(resource, polypts.begin(), polypts.end(), false);
-        innerLoopsEdges.back().push_back(std::make_pair(modelEdge, true));
+        innerLoopsEdges.back().emplace_back(modelEdge, true);
       }
       else
       {

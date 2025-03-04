@@ -847,7 +847,7 @@
       // Auto-undirected arcs may have to/from nodes flipped... look
       // for \a to in the reverse map. We are guaranteed to have
       // an in-visitor for undirected arcs.
-      this->inVisitor(reinterpret_cast<const ToType*>(to), [&result](const ToType*) { ++result; });
+      this->inVisitor(to, [&result](const ToType*) { ++result; });
 
       return result;
     };

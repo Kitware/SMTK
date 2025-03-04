@@ -79,7 +79,7 @@ bool ModelEntityPointLocator::closestPointOn(
     auto agext = vtkAuxiliaryGeometryExtension::create();
     if (agext->canHandleAuxiliaryGeometry(aux, bbox))
     {
-      cachedAuxData = agext->fetchCachedGeometry(aux);
+      cachedAuxData = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
       pdata = vtkPointSet::SafeDownCast(cachedAuxData);
     }
   }

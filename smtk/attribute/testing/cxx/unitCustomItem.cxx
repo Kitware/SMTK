@@ -164,13 +164,13 @@ public:
 
   MyItemDefinition(MyItemDefinition&&) = default;
 
-  bool isValueValid(const std::complex<double>& val) const
+  [[nodiscard]] bool isValueValid(const std::complex<double>& val) const
   {
     double phase = std::arg(val);
     return (phase >= m_phaseRange.first && phase <= m_phaseRange.second);
   }
 
-  const std::pair<double, double>& phaseRange() const { return m_phaseRange; }
+  [[nodiscard]] const std::pair<double, double>& phaseRange() const { return m_phaseRange; }
   void setPhaseRange(const std::pair<double, double>& range) { m_phaseRange = range; }
 
   smtk::attribute::ItemDefinition::Ptr createCopy(

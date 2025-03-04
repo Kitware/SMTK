@@ -50,7 +50,7 @@ public:
   const std::shared_ptr<smtk::resource::PersistentObject>& operator()(
     const std::shared_ptr<smtk::resource::PersistentObject>& persistentObject) const
   {
-    return persistentObject;
+    return persistentObject; // bugprone-return-const-ref-from-parameter
   }
 
   std::shared_ptr<smtk::resource::PersistentObject> operator()(
@@ -1241,7 +1241,7 @@ void ReferenceItem::appendToCache(const PersistentObjectPtr& obj) const
 {
   std::size_t i = m_cache->size();
   m_cache->push_back(Cache::value_type());
-  return assignToCache(i, obj);
+  assignToCache(i, obj);
 }
 
 bool ReferenceItem::removeInvalidValues()

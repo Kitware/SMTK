@@ -47,7 +47,7 @@ smtk::model::Faces Volume::faces() const
   for (EntityRefs::iterator it = all.begin(); it != all.end(); ++it)
   {
     if (it->isFace())
-      result.push_back(*it);
+      result.emplace_back(*it);
   }
   return result;
 }

@@ -742,7 +742,7 @@ RegionId Neighborhood::traverseLoop(
       //       the fragments updated with new model-edge UUIDs so there are no
       //       partial edge uses or discontiguous segment uses.
       already[frag->edge()] |= (edgeOrient ? 0x02 : 0x01);
-      result.push_back(std::make_pair(frag->edge(), edgeOrient));
+      result.emplace_back(frag->edge(), edgeOrient);
     }
     neighborRegions.insert(m_regionIds.find(frag->ccwRegion(!orientation)));
     fragId = frag->nextFragment(orientation);

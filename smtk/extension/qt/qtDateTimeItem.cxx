@@ -452,10 +452,7 @@ void qtDateTimeItem::updateUI()
     return;
   }
 
-  if (m_widget)
-  {
-    delete m_widget;
-  }
+  delete m_widget;
 
   m_widget = new QFrame(m_itemInfo.parentWidget());
   m_widget->setObjectName(dataObj->name().c_str());

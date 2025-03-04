@@ -52,7 +52,7 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     nlohmann::json::array_t deps;
     for (const auto& dependency : task->dependencies())
     {
-      deps.push_back(dependency->id());
+      deps.emplace_back(dependency->id());
     }
     if (!deps.empty())
     {

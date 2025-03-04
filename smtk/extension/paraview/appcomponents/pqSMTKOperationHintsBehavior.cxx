@@ -395,7 +395,7 @@ void pqSMTKOperationHintsBehavior::observeWrapper(pqSMTKWrapper* wrapper, pqServ
   if (operationManager)
   {
     bool didInsert = m_p->m_opObservers
-                       .emplace(std::make_pair(
+                       .emplace(
                          server,
                          operationManager->observers().insert(
                            [this](
@@ -406,7 +406,7 @@ void pqSMTKOperationHintsBehavior::observeWrapper(pqSMTKWrapper* wrapper, pqServ
                            },
                            smtk::view::PhraseModel::operationObserverPriority() - 128,
                            /*initialize*/ true,
-                           "Process operation hints.")))
+                           "Process operation hints."))
                        .second;
     if (!didInsert)
     {
@@ -421,13 +421,13 @@ void pqSMTKOperationHintsBehavior::observeWrapper(pqSMTKWrapper* wrapper, pqServ
   {
     bool didInsert =
       m_p->m_selnObservers
-        .emplace(std::make_pair(
+        .emplace(
           server,
           selection->observers().insert(
             [this](
               const std::string& selectionSource, const smtk::view::Selection::Ptr& selection) {
-              return this->removeEphemera(selectionSource, selection);
-            })))
+              this->removeEphemera(selectionSource, selection);
+            }))
         .second;
     if (!didInsert)
     {

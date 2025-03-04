@@ -208,12 +208,11 @@ public:
   template<typename Functor, typename... Args>
   void evaluateArcs(Args&&... args) const
   {
-    Functor::begin(this, std::forward<Args>(args)...);
-    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
-      this, std::forward<Args>(args)...);
+    Functor::begin(this, args...);
+    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(this, args...);
     // Now, for arc-map entries not present in the ArcTypes tuple,
     // invoke the Functor on the runtime arc-object base.
-    m_arcs.invokeRuntime<Functor>(this, std::forward<Args>(args)...);
+    m_arcs.invokeRuntime<Functor>(this, args...);
     Functor::end(this, std::forward<Args>(args)...);
   }
 
@@ -221,12 +220,11 @@ public:
   template<typename Functor, typename... Args>
   void evaluateArcs(Args&&... args)
   {
-    Functor::begin(this, std::forward<Args>(args)...);
-    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(
-      this, std::forward<Args>(args)...);
+    Functor::begin(this, args...);
+    m_arcs.invoke<typename detail::GraphTraits<Traits>::ArcTypes, Functor>(this, args...);
     // Now, for arc-map entries not present in the ArcTypes tuple,
     // invoke the Functor on the runtime arc-object base.
-    m_arcs.invokeRuntime<Functor>(this, std::forward<Args>(args)...);
+    m_arcs.invokeRuntime<Functor>(this, args...);
     Functor::end(this, std::forward<Args>(args)...);
   }
   //@}

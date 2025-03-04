@@ -35,7 +35,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #else
 #include "PybindPathsHelperWindows.h"
 #endif
-#include "PybindCategories.h"
 #include "PybindColor.h"
 #include "PybindDateTime.h"
 #include "PybindDateTimeZonePair.h"

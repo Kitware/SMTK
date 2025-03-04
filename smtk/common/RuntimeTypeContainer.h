@@ -151,7 +151,7 @@ public:
       "Inserted object must inherit the requested base Type.");
     bool didInsert =
       m_container
-        .emplace(std::make_pair(
+        .emplace(
           declaredType.id(),
 #ifdef SMTK_HAVE_CXX_14
           std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<ActualType>(value))
@@ -159,7 +159,7 @@ public:
           std::unique_ptr<Wrapper>(
             new WrapperFor<RuntimeType>(std::unique_ptr<ActualType>(new ActualType((value)))))
 #endif
-            ))
+            )
         .second;
     if (didInsert)
     {
@@ -185,7 +185,7 @@ public:
   bool emplaceRuntime(smtk::string::Token declaredType, Args&&... args)
   {
     bool didInsert = m_container
-                       .emplace(std::make_pair(
+                       .emplace(
                          declaredType.id(),
 #ifdef SMTK_HAVE_CXX_14
                          std::make_unique<WrapperFor<RuntimeType>>(
@@ -195,7 +195,7 @@ public:
                            new WrapperFor<RuntimeType>(std::unique_ptr<RuntimeType>(
                              new RuntimeType(std::forward<Args>(args)...))))
 #endif
-                           ))
+                           )
                        .second;
     if (didInsert)
     {
@@ -229,7 +229,7 @@ public:
     if (search == m_container.end())
     {
       search = m_container
-                 .emplace(std::make_pair(
+                 .emplace(
                    declaredType.id(),
 #ifdef SMTK_HAVE_CXX_14
                    std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<RuntimeType>())
@@ -237,7 +237,7 @@ public:
                    std::unique_ptr<Wrapper>(
                      new WrapperFor<RuntimeType>(std::unique_ptr<RuntimeType>(new RuntimeType)))
 #endif
-                     ))
+                     )
                  .first;
     }
     // TODO: Check that \a RuntimeType was the type used to insert \a declaredType.

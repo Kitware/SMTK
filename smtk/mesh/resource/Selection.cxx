@@ -62,7 +62,10 @@ public:
     }
   }
 
-  const std::shared_ptr<smtk::mesh::Selection>& selection() const { return m_selection; }
+  [[nodiscard]] const std::shared_ptr<smtk::mesh::Selection>& selection() const
+  {
+    return m_selection;
+  }
 
 private:
   std::shared_ptr<smtk::mesh::Selection> m_selection;

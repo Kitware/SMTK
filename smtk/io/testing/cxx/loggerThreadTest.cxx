@@ -27,7 +27,7 @@ int main()
   threads.reserve(10);
   for (int i = 0; i < 10; i++)
   {
-    threads.emplace_back(std::thread(foo, i));
+    threads.emplace_back(foo, i);
   }
 
   for (auto& th : threads)

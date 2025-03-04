@@ -265,7 +265,7 @@ protected:
   };
 
   /// A type-conversion operation to cast Associability enumerants to strings.
-  inline std::string associabilityName(const Associability& aa)
+  std::string associabilityName(const Associability& aa)
   {
     static std::array<std::string, 10> names{ "BadExcess",      "UglyExcess",    "GoodExcess",
                                               "Unneeded",       "BadIncomplete", "UglyIncomplete",
@@ -275,7 +275,7 @@ protected:
   }
 
   /// A type-conversion operation to cast strings to Associability enumerants.
-  inline Associability associabilityEnum(const std::string& aa)
+  Associability associabilityEnum(const std::string& aa)
   {
     std::string associabilityName(aa);
     std::transform(

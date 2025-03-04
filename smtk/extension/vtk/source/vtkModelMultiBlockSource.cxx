@@ -401,7 +401,7 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
           std::vector<double> bbox;
           if (ext->canHandleAuxiliaryGeometry(aux, bbox))
           {
-            cgeom = ext->fetchCachedGeometry(aux);
+            cgeom = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
             return std::make_pair(true, true);
           }
           return std::make_pair(false, false);

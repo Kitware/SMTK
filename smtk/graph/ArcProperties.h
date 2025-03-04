@@ -27,7 +27,7 @@ namespace graph
 {
 
 /// Return a constant used to indicate the maximimum degree of an arc endpoint is unconstrained.
-constexpr inline std::size_t unconstrained()
+constexpr std::size_t unconstrained()
 {
   return std::numeric_limits<std::size_t>::max();
 }
@@ -284,12 +284,12 @@ protected:
   template<class T, class = void>
   struct hasSemantics : std::false_type
   {
-    inline constexpr OwnershipSemantics operator()() const { return OwnershipSemantics::None; }
+    constexpr OwnershipSemantics operator()() const { return OwnershipSemantics::None; }
   };
   template<class T>
   struct hasSemantics<T, type_sink_t<decltype(T::semantics)>> : std::true_type
   {
-    inline constexpr OwnershipSemantics operator()() const { return T::semantics; }
+    constexpr OwnershipSemantics operator()() const { return T::semantics; }
   };
 
 public:
@@ -309,10 +309,7 @@ public:
     * be deleted unless the Group node was also deleted; but the Group node could be
     * deleted even when it has arcs to Member nodes.
     */
-  inline static constexpr OwnershipSemantics ownershipSemantics()
-  {
-    return hasSemantics<ArcTraits>()();
-  }
+  static constexpr OwnershipSemantics ownershipSemantics() { return hasSemantics<ArcTraits>()(); }
 
   // clang-format off
   /// Test whether an arc-traits object provides an "accepts()"

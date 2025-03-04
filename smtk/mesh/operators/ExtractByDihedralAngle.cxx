@@ -98,7 +98,7 @@ public:
   {
   }
 
-  smtk::mesh::HandleRange newCellHandles() const { return m_newCells; }
+  [[nodiscard]] smtk::mesh::HandleRange newCellHandles() const { return m_newCells; }
 
   void clear() { m_newCells.clear(); }
 

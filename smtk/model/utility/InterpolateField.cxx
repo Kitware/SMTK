@@ -95,7 +95,7 @@ std::vector<Weights> computeWeights(
           { samplePoints[j], samplePoints[j + 1], samplePoints[j + 2] }
         };
         double distance = (*distanceTo)(entity, input).first;
-        pointProfiles[counter++].push_back(std::make_pair(distance, attribute.get()));
+        pointProfiles[counter++].emplace_back(distance, attribute.get());
       }
     }
   }

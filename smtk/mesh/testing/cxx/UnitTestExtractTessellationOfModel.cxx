@@ -85,7 +85,7 @@ public:
     m_currentLocation += numPts;
   }
 
-  smtk::mesh::CellSet cells(smtk::mesh::ResourcePtr mr) const
+  [[nodiscard]] smtk::mesh::CellSet cells(smtk::mesh::ResourcePtr mr) const
   {
     return smtk::mesh::CellSet(mr, m_cells);
   }

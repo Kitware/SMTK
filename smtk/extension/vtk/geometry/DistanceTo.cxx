@@ -116,7 +116,7 @@ std::pair<double, std::array<double, 3>> DistanceTo::operator()(
       auto agext = vtkAuxiliaryGeometryExtension::create();
       if (agext->canHandleAuxiliaryGeometry(aux, bbox))
       {
-        cachedAuxData = agext->fetchCachedGeometry(aux);
+        cachedAuxData = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
         pdata = vtkPointSet::SafeDownCast(cachedAuxData);
       }
     }
@@ -126,9 +126,9 @@ std::pair<double, std::array<double, 3>> DistanceTo::operator()(
     auto search = pointLocatorCache.m_caches.find(component->id());
     if (search == pointLocatorCache.m_caches.end())
     {
-      search = pointLocatorCache.m_caches
-                 .emplace(std::make_pair(component->id(), vtkSmartPointer<vtkCellLocator>::New()))
-                 .first;
+      search =
+        pointLocatorCache.m_caches.emplace(component->id(), vtkSmartPointer<vtkCellLocator>::New())
+          .first;
       search->second->SetDataSet(pdata);
       search->second->BuildLocator();
     }

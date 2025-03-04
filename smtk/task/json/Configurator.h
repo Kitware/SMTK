@@ -81,30 +81,30 @@ public:
   /// Also, because serialization and deserialization are inherently a
   /// run-time activity, we don't make an attempt at compile-time type-safety.
   template<typename ClassList, typename HelperList>
-  inline static bool registerTypes();
+  static bool registerTypes();
 
   template<typename ClassList>
-  inline static bool unregisterTypes();
+  static bool unregisterTypes();
 
   template<std::size_t I, typename ClassList, class HelperList>
-  inline static typename std::enable_if<I != std::tuple_size<ClassList>::value, bool>::type
+  static typename std::enable_if<I != std::tuple_size<ClassList>::value, bool>::type
   registerTypes();
 
   template<std::size_t I, typename ClassList, class HelperList>
-  inline static typename std::enable_if<I == std::tuple_size<ClassList>::value, bool>::type
+  static typename std::enable_if<I == std::tuple_size<ClassList>::value, bool>::type
   registerTypes();
 
   template<std::size_t I, typename ClassList>
-  inline static typename std::enable_if<I != std::tuple_size<ClassList>::value, bool>::type
+  static typename std::enable_if<I != std::tuple_size<ClassList>::value, bool>::type
   unregisterTypes();
 
   template<std::size_t I, typename ClassList>
-  inline static typename std::enable_if<I == std::tuple_size<ClassList>::value, bool>::type
+  static typename std::enable_if<I == std::tuple_size<ClassList>::value, bool>::type
   unregisterTypes();
   ///@}
 
-  inline static bool registerType(const std::string& typeName, ConfigurationHelper helper);
-  inline static bool unregisterType(const std::string& typeName);
+  static bool registerType(const std::string& typeName, ConfigurationHelper helper);
+  static bool unregisterType(const std::string& typeName);
 
   /// Return json configuration for the given object using registered helpers.
   typename ObjectType::Configuration configuration(const ObjectType* object);

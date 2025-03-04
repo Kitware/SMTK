@@ -1322,7 +1322,7 @@ void Resource::setIntegerProperty(
     // this->properties().data().get<IntProperty>()[propName]
     //   .emplace(std::make_pair(entity, propValue));
     this->properties().data().get<IntProperty>()[propName].emplace(
-      std::make_pair(smtk::common::UUID(entity), std::vector<long>(1, propValue)));
+      smtk::common::UUID(entity), std::vector<long>(1, propValue));
     // this->properties().data().get<IntProperty>()[propName][entity] = { propValue };
   }
 }
@@ -3539,7 +3539,7 @@ SessionRefs Resource::sessions() const
   SessionRefs result;
   UUIDsToSessions::const_iterator it;
   for (it = m_sessions->begin(); it != m_sessions->end(); ++it)
-    result.push_back(SessionRef(smtk::const_pointer_cast<Resource>(shared_from_this()), it->first));
+    result.emplace_back(smtk::const_pointer_cast<Resource>(shared_from_this()), it->first);
   return result;
 }
 

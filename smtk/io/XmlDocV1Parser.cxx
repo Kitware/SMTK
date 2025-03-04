@@ -654,7 +654,7 @@ void XmlDocV1Parser::process(
   // Get the category information, starting with current set
   std::set<std::string> newCats, seccategories = m_resource->categories();
   std::string defCat, s;
-  this->getCategories(amnode, newCats, defCat);
+  XmlDocV1Parser::getCategories(amnode, newCats, defCat);
   if (!defCat.empty())
   {
     m_defaultCategory = defCat;

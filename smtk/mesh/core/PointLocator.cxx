@@ -36,7 +36,7 @@ smtk::mesh::HandleRange PointLocator::range() const
 
 void PointLocator::find(double x, double y, double z, double radius, LocatorResults& results)
 {
-  return m_locator->locatePointsWithinRadius(x, y, z, radius, results);
+  m_locator->locatePointsWithinRadius(x, y, z, radius, results);
 }
 } // namespace mesh
 } // namespace smtk

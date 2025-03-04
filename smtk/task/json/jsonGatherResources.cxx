@@ -122,7 +122,7 @@ void to_json(nlohmann::json& j, const GatherResources::ResourceSet& resourceSet)
   {
     if (auto resource = weakResource.lock())
     {
-      resourceIds.push_back(resource->id());
+      resourceIds.emplace_back(resource->id());
     }
   }
   if (!resourceIds.empty())

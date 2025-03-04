@@ -41,7 +41,7 @@ void to_json(json& j, const std::shared_ptr<Manager>& m)
     json::array_t children;
     m->visitMembers(
       [&children](Hash h) {
-        children.push_back(h);
+        children.emplace_back(h);
         return smtk::common::Visit::Continue;
       },
       setHash);

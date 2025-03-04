@@ -381,7 +381,7 @@ public:
     }
   }
 
-  int numberOfPointsVisited() const { return numPointsIteratedOver; }
+  [[nodiscard]] int numberOfPointsVisited() const { return numPointsIteratedOver; }
 };
 
 void verify_pointset_for_each_read(const smtk::mesh::ResourcePtr& mr)

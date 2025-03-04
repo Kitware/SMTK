@@ -40,7 +40,10 @@ public:
     }
   }
 
-  const std::shared_ptr<smtk::resource::Resource>& get() const { return m_wrappedResource; }
+  [[nodiscard]] const std::shared_ptr<smtk::resource::Resource>& get() const
+  {
+    return m_wrappedResource;
+  }
   std::shared_ptr<smtk::resource::Resource>& get() { return m_wrappedResource; }
 
 private:

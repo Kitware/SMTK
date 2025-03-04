@@ -74,7 +74,7 @@ void verify_partial_pointfields()
     fieldValuesForPointField1[i] = static_cast<double>(i);
   }
   one.createPointField(
-    "field data for set 1", 2, smtk::mesh::FieldType::Double, &fieldValuesForPointField1[0]);
+    "field data for set 1", 2, smtk::mesh::FieldType::Double, fieldValuesForPointField1.data());
 
   std::vector<double> fieldValuesForPointField2(two.points().size() * 3);
   for (std::size_t i = 0; i < fieldValuesForPointField2.size(); i++)
@@ -82,7 +82,7 @@ void verify_partial_pointfields()
     fieldValuesForPointField2[i] = static_cast<double>(i);
   }
   two.createPointField(
-    "field data for set 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
+    "field data for set 2", 3, smtk::mesh::FieldType::Double, fieldValuesForPointField2.data());
 
   {
     std::set<smtk::mesh::PointField> pointfields = mesh.pointFields();
@@ -166,7 +166,7 @@ void verify_duplicate_pointfields()
     fieldValuesForPointField1[i] = static_cast<double>(i) * 2;
   }
   auto cf1 = one.createPointField(
-    "field data", 1, smtk::mesh::FieldType::Double, &fieldValuesForPointField1[0]);
+    "field data", 1, smtk::mesh::FieldType::Double, fieldValuesForPointField1.data());
   test(cf1.isValid());
 
   // Verify that the field values have been updated to the new values.
@@ -200,12 +200,12 @@ void verify_duplicate_pointfields()
     fieldValuesForPointField2[i] = static_cast<double>(i);
   }
   auto cf2 = two.createPointField(
-    "field data", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
+    "field data", 3, smtk::mesh::FieldType::Double, fieldValuesForPointField2.data());
   test(!cf2.isValid());
 
   // Try again, but change the name (should succeed).
   cf2 = two.createPointField(
-    "field data 2", 3, smtk::mesh::FieldType::Double, &fieldValuesForPointField2[0]);
+    "field data 2", 3, smtk::mesh::FieldType::Double, fieldValuesForPointField2.data());
   test(cf2.isValid());
 }
 

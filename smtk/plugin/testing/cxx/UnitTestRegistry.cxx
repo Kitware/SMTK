@@ -39,9 +39,9 @@ class Registrar_1
 public:
   static constexpr const char* const type_name = "Registrar 1";
 
-  bool registerTo(const std::shared_ptr<Manager_1>& /*m*/) const;
-  bool unregisterFrom(const std::shared_ptr<Manager_1>& /*m*/) const;
-  bool registerTo(const std::shared_ptr<Manager_2>& /*m*/) const;
+  [[nodiscard]] bool registerTo(const std::shared_ptr<Manager_1>& /*m*/) const;
+  [[nodiscard]] bool unregisterFrom(const std::shared_ptr<Manager_1>& /*m*/) const;
+  [[nodiscard]] bool registerTo(const std::shared_ptr<Manager_2>& /*m*/) const;
   void unregisterFrom(const std::shared_ptr<Manager_2>& /*m*/) const;
   void registerTo(const std::shared_ptr<Manager_3>& /*m*/) const;
   void unregisterFrom(const std::shared_ptr<Manager_3>& /*m*/) const;

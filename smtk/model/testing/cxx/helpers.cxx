@@ -214,9 +214,9 @@ UUIDArray createTet(smtk::model::ResourcePtr sm)
         /*edge*/ Edge(sm, uids[eul[i][j]]),
         /*sense*/ eus[i][j],
         /*orientation*/ euo[i][j]));
-      chains.push_back(sm->addChain(lu[i].back())
-                         .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 0 : 1]])
-                         .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 1 : 0]]));
+      chains.emplace_back(sm->addChain(lu[i].back())
+                            .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 0 : 1]])
+                            .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 1 : 0]]));
       uids.push_back(lu[i][j].entity());
       uids.push_back(chains.back().entity());
     }

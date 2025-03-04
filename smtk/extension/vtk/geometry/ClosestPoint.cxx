@@ -83,7 +83,7 @@ std::array<double, 3> ClosestPoint::operator()(
       auto agext = vtkAuxiliaryGeometryExtension::create();
       if (agext->canHandleAuxiliaryGeometry(aux, bbox))
       {
-        cachedAuxData = agext->fetchCachedGeometry(aux);
+        cachedAuxData = vtkAuxiliaryGeometryExtension::fetchCachedGeometry(aux);
         pdata = vtkPointSet::SafeDownCast(cachedAuxData);
       }
     }

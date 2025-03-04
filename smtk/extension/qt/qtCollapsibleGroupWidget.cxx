@@ -69,7 +69,7 @@ void qtCollapsibleGroupWidget::setContentsLayout(QLayout* newLayout)
 
 void qtCollapsibleGroupWidget::setName(const QString& newName)
 {
-  return m_internals->VisibilityControl->setText(newName);
+  m_internals->VisibilityControl->setText(newName);
 }
 
 QString qtCollapsibleGroupWidget::name() const
@@ -79,10 +79,10 @@ QString qtCollapsibleGroupWidget::name() const
 
 void qtCollapsibleGroupWidget::open()
 {
-  return m_internals->VisibilityControl->setChecked(true);
+  m_internals->VisibilityControl->setChecked(true);
 }
 
 void qtCollapsibleGroupWidget::collapse()
 {
-  return m_internals->VisibilityControl->setChecked(false);
+  m_internals->VisibilityControl->setChecked(false);
 }

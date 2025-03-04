@@ -89,8 +89,8 @@ protected:
   void updateArc();
   void updateShape();
 
-  qreal m_length;
-  qreal m_angle;
+  qreal m_length{ 20 };
+  qreal m_angle{ 90 };
   QPainterPath m_path;
   QGraphicsPathItem* m_arc;
 

@@ -153,7 +153,7 @@ std::string ValueItemDefinition::expressionType() const
   // if there are are any rejected entries.
   if (
     (m_expressionInformation->acceptableEntries().size() != 1) ||
-    (m_expressionInformation->rejectedEntries().size()))
+    (!m_expressionInformation->rejectedEntries().empty()))
   {
     return std::string();
   }
@@ -370,7 +370,7 @@ void ValueItemDefinition::copyTo(
       // In the case that the Expression Definition exists in the source Attribute Resource,
       // Lets queue it up so that this Item Definition's Expression Definition can be set once
       // it has been copied.
-      info.UnresolvedExpItems.push(std::make_pair(m_expressionType, def));
+      info.UnresolvedExpItems.emplace(m_expressionType, def);
     }
   }
 

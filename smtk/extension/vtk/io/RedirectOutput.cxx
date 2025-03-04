@@ -29,7 +29,7 @@ public:
   vtkTypeMacro(OutputWindow, vtkOutputWindow);
 
   void SetLogger(smtk::io::Logger* log);
-  smtk::io::Logger* GetLogger() const;
+  [[nodiscard]] smtk::io::Logger* GetLogger() const;
 
   void DisplayText(const char* msg) override;
   void DisplayErrorText(const char* msg) override;

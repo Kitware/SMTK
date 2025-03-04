@@ -271,7 +271,7 @@ public:
 protected:
   std::vector<double> multX;
   std::vector<double> multY;
-  inline void compPt(int i, double* point, double* r, double shift)
+  void compPt(int i, double* point, double* r, double shift)
   {
     point[0] = (r[0] + shift) * multX[i];
     point[1] = (r[1] + shift) * multY[i];

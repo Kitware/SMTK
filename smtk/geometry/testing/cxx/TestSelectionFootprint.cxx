@@ -64,7 +64,7 @@ public:
   Backend() = default;
   ~Backend() override = default;
 
-  std::string name() const override { return "Backend"; }
+  [[nodiscard]] std::string name() const override { return "Backend"; }
 };
 
 class Geometry : public smtk::geometry::Cache<smtk::geometry::GeometryForBackend<Format>>
@@ -138,7 +138,7 @@ public:
 class RegisterBackend : public smtk::geometry::Supplier<RegisterBackend>
 {
 public:
-  bool valid(const Specification& in) const override
+  [[nodiscard]] bool valid(const Specification& in) const override
   {
     Backend backend;
     return std::get<1>(in).index() == backend.index();

@@ -379,12 +379,11 @@ class CountMeshesAndCells : public smtk::mesh::MeshForEach
   smtk::mesh::CellSet cellsSeen;
   //keep a physical count of number of meshes so that we can verify we
   //don't iterate over a mesh more than once
-  int numMeshesIteratedOver;
+  int numMeshesIteratedOver{ 0 };
 
 public:
   CountMeshesAndCells(smtk::mesh::ResourcePtr resource)
     : cellsSeen(resource->meshes("InvalidName").cells())
-    , numMeshesIteratedOver(0)
 
   {
   }
@@ -395,9 +394,9 @@ public:
     this->cellsSeen.append(mesh.cells());
   }
 
-  int numberOfMeshesVisited() const { return numMeshesIteratedOver; }
+  [[nodiscard]] int numberOfMeshesVisited() const { return numMeshesIteratedOver; }
 
-  smtk::mesh::CellSet cells() const { return cellsSeen; }
+  [[nodiscard]] smtk::mesh::CellSet cells() const { return cellsSeen; }
 };
 
 void verify_meshset_for_each(const smtk::mesh::ResourcePtr& mr)

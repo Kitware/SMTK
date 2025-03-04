@@ -42,11 +42,8 @@ public:
 
   ~ReferenceItemConstIteratorTemplate() = default;
 
-  ReferenceItemConstIteratorTemplate<H>& operator=(const ReferenceItemConstIteratorTemplate<H>& it)
-  {
-    this->m_refItemIterator = it.m_refItemIterator;
-    return *this;
-  }
+  ReferenceItemConstIteratorTemplate<H>& operator=(
+    const ReferenceItemConstIteratorTemplate<H>& it) = default;
 
   ReferenceItemConstIteratorTemplate<H>& operator++()
   {

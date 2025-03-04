@@ -400,7 +400,7 @@ void smtkDataSetInfoInspectorView::updateInfoTable(const smtk::attribute::Attrib
   nonEmptyCounters(datasets, compIndices, itemIndices, infoNames);
   m_p->m_summaryTable->clear();
   m_p->m_summaryTable->setColumnCount(static_cast<int>(compIndices.size()));
-  m_p->m_summaryTable->setRowCount(static_cast<int>(infoNames.size()));
+  m_p->m_summaryTable->setRowCount(infoNames.size());
   QStringList componentNames;
   int column = 0;
   for (const auto& compIndex : compIndices)

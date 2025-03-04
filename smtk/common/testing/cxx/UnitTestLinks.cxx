@@ -363,7 +363,7 @@ void SubsetJsonTest()
   helper->setLeftPlaceholderId(aa);
   helper->setRightPlaceholderId(aa);
   nlohmann::json j = links;
-  helper->deactivate();
+  smtk::common::Helper<>::deactivate();
   smtkTest(!smtk::common::Helper<>::instance(), "Should not have a helper any longer.");
 
   // Deserialize links, replacing the placeholder (previously aa) with dd.
@@ -372,7 +372,7 @@ void SubsetJsonTest()
   helper->setLeftPlaceholderId(dd);
   helper->setRightPlaceholderId(dd);
   LocalLinks newLinks = j.get<LocalLinks>();
-  helper->deactivate();
+  smtk::common::Helper<>::deactivate();
 
   smtkTest(links.size() == 7, "Should start with 7 links.");
   smtkTest(newLinks.size() == 4, "Should subset the 4 links with aa/bb on left.");

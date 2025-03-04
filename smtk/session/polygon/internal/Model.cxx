@@ -848,12 +848,12 @@ bool pmodel::splitModelEdgeAtModelVertices(
   std::vector<PointSeq::const_iterator>::const_iterator lit = locationsInEdgeOrder.begin();
   for (++it; it != edgeToSplit->pointsEnd(); ++it, ++n)
   {
-    segs.push_back(std::pair<size_t, Segment>(n, Segment(*prev, *it)));
+    segs.emplace_back(n, Segment(*prev, *it));
     if (prev == *lit)
     {
       // We've happened upon a split point.
-      allVertices.push_back(
-        smtk::model::Vertex(resource, (*mvertit)->id())); // Add the model vertex here to the list.
+      allVertices.emplace_back(
+        resource, (*mvertit)->id()); // Add the model vertex here to the list.
       ++mvertit;
       segSplits.push_back(segs.begin() + n); // Remember where to start the next edge.
       ++lit;                                 // Start looking for the next split point.

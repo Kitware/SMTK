@@ -88,7 +88,7 @@ void qtLegendDelegate::paint(
   }
   else
   {
-    return Superclass::paint(painter, option, index);
+    Superclass::paint(painter, option, index);
   }
 }
 

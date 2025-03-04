@@ -39,7 +39,7 @@ class ResourceLinkBase
 {
 public:
   ResourceLinkBase(const ResourceLinkBase&) = default;
-  ResourceLinkBase(ResourceLinkBase&&) = default;
+  ResourceLinkBase(ResourceLinkBase&&) noexcept = default;
 
   ResourceLinkBase(
     const std::size_t& index,

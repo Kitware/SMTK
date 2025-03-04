@@ -135,7 +135,7 @@ std::string Logger::toString(const Logger::Record& record, bool includeSourceLoc
 std::string Logger::toString(std::size_t i, bool includeSourceLoc) const
 {
   std::lock_guard<std::mutex> lock(m_mutex);
-  return this->toString(m_records[i], includeSourceLoc);
+  return Logger::toString(m_records[i], includeSourceLoc);
 }
 
 /**\brief Convert the given log entry range to a string.

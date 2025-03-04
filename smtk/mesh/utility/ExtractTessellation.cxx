@@ -452,8 +452,8 @@ namespace
 // A Link is simply a pair of vertex ids.
 struct Link
 {
-  const smtk::mesh::Handle& first() const { return this->Handles[0]; }
-  const smtk::mesh::Handle& second() const { return this->Handles[1]; }
+  [[nodiscard]] const smtk::mesh::Handle& first() const { return this->Handles[0]; }
+  [[nodiscard]] const smtk::mesh::Handle& second() const { return this->Handles[1]; }
 
   smtk::mesh::Handle Handles[2];
 };

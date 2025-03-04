@@ -38,16 +38,16 @@ PYBIND11_MODULE(_smtkPybindVTKSourceFns, source)
   source.doc() = "<description>";
 
   source.def("_vtkModelMultiBlockSource_GetDataObjectUUID",[&](vtkInformation* info){ return vtkModelMultiBlockSource::GetDataObjectUUID(info); });
-  source.def("_vtkModelMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ return vtkModelMultiBlockSource::SetDataObjectUUID(info, id); });
+  source.def("_vtkModelMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ vtkModelMultiBlockSource::SetDataObjectUUID(info, id); });
   source.def("_vtkModelMultiBlockSource_GetComponent",[&](vtkModelMultiBlockSource* obj, vtkInformation* info){ return std::dynamic_pointer_cast<smtk::model::Entity>(obj->GetComponent(info)); });
   source.def("_vtkModelMultiBlockSource_GetModelResource",[&](vtkModelMultiBlockSource* obj){ return obj->GetModelResource(); });
-  source.def("_vtkModelMultiBlockSource_SetModelResource",[&](vtkModelMultiBlockSource* obj, smtk::model::ResourcePtr resource){ return obj->SetModelResource(resource); });
+  source.def("_vtkModelMultiBlockSource_SetModelResource",[&](vtkModelMultiBlockSource* obj, smtk::model::ResourcePtr resource){ obj->SetModelResource(resource); });
 
   source.def("_vtkResourceMultiBlockSource_GetDataObjectUUID",[&](vtkInformation* info){ return vtkResourceMultiBlockSource::GetDataObjectUUID(info); });
-  source.def("_vtkResourceMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ return vtkResourceMultiBlockSource::SetDataObjectUUID(info, id); });
+  source.def("_vtkResourceMultiBlockSource_SetDataObjectUUID",[&](vtkInformation* info, const smtk::common::UUID& id){ vtkResourceMultiBlockSource::SetDataObjectUUID(info, id); });
   source.def("_vtkResourceMultiBlockSource_GetComponent",[&](vtkResourceMultiBlockSource* obj, vtkInformation* info){ return std::dynamic_pointer_cast<smtk::mesh::Component>(obj->GetComponent(info)); });
   source.def("_vtkResourceMultiBlockSource_GetResource",[&](vtkResourceMultiBlockSource* obj){ obj->GetResource(); });
-  source.def("_vtkResourceMultiBlockSource_SetResource",[&](vtkResourceMultiBlockSource* obj, smtk::resource::ResourcePtr resource){ return obj->SetResource(resource); });
+  source.def("_vtkResourceMultiBlockSource_SetResource",[&](vtkResourceMultiBlockSource* obj, smtk::resource::ResourcePtr resource){ obj->SetResource(resource); });
 
   bool pcRegistered =
     smtk::extension::vtk::mesh::PointCloudFromVTKAuxiliaryGeometry::registerClass();

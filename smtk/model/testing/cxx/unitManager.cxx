@@ -97,13 +97,13 @@ int main(int argc, char* argv[])
   // Test the methods used to set/get string properties
   sm->setStringProperty(uids[21], "name", "Tetrahedron");
   smtk::model::StringList components;
-  components.push_back("vx");
-  components.push_back("vy");
-  components.push_back("vz");
+  components.emplace_back("vx");
+  components.emplace_back("vy");
+  components.emplace_back("vz");
   sm->setStringProperty(uids[0], "velocity", components);
   sm->stringProperty(uids[21], "name")[0] = "Ignatius";
-  sm->stringProperty(uids[21], "name").push_back("J");
-  sm->stringProperty(uids[21], "name").push_back("Fumblemumbler");
+  sm->stringProperty(uids[21], "name").emplace_back("J");
+  sm->stringProperty(uids[21], "name").emplace_back("Fumblemumbler");
   sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
   test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
   test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
@@ -123,9 +123,9 @@ int main(int argc, char* argv[])
   Volumes search1 = sm->findEntitiesByPropertyAs<Volumes>("name", "Tetrahedron");
   test(!search1.empty() && search1.begin()->name() == "Tetrahedron");
   StringList ijfumbler;
-  ijfumbler.push_back("Ignatius");
-  ijfumbler.push_back("Jeremiah");
-  ijfumbler.push_back("Fumblemumbler");
+  ijfumbler.emplace_back("Ignatius");
+  ijfumbler.emplace_back("Jeremiah");
+  ijfumbler.emplace_back("Fumblemumbler");
   search1.begin()->setStringProperty("name", ijfumbler);
   search1 = sm->findEntitiesByPropertyAs<Volumes>("name", ijfumbler);
   test(!search1.empty() && search1.begin()->stringProperty("name") == ijfumbler);
