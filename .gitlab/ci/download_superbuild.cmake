@@ -7,17 +7,17 @@ cmake_minimum_required(VERSION 3.12)
 
 set(data_host "https://data.kitware.com")
 
-# Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}.tar.gz
-# 20250105 - Update to use Xcode 16.1
+# Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}-{platform}.tar.gz
+# 20250305 - Update to MOAB with C++17 compat
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_id "1fv29BZW5MedtbwV_-XuvGFNYHNFLdVxm")
-  set(file_hash "7d0919c3217e143c4be6f4e7c4e47e5b9831858efc0a406f7531d09d091243fb5be44bc7ed7e26a4c61d81a5e57f38a453c253dcc8037d3ffe0fb7c9b09ba77f")
+  set(file_id "1yh4aAKx-V3vul07YlBHcjw5o3TPq4KUk")
+  set(file_hash "070f1c176c7db85eed3c22d9d1dd53c1dacd1de2156120f51c17806bf59f705d60aaa1bf6bf3087019d0421b4ca1b71345f41f05ec26cbd5733d3671bd81c2e3")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_x86_64")
-  set(file_id "1q_yl0ZXBzXZu27CqH0RJIggUO0dcdzxz")
-  set(file_hash "a8cd9a32216b5c1153b1a37ff672941302004a64e066192288727c4b6be5c2fd6c57a818b9254c0d7aed5e8ed26bdd357d54224ce503468ed34b8352315f6138")
+  set(file_id "1uYwTX1C6pbBja_smvkGJNCOBWM-WvgFz")
+  set(file_hash "4b6305631f02daf3443703d27e038b385611f0f7f89b319d2093807297a90780e232f34b1fac895ed22dc4de56a9e837e6befabb2a38c64a90321303d10b9c1f")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_id "1BluXPsmfRNqAqSpYahyvC6iWAVlJ0vzy")
-  set(file_hash "8e8a2f8492cc383658028184a25cd555f85697e2a0075c0792321de7980eda58e7b60c0ef5be743f253d44f5abaebf89852a606a90078214bb9eed885428ce73")
+  set(file_id "1-TmoPhfF71TeXaI62vZ9aOHvKmeRN2t7")
+  set(file_hash "dc08efb27412284c413e00c45e20cf037d906ca76a6e35021d9ba3fb26679cbdea46b8273bfbe6a448b524f78f19d70a5a5a99a8636714e7ad56f5313158a7c4")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")

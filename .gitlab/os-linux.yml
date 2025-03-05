@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora41:
-    # Update to Fedora 41
-    image: "kitware/cmb:ci-smtk-fedora41-20250226"
+    # Update to MOAB with C++17 compat
+    image: "kitware/cmb:ci-smtk-fedora41-20250305"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -67,14 +67,14 @@
 
 .fedora41_vtk_python3:
     extends: .fedora41
-    image: "kitware/cmb:ci-smtk-fedora41-vtk-20250226"
+    image: "kitware/cmb:ci-smtk-fedora41-vtk-20250305"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_vtk_python3
 
 .fedora41_paraview:
     extends: .fedora41
-    image: "kitware/cmb:ci-smtk-fedora41-paraview-20250226"
+    image: "kitware/cmb:ci-smtk-fedora41-paraview-20250305"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_paraview
