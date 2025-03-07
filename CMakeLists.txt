@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.20)
 
 #If the user/superbuild hasn't explicitly stated what c++ standard to use
 #require C++17
-if(NOT DEFINED CMAKE_CXX_STANDARD)
+set(old_cxx_standards
+  98 93 11 14)
+if(NOT DEFINED CMAKE_CXX_STANDARD OR
+   CMAKE_CXX_STANDARD IN_LIST old_cxx_standards)
   set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_CXX_STANDARD_REQUIRED True)
   set(CMAKE_CXX_EXTENSIONS FALSE)
