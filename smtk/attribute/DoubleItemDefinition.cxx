@@ -67,7 +67,7 @@ std::string DoubleItemDefinition::defaultValueAsString(std::size_t element) cons
                                           : m_defaultValuesAsStrings[vectorDefault ? element : 0];
 }
 
-const std::vector<std::string> DoubleItemDefinition::defaultValuesAsStrings() const
+const std::vector<std::string>& DoubleItemDefinition::defaultValuesAsStrings() const
 {
   return m_defaultValuesAsStrings;
 }
