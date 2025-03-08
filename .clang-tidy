@@ -72,6 +72,7 @@ modernize-*,\
 -modernize-type-traits,\
 -modernize-use-auto,\
 -modernize-use-trailing-return-type,\
+-modernize-use-transparent-functors,\
 -modernize-use-using,\
 mpi-*,\
 openmp-*,\
