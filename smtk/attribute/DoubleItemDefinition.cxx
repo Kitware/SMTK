@@ -59,7 +59,7 @@ bool DoubleItemDefinition::setDefaultValue(const std::vector<double>& vals)
   return this->setDefaultValue(vals, m_units);
 }
 
-const std::string DoubleItemDefinition::defaultValueAsString(std::size_t element) const
+std::string DoubleItemDefinition::defaultValueAsString(std::size_t element) const
 {
   bool vectorDefault = m_defaultValuesAsStrings.size() == this->numberOfRequiredValues();
   assert(!vectorDefault || m_defaultValuesAsStrings.size() > element);
