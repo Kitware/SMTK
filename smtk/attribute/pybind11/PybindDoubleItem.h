@@ -24,6 +24,20 @@ inline PySharedPtrClass< smtk::attribute::DoubleItem, smtk::attribute::ValueItem
     .def("setValue", (bool (smtk::attribute::DoubleItem::*)(double const &)) &smtk::attribute::DoubleItem::setValue)
     .def("setValue", (bool (smtk::attribute::DoubleItem::*)(::size_t, double const &)) &smtk::attribute::DoubleItem::setValue)
     .def("setValue", (bool (smtk::attribute::DoubleItem::*)(::size_t, double const &, const std::string&)) &smtk::attribute::DoubleItem::setValue)
+    .def("setValues", [&](smtk::attribute::DoubleItem* self, const std::vector<double>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::DoubleItem* self) -> std::vector<double>
+      {
+        std::vector<double> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     .def("hasExplicitUnits", &smtk::attribute::DoubleItem::hasExplicitUnits)
     .def(py::init<::smtk::attribute::DoubleItem const &>())
     .def("type", &smtk::attribute::DoubleItem::type)
