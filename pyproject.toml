@@ -1,0 +1,38 @@
+[build-system]
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "smtk"
+version = "25.03" # This gets rewritten to 25.3 somewhere. I assume that's OK?
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+ninja.version = ">=1.11"
+ninja.make-fallback = false
+
+cmake.verbose = true
+logging.level = "INFO"
+cmake.args = []
+cmake.build-type = "Debug"
+
+# wheel.packages = [ 'smtk/python' ]
+wheel.license-files = [ 'LICENSE.txt' ]
+
+[tool.scikit-build.cmake.define]
+
+SMTK_ENABLE_TESTING = true
+SMTK_ENABLE_PYTHON_WRAPPING = true
+SMTK_ENABLE_OPERATION_THREADS = true
+# These are hardwired at the moment; they come from the superbuild.
+units_DIR = '/stage/bld/aeva/superbuild/install/lib/cmake/units-24.07.0'
+Eigen3_DIR = '/stage/bld/aeva/superbuild/install/share/eigen3/cmake'
+
+SMTK_NO_SYSTEM_BOOST = false
+SMTK_ENABLE_VTK_SUPPORT = false
+SMTK_ENABLE_PARAVIEW_SUPPORT = false
+SMTK_ENABLE_QT_SUPPORT = false
+SMTK_ENABLE_APPLICATIONS = false
+SMTK_ENABLE_EXAMPLES = false
+SMTK_ENABLE_POLYGON_SESSION = false
+SMTK_ENABLE_VTK_SESSION = false
