@@ -11,6 +11,9 @@
 #include "smtk/extension/paraview/project/pqTaskControlView.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKDiagramPanel.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
+#include "smtk/extension/paraview/appcomponents/pqSMTKResourceRepresentation.h"
+#include "smtk/extension/paraview/project/Utility.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
 
@@ -26,6 +29,12 @@
 #include "smtk/io/Logger.h"
 
 #include "pqApplicationCore.h"
+#include "pqSMAdaptor.h"
+#include "pqView.h"
+
+#include "vtkSMProperty.h"
+#include "vtkSMPropertyHelper.h"
+#include "vtkSMProxy.h"
 
 #include <QFile>
 #include <QFont>
@@ -36,17 +45,39 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QSize>
+#include <QSlider>
 #include <QTabWidget>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QVariant>
 
+using namespace smtk::paraview;
 using namespace smtk::string::literals;
 
 namespace smtk
 {
 namespace extension
 {
+namespace // anonymous
+{
+
+// Return true if \a entry references a resource (as opposed to a component).
+//
+// This is used by buttons in the view to determine whether to toggle visibility of
+// the entire representation or just a block within the representation.
+bool representationObjectMapContainsResource(const RepresentationObjectMap::value_type& entry)
+{
+  auto pvDRep = dynamic_cast<pqDataRepresentation*>(entry.first);
+  auto pvRsrc = pvDRep ? dynamic_cast<pqSMTKResource*>(pvDRep->getInput()) : nullptr;
+  if (!pvRsrc)
+  {
+    return false;
+  }
+  auto it = entry.second.find(pvRsrc->getResource().get());
+  return (it != entry.second.end() || entry.second.find(nullptr) != entry.second.end());
+}
+
+} // anonymous namespace
 
 /// Private storage for a task-control views.
 class pqTaskControlView::Internal
@@ -75,12 +106,136 @@ public:
     (void)prev;
     (void)next;
     m_view->updateWithActiveTask(next);
-    // m_view->buildUI();
+  }
+
+  void addTaskDescription(
+    QLayout* layout,
+    smtk::task::Task* task,
+    const smtk::view::Configuration::Component& spec)
+  {
+    (void)spec; // Currently no options to look up.
+    auto* description = new QLabel();
+    smtk::task::Task::InformationOptions opt;
+    description->setObjectName("taskDescription");
+    description->setText(QString::fromStdString(task ? task->information(opt) : ""));
+    description->setWordWrap(true); // Allow line breaks so panel is not forced to be crazy wide.
+    layout->addWidget(description);
+    ++this->numChildren;
+  }
+
+  void addTaskStatus(
+    QFormLayout* formLayout,
+    smtk::task::Task* task,
+    const smtk::view::Configuration::Component& spec)
+  {
+    auto* label = new QLabel();
+    label->setObjectName("taskName");
+    auto txt = QString::fromStdString(task ? task->name() : "");
+    if (spec.attributeAsBool("ReturnToDiagram"))
+    {
+      txt += QString::fromStdString("<a href=\"#returnToDiagram\">⤴</a>");
+    }
+    label->setText(txt);
+    label->setOpenExternalLinks(false);
+    QObject::connect(label, &QLabel::linkActivated, m_view, &pqTaskControlView::returnToDiagram);
+    auto* ctrl = new QPushButton();
+    ctrl->setObjectName("taskCompleter");
+    ctrl->setText(task ? (task->isCompleted() ? "Completed" : "Complete") : "Complete");
+    ctrl->setCheckable(true);
+    ctrl->setChecked(task ? task->isCompleted() : false);
+    ctrl->setEnabled(task ? task->state() >= smtk::task::State::Completable : false);
+    QObject::connect(
+      ctrl, &QAbstractButton::toggled, m_view, &pqTaskControlView::updateTaskCompletion);
+    formLayout->addRow(label, ctrl);
+    ++this->numChildren;
+  }
+
+  void addRepresentationControl(
+    QFormLayout* formLayout,
+    smtk::task::Task* task,
+    const smtk::view::Configuration::Component& spec)
+  {
+    (void)task;
+    auto* field = new QHBoxLayout;
+    std::string name;
+    if (!spec.attribute("Name", name))
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "RepresentationControl without name.");
+      name = "Unknown";
+    }
+    std::string label;
+    if (!spec.attribute("Label", label))
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "RepresentationControl without label.");
+      label = name;
+    }
+    for (const auto& controlSpec : spec.children())
+    {
+      if (controlSpec.name() == "Control")
+      {
+        if (controlSpec.attributeAsString("Type") == "Visibility")
+        {
+          auto* ctrl = new QPushButton;
+          ctrl->setObjectName("visibility");
+          ctrl->setText("Visibility");
+          ctrl->setCheckable(true);
+          ctrl->setToolTip("Toggle visibility");
+          bool initiallyVisible{ true };
+          controlSpec.attributeAsBool("InitiallyVisible", initiallyVisible);
+          ctrl->setChecked(initiallyVisible);
+          m_representationSpecs[name] = spec;
+          QObject::connect(ctrl, &QPushButton::toggled, [this, name](bool toggled) {
+            m_view->toggleVisibility(name, toggled);
+          });
+          field->addWidget(ctrl);
+          // Now force state to match button upon view construction.
+          m_view->toggleVisibility(name, initiallyVisible);
+        }
+        else if (controlSpec.attributeAsString("Type") == "Opacity")
+        {
+          auto* ctrl = new QSlider;
+          ctrl->setObjectName("opacity");
+          ctrl->setMinimum(0);
+          ctrl->setMaximum(255);
+          ctrl->setPageStep(16);
+          ctrl->setOrientation(Qt::Horizontal);
+          int initialValue{ 255 };
+          controlSpec.attributeAsInt("InitialValue", initialValue);
+          ctrl->setValue(initialValue);
+          ctrl->setToolTip("Adjust opacity");
+          m_representationSpecs[name] = spec;
+          QObject::connect(ctrl, &QSlider::valueChanged, [this, name](int value) {
+            m_view->updateOpacity(name, value / 255.0);
+          });
+          field->addWidget(ctrl);
+          // Now force state to match slider upon view construction.
+          m_view->updateOpacity(name, initialValue / 255.);
+        }
+      }
+    }
+    formLayout->addRow(QString::fromStdString(label), field);
+    ++this->numChildren;
+  }
+
+  void addOperationControl(
+    QLayout* layout,
+    smtk::task::Task* task,
+    const smtk::view::Configuration::Component& spec)
+  {
+    (void)layout;
+    (void)task;
+    (void)spec;
+    ++this->numChildren;
   }
 
   pqTaskControlView* m_view{ nullptr };
+  smtk::task::Manager* m_currentTaskManager{ nullptr };
+  smtk::task::Task* m_currentTask{ nullptr };
   smtk::project::Observers::Key m_projectObserverKey;
   smtk::task::Active::Observers::Key m_activeTaskObserverKey;
+  std::unordered_map<smtk::string::Token, smtk::view::Configuration::Component>
+    m_representationSpecs;
+  int numChildren{ 0 };
 };
 
 bool pqTaskControlView::Internal::addChildItem(
@@ -93,7 +248,7 @@ bool pqTaskControlView::Internal::addChildItem(
   bool needLayout = !layout;
   smtk::string::Token childType = childSpec.name();
   static std::unordered_set<smtk::string::Token> formItems{ "ActiveTaskStatus"_token,
-                                                            "ObjectControl"_token };
+                                                            "RepresentationControl"_token };
 
   bool isFormItem = (formItems.find(childType) != formItems.end());
   auto* formLayout = dynamic_cast<QFormLayout*>(layout);
@@ -117,42 +272,17 @@ bool pqTaskControlView::Internal::addChildItem(
   }
   switch (childType.id())
   {
-    case "ActiveTaskStatus"_hash:
-    {
-      auto* label = new QLabel();
-      label->setObjectName("taskName");
-      auto txt = QString::fromStdString(task ? task->name() : "");
-      if (childSpec.attributeAsBool("ReturnToDiagram"))
-      {
-        txt += QString::fromStdString("<a href=\"#returnToDiagram\">⤴</a>");
-      }
-      label->setText(txt);
-      label->setOpenExternalLinks(false);
-      QObject::connect(label, &QLabel::linkActivated, m_view, &pqTaskControlView::returnToDiagram);
-      auto* ctrl = new QPushButton();
-      ctrl->setObjectName("taskCompleter");
-      ctrl->setText(task ? (task->isCompleted() ? "Completed" : "Complete") : "Complete");
-      ctrl->setCheckable(true);
-      ctrl->setChecked(task ? task->isCompleted() : false);
-      ctrl->setEnabled(task ? task->state() >= smtk::task::State::Completable : false);
-      QObject::connect(
-        ctrl, &QAbstractButton::toggled, m_view, &pqTaskControlView::updateTaskCompletion);
-      formLayout->addRow(label, ctrl);
-    }
-    break;
     case "ActiveTaskDescription"_hash:
-    {
-      auto* description = new QLabel();
-      smtk::task::Task::InformationOptions opt;
-      description->setObjectName("taskDescription");
-      description->setText(QString::fromStdString(task ? task->information(opt) : ""));
-      description->setWordWrap(true); // Allow line breaks so panel is not forced to be crazy wide.
-      layout->addWidget(description);
-    }
-    break;
-    case "ObjectControl"_hash:
+      this->addTaskDescription(layout, task, childSpec);
+      break;
+    case "ActiveTaskStatus"_hash:
+      this->addTaskStatus(formLayout, task, childSpec);
+      break;
+    case "RepresentationControl"_hash:
+      this->addRepresentationControl(formLayout, task, childSpec);
       break;
     case "OperationControl"_hash:
+      this->addOperationControl(layout, task, childSpec);
       break;
     default:
       return false;
@@ -189,8 +319,7 @@ pqTaskControlView::~pqTaskControlView()
 
 bool pqTaskControlView::isEmpty() const
 {
-  // TODO
-  return false;
+  return m_p->numChildren == 0;
 }
 
 bool pqTaskControlView::isValid() const
@@ -254,6 +383,92 @@ void pqTaskControlView::updateTaskCompletion(bool completed)
           this->returnToDiagram();
         }
       });
+    }
+  }
+}
+
+void pqTaskControlView::toggleVisibility(const std::string& name, bool show)
+{
+  if (m_p->m_currentTaskManager)
+  {
+    auto objMap = m_p->m_currentTaskManager->workflowObjects(
+      m_p->m_representationSpecs[name], m_p->m_currentTask);
+    auto repMap = smtk::paraview::representationsOfObjects(objMap);
+    for (const auto& entry : repMap)
+    {
+      bool needRender = false;
+      // Toggle the whole representation's visibility if either
+      // (1) entry.second contains a null pointer (indicating the resource itself
+      //     is supposed to have its visibility changed) or
+      // (2) \a show is set to true (indicating that some components that were
+      //     hidden should now be shown – which cannot happen without the
+      //     resource-representation visibility being set to true).
+      if (show || representationObjectMapContainsResource(entry))
+      {
+        if (entry.first->isVisible() != show)
+        {
+          entry.first->setVisible(show);
+          needRender = true;
+        }
+      }
+      auto pvDRep = dynamic_cast<pqSMTKResourceRepresentation*>(entry.first);
+      if (!pvDRep)
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not downcast representation " << entry.first
+                                               << " to an SMTK resource representation.");
+        continue;
+      }
+      // Now, tell the representation to toggle individual component visibilities.
+      for (const auto& obj : entry.second)
+      {
+        if (!obj)
+        {
+          continue;
+        }
+        if (auto comp = dynamic_cast<smtk::resource::Component*>(obj)->shared_from_this())
+        {
+          needRender |= pvDRep->setVisibility(comp, show);
+        }
+      }
+      if (needRender)
+      {
+        entry.first->getView()->render();
+      }
+    }
+  }
+}
+
+void pqTaskControlView::updateOpacity(const std::string& name, double opacity)
+{
+  if (m_p->m_currentTaskManager)
+  {
+    auto objMap = m_p->m_currentTaskManager->workflowObjects(
+      m_p->m_representationSpecs[name], m_p->m_currentTask);
+    auto repMap = smtk::paraview::representationsOfObjects(objMap);
+    for (const auto& entry : repMap)
+    {
+      bool needRender = false;
+      // Toggle the whole representation's visibility if either
+      // (1) entry.second contains a null pointer (indicating the resource itself
+      //     is supposed to have its visibility changed) or
+      // (2) \a show is set to true (indicating that some components that were
+      //     hidden should now be shown – which cannot happen without the
+      //     resource-representation visibility being set to true).
+      if (representationObjectMapContainsResource(entry))
+      {
+        pqSMAdaptor::setElementProperty(entry.first->getProxy()->GetProperty("Opacity"), opacity);
+        entry.first->getProxy()->UpdateVTKObjects();
+        needRender = true;
+      }
+      // TODO: Handle per-block opacity settings for components.
+      //       Iterate over entry.second, find component inside the
+      //       pqSMTKRepresentation and set per-block opacity.
+      if (needRender)
+      {
+        entry.first->getView()->render();
+      }
     }
   }
 }
@@ -326,6 +541,9 @@ void pqTaskControlView::createWidget()
 
 void pqTaskControlView::updateWithActiveTask(smtk::task::Task* task)
 {
+  m_p->m_currentTaskManager = task ? task->manager() : nullptr;
+  m_p->m_currentTask = task;
+
   smtk::view::ConfigurationPtr view = this->configuration();
   if (!view)
   {

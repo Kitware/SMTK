@@ -10,8 +10,9 @@
 #ifndef smtk_extension_pqTaskControlView_h
 #define smtk_extension_pqTaskControlView_h
 
-#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h"
+#include "smtk/extension/paraview/project/smtkPQProjectExtModule.h" // For export.
 #include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/view/Configuration.h" // For API.
 
 namespace smtk
 {
@@ -51,6 +52,8 @@ public Q_SLOTS:
   void onShowCategory() override;
   void returnToDiagram();
   void updateTaskCompletion(bool completed);
+  void toggleVisibility(const std::string& name, bool show);
+  void updateOpacity(const std::string& name, double opacity);
 
 protected:
   void buildUI() override;

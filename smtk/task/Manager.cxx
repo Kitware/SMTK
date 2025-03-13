@@ -9,6 +9,9 @@
 //=========================================================================
 
 #include "smtk/task/Manager.h"
+#include "smtk/task/ObjectsInRoles.h"
+
+#include "smtk/project/Project.h"
 
 #include "smtk/operation/Operation.h"
 
@@ -20,10 +23,133 @@
 
 #include "smtk/io/Logger.h"
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace task
 {
+namespace // anonymous
+{
+
+bool resourceMatch(
+  const std::string& filter,
+  smtk::resource::PersistentObject* object,
+  smtk::resource::Resource*& rsrc)
+{
+  if (auto* resource = dynamic_cast<smtk::resource::Resource*>(object))
+  {
+    rsrc = resource;
+    if (filter == "*" || rsrc->matchesType(filter))
+    {
+      return true;
+    }
+  }
+  else if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
+  {
+    if ((rsrc = comp->parentResource()))
+    {
+      if (filter == "*" || rsrc->matchesType(filter))
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool componentMatch(
+  const std::string& filter,
+  smtk::resource::PersistentObject* object,
+  smtk::resource::Resource* rsrc)
+{
+  // An empty filter string indicates only resources are allowed.
+  if (filter.empty())
+  {
+    return (object == rsrc);
+  }
+  // "*" allows any component:
+  else if (filter == "*")
+  {
+    // Assume that if object is not a pointer to the parent resource,
+    // it must be a component:
+    return (object != rsrc);
+  }
+  // We have a non-trivial filter string; we must have a component.
+  if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
+  {
+    auto query = rsrc->queryOperation(filter);
+    return query ? query(*comp) : false;
+  }
+  return false;
+}
+
+bool filterObject(const nlohmann::json::array_t& filter, smtk::resource::PersistentObject* object)
+{
+  for (const auto& filterTuple : filter)
+  {
+    try
+    {
+      if (filterTuple.is_array() && filterTuple.size() == 2)
+      {
+        smtk::resource::Resource* rsrc{ nullptr };
+        if (resourceMatch(filterTuple[0].get<std::string>(), object, rsrc))
+        {
+          auto compSpec = filterTuple[1].is_null() ? "" : filterTuple[1].get<std::string>();
+          if (componentMatch(compSpec, object, rsrc))
+          {
+            return true;
+          }
+        }
+      }
+    }
+    catch (nlohmann::json::exception& e)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Cannot process filter \"" << filterTuple.dump() << "\";" << e.what());
+      continue;
+    }
+  }
+  return false;
+}
+
+nlohmann::json::array_t filtersForSpec(const smtk::view::Configuration::Component& spec)
+{
+  nlohmann::json::array_t filters;
+  for (const auto& filter : spec.children())
+  {
+    if (filter.name() != "Filter")
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(), "Unhandled child \"" << filter.name() << "\".");
+      continue;
+    }
+    std::string rsrcMatch;
+    if (!filter.attribute("Resource", rsrcMatch))
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(), "No resource in \"" << filter.name() << "\". Skipping.");
+      continue;
+    }
+    std::string compMatch;
+    filter.attribute("Component", compMatch);
+    nlohmann::json::array_t fspec{ rsrcMatch };
+    //NOLINTNEXTLINE(modernize-use-emplace)
+    if (!compMatch.empty())
+    {
+      fspec.push_back(compMatch);
+    }
+    else
+    {
+      fspec.push_back(std::nullptr_t());
+    }
+    filters.emplace_back(fspec);
+  }
+  return filters;
+}
+
+} // anonymous namespace
 
 constexpr const char* const Manager::type_name;
 
@@ -147,6 +273,232 @@ nlohmann::json Manager::getStyle(const smtk::string::Token& styleClass) const
 smtk::resource::Resource* Manager::resource() const
 {
   return m_parent;
+}
+
+Manager::ResourceObjectMap Manager::workflowObjects(const nlohmann::json& spec, Task* task)
+{
+  // Filter objects by the \a spec.
+  ResourceObjectMap objectMap;
+
+  nlohmann::json source;
+  nlohmann::json filter;
+  if (spec.contains("source"))
+  {
+    source = spec.at("source");
+    if (!source.is_object() || !source.contains("type"))
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Spec source must be a dictionary with 'type' key, "
+        "got \""
+          << source.dump() << "\"");
+      return objectMap;
+    }
+  }
+  else
+  {
+    source = { { "type", "project resources" } };
+  }
+
+  if (spec.contains("filter"))
+  {
+    filter = spec.at("filter");
+    if (!filter.is_array())
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Spec filter must be an array, got \"" << filter.dump() << "\".");
+      return objectMap;
+    }
+  }
+  else
+  {
+    // Accept any resource or component:
+    filter = nlohmann::json::array_t({ { "*", "*" }, { "*", nullptr } });
+  }
+
+  auto sourceType = source["type"].get<smtk::string::Token>();
+  std::unordered_set<smtk::resource::PersistentObject*> objects;
+  switch (sourceType.id())
+  {
+    default:
+      smtkErrorMacro(
+        smtk::io::Logger::instance(), "Unknown source type \"" << sourceType.data() << "\".");
+      // fall through
+    case "project resources"_hash:
+    {
+      auto* project = dynamic_cast<smtk::project::Project*>(this->resource());
+      if (!project)
+      {
+        return objectMap;
+      }
+
+      for (const auto& resource : project->resources())
+      {
+        if (filterObject(filter, resource.get()))
+        {
+          objects.insert(resource.get());
+        }
+      }
+    }
+    break;
+    case "active task port"_hash:
+    {
+      auto* currentTask = task ? task : this->active().task();
+      if (!currentTask || !source.contains("port"))
+      {
+        smtkErrorMacro(smtk::io::Logger::instance(), "No active task or no \"port\" specified.");
+        return objectMap;
+      }
+
+      // We are asked to find objects on a port of the (now) active task.
+      // Determine whether we are filtering on role or not.
+      smtk::string::Token sourceRole;
+      if (source.contains("role"))
+      {
+        sourceRole = source.at("role").get<smtk::string::Token>();
+      }
+      // Find the correct port:
+      const auto& taskPortMap = currentTask->ports();
+      auto it = taskPortMap.find(source["port"]);
+      if (it == taskPortMap.end())
+      {
+        return objectMap;
+      }
+      // Fetch data from the port. We only understand ObjectsInRoles at this point:
+      auto portData = it->second->parent()->portData(it->second);
+      if (portData)
+      {
+        if (auto objectsInRoles = std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(portData))
+        {
+          for (const auto& entry : objectsInRoles->data())
+          {
+            if (sourceRole.valid() && entry.first != sourceRole)
+            { // Skip objects in unrequested roles.
+              continue;
+            }
+            // Filter objects as requested.
+            for (const auto& object : entry.second)
+            {
+              if (filterObject(filter, object))
+              {
+                objects.insert(object);
+              }
+            }
+          }
+        }
+        else
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Unhandled port data type \"" << portData->typeName() << "\".");
+        }
+      }
+    }
+    break;
+  }
+
+  for (const auto& object : objects)
+  {
+    smtk::resource::Resource* resource = dynamic_cast<smtk::resource::Resource*>(object);
+    if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
+    {
+      resource = comp->parentResource();
+    }
+    if (!resource || !this->isResourceRelevant(resource, filter))
+    {
+      continue;
+    }
+    objectMap[resource].insert(object == resource ? nullptr : object);
+  }
+
+  return objectMap;
+}
+
+Manager::ResourceObjectMap Manager::workflowObjects(
+  const smtk::view::Configuration::Component& spec,
+  Task* task)
+{
+  // To avoid dueling implementations, we'll convert \a spec into JSON and pass
+  // it to the variant above.
+  nlohmann::json jsonSpec;
+  nlohmann::json::array_t controls;
+  for (const auto& entry : spec.children())
+  {
+    smtk::string::Token tagName = entry.name();
+    switch (tagName.id())
+    {
+      case "ActiveTaskPort"_hash:
+      {
+        auto portName = entry.attributeAsString("Port");
+        auto roleName = entry.attributeAsString("Role");
+        if (portName.empty())
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "Missing a port name.");
+          continue;
+        }
+        nlohmann::json sourceSpec{ { "type", "active task port" }, { "port", portName } };
+        if (!roleName.empty())
+        {
+          sourceSpec["role"] = roleName;
+        }
+        auto filters = filtersForSpec(entry);
+        if (!filters.empty())
+        {
+          sourceSpec["filters"] = filters;
+        }
+        jsonSpec["source"] = sourceSpec;
+      }
+      break;
+      case "ProjectResources"_hash:
+      {
+        nlohmann::json sourceSpec{ { "type", "project resources" } };
+        auto filters = filtersForSpec(entry);
+        if (!filters.empty())
+        {
+          sourceSpec["filters"] = filters;
+        }
+        jsonSpec["source"] = sourceSpec;
+      }
+      break;
+      case "Control"_hash:
+      {
+        auto controlType = entry.attributeAsString("Type");
+        if (controlType.empty())
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Control tag must provide a Type attribute.");
+          continue;
+        }
+        controls.emplace_back(controlType);
+      }
+      break;
+      default:
+      {
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "Unhandled specification tag <" << tagName.data() << ">. Skipping.");
+      }
+    }
+  }
+  if (!controls.empty())
+  {
+    jsonSpec["controls"] = controls;
+  }
+  auto objMap = this->workflowObjects(jsonSpec, task);
+  return objMap;
+}
+
+bool Manager::isResourceRelevant(
+  const std::shared_ptr<smtk::resource::Resource>& resource,
+  const nlohmann::json& filter)
+{
+  return filterObject(filter, resource.get());
+}
+
+bool Manager::isResourceRelevant(smtk::resource::Resource* resource, const nlohmann::json& filter)
+{
+  return filterObject(filter, resource);
 }
 
 int Manager::handleOperation(
