@@ -82,9 +82,9 @@ bool Active::switchTo(smtk::task::Task* task)
   {
     if (current)
     {
-      m_p->m_observers(current.get(), nullptr);
       m_p->m_active.reset();
       m_p->m_activeObserver.release();
+      m_p->m_observers(current.get(), nullptr);
       return true;
     }
     return false;
@@ -99,8 +99,8 @@ bool Active::switchTo(smtk::task::Task* task)
     // Only managed tasks can be active if we have instances tracked.
     return false;
   }
-  m_p->m_observers(current.get(), task);
   m_p->m_active = sharedTask;
+  m_p->m_observers(current.get(), task);
   m_p->m_activeObserver = task->observers().insert([this](Task&, State, State next) {
     if (next == State::Unavailable)
     {
