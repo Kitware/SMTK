@@ -24,6 +24,7 @@
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
+    <include href="smtk/operation/Hints.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
         <Void Name="allow camera reset" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>

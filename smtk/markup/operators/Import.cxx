@@ -18,6 +18,8 @@
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -28,6 +30,7 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/Hints.h"
 #include "smtk/operation/MarkGeometry.h"
 
 #include "smtk/resource/Manager.h"
@@ -414,6 +417,12 @@ Import::Result Import::operateInternal()
   {
     m_result->findInt("outcome")->setValue(0, static_cast<int>(Import::Outcome::SUCCEEDED));
     m_result->findResource("resourcesCreated")->appendValue(resource);
+
+    auto created = m_result->findComponent("created");
+    std::set<smtk::resource::Component::Ptr> importedComponents;
+    importedComponents.insert(created->begin(), created->end());
+    smtk::operation::addSelectionHint(
+      m_result, importedComponents, smtk::view::SelectionAction::UNFILTERED_REPLACE);
   }
   return m_result;
 }
