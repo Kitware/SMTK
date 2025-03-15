@@ -121,9 +121,8 @@ public:
     else
     {
       std::ostringstream msg;
-      msg << "This component is not the proper type (" << this->typeName()
-          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>()
-          << ").";
+      msg << "This component is not the proper type for the "
+          << "arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>() << ").";
       throw std::logic_error(
         msg.str()); // "This component is not the proper type for the arc's endpoint.");
     }
@@ -156,9 +155,8 @@ public:
     else
     {
       std::ostringstream msg;
-      msg << "This component is not the proper type (" << this->typeName()
-          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>()
-          << ").";
+      msg << "This component is not the proper type for the "
+          << "arc's endpoint (" << smtk::common::typeName<typename ArcType::FromType>() << ").";
       throw std::logic_error(
         msg.str()); // "This component is not the proper type for the arc's endpoint.");
     }
@@ -203,9 +201,8 @@ public:
     else
     {
       std::ostringstream msg;
-      msg << "This component is not the proper type (" << this->typeName()
-          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>()
-          << ").";
+      msg << "This component is not the proper type for the "
+          << "arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>() << ").";
       throw std::logic_error(
         msg.str()); // "This component is not the proper type for the arc's endpoint.");
     }
@@ -239,9 +236,8 @@ public:
     else
     {
       std::ostringstream msg;
-      msg << "This component is not the proper type (" << this->typeName()
-          << ") for the arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>()
-          << ").";
+      msg << "This component is not the proper type for the "
+          << "arc's endpoint (" << smtk::common::typeName<typename ArcType::ToType>() << ").";
       throw std::logic_error(
         msg.str()); // "This component is not the proper type for the arc's endpoint.");
     }
