@@ -225,9 +225,9 @@ void Resource::setClean(bool state)
   m_clean = state;
 }
 
-bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+bool Resource::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
   return true;
 }
 
@@ -285,15 +285,15 @@ void Resource::copyUnitSystem(
       // Do not set a unit system.
       break;
     case CopyOptions::CopyType::Shallow:
-      this->setUnitsSystem(rsrc->unitsSystem());
+      this->setUnitSystem(rsrc->unitSystem());
       break;
     case CopyOptions::CopyType::Deep:
     {
-      if (auto unitSys = rsrc->unitsSystem())
+      if (auto unitSys = rsrc->unitSystem())
       {
         nlohmann::json spec = unitSys;
         shared_ptr<units::System> unitCopy = units::System::createFromSpec(spec.dump());
-        this->setUnitsSystem(unitCopy);
+        this->setUnitSystem(unitCopy);
       }
     }
     break;

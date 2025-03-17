@@ -744,9 +744,9 @@ void qtInputsItem::showExpressionResultWidgets(
   auto itemUnits = item->units();
   if (!itemUnits.empty())
   {
-    auto unitsSystem = item->definition()->unitsSystem();
+    auto unitSystem = item->definition()->unitSystem();
     bool parsed = false;
-    unitsSystem->unit(itemUnits, &parsed);
+    unitSystem->unit(itemUnits, &parsed);
     if (parsed)
     {
       displayText = QString("%1 %2").arg(text).arg(itemUnits.c_str());
@@ -981,11 +981,11 @@ QFrame* qtInputsItem::createLabelFrame(
     if (addUnitsLabel && !vitemDef->isDiscrete())
     {
       // Check if units are "valid"
-      const auto& unitsSystem = vitemDef->unitsSystem();
-      if (unitsSystem)
+      const auto& unitSystem = vitemDef->unitSystem();
+      if (unitSystem)
       {
         bool unitsParsed = false;
-        units::Unit defUnit = unitsSystem->unit(valUnits, &unitsParsed);
+        units::Unit defUnit = unitSystem->unit(valUnits, &unitsParsed);
         addUnitsLabel = addUnitsLabel && (!unitsParsed);
       }
     }

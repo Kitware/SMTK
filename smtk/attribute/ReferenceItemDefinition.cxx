@@ -611,13 +611,13 @@ std::size_t ReferenceItemDefinition::testConditionals(PersistentObjectPtr& objec
   return s_invalidIndex;
 }
 
-void ReferenceItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+void ReferenceItemDefinition::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
 
   for (const auto& item : m_itemDefs)
   {
-    item.second->setUnitsSystem(m_unitsSystem);
+    item.second->setUnitSystem(m_unitSystem);
   }
 }
 } // namespace attribute

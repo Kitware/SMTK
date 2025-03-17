@@ -521,7 +521,7 @@ bool ValueItemDefinition::addItemDefinition(smtk::attribute::ItemDefinitionPtr c
     return false;
   }
   m_itemDefs[cdef->name()] = cdef;
-  cdef->setUnitsSystem(m_unitsSystem);
+  cdef->setUnitSystem(m_unitSystem);
   return true;
 }
 
@@ -575,13 +575,13 @@ std::vector<std::string> ValueItemDefinition::relevantEnums(
   return result;
 }
 
-void ValueItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+void ValueItemDefinition::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
 
   for (const auto& item : m_itemDefs)
   {
-    item.second->setUnitsSystem(m_unitsSystem);
+    item.second->setUnitSystem(m_unitSystem);
   }
 }
 
@@ -605,10 +605,10 @@ bool ValueItemDefinition::isDiscreteIndexValid(int index) const
 
 bool ValueItemDefinition::hasSupportedUnits() const
 {
-  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
+  if (!(m_units.empty() || (m_unitSystem == nullptr)))
   {
     bool status;
-    auto defUnit = m_unitsSystem->unit(m_units, &status);
+    auto defUnit = m_unitSystem->unit(m_units, &status);
     return status;
   }
   return false;
@@ -617,9 +617,9 @@ bool ValueItemDefinition::hasSupportedUnits() const
 std::string ValueItemDefinition::supportedUnits() const
 {
   bool status = false;
-  if (!(m_units.empty() || (m_unitsSystem == nullptr)))
+  if (!(m_units.empty() || (m_unitSystem == nullptr)))
   {
-    auto defUnit = m_unitsSystem->unit(m_units, &status);
+    auto defUnit = m_unitSystem->unit(m_units, &status);
   }
   return (status ? m_units : std::string());
 }

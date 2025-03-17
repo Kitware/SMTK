@@ -23,6 +23,7 @@
 #include "smtk/attribute/Item.h" // For Item Types.
 #include "smtk/attribute/Tag.h"
 #include "smtk/common/Categories.h"
+#include "smtk/common/Deprecation.h"
 
 #include <queue>
 #include <set>
@@ -167,8 +168,10 @@ public:
   bool removeTag(const std::string& name);
   ///@}
 
-  ///\brief Return the unitsSystem of the Definition
-  const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+  ///\brief Return the unitSystem of the Definition
+  const shared_ptr<units::System>& unitSystem() const { return m_unitSystem; }
+  SMTK_DEPRECATED_IN_NEXT("Use unitSystem() instead.")
+  const shared_ptr<units::System>& unitsSystem() const { return m_unitSystem; }
 
   virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition)
     const = 0;
@@ -189,10 +192,15 @@ protected:
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent);
 
-  ///\brief Set the unitsSystem of the Definition
+  ///\brief Set the unitSystem of the Definition
   ///
   /// Note that this should be done before units are specified in the Definition
-  virtual void setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+  virtual void setUnitSystem(const shared_ptr<units::System>& unitSystem);
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  virtual void setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+  {
+    this->setUnitSystem(unitsSystem);
+  }
 
   int m_version;
   bool m_isOptional;
@@ -207,7 +215,7 @@ protected:
   unsigned int m_advanceLevel[2];
   attribute::Tags m_tags;
   smtk::common::Categories::CombinationMode m_combinationMode;
-  std::shared_ptr<units::System> m_unitsSystem;
+  std::shared_ptr<units::System> m_unitSystem;
 
 private:
   // constant value that should never be changed

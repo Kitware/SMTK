@@ -690,19 +690,19 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   std::size_t n = m_itemDefs.size();
   m_itemDefs.push_back(cdef);
   m_itemDefPositions[cdef->name()] = static_cast<int>(n);
-  this->setItemDefinitionUnitsSystem(cdef);
+  this->setItemDefinitionUnitSystem(cdef);
   this->updateDerivedDefinitions();
   return true;
 }
 
-void Definition::setItemDefinitionUnitsSystem(
+void Definition::setItemDefinitionUnitSystem(
   const smtk::attribute::ItemDefinitionPtr& itemDef) const
 {
-  const auto& defUnitsSystem = this->unitsSystem();
+  const auto& defUnitSystem = this->unitSystem();
   auto attRes = this->attributeResource();
-  if (defUnitsSystem)
+  if (defUnitSystem)
   {
-    itemDef->setUnitsSystem(defUnitsSystem);
+    itemDef->setUnitSystem(defUnitSystem);
   }
 }
 
@@ -914,15 +914,15 @@ void Definition::applyAdvanceLevels(
   }
 }
 
-const std::shared_ptr<units::System>& Definition::unitsSystem() const
+const std::shared_ptr<units::System>& Definition::unitSystem() const
 {
-  static std::shared_ptr<units::System> nullUnitsSystem;
+  static std::shared_ptr<units::System> nullUnitSystem;
   auto attRes = this->attributeResource();
   if (attRes)
   {
-    return attRes->unitsSystem();
+    return attRes->unitSystem();
   }
-  return nullUnitsSystem;
+  return nullUnitSystem;
 }
 
 bool Definition::setLocalUnits(const std::string& newUnits, bool force)
@@ -933,7 +933,7 @@ bool Definition::setLocalUnits(const std::string& newUnits, bool force)
     m_localUnits = newUnits;
     return true;
   }
-  const auto& unitSys = this->unitsSystem();
+  const auto& unitSys = this->unitSystem();
   if (!unitSys)
   {
     return false; // There is no unit system

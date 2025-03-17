@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Component.h"
@@ -331,9 +332,17 @@ public:
   /// unit systems.
 
   /// \brief Sets the system of units used by this resource.
-  virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+  virtual bool setUnitSystem(const shared_ptr<units::System>& unitSystem);
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+  {
+    return this->setUnitSystem(unitsSystem);
+  }
+
   /// \brief Gets the system of units used by this resource.
-  const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+  const shared_ptr<units::System>& unitSystem() const { return m_unitSystem; }
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  const shared_ptr<units::System>& unitsSystem() const { return m_unitSystem; }
   ///@}
 
   ///@name Resource Templates
@@ -489,7 +498,7 @@ protected:
   void copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;
-  std::shared_ptr<units::System> m_unitsSystem;
+  std::shared_ptr<units::System> m_unitSystem;
 
 private:
   /// Instances of this internal class are passed to resource::Manager to

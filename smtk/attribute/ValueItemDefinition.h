@@ -248,8 +248,8 @@ public:
     }
     item = SharedTypes::RawPointerType::New(idName);
     m_itemDefs[item->name()] = item;
-    // We need to get a pointer to the base Item class to set the unitsSystem
-    static_cast<ItemDefinition*>(item.get())->setUnitsSystem(m_unitsSystem);
+    // We need to get a pointer to the base Item class to set the unitSystem
+    static_cast<ItemDefinition*>(item.get())->setUnitSystem(m_unitSystem);
     return item;
   }
 
@@ -290,7 +290,12 @@ protected:
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent) override;
 
-  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+  void setUnitSystem(const shared_ptr<units::System>& unitSystem) override;
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override
+  {
+    this->setUnitSystem(unitsSystem);
+  }
 
   virtual void updateDiscreteValue() = 0;
   bool m_hasDefault;

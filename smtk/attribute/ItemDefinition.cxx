@@ -157,7 +157,7 @@ bool ItemDefinition::removeTag(const std::string& name)
   return false;
 }
 
-void ItemDefinition::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+void ItemDefinition::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
 }

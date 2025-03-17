@@ -207,26 +207,26 @@ bool DoubleItem::setValue(std::size_t element, const double& val, const std::str
   const std::string& myUnitStr = this->supportedUnits();
   if (myUnitStr != valUnitStr)
   {
-    auto unitsSystem = this->definition()->unitsSystem();
+    auto unitSystem = this->definition()->unitSystem();
     // Is there a units system specified?
-    if (!unitsSystem)
+    if (!unitSystem)
     {
       return false; // we can not convert units
     }
     bool status;
-    auto myUnits = unitsSystem->unit(myUnitStr, &status);
+    auto myUnits = unitSystem->unit(myUnitStr, &status);
     if (!status)
     {
       return false; // Could not find the base's units
     }
-    auto valUnits = unitsSystem->unit(valUnitStr, &status);
+    auto valUnits = unitSystem->unit(valUnitStr, &status);
     if (!status)
     {
       return false; // Could not find vals' units
     }
 
     units::Measurement m(val, valUnits);
-    auto newM = unitsSystem->convert(m, myUnits, &status);
+    auto newM = unitSystem->convert(m, myUnits, &status);
     if (!status)
     {
       return false; // could not convert
@@ -268,7 +268,7 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     return false; // badly formatted string
   }
 
-  auto unitsSystem = this->definition()->unitsSystem();
+  auto unitSystem = this->definition()->unitSystem();
   const std::string& myUnitStr = this->supportedUnits();
 
   units::Unit myUnit;
@@ -276,11 +276,11 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
   // item has known units. Note that we don't need to do conversion
   // if the value does not have units specified
   bool convert = false;
-  if (unitsSystem && (!(myUnitStr.empty() || valUnitsStr.empty())))
+  if (unitSystem && (!(myUnitStr.empty() || valUnitsStr.empty())))
   {
     // If we have a units System, let's see if the base units
     // are valid?
-    myUnit = unitsSystem->unit(myUnitStr, &convert);
+    myUnit = unitSystem->unit(myUnitStr, &convert);
   }
 
   double convertedVal;
@@ -304,7 +304,7 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     // We can convert units
     bool status;
 
-    auto valMeasure = unitsSystem->measurement(val, &status);
+    auto valMeasure = unitSystem->measurement(val, &status);
     if (!status)
     {
       // Could not parse the value
@@ -312,7 +312,7 @@ bool DoubleItem::setValueFromString(std::size_t element, const std::string& val)
     }
     if (!valMeasure.m_units.dimensionless())
     {
-      auto convertedMeasure = unitsSystem->convert(valMeasure, myUnit, &status);
+      auto convertedMeasure = unitSystem->convert(valMeasure, myUnit, &status);
       if (!status)
       {
         return false;
@@ -519,9 +519,9 @@ double DoubleItem::value(std::size_t element, smtk::io::Logger& log) const
       return eval; // no conversion needed
     }
     // We need to convert to the units of the item
-    auto unitsSystem = this->definition()->unitsSystem();
+    auto unitSystem = this->definition()->unitSystem();
     // Is there a units system specified?
-    if (!unitsSystem)
+    if (!unitSystem)
     {
       smtkErrorMacro(
         log,
@@ -531,7 +531,7 @@ double DoubleItem::value(std::size_t element, smtk::io::Logger& log) const
       return 0.0;
     }
     bool status;
-    auto myUnits = unitsSystem->unit(this->units(), &status);
+    auto myUnits = unitSystem->unit(this->units(), &status);
     if (!status)
     {
       smtkErrorMacro(
@@ -541,7 +541,7 @@ double DoubleItem::value(std::size_t element, smtk::io::Logger& log) const
                   << " are not supported for conversion.");
       return 0.0;
     }
-    auto exUnits = unitsSystem->unit(exStr, &status);
+    auto exUnits = unitSystem->unit(exStr, &status);
     if (!status)
     {
       smtkErrorMacro(
@@ -553,7 +553,7 @@ double DoubleItem::value(std::size_t element, smtk::io::Logger& log) const
     }
 
     units::Measurement m(eval, exUnits);
-    auto newM = unitsSystem->convert(m, myUnits, &status);
+    auto newM = unitSystem->convert(m, myUnits, &status);
     if (!status)
     {
       smtkErrorMacro(

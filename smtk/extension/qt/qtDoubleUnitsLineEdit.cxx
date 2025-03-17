@@ -167,7 +167,7 @@ qtDoubleUnitsLineEdit* qtDoubleUnitsLineEdit::checkAndCreate(
   }
 
   // Get units system
-  auto unitSystem = dItem->definition()->unitsSystem();
+  auto unitSystem = dItem->definition()->unitSystem();
   if (unitSystem == nullptr)
   {
     return nullptr;
@@ -302,7 +302,7 @@ void qtDoubleUnitsLineEdit::onTextEdited()
 
   auto dItem = m_inputsItem->itemAs<DoubleItem>();
   auto dUnits = dItem->units();
-  auto unitSystem = dItem->definition()->unitsSystem();
+  auto unitSystem = dItem->definition()->unitSystem();
 
   // Parsing the Item's unit string
   bool parsedOK = false;

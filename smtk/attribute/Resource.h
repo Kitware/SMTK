@@ -106,7 +106,12 @@ public:
 
   ~Resource() override;
 
-  bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+  bool setUnitSystem(const shared_ptr<units::System>& unitSystem) override;
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem instead.")
+  bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override
+  {
+    return this->setUnitSystem(unitsSystem);
+  }
 
   smtk::attribute::DefinitionPtr createDefinition(
     const std::string& typeName,
@@ -443,7 +448,7 @@ public:
   ///
   /// If \a options has copyTemplateData() set to true, then this resource's
   /// Definition instances will be copied to the output resources.
-  /// In addition, unitsSystem and Analysis information is copied.
+  /// In addition, unitSystem and Analysis information is copied.
   std::shared_ptr<smtk::resource::Resource> clone(
     smtk::resource::CopyOptions& options) const override;
 

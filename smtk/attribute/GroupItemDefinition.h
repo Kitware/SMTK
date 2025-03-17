@@ -65,8 +65,8 @@ public:
       {
         item->setIsOptional(true);
       }
-      // We need to get a pointer to the base Item class to set the unitsSystem
-      static_cast<ItemDefinition*>(item.get())->setUnitsSystem(m_unitsSystem);
+      // We need to get a pointer to the base Item class to set the unitSystem
+      static_cast<ItemDefinition*>(item.get())->setUnitSystem(m_unitSystem);
       m_itemDefs.push_back(item);
       m_itemDefPositions[inName] = static_cast<int>(n);
     }
@@ -159,7 +159,12 @@ protected:
   void applyAdvanceLevels(
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent) override;
-  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+  void setUnitSystem(const shared_ptr<units::System>& unitSystem) override;
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override
+  {
+    this->setUnitSystem(unitsSystem);
+  }
   std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
   std::map<std::string, int> m_itemDefPositions;
   std::vector<std::string> m_labels;
