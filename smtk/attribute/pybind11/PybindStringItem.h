@@ -24,6 +24,20 @@ inline PySharedPtrClass< smtk::attribute::StringItem, smtk::attribute::ValueItem
     .def(py::init<::smtk::attribute::StringItem const &>())
     .def("isSecure", &smtk::attribute::StringItem::isSecure)
     .def("type", &smtk::attribute::StringItem::type)
+    .def("setValues", [&](smtk::attribute::StringItem* self, const std::vector<std::string>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::StringItem* self) -> std::vector<std::string>
+      {
+        std::vector<std::string> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::StringItem>(i);
       })
