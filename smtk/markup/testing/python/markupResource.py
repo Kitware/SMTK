@@ -19,6 +19,27 @@ print('Node Types\n  ' + '\n  '.join([xx.data()
       for xx in resource.nodeTypes()]))
 print('Arc Types\n  ' + '\n  '.join([xx.data() for xx in resource.arcTypes()]))
 
+expectedNodeset = set([
+    'URL', 'UnstructuredData', 'Comment', 'Plane', 'Cone', 'Label', 'DiscreteGeometry',
+    'Ontology', 'Field', 'AnalyticShape', 'SideSet', 'Box', 'OntologyIdentifier',
+    'Subset', 'NodeSet', 'Landmark', 'SpatialData', 'ImageData', 'Component', 'Sphere',
+    'Feature', 'Group'])
+fqnsNodes = {smtk.string.Token('smtk::markup::' + xx)
+             for xx in expectedNodeset}
+if fqnsNodes != set(resource.nodeTypes()):
+    print('Error: unexpected nodeset.')
+    raise RuntimeError('Unexpected nodeset')
+
+expectedArcset = set([
+    'URLsToData', 'ReferencesToPrimaries', 'LabelsToSubjects', 'OntologyIdentifiersToSubtypes',
+    'URLsToImportedData', 'OntologyIdentifiersToIndividuals', 'FieldsToShapes',
+    'OntologyToIdentifiers', 'GroupsToMembers', 'BoundariesToShapes'])
+fqnsArcs = {smtk.string.Token('smtk::markup::arcs::' + xx)
+            for xx in expectedArcset}
+if fqnsArcs != set(resource.arcTypes()):
+    print('Error: unexpected arcset.')
+    raise RuntimeError('Unexpected arcset')
+
 # Create one node of every type
 nodes = [resource.createNodeOfType(nodeTypeName)
          for nodeTypeName in resource.nodeTypes()]
@@ -48,5 +69,18 @@ if not didConnect:
 
 
 resource.dump('')
-print(resource.domains())
-print(resource.domains().keys())
+# print(resource.domains())
+print('Domains\n  ' + '\n  '.join([xx.data()
+      for xx in resource.domains().keys()]))
+
+print('Test blanking')
+nodeToBlank = resource.createNodeOfType(
+    smtk.string.Token('smtk::markup::UnstructuredData'))
+bbefore = nodeToBlank.isBlanked()
+print('  Is blanked initially?', nodeToBlank.isBlanked())
+nodeToBlank.setBlanking(True)
+print('  Is blanked finally?', nodeToBlank.isBlanked())
+bafter = nodeToBlank.isBlanked()
+print('  Shape?', nodeToBlank.shape())
+if bbefore or not bafter:
+    raise ('Blanking incorrect')

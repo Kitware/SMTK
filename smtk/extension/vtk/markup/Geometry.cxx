@@ -61,6 +61,16 @@ void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, C
 
   entry.m_geometry = nullptr;
 
+  // Check component-wide blanking
+  if (auto* spatial = dynamic_cast<smtk::markup::SpatialData*>(component.get()))
+  {
+    if (spatial->isBlanked())
+    {
+      entry.m_generation = Invalid;
+      return;
+    }
+  }
+
   if (auto* image = dynamic_cast<smtk::markup::ImageData*>(component.get()))
   {
     auto shape = image->shapeData();
