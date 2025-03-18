@@ -23,6 +23,20 @@ inline PySharedPtrClass< smtk::attribute::IntItem, smtk::attribute::ValueItemTem
   instance
     .def(py::init<::smtk::attribute::IntItem const &>())
     .def("type", &smtk::attribute::IntItem::type)
+    .def("setValues", [&](smtk::attribute::IntItem* self, const std::vector<int>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::IntItem* self) -> std::vector<int>
+      {
+        std::vector<int> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     .def_static("CastTo", [](const std::shared_ptr<smtk::attribute::Item> i) {
         return std::dynamic_pointer_cast<smtk::attribute::IntItem>(i);
       })
