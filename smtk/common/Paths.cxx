@@ -265,6 +265,11 @@ std::string Paths::uniquePath()
   return boost::filesystem::unique_path().string();
 }
 
+std::string Paths::uniquePath(const std::string& modelPath)
+{
+  return boost::filesystem::unique_path(modelPath).string();
+}
+
 /**\brief Return the best guess at the directory containing the current process's executable.
   */
 std::string Paths::executableDirectory()

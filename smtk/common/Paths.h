@@ -64,6 +64,8 @@ public:
   static std::string replaceFilename(const std::string& path, const std::string& newFilename);
   static std::string tempDirectory();
   static std::string uniquePath();
+  /// The \a modelPath must have percent (%) signs that will be replaced with random characters.
+  static std::string uniquePath(const std::string& modelPath);
 
   std::string executableDirectory();
   std::string toplevelDirectory();
