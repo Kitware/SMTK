@@ -203,6 +203,17 @@ void Write::markModifiedResources(Write::Result& /*unused*/)
   }
 }
 
+void Write::generateSummary(Result& res)
+{
+  if (smtk::operation::outcome(res) != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(res);
+  }
+  auto resourceItem = this->parameters()->associations();
+  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value());
+  smtkInfoMacro(this->log(), "Wrote \"" << resource->location() << "\".");
+}
+
 bool Write::writeData(
   const Component* dataNode,
   const std::string& filename,

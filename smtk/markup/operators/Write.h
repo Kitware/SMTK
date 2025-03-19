@@ -38,6 +38,7 @@ protected:
   Result operateInternal() override;
   const char* xmlDescription() const override;
   void markModifiedResources(Result&) override;
+  void generateSummary(Result&) override;
 
   bool
   writeData(const Component* dataNode, const std::string& filename, smtk::string::Token mimeType);

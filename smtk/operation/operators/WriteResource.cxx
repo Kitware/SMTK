@@ -213,8 +213,7 @@ void WriteResource::generateSummary(WriteResource::Result& res)
   }
   else if (outcome == static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
   {
-    msg << ": wrote \"" << resource->location() << "\"";
-    smtkInfoMacro(this->log(), msg.str());
+    // Do nothing. Each child operation should provide a summary.
   }
   else
   {

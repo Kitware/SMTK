@@ -34,6 +34,7 @@ public:
 
 protected:
   Result operateInternal() override;
+  void generateSummary(Operation::Result& res) override;
   const char* xmlDescription() const override;
 };
 

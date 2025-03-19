@@ -173,6 +173,17 @@ Write::Result Write::operateInternal()
   return result;
 }
 
+void Write::generateSummary(Operation::Result& res)
+{
+  if (smtk::operation::outcome(res) != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(res);
+  }
+  auto resourceItem = this->parameters()->associations();
+  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value());
+  smtkInfoMacro(this->log(), "Wrote \"" << resource->location() << "\".");
+}
+
 const char* Write::xmlDescription() const
 {
   return Write_xml;
