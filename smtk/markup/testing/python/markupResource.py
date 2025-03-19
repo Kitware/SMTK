@@ -81,6 +81,5 @@ print('  Is blanked initially?', nodeToBlank.isBlanked())
 nodeToBlank.setBlanking(True)
 print('  Is blanked finally?', nodeToBlank.isBlanked())
 bafter = nodeToBlank.isBlanked()
-print('  Shape?', nodeToBlank.shape())
 if bbefore or not bafter:
     raise ('Blanking incorrect')
