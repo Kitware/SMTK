@@ -200,6 +200,39 @@ bool Resource::setLocation(const std::string& myLocation)
   return false;
 }
 
+std::string Resource::absoluteLocation(bool createDir) const
+{
+  auto url = this->location();
+  if (!smtk::common::Paths::isRelative(url))
+  {
+    if (createDir)
+    {
+      auto containingDir = smtk::common::Paths::directory(url);
+      smtk::common::Paths::createDirectory(containingDir);
+    }
+    return url;
+  }
+  const auto* parent = this->parentResource();
+  if (parent && parent != this)
+  {
+    auto parentUrl = parent->absoluteLocation();
+    // The parent URL contains the filename of the parent resource. Strip that:
+    auto parentDir = smtk::common::Paths::directory(parentUrl);
+    url = parentDir + "/" + url;
+  }
+  else
+  {
+    auto workDir = smtk::common::Paths::currentDirectory();
+    url = workDir + "/" + url;
+  }
+  if (createDir)
+  {
+    auto containingDir = smtk::common::Paths::directory(url);
+    smtk::common::Paths::createDirectory(containingDir);
+  }
+  return url;
+}
+
 std::string Resource::name() const
 {
   if (m_name.empty())
