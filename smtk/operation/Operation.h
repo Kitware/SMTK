@@ -40,6 +40,7 @@ class Helper;
 class ImportPythonOperation;
 class Manager;
 class Operation;
+class PythonRunChild;
 
 using Handler = std::function<void(Operation&, const std::shared_ptr<smtk::attribute::Attribute>&)>;
 
@@ -228,6 +229,7 @@ public:
   };
 
 protected:
+  friend class PythonRunChild;
   Operation();
 
   /// Identify resources to lock, and whether to lock them for reading or writing.
