@@ -79,7 +79,15 @@ public:
   /// Do not call this method outside of an operation and be aware
   /// that it _may_ modify m_pointIds and m_cellIds as well.
   bool setShapeData(vtkSmartPointer<vtkImageData> image, Superclass::ShapeOptions& options);
+  /// Return the geometric content for this node as a vtkImageData.
+  ///
+  /// This method is not inherited and provides output in the node's native format.
   vtkSmartPointer<vtkImageData> shapeData() const { return m_image; }
+  /// Return the geometric content for this node.
+  ///
+  /// This method is inherited from DiscreteGeometry and does not make any assumptions
+  /// about the type of data returned.
+  vtkSmartPointer<vtkDataObject> shape() const override { return m_image; }
 
   /// Assign this node's state from \a source.
   bool assign(const smtk::graph::Component::ConstPtr& source, smtk::resource::CopyOptions& options)
