@@ -55,7 +55,7 @@ void GatherObjectsAgent::configure(const Configuration& config)
 
 GatherObjectsAgent::Configuration GatherObjectsAgent::configuration() const
 {
-  Configuration config;
+  Configuration config = this->Superclass::configuration();
   config["output-port"] = m_outputPortName;
   Configuration outputs = m_objects;
   if (!outputs.empty())
