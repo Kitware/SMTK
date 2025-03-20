@@ -34,6 +34,7 @@ inline PySharedPtrClass< smtk::task::Task, smtk::resource::Component > pybind11_
     .def("setName", &smtk::task::Task::setName, py::arg("name"))
     .def("title", &smtk::task::Task::name)
     .def("setTitle", &smtk::task::Task::setName, py::arg("title"))
+    .def("ports", &smtk::task::Task::ports)
     .def("state", &smtk::task::Task::state)
     .def("agents", &smtk::task::Task::agents, py::return_value_policy::reference_internal)
     .def("children", &smtk::task::Task::children, py::return_value_policy::reference_internal)
