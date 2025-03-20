@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/markup/Registrar.h"
 
+#include "smtk/markup/operators/ChangeUnits.h"
 #include "smtk/markup/operators/Create.h"
 #include "smtk/markup/operators/CreateAnalyticShape.h"
 #include "smtk/markup/operators/CreateArc.h"
@@ -48,6 +49,7 @@ namespace markup
 namespace
 {
 using OperationList = std::tuple<
+  ChangeUnits,
   Create,
   CreateArc,
   CreateAnalyticShape,
