@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DiskPropertyWidget</class>
+ <widget class="QWidget" name="DiskPropertyWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>341</width>
+    <height>155</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
+   <item row="5" column="1">
+    <widget class="pqDoubleLineEdit" name="normalX"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="labelNormal">
+     <property name="text">
+      <string>Normal</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="4">
+    <widget class="QLabel" name="pickLabel">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Note: Use 'P' to move the center to the pointer or 'Ctrl+P' to snap to the closest mesh point. </string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QCheckBox" name="show3DWidget">
+     <property name="text">
+      <string>Show disk</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="labelRadius">
+     <property name="text">
+      <string>Radius</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
+    <widget class="pqDoubleLineEdit" name="centerZ"/>
+   </item>
+   <item row="5" column="3">
+    <widget class="pqDoubleLineEdit" name="normalZ"/>
+   </item>
+   <item row="4" column="1">
+    <widget class="pqDoubleLineEdit" name="centerX"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labelCenter">
+     <property name="text">
+      <string>Center</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="pqDoubleLineEdit" name="radius"/>
+   </item>
+   <item row="5" column="2">
+    <widget class="pqDoubleLineEdit" name="normalY"/>
+   </item>
+   <item row="4" column="2">
+    <widget class="pqDoubleLineEdit" name="centerY"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>pqDoubleLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>pqDoubleLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>show3DWidget</tabstop>
+  <tabstop>centerX</tabstop>
+  <tabstop>centerY</tabstop>
+  <tabstop>centerZ</tabstop>
+  <tabstop>normalX</tabstop>
+  <tabstop>normalY</tabstop>
+  <tabstop>normalZ</tabstop>
+  <tabstop>radius</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

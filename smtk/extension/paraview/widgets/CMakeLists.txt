@@ -8,11 +8,13 @@ set(headers
 set(classes
   Registrar
   pqConePropertyWidget
+  pqDiskPropertyWidget
   pqPointPropertyWidget
   pqSMTKAttributeItemWidget
   pqSMTKBoxItemWidget
   pqSMTKTransformWidget
   pqSMTKConeItemWidget
+  pqSMTKDiskItemWidget
   pqSMTKInfiniteCylinderItemWidget
   pqSMTKLineItemWidget
   pqSMTKPointItemWidget
@@ -23,6 +25,7 @@ set(classes
 
 set(ui_files
   resources/pqConePropertyWidget.ui
+  resources/pqDiskPropertyWidget.ui
   resources/pqPointPropertyWidget.ui
 )
 

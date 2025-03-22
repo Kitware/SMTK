@@ -1,6 +1,8 @@
 set(classes
   vtkConeRepresentation
   vtkConeWidget
+  vtkDiskRepresentation
+  vtkDiskWidget
   vtkSBFunctionParser
   vtkSMTKArcRepresentation)
 

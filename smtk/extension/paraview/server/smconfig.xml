@@ -1171,6 +1171,63 @@
         <BooleanDomain name="bool"/>
       </IntVectorProperty>
     </Proxy>
+
+    <Proxy
+      class="vtkDiskRepresentation"
+      name="DiskRepresentation">
+      <IntVectorProperty
+        animateable="1"
+        command="SetVisibility"
+        default_values="0"
+        name="Visibility"
+        number_of_elements="1">
+        <BooleanDomain name="bool" />
+      </IntVectorProperty>
+      <DoubleVectorProperty
+        argument_is_array="1"
+        command="SetCenterPoint"
+        default_values="0 0 0"
+        information_property="CenterPointInfo"
+        name="CenterPoint"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetCenterPoint"
+        information_only="1"
+        name="CenterPointInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        argument_is_array="1"
+        command="SetNormal"
+        default_values="0 0 0"
+        information_property="NormalInfo"
+        name="Normal"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetNormalVector"
+        information_only="1"
+        name="NormalInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="SetRadius"
+        default_values="1"
+        information_property="RadiusInfo"
+        name="Radius"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        command="GetRadius"
+        information_only="1"
+        name="RadiusInfo">
+        <SimpleDoubleInformationHelper />
+      </DoubleVectorProperty>
+    </Proxy>
   </ProxyGroup>
 
 <!-- ====================================================================== -->
@@ -1181,6 +1238,13 @@
       base_proxyname="WidgetBase"
       class="vtkConeWidget"
       name="ConeWidget">
+    </Proxy>
+
+    <Proxy
+      base_proxygroup="3d_widgets"
+      base_proxyname="WidgetBase"
+      class="vtkDiskWidget"
+      name="DiskWidget">
     </Proxy>
 
   </ProxyGroup>
@@ -1225,6 +1289,38 @@
         <Property function="BottomRadius" name="BottomRadius" />
         <Property function="TopPoint" name="TopPoint" />
         <Property function="TopRadius" name="TopRadius" />
+      </PropertyGroup>
+    </Proxy>
+
+    <Proxy
+      name="ImplicitDisk"
+      class="vtkImplicitDisk"
+      >
+      <DoubleVectorProperty
+        name="CenterPoint"
+        command="SetCenterPoint"
+        default_values="0 0 0"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="Radius"
+        command="SetRadius"
+        default_values="0.5"
+        number_of_elements="1">
+        <DoubleRangeDomain name="range" min="0.0"/>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+        name="Normal"
+        command="SetNormal"
+        default_values="0 0 1"
+        number_of_elements="3">
+        <DoubleRangeDomain name="range"/>
+      </DoubleVectorProperty>
+      <PropertyGroup label="Disk Parameters" panel_widget="InteractiveDisk">
+        <Property function="CenterPoint" name="CenterPoint" />
+        <Property function="Radius" name="Radius" />
+        <Property function="Normal" name="Normal" />
       </PropertyGroup>
     </Proxy>
 
@@ -1972,6 +2068,41 @@
           name="Widget"
           proxygroup="3d_widgets"
           proxyname="ConeWidget"></Proxy>
+      </SubProxy>
+    </NewWidgetRepresentationProxy>
+
+    <!-- Disk widget -->
+    <NewWidgetRepresentationProxy
+      class="vtk3DWidgetRepresentation"
+      name="DiskWidgetRepresentation">
+      <IntVectorProperty
+        command="SetEnabled"
+        default_values="0"
+        name="Enabled"
+        number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>Enable/Disable widget interaction.</Documentation>
+      </IntVectorProperty>
+      <SubProxy>
+        <Proxy
+          name="Prop"
+          proxygroup="3d_widget_representations"
+          proxyname="DiskRepresentation"></Proxy>
+        <ExposedProperties>
+          <Property name="Visibility" />
+          <Property name="CenterPointInfo" />
+          <Property name="CenterPoint" />
+          <Property name="NormalInfo" />
+          <Property name="Normal" />
+          <Property name="RadiusInfo" />
+          <Property name="Radius" />
+        </ExposedProperties>
+      </SubProxy>
+      <SubProxy>
+        <Proxy
+          name="Widget"
+          proxygroup="3d_widgets"
+          proxyname="DiskWidget"></Proxy>
       </SubProxy>
     </NewWidgetRepresentationProxy>
 
