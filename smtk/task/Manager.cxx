@@ -405,7 +405,7 @@ Manager::ResourceObjectMap Manager::workflowObjects(const nlohmann::json& spec, 
     {
       resource = comp->parentResource();
     }
-    if (!resource || !this->isResourceRelevant(resource, filter))
+    if (!resource)
     {
       continue;
     }
@@ -445,7 +445,7 @@ Manager::ResourceObjectMap Manager::workflowObjects(
         auto filters = filtersForSpec(entry);
         if (!filters.empty())
         {
-          sourceSpec["filters"] = filters;
+          jsonSpec["filter"] = filters;
         }
         jsonSpec["source"] = sourceSpec;
       }
@@ -456,7 +456,7 @@ Manager::ResourceObjectMap Manager::workflowObjects(
         auto filters = filtersForSpec(entry);
         if (!filters.empty())
         {
-          sourceSpec["filters"] = filters;
+          jsonSpec["filter"] = filters;
         }
         jsonSpec["source"] = sourceSpec;
       }
