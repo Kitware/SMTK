@@ -23,6 +23,11 @@
 
 #include "smtk/resource/pybind11/PyResource.h"
 
+// For unit conversion
+#include "units/Measurement.h"
+#include "units/System.h"
+#include "units/Unit.h"
+
 namespace py = pybind11;
 
 inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, smtk::resource::PersistentObject > pybind11_init_smtk_resource_Resource(py::module &m)
@@ -150,6 +155,37 @@ inline PySharedPtrClass< smtk::resource::Resource, smtk::resource::PyResource, s
     .def("setMarkedForRemoval", &smtk::resource::Resource::setMarkedForRemoval, py::arg("val"))
     .def("setName", &smtk::resource::Resource::setName, py::arg("name"))
     .def("typeName", &smtk::resource::Resource::typeName)
+    .def("createDefaultUnitSystem", [](smtk::resource::Resource* rsrc)
+      {
+        auto sys = rsrc->unitSystem();
+        if (!sys)
+        {
+          sys = units::System::createWithDefaults();
+          rsrc->setUnitSystem(sys);
+          return true;
+        }
+        return false;
+      }
+    )
+    .def("unitConversion", [](smtk::resource::Resource* rsrc, const std::string& measurement, const std::string& unit) -> double
+      {
+        double result = std::numeric_limits<double>::quiet_NaN();
+        auto sys = rsrc->unitSystem();
+        if (!sys)
+        {
+          return result;
+        }
+        bool didConvert;
+        auto valueIn = sys->measurement(measurement, &didConvert);
+        if (!didConvert) { return result; }
+        auto unitOut = sys->unit(unit, &didConvert);
+        if (!didConvert) { return result; }
+        auto valueOut = sys->convert(valueIn, unitOut, &didConvert);
+        if (!didConvert) { return result; }
+        result = valueOut.m_value;
+        return result;
+      }, py::arg("valueWithUnitsIn"), py::arg("unitsOut")
+    )
     .def("visit", &smtk::resource::Resource::visit, py::arg("v"))
     .def_static("visuallyLinkedRole", &smtk::resource::Resource::visuallyLinkedRole)
     .def_readonly_static("VisuallyLinkedRole", &smtk::resource::Resource::VisuallyLinkedRole)
