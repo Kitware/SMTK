@@ -25,6 +25,9 @@ class ObjectsInRoles;
 /// assign objects to a task. The downstream or child tasks of this
 /// agent's task will then be configured with the objects in the roles
 /// as configured.
+///
+/// Unless the task's configuration includes a minimum/maximum count
+/// of objects per role, the task will always be completable.
 class SMTKCORE_EXPORT TrivialProducerAgent : public Agent
 {
 public:
@@ -38,7 +41,10 @@ public:
 
   ///\brief Return the current state of the agent.
   ///
-  /// This agent will always be completable, even if no resources are assigned.
+  /// By default, this agent will always be completable, even if no resources are assigned.
+  /// However, if the agent's configuration contains minimum/maximum counts
+  /// for objects by role, the state will only be completable when the number of objects
+  /// in each specified role is in the allowed range.
   State state() const override;
 
   ///\brief Configure the agent based on a provided JSON configuration.
@@ -46,6 +52,9 @@ public:
 
   ///\brief Produce a JSON configuration object for the current task state.
   Configuration configuration() const override;
+
+  ///\brief Provide feedback to users on how to make this agent completable.
+  std::string troubleshoot() const override;
 
   ///\brief Return the port data from the agent.
   std::shared_ptr<PortData> portData(const Port* port) const override;
@@ -94,7 +103,11 @@ public:
   static bool resetData(Task* task, Port* port);
 
 protected:
+  virtual State computeInternalState();
+
+  State m_internalState{ State::Completable };
   std::shared_ptr<ObjectsInRoles> m_data;
+  std::map<smtk::string::Token, std::pair<int, int>> m_requiredObjectCounts;
   Port* m_outputPort{ nullptr };
 };
 

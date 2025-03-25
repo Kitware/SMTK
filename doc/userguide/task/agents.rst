@@ -488,6 +488,10 @@ this agent:
   If an object is a resource, each specifier is a tuple holding a UUID and ``null``.
   If an object is a component, each specified is a tuple holding the UUID of the
   component's parent resource and the component's UUID.
+* ``required-counts``: is a map from a role name to an array of 2 integers specifying
+  the minimum and maximum number of objects permitted in the given role. A ``-1`` for
+  the second array value indicates there is no maximum. If both numbers are ``-1``,
+  then no objects are allowed in the given role.
 
 Example
 """""""
