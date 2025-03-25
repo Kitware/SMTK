@@ -20,6 +20,7 @@
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Manager.h"
 
+#include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/task/Active.h"
 #include "smtk/task/Manager.h"
@@ -225,6 +226,105 @@ public:
     (void)layout;
     (void)task;
     (void)spec;
+    std::string opType;
+    if (!spec.attribute("Type", opType) || opType.empty())
+    {
+      smtkErrorMacro(smtk::io::Logger::instance(), "Operation type must be specified.");
+      return;
+    }
+    std::string opLabel;
+    spec.attribute("Label", opLabel);
+    if (opLabel.empty())
+    {
+      opLabel = "Run " + opType;
+    }
+    auto taskMgr = task->manager();
+    auto mgrs = taskMgr->managers();
+    auto opMgr = mgrs ? mgrs->get<smtk::operation::Manager::Ptr>() : nullptr;
+    auto op = opMgr ? opMgr->create(opType) : nullptr;
+    if (!op)
+    {
+      smtkErrorMacro(
+        smtk::io::Logger::instance(),
+        "Could not create \"" << opType << "\" from mgr " << opMgr << ".");
+      return;
+    }
+    auto opButton = new QPushButton;
+    opButton->setText(QString::fromStdString(opLabel));
+    QObject::connect(opButton, &QAbstractButton::clicked, [task, opMgr, op, spec](bool clicked) {
+      for (const auto& paramSpec : spec.children())
+      {
+        if (paramSpec.name() == "Association")
+        {
+          if (!op->parameters()->associations())
+          {
+            smtkErrorMacro(
+              smtk::io::Logger::instance(), "No associations can be specified for operation.");
+            continue;
+          }
+          op->parameters()->associations()->reset();
+          auto data = task->manager()->workflowObjects(paramSpec, task);
+          for (const auto& entry : data)
+          {
+            for (const auto& obj : entry.second)
+            {
+              if (obj)
+              {
+                op->parameters()->associations()->appendValue(obj->shared_from_this());
+              }
+              else
+              {
+                op->parameters()->associations()->appendValue(entry.first->shared_from_this());
+              }
+            }
+          }
+        }
+        else if (paramSpec.name() == "Reference")
+        {
+          std::string refPath;
+          smtk::attribute::ReferenceItem::Ptr refItem;
+          if (
+            !paramSpec.attribute("Path", refPath) ||
+            !(refItem = op->parameters()->itemAtPathAs<smtk::attribute::ReferenceItem>(refPath)))
+          {
+            smtkErrorMacro(
+              smtk::io::Logger::instance(), "No reference item at path '" << refPath << "'.");
+            continue;
+          }
+          refItem->reset();
+          auto data = task->manager()->workflowObjects(paramSpec, task);
+          for (const auto& entry : data)
+          {
+            for (const auto& obj : entry.second)
+            {
+              if (obj)
+              {
+                refItem->appendValue(obj->shared_from_this());
+              }
+              else
+              {
+                refItem->appendValue(entry.first->shared_from_this());
+              }
+            }
+          }
+        }
+        else
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Unhandled element '" << paramSpec.name() << "'.");
+        }
+      }
+      opMgr->launchers()(op);
+    });
+
+    if (auto* formLayout = dynamic_cast<QFormLayout*>(layout))
+    {
+      formLayout->addRow(QString::fromStdString(opLabel), opButton);
+    }
+    else
+    {
+      layout->addWidget(opButton);
+    }
     ++this->numChildren;
   }
 
