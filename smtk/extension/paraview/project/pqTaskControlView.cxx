@@ -147,6 +147,15 @@ public:
     ctrl->setEnabled(task ? task->state() >= smtk::task::State::Completable : false);
     QObject::connect(
       ctrl, &QAbstractButton::toggled, m_view, &pqTaskControlView::updateTaskCompletion);
+    if (task)
+    {
+      m_taskStateObserver = task->observers().insert(
+        [ctrl, this](smtk::task::Task& t, smtk::task::State prev, smtk::task::State next) {
+          (void)prev;
+          ctrl->setChecked(t.isCompleted());
+          ctrl->setEnabled(next >= smtk::task::State::Completable);
+        });
+    }
     formLayout->addRow(label, ctrl);
     ++this->numChildren;
   }
@@ -252,6 +261,7 @@ public:
     auto opButton = new QPushButton;
     opButton->setText(QString::fromStdString(opLabel));
     QObject::connect(opButton, &QAbstractButton::clicked, [task, opMgr, op, spec](bool clicked) {
+      (void)clicked;
       for (const auto& paramSpec : spec.children())
       {
         if (paramSpec.name() == "Association")
@@ -328,6 +338,29 @@ public:
     ++this->numChildren;
   }
 
+  void addFormGroup(
+    QFormLayout* formLayout,
+    smtk::task::Task* task,
+    const smtk::view::Configuration::Component& spec,
+    QWidget*& parent,
+    int& childNum)
+  {
+    // Create an internal HBoxLayout and add children (presumed
+    // to be non-form controls) to that. Then add the HBox plus
+    // the form-title to \a formLayout.
+    QLayout* hbox = new QHBoxLayout;
+    for (const auto& formChild : spec.children())
+    {
+      this->addChildItem(formChild, hbox, parent, childNum, task);
+    }
+    std::string formLabel;
+    if (!spec.attribute("Title", formLabel))
+    {
+      formLabel = " ";
+    }
+    formLayout->addRow(QString::fromStdString(formLabel), hbox);
+  }
+
   pqTaskControlView* m_view{ nullptr };
   smtk::task::Manager* m_currentTaskManager{ nullptr };
   smtk::task::Task* m_currentTask{ nullptr };
@@ -336,6 +369,7 @@ public:
   std::unordered_map<smtk::string::Token, smtk::view::Configuration::Component>
     m_representationSpecs;
   int numChildren{ 0 };
+  smtk::task::Task::Observers::Key m_taskStateObserver;
 };
 
 bool pqTaskControlView::Internal::addChildItem(
@@ -348,7 +382,8 @@ bool pqTaskControlView::Internal::addChildItem(
   bool needLayout = !layout;
   smtk::string::Token childType = childSpec.name();
   static std::unordered_set<smtk::string::Token> formItems{ "ActiveTaskStatus"_token,
-                                                            "RepresentationControl"_token };
+                                                            "RepresentationControl"_token,
+                                                            "FormGroup"_token };
 
   bool isFormItem = (formItems.find(childType) != formItems.end());
   auto* formLayout = dynamic_cast<QFormLayout*>(layout);
@@ -383,6 +418,9 @@ bool pqTaskControlView::Internal::addChildItem(
       break;
     case "OperationControl"_hash:
       this->addOperationControl(layout, task, childSpec);
+      break;
+    case "FormGroup"_hash:
+      this->addFormGroup(formLayout, task, childSpec, parent, childNum);
       break;
     default:
       return false;
