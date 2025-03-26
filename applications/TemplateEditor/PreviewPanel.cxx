@@ -147,7 +147,7 @@ void PreviewPanel::createViewWidget(const smtk::view::ConfigurationPtr& view)
 
   // Destroying qtUIManager will cleanup after the older PreviewWidget as it is
   // parented by one of its internal widgets (m_ScrollArea).
-  this->UIManager.reset(new smtk::extension::qtUIManager(this->AttributeResource));
+  this->UIManager = std::make_unique<smtk::extension::qtUIManager>(this->AttributeResource);
 
   this->PreviewWidget = new QWidget(this);
   this->PreviewWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

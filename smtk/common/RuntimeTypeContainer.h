@@ -13,6 +13,8 @@
 
 #include "smtk/common/TypeContainer.h"
 
+#include <memory>
+
 namespace smtk
 {
 namespace common
@@ -153,13 +155,7 @@ public:
       m_container
         .emplace(
           declaredType.id(),
-#ifdef SMTK_HAVE_CXX_14
-          std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<ActualType>(value))
-#else
-          std::unique_ptr<Wrapper>(
-            new WrapperFor<RuntimeType>(std::unique_ptr<ActualType>(new ActualType((value)))))
-#endif
-            )
+          std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<ActualType>(value)))
         .second;
     if (didInsert)
     {
@@ -187,15 +183,8 @@ public:
     bool didInsert = m_container
                        .emplace(
                          declaredType.id(),
-#ifdef SMTK_HAVE_CXX_14
                          std::make_unique<WrapperFor<RuntimeType>>(
-                           std::make_unique<RuntimeType>(std::forward<Args>(args)...))
-#else
-                         std::unique_ptr<Wrapper>(
-                           new WrapperFor<RuntimeType>(std::unique_ptr<RuntimeType>(
-                             new RuntimeType(std::forward<Args>(args)...))))
-#endif
-                           )
+                           std::make_unique<RuntimeType>(std::forward<Args>(args)...)))
                        .second;
     if (didInsert)
     {
@@ -231,13 +220,7 @@ public:
       search = m_container
                  .emplace(
                    declaredType.id(),
-#ifdef SMTK_HAVE_CXX_14
-                   std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<RuntimeType>())
-#else
-                   std::unique_ptr<Wrapper>(
-                     new WrapperFor<RuntimeType>(std::unique_ptr<RuntimeType>(new RuntimeType)))
-#endif
-                     )
+                   std::make_unique<WrapperFor<RuntimeType>>(std::make_unique<RuntimeType>()))
                  .first;
     }
     // TODO: Check that \a RuntimeType was the type used to insert \a declaredType.

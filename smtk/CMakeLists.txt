@@ -126,6 +126,9 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
 endif()
 
 add_library(smtkCore ${smtk_srcs})
+target_compile_features(smtkCore
+  PUBLIC
+    cxx_std_17)
 # dependencies on generated files from subdirectories
 add_dependencies(smtkCore
   attributeGenHeaders

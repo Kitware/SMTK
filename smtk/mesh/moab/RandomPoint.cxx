@@ -24,6 +24,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cmath>
+#include <memory>
 #include <random>
 
 #ifndef M_PI
@@ -110,8 +111,8 @@ std::array<double, 3> RandomPoint::operator()(const smtk::mesh::MeshSet& meshset
         pointLocatorCache.m_caches
           .emplace(
             meshset.id(),
-            std::unique_ptr<PointLocatorCache::CacheForIndex>(new PointLocatorCache::CacheForIndex(
-              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions)))
+            std::make_unique<PointLocatorCache::CacheForIndex>(
+              interface->moabInterface(), smtkToMOABRange(meshset.cells().range()), &treeOptions))
           .first;
     }
 

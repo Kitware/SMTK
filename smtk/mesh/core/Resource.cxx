@@ -24,8 +24,6 @@ namespace smtk
 namespace mesh
 {
 
-constexpr smtk::resource::Links::RoleType Resource::ClassificationRole;
-
 class Resource::InternalImpl
 {
 public:

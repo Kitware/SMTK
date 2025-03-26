@@ -48,8 +48,8 @@ public:
   bool setDefaultValueAsString(const std::vector<std::string>& vals);
   ///}@
 
-  const std::string defaultValueAsString(std::size_t element = 0) const;
-  const std::vector<std::string> defaultValuesAsStrings() const;
+  std::string defaultValueAsString(std::size_t element = 0) const;
+  const std::vector<std::string>& defaultValuesAsStrings() const;
 
   smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition) const override;
   smtk::attribute::ItemPtr buildItem(Item* owningItem, int position, int subGroupPosition)
