@@ -17,6 +17,7 @@ set(commonSrcs
   TimeZone.cxx
   timezonespec.cxx
   TypeContainer.cxx
+  URL.cxx
   UUID.cxx
   UUIDGenerator.cxx
   VersionNumber.cxx
@@ -63,6 +64,7 @@ set(commonHeaders
   TypeName.h
   TypeContainer.h
   TypeTraits.h
+  URL.h
   UUID.h
   UUIDGenerator.h
   VersionNumber.h

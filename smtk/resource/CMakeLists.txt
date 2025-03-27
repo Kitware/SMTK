@@ -1,5 +1,6 @@
 # set up sources to build
 set(resourceSrcs
+  Artifact.cxx
   Component.cxx
   ComponentLinks.cxx
   CopyOptions.cxx
@@ -26,6 +27,7 @@ set(resourceSrcs
 )
 
 set(resourceHeaders
+  Artifact.h
   Component.h
   ComponentLinks.h
   Container.h

@@ -42,6 +42,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindRangeDetector.h"
 #include "PybindStringUtil.h"
 #include "PybindTimeZone.h"
+#include "PybindURL.h"
 #include "PybindUUID.h"
 #include "PybindUUIDGenerator.h"
 #include "PybindUnionFind.h"
@@ -73,6 +74,7 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
 #endif
   py::class_< smtk::common::StringUtil > smtk_common_StringUtil = pybind11_init_smtk_common_StringUtil(common);
   py::class_< smtk::common::TimeZone > smtk_common_TimeZone = pybind11_init_smtk_common_TimeZone(common);
+  py::class_< smtk::common::URL > smtk_common_URL = pybind11_init_smtk_common_URL(common);
   py::class_< smtk::common::UUID > smtk_common_UUID = pybind11_init_smtk_common_UUID(common);
   py::class_< smtk::common::UUIDGenerator > smtk_common_UUIDGenerator = pybind11_init_smtk_common_UUIDGenerator(common);
   py::class_< smtk::common::Version > smtk_common_Version = pybind11_init_smtk_common_Version(common);
