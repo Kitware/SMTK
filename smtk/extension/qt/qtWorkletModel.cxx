@@ -283,12 +283,18 @@ void qtWorkletModel::workletUpdate(
   // components.  So use a set to assemble all of the uniquely created worklets and then
   // insert them all at the same time.
   std::set<smtk::task::Worklet::Ptr> workletsToBeInserted;
+  std::set<smtk::task::Worklet::Ptr> allWorklets(m_worklets.begin(), m_worklets.end());
   smtk::resource::Component::Visitor visitor =
-    [this, workletTypeName, &workletsToBeInserted](const smtk::resource::Component::Ptr& comp) {
+    [this, workletTypeName, &allWorklets, &workletsToBeInserted](
+      const smtk::resource::Component::Ptr& comp) {
       if (comp->matchesType(workletTypeName))
       {
         auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp);
-        m_worklets.push_back(worklet);
+        if (allWorklets.find(worklet) == allWorklets.end())
+        {
+          m_worklets.push_back(worklet);
+          allWorklets.insert(worklet);
+        }
         // Lets see if the worklet should be presented?
         if (m_parentTask)
         {
@@ -324,7 +330,11 @@ void qtWorkletModel::workletUpdate(
   {
     if (auto worklet = std::dynamic_pointer_cast<smtk::task::Worklet>(comp))
     {
-      m_worklets.push_back(worklet);
+      if (allWorklets.find(worklet) == allWorklets.end())
+      {
+        m_worklets.push_back(worklet);
+        allWorklets.insert(worklet);
+      }
       // Lets see if the worklet should be presented?
       if (m_parentTask)
       {
