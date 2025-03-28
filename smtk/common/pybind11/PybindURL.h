@@ -24,6 +24,13 @@ inline py::class_< smtk::common::URL > pybind11_init_smtk_common_URL(py::module 
     .def(py::init<>())
     .def(py::init<::smtk::common::URL const &>())
     .def(py::init<::std::string const &>())
+    .def("__eq__", [](smtk::common::URL* url, smtk::common::URL* other)
+      { return *url == *other; }, py::arg("other"))
+    .def("__lt__", [](smtk::common::URL* url, smtk::common::URL* other)
+      { return *url < *other; }, py::arg("other"))
+    .def("__hash__", [](smtk::common::URL* url) { return smtk::string::Token((std::string)*url).id(); })
+    .def("__str__", [](smtk::common::URL* url) { return (std::string)*url; })
+    .def("__repr__", [](smtk::common::URL* url) { return "URL('" + (std::string)*url + "')"; })
     .def("deepcopy",
       (smtk::common::URL & (smtk::common::URL::*)(::smtk::common::URL const &))
       &smtk::common::URL::operator=)
