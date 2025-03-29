@@ -505,7 +505,10 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   {
     // Only use the top level view if the resource is not
     // managed by a project
-    if (rsrc && (rsrc->parentResource() == nullptr))
+    auto* project = dynamic_cast<smtk::project::Project*>(rsrc->parentResource());
+    if (
+      rsrc &&
+      (!project || (project && project->taskManager().taskInstances().topLevelTasks().empty())))
     {
       theView = rsrc->findTopLevelView();
     }
