@@ -324,8 +324,19 @@ Operation::Result Operation::operate(const BaseKey& key)
       smtk::attribute::IntItem::Ptr debugItem = this->parameters()->findInt("debug level");
       m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
 
-      // Perform the derived operation.
-      result = this->operateInternal();
+      try
+      {
+        // Perform the derived operation.
+        result = this->operateInternal();
+      }
+      catch (const std::exception&)
+      {
+        // Report that the operation failed due to unhandled exception.
+        // This allows the operation to return normally so that
+        // any threads do not continue to be blocked.
+        result = this->createResult(Outcome::FAILED);
+      }
+
       // Post-process the result if the operation was successful.
       outcome = static_cast<Outcome>(result->findInt("outcome")->value());
       if (outcome == Outcome::SUCCEEDED)
