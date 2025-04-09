@@ -18,6 +18,7 @@
 
 #include <functional>
 #include <map>
+#include <mutex>
 #include <string>
 #include <typeindex>
 #include <utility>
@@ -67,17 +68,20 @@ class SMTKCORE_EXPORT Operation : smtkEnableSharedPtr(Operation)
 public:
   smtkTypeMacroBase(smtk::operation::Operation);
 
-  // A hash value uniquely representing the operation.
+  /// A priority for Handlers.
+  using Priority = int;
+
+  /// A hash value uniquely representing the operation.
   typedef std::size_t Index;
 
-  // An attribute describing the operation's input.
+  /// An attribute describing the operation's input.
   typedef std::shared_ptr<smtk::attribute::Attribute> Parameters;
 
-  // An attribute containing the operation's result.
+  /// An attribute containing the operation's result.
   typedef std::shared_ptr<smtk::attribute::Attribute> Result;
 
-  // An attribute resource containing the operation's execution definition
-  // result definition.
+  /// An attribute resource containing the operation's execution definition
+  /// result definition.
   typedef std::shared_ptr<smtk::attribute::Resource> Specification;
 
   typedef std::shared_ptr<smtk::attribute::Definition> Definition;
@@ -185,6 +189,33 @@ public:
   /// Create an attribute representing this operation's result type. The result
   /// attribute is distinguished by its derivation from the "result" attribute.
   Result createResult(Outcome);
+
+  /// Pass a \a handler to invoke after the operation's completion (successful or not).
+  /// The \a handler is called only on this instance of the operation (as opposed to
+  /// observers of the operation manager, which are invoked for every operation).
+  ///
+  /// The \a priority is used to schedule the \a handler relative to other observers.
+  ///
+  /// Handlers are cleared each time the operation is run, so if you run the same
+  /// instance of an operation multiple times, you must add the handler before
+  /// launching the operation each time.
+  ///
+  /// Note that you are expected to avoid launching the same instance of an operation
+  /// multiple times without ensuring that the operation is not already queued.
+  /// Otherwise, handlers may be added or removed while a previous instance is running
+  /// – including removal after the first instance of the operation has completed but
+  /// before successive instances – making invocation of handlers intermittent after the
+  /// first operation.
+  ///
+  /// A handler may add itself or other handlers back to the operation instance
+  /// as the operation will copy the handler container before invoking handlers.
+  void addHandler(Handler handler, Priority priority);
+
+  /// Remove a \a handler from the operation.
+  bool removeHandler(Handler handler, Priority priority);
+
+  /// Clear all handlers from the operation.
+  bool clearHandlers();
 
   /// Operations that are managed have a non-null pointer to their manager.
   ManagerPtr manager() const { return m_manager.lock(); }
@@ -331,6 +362,8 @@ private:
   Definition m_resultDefinition;
   std::vector<std::weak_ptr<smtk::attribute::Attribute>> m_results;
   ResourceAccessMap m_lockedResources;
+  std::mutex m_handlerLock;
+  std::multimap<Priority, Handler> m_handlers;
 };
 
 /**\brief Return the outcome of an operation given its \a result object.

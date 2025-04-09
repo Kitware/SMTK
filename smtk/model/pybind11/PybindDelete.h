@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > py
   PySharedPtrClass< smtk::model::Delete, smtk::operation::XMLOperation > instance(m, "Delete");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::model::Delete const &>())
-    .def("deepcopy", (smtk::model::Delete & (smtk::model::Delete::*)(::smtk::model::Delete const &)) &smtk::model::Delete::operator=)
     .def_static("create", (std::shared_ptr<smtk::model::Delete> (*)()) &smtk::model::Delete::create)
     .def_static("create", (std::shared_ptr<smtk::model::Delete> (*)(::std::shared_ptr<smtk::model::Delete> &)) &smtk::model::Delete::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::Delete> (smtk::model::Delete::*)() const) &smtk::model::Delete::shared_from_this)

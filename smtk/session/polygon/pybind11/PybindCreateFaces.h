@@ -34,8 +34,6 @@ inline PySharedPtrClass< smtk::session::polygon::CreateFaces > pybind11_init_smt
 {
   PySharedPtrClass< smtk::session::polygon::CreateFaces > instance(m, "CreateFaces", parent);
   instance
-    .def(py::init<::smtk::session::polygon::CreateFaces const &>())
-    .def("deepcopy", (smtk::session::polygon::CreateFaces & (smtk::session::polygon::CreateFaces::*)(::smtk::session::polygon::CreateFaces const &)) &smtk::session::polygon::CreateFaces::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateFaces> (*)()) &smtk::session::polygon::CreateFaces::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateFaces> (*)(::std::shared_ptr<smtk::session::polygon::CreateFaces> &)) &smtk::session::polygon::CreateFaces::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::polygon::CreateFaces> (smtk::session::polygon::CreateFaces::*)() const) &smtk::session::polygon::CreateFaces::shared_from_this)

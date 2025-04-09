@@ -83,7 +83,6 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
 
   instance
     .def(py::init<>())
-    .def("deepcopy", (smtk::operation::Operation & (smtk::operation::Operation::*)(::smtk::operation::Operation const &)) &smtk::operation::Operation::operator=)
     .def_static("create", &smtk::operation::PyOperation::create)
     .def("typeName", &smtk::operation::Operation::typeName)
     .def("index", &smtk::operation::Operation::index)
@@ -138,6 +137,9 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
     .def("managers", &smtk::operation::Operation::managers)
+    .def("addHandler", &smtk::operation::Operation::addHandler, py::arg("handler"), py::arg("priority"))
+    .def("removeHandler", &smtk::operation::Operation::removeHandler, py::arg("handler"), py::arg("priority"))
+    .def("clearHandlers", &smtk::operation::Operation::clearHandlers)
     .def("restoreTrace", (bool (smtk::operation::Operation::*)(::std::string const &)) &smtk::operation::Operation::restoreTrace)
     .def("runChildOp", [](smtk::operation::Operation* self, const smtk::operation::Operation::Ptr& childOp,
         smtk::operation::Operation::ObserverOption observerOption,

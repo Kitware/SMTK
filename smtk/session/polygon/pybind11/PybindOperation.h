@@ -22,9 +22,6 @@ namespace py = pybind11;
 inline PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_session_polygon_Operation(py::module &m)
 {
   PySharedPtrClass< smtk::session::polygon::Operation, smtk::operation::XMLOperation > instance(m, "Operation");
-  instance
-    .def("deepcopy", (smtk::session::polygon::Operation & (smtk::session::polygon::Operation::*)(::smtk::session::polygon::Operation const &)) &smtk::session::polygon::Operation::operator=)
-    ;
   return instance;
 }
 

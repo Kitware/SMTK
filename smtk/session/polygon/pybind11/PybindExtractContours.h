@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::session::polygon::ExtractContours > pybind11_init
   PySharedPtrClass< smtk::session::polygon::ExtractContours > instance(m, "ExtractContours", parent);
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::session::polygon::ExtractContours const &>())
-    .def("deepcopy", (smtk::session::polygon::ExtractContours & (smtk::session::polygon::ExtractContours::*)(::smtk::session::polygon::ExtractContours const &)) &smtk::session::polygon::ExtractContours::operator=)
     .def("ableToOperate", &smtk::session::polygon::ExtractContours::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::ExtractContours> (*)()) &smtk::session::polygon::ExtractContours::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::ExtractContours> (*)(::std::shared_ptr<smtk::session::polygon::ExtractContours> &)) &smtk::session::polygon::ExtractContours::create, py::arg("ref"))

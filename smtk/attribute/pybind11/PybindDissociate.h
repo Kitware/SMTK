@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperat
   PySharedPtrClass< smtk::attribute::Dissociate, smtk::operation::XMLOperation > instance(m, "Dissociate");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::attribute::Dissociate const &>())
-    .def("deepcopy", (smtk::attribute::Dissociate & (smtk::attribute::Dissociate::*)(::smtk::attribute::Dissociate const &)) &smtk::attribute::Dissociate::operator=)
     .def_static("create", (std::shared_ptr<smtk::attribute::Dissociate> (*)()) &smtk::attribute::Dissociate::create)
     .def_static("create", (std::shared_ptr<smtk::attribute::Dissociate> (*)(::std::shared_ptr<smtk::attribute::Dissociate> &)) &smtk::attribute::Dissociate::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::attribute::Dissociate> (smtk::attribute::Dissociate::*)() const) &smtk::attribute::Dissociate::shared_from_this)

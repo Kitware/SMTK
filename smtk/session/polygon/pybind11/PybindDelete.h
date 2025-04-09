@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::Delete> pybind11_init_smtk_sess
 {
   PySharedPtrClass< smtk::session::polygon::Delete > instance(m, "Delete", parent);
   instance
-    .def(py::init<::smtk::session::polygon::Delete const &>())
-    .def("deepcopy", (smtk::session::polygon::Delete & (smtk::session::polygon::Delete::*)(::smtk::session::polygon::Delete const &)) &smtk::session::polygon::Delete::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::Delete> (*)()) &smtk::session::polygon::Delete::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::Delete> (*)(::std::shared_ptr<smtk::session::polygon::Delete> &)) &smtk::session::polygon::Delete::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::polygon::Delete> (smtk::session::polygon::Delete::*)() const) &smtk::session::polygon::Delete::shared_from_this)

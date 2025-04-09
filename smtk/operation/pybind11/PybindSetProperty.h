@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOpera
   PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > instance(m, "SetProperty");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::operation::SetProperty const &>())
-    .def("deepcopy", (smtk::operation::SetProperty & (smtk::operation::SetProperty::*)(::smtk::operation::SetProperty const &)) &smtk::operation::SetProperty::operator=)
     .def_static("create", (std::shared_ptr<smtk::operation::SetProperty> (*)()) &smtk::operation::SetProperty::create)
     .def_static("create", (std::shared_ptr<smtk::operation::SetProperty> (*)(::std::shared_ptr<smtk::operation::SetProperty> &)) &smtk::operation::SetProperty::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::operation::SetProperty> (smtk::operation::SetProperty::*)() const) &smtk::operation::SetProperty::shared_from_this)

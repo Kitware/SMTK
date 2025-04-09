@@ -23,9 +23,7 @@ inline PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::op
 {
   PySharedPtrClass< smtk::session::mesh::EulerCharacteristicRatio, smtk::operation::XMLOperation > instance(m, "EulerCharacteristicRatio");
   instance
-    .def(py::init<::smtk::session::mesh::EulerCharacteristicRatio const &>())
     .def(py::init<>())
-    .def("deepcopy", (smtk::session::mesh::EulerCharacteristicRatio & (smtk::session::mesh::EulerCharacteristicRatio::*)(::smtk::session::mesh::EulerCharacteristicRatio const &)) &smtk::session::mesh::EulerCharacteristicRatio::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::EulerCharacteristicRatio> (*)()) &smtk::session::mesh::EulerCharacteristicRatio::create)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::EulerCharacteristicRatio> (*)(::std::shared_ptr<smtk::session::mesh::EulerCharacteristicRatio> &)) &smtk::session::mesh::EulerCharacteristicRatio::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::session::mesh::EulerCharacteristicRatio> (smtk::session::mesh::EulerCharacteristicRatio::*)()) &smtk::session::mesh::EulerCharacteristicRatio::shared_from_this)

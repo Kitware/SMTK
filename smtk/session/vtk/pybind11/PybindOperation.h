@@ -22,9 +22,6 @@ namespace py = pybind11;
 inline PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > pybind11_init_smtk_session_vtk_Operation(py::module &m)
 {
   PySharedPtrClass< smtk::session::vtk::Operation, smtk::operation::XMLOperation > instance(m, "Operation");
-  instance
-    .def("deepcopy", (smtk::session::vtk::Operation & (smtk::session::vtk::Operation::*)(::smtk::session::vtk::Operation const &)) &smtk::session::vtk::Operation::operator=)
-    ;
   return instance;
 }
 

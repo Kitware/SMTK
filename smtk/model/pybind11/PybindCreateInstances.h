@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOpera
   PySharedPtrClass< smtk::model::CreateInstances, smtk::operation::XMLOperation > instance(m, "CreateInstances");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::model::CreateInstances const &>())
-    .def("deepcopy", (smtk::model::CreateInstances & (smtk::model::CreateInstances::*)(::smtk::model::CreateInstances const &)) &smtk::model::CreateInstances::operator=)
     .def_static("create", (std::shared_ptr<smtk::model::CreateInstances> (*)()) &smtk::model::CreateInstances::create)
     .def_static("create", (std::shared_ptr<smtk::model::CreateInstances> (*)(::std::shared_ptr<smtk::model::CreateInstances> &)) &smtk::model::CreateInstances::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::CreateInstances> (smtk::model::CreateInstances::*)() const) &smtk::model::CreateInstances::shared_from_this)

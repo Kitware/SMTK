@@ -23,9 +23,7 @@ inline PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation
 {
   PySharedPtrClass< smtk::session::mesh::CreateUniformGrid, smtk::operation::XMLOperation > instance(m, "CreateUniformGrid");
   instance
-    .def(py::init<::smtk::session::mesh::CreateUniformGrid const &>())
     .def(py::init<>())
-    .def("deepcopy", (smtk::session::mesh::CreateUniformGrid & (smtk::session::mesh::CreateUniformGrid::*)(::smtk::session::mesh::CreateUniformGrid const &)) &smtk::session::mesh::CreateUniformGrid::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::CreateUniformGrid> (*)()) &smtk::session::mesh::CreateUniformGrid::create)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::CreateUniformGrid> (*)(::std::shared_ptr<smtk::session::mesh::CreateUniformGrid> &)) &smtk::session::mesh::CreateUniformGrid::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::session::mesh::CreateUniformGrid> (smtk::session::mesh::CreateUniformGrid::*)()) &smtk::session::mesh::CreateUniformGrid::shared_from_this)

@@ -188,6 +188,8 @@ as may operations that only require read access to the same resource.
 However, operations that require write access to the same resource will
 be run sequentially.
 
+.. _operation-observers:
+
 Observing operations
 --------------------
 
