@@ -329,12 +329,15 @@ Operation::Result Operation::operate(const BaseKey& key)
         // Perform the derived operation.
         result = this->operateInternal();
       }
-      catch (const std::exception&)
+      catch (const std::exception& e)
       {
         // Report that the operation failed due to unhandled exception.
         // This allows the operation to return normally so that
         // any threads do not continue to be blocked.
         result = this->createResult(Outcome::FAILED);
+        smtkErrorMacro(
+          this->log(),
+          "An unhandled exception (" << e.what() << ") occurred in " << this->typeName() << ".");
       }
 
       // Post-process the result if the operation was successful.
