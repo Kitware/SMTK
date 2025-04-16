@@ -1422,18 +1422,18 @@ void qtInputsItem::displayExpressionWidget(bool checkstate)
     m_internals->m_expressionModel->sort(0);
 
     // Now add Please Select and Create Options
-    m_internals->m_expressionModel->insertRow(0);
-    QModelIndex modelIndex = m_internals->m_expressionModel->index(0, 0);
-    m_internals->m_expressionModel->setData(modelIndex, "Please Select");
+    QStandardItem* item = new QStandardItem();
+    item->setData("Please Select", Qt::EditRole);
+    m_internals->m_expressionModel->insertRow(0, item);
 
     // Ensure the expressionCreation option is disabled
     m_internals->m_expressionProxyModel->enableExpressionCreation(false);
 
     if (!(m_internals->m_disableExpCreation || valItemDef->expressionType().empty()))
     {
-      m_internals->m_expressionModel->insertRow(1);
-      QModelIndex modelIndex = m_internals->m_expressionModel->index(1, 0);
-      m_internals->m_expressionModel->setData(modelIndex, "Create...");
+      QStandardItem* item = new QStandardItem();
+      item->setData("Create...", Qt::EditRole);
+      m_internals->m_expressionModel->insertRow(1, item);
       m_internals->m_expressionProxyModel->enableExpressionCreation(true);
     }
 
@@ -1612,13 +1612,13 @@ void qtInputsItem::onExpressionReferenceChanged()
     m_internals->m_expressionModel->sort(0);
 
     // Now add back Please Select and Create Options
-    m_internals->m_expressionModel->insertRow(0);
-    QModelIndex modelIndex = m_internals->m_expressionModel->index(0, 0);
-    m_internals->m_expressionModel->setData(modelIndex, "Please Select");
+    item = new QStandardItem();
+    item->setData("Please Select", Qt::EditRole);
+    m_internals->m_expressionModel->insertRow(0, item);
 
-    m_internals->m_expressionModel->insertRow(1);
-    modelIndex = m_internals->m_expressionModel->index(1, 0);
-    m_internals->m_expressionModel->setData(modelIndex, "Create...");
+    item = new QStandardItem();
+    item->setData("Create...", Qt::EditRole);
+    m_internals->m_expressionModel->insertRow(1, item);
 
     auto index = m_internals->m_expressionCombo->findText(newAtt->name().c_str());
     m_internals->m_expressionCombo->setCurrentIndex(index);
