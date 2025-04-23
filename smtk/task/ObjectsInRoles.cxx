@@ -9,6 +9,9 @@
 //=========================================================================
 #include "smtk/task/ObjectsInRoles.h"
 
+#include "smtk/task/Port.h"
+#include "smtk/task/Task.h"
+
 #include "smtk/resource/PersistentObject.h"
 
 namespace smtk
@@ -81,6 +84,49 @@ bool ObjectsInRoles::merge(const PortData* other)
     return true;
   }
   return false;
+}
+
+smtk::resource::PersistentObject* ObjectsInRoles::firstObjectInRoleOfType(
+  smtk::string::Token role,
+  smtk::string::Token objectType)
+{
+  auto it = m_data.find(role);
+  if (it == m_data.end())
+  {
+    return nullptr;
+  }
+
+  for (const auto& obj : it->second)
+  {
+    if (obj && obj->matchesType(objectType))
+    {
+      return obj;
+    }
+  }
+  return nullptr;
+}
+
+smtk::resource::PersistentObject* ObjectsInRoles::findTaskPortObjectInRoleOfType(
+  smtk::task::Task* task,
+  smtk::string::Token portName,
+  smtk::string::Token role,
+  smtk::string::Token objectType)
+{
+  if (!task || !portName.valid())
+  {
+    return nullptr;
+  }
+  auto pit = task->ports().find(portName);
+  if (pit == task->ports().end())
+  {
+    return nullptr;
+  }
+  auto portData = task->portData(pit->second);
+  if (auto objectsInRoles = std::dynamic_pointer_cast<ObjectsInRoles>(portData))
+  {
+    return objectsInRoles->firstObjectInRoleOfType(role, objectType);
+  }
+  return nullptr;
 }
 
 } // namespace task
