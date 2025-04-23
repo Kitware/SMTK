@@ -135,14 +135,13 @@ nlohmann::json::array_t filtersForSpec(const smtk::view::Configuration::Componen
     std::string compMatch;
     filter.attribute("Component", compMatch);
     nlohmann::json::array_t fspec{ rsrcMatch };
-    //NOLINTNEXTLINE(modernize-use-emplace)
     if (!compMatch.empty())
     {
-      fspec.push_back(compMatch);
+      fspec.emplace_back(compMatch);
     }
     else
     {
-      fspec.push_back(std::nullptr_t());
+      fspec.emplace_back(std::nullptr_t());
     }
     filters.emplace_back(fspec);
   }
@@ -713,6 +712,7 @@ void Manager::handleCreatedOrModifiedPort(const std::shared_ptr<smtk::task::Port
   }
   else
   {
+    bool didUpdate = false;
     // If an input port was created/modified, index any non-Port connections
     // so that we can inform the port when the object is modified
     // or expunged.
@@ -730,8 +730,15 @@ void Manager::handleCreatedOrModifiedPort(const std::shared_ptr<smtk::task::Port
         if (m_portData[conn].insert(port.get()).second)
         {
           port->parent()->portDataUpdated(port.get());
+          didUpdate = true;
         }
       }
+    }
+    // Notify agents that the port data may have changed if they have not
+    // already been notified due to a direct (non-port) connection above.
+    if (!didUpdate)
+    {
+      port->parent()->portDataUpdated(port.get());
     }
   }
 }
