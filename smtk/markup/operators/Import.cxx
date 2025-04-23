@@ -54,6 +54,7 @@
 #include "vtkLookupTable.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMultiThreshold.h"
+#include "vtkOrientPolyData.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
@@ -175,6 +176,20 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
     }
   }
 
+  return result;
+}
+
+vtkSmartPointer<vtkPolyData> makeConsistent(const vtkSmartPointer<vtkPolyData>& surface)
+{
+  vtkNew<vtkOrientPolyData> orient;
+  orient->SetInputDataObject(surface);
+  orient->ConsistencyOn();
+  orient->AutoOrientNormalsOn();
+  orient->NonManifoldTraversalOn();
+  orient->Update();
+
+  auto result = vtkSmartPointer<vtkPolyData>::New();
+  result->ShallowCopy(orient->GetOutput());
   return result;
 }
 
@@ -371,6 +386,7 @@ Import::Result Import::operateInternal()
   }
 
   bool ok = true;
+  bool consistency = this->parameters()->findVoid("consistency")->isEnabled();
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
   for (std::size_t ii = 0; ii < filenameItem->numberOfValues(); ++ii)
   {
@@ -399,7 +415,7 @@ Import::Result Import::operateInternal()
       case ".vtp"_hash: // fall through
       case ".vtu"_hash: // fall through
       case ".vtk"_hash:
-        ok &= this->importVTKMesh(resource, filename);
+        ok &= this->importVTKMesh(resource, filename, consistency);
         break;
       default:
       {
@@ -511,13 +527,25 @@ bool Import::importVTKImage(const Resource::Ptr& resource, const std::string& fi
   return true;
 }
 
-bool Import::importVTKMesh(const Resource::Ptr& resource, const std::string& filename)
+bool Import::importVTKMesh(
+  const Resource::Ptr& resource,
+  const std::string& filename,
+  bool consistency)
 {
   smtk::extension::vtk::io::ImportAsVTKData vtkImporter;
   auto data = vtkImporter(filename);
   if (!data)
   {
     return false;
+  }
+  if (consistency)
+  {
+    auto* pp = vtkPolyData::SafeDownCast(data.GetPointer());
+    if (pp)
+    {
+      vtkSmartPointer<vtkPolyData> pdata(pp);
+      data = makeConsistent(pdata);
+    }
   }
 
   auto createdItems = m_result->findComponent("created");

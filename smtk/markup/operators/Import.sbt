@@ -20,6 +20,9 @@
           FileFilters="VTK Unstructured Grids (*.vtu);; VTK Polydata (*.vtp);; VTK Image Data (*.vti);; Web Ontology Language (*.owl);;">
         </File>
 
+        <Void Name="consistency" Label="enforce consistency" Optional="true" IsEnabledByDefault="false">
+          <BriefDescription>If enabled, force surfaces to have consistent, outward-pointing normals.</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
