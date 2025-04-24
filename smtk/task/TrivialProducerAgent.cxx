@@ -169,8 +169,10 @@ bool TrivialProducerAgent::addObjectInRole(
         bool didAdd = trivialProducer->m_data->addObject(object, role);
         if (didAdd)
         {
+          // Tell the task to update state based on this agent.
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
         }
         return didAdd;
       }
@@ -201,6 +203,7 @@ bool TrivialProducerAgent::addObjectInRole(
         {
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
         }
         return didAdd;
       }
@@ -231,6 +234,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
         {
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
           return true;
         }
       }
@@ -261,6 +265,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
         {
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
           return true;
         }
       }
@@ -288,6 +293,7 @@ bool TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
         {
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
         }
       }
     }
@@ -312,6 +318,7 @@ bool TrivialProducerAgent::resetData(Task* task, Port* port)
       {
         trivialProducer->parent()->updateAgentState(
           trivialProducer, prev, trivialProducer->computeInternalState());
+        trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
       }
     }
   }

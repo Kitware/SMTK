@@ -69,6 +69,10 @@ public:
   ///
   /// Note that if multiple agents match the same \a agentName or \a port,
   /// only the first occurence will have \a object inserted.
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
   static bool addObjectInRole(
     Task* task,
     const std::string& agentName,
@@ -84,6 +88,10 @@ public:
   ///
   /// Note that if multiple agents match the same \a agentName or \a port,
   /// only the first occurence will have \a object removed.
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
   static bool removeObjectFromRole(
     Task* task,
     const std::string& agentName,
@@ -99,6 +107,10 @@ public:
   ///
   /// Note that if multiple agents match the same \a agentName or \a port,
   /// all of them will be reset.
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
   static bool resetData(Task* task, const std::string& agentName);
   static bool resetData(Task* task, Port* port);
 
