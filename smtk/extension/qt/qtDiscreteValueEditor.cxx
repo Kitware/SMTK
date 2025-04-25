@@ -13,7 +13,6 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 
 #include <QAction>
-#include <QComboBox>
 #include <QFont>
 #include <QFontMetrics>
 #include <QFrame>
@@ -91,34 +90,26 @@ QWidget* qtDiscreteValueEditor::lastEditingWidget() const
   return this->Internals->m_combo;
 }
 
-void qtDiscreteValueEditor::createWidget()
+void qtDiscreteValueEditor::repopulateComboBox(QComboBox* combo)
 {
-  smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
-  auto* uiManager = this->Internals->m_inputItem->uiManager();
+  if (!combo)
+  {
+    return;
+  }
 
+  auto* uiManager = this->Internals->m_inputItem->uiManager();
   smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
   if (!item)
   {
     return;
   }
-  this->Internals->clearChildItems();
-  QBoxLayout* wlayout = new QVBoxLayout(this);
-  wlayout->setMargin(0);
-  wlayout->setAlignment(Qt::AlignTop);
-  if (!item || !item->isDiscrete())
-  {
-    return;
-  }
-
-  std::size_t n = item->numberOfValues();
-  if (!n)
-  {
-    return;
-  }
 
   auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
+
+  // Clear all combo box items.
+  combo->clear();
+
   QString tooltip;
-  QComboBox* combo = new QComboBox(this);
   // When building the combobox using the following guidelines:
   // * All entries should set UserRole data to indicate the corresponding
   //   discrete index that value corresponds to.
@@ -155,6 +146,78 @@ void qtDiscreteValueEditor::createWidget()
   {
     combo->setToolTip(tooltip);
   }
+
+  const int elementIdx = this->Internals->m_elementIndex;
+  if (item->isSet(elementIdx))
+  {
+    const int setIndex = item->discreteIndex(elementIdx);
+
+    // Select the previously selected value.
+    int i, numItems = combo->count();
+    for (i = 0; i < numItems; i++)
+    {
+      if (combo->itemData(i).toInt() == setIndex)
+      {
+        combo->setCurrentIndex(i);
+        break;
+      }
+    }
+
+    // The item's current value was not found in the combobox
+    // due to advance level/category filtering so lets add it
+    // but make its text red and mark it using UserRole+1 to indicate
+    // it does not currently pass advance level/category filtering
+    if (i == numItems)
+    {
+      combo->addItem(itemDef->discreteEnum(setIndex).c_str(), setIndex);
+      combo->setItemData(numItems, QColor(Qt::red), Qt::ForegroundRole);
+      combo->setItemData(numItems, 1, Qt::UserRole + 1);
+      combo->setCurrentIndex(numItems);
+    }
+
+    if ((i == 0) || (i == numItems))
+    {
+      // On Macs to change the button text color you need to set QPalette::Text
+      // For Linux you need to set QPalette::ButtonText
+      QPalette comboboxPalette = combo->palette();
+      comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
+      comboboxPalette.setColor(QPalette::Text, Qt::red);
+      combo->setPalette(comboboxPalette);
+    }
+    else
+    {
+      combo->setPalette(combo->parentWidget()->palette());
+    }
+  }
+}
+
+void qtDiscreteValueEditor::createWidget()
+{
+  smtk::attribute::ResourcePtr attResource = this->Internals->m_inputItem->attributeResource();
+
+  smtk::attribute::ValueItemPtr item = this->Internals->m_inputItem->itemAs<attribute::ValueItem>();
+  if (!item)
+  {
+    return;
+  }
+  this->Internals->clearChildItems();
+  QBoxLayout* wlayout = new QVBoxLayout(this);
+  wlayout->setMargin(0);
+  wlayout->setAlignment(Qt::AlignTop);
+  if (!item || !item->isDiscrete())
+  {
+    return;
+  }
+
+  std::size_t n = item->numberOfValues();
+  if (!n)
+  {
+    return;
+  }
+
+  auto combo = new QComboBox(this);
+  repopulateComboBox(combo);
+
   QPointer<qtDiscreteValueEditor> guardedObject(this);
   QObject::connect(
     combo,
@@ -217,6 +280,7 @@ void qtDiscreteValueEditor::updateItemData()
   {
     return;
   }
+  auto selectedValue = combo->currentData().toInt();
   auto itemDef = item->definitionAs<attribute::ValueItemDefinition>();
 
   int setIndex = -1, elementIdx = this->Internals->m_elementIndex;
@@ -224,52 +288,19 @@ void qtDiscreteValueEditor::updateItemData()
   {
     setIndex = item->discreteIndex(elementIdx);
   }
+
+  // Recalculate child item relevancy and repopulate the combobox accordingly.
+  repopulateComboBox(combo);
+
   // If combo's current value matches the state of the item then we just need
   // to tell our children items to update their data
-  if ((setIndex >= 0) && (setIndex == combo->currentData().toInt()))
+  if ((setIndex >= 0) && (setIndex == selectedValue))
   {
     int n = Internals->m_childItems.size();
     for (int i = 0; i < n; i++)
     {
       Internals->m_childItems.at(i)->updateItemData();
     }
-    return;
-  }
-  // We need to find the correct Item in the combo box
-  int i, numItems = combo->count();
-  for (i = 0; i < numItems; i++)
-  {
-    if (combo->itemData(i).toInt() == setIndex)
-    {
-      combo->setCurrentIndex(i);
-      break;
-    }
-  }
-
-  // The item's current value was not found in the combobox
-  // due to advance level/category filtering so lets add it
-  // but make its text red and mark it using UserRole+1 to indicate
-  // it does not currently pass advance level/category filtering
-  if (i == numItems)
-  {
-    combo->addItem(itemDef->discreteEnum(setIndex).c_str(), setIndex);
-    combo->setItemData(numItems, QColor(Qt::red), Qt::ForegroundRole);
-    combo->setItemData(numItems, 1, Qt::UserRole + 1);
-    combo->setCurrentIndex(numItems);
-  }
-
-  if ((i == 0) || (i == numItems))
-  {
-    // On Macs to change the button text color you need to set QPalette::Text
-    // For Linux you need to set QPalette::ButtonText
-    QPalette comboboxPalette = combo->palette();
-    comboboxPalette.setColor(QPalette::ButtonText, Qt::red);
-    comboboxPalette.setColor(QPalette::Text, Qt::red);
-    combo->setPalette(comboboxPalette);
-  }
-  else
-  {
-    combo->setPalette(combo->parentWidget()->palette());
   }
 }
 
@@ -283,10 +314,10 @@ void qtDiscreteValueEditor::onInputValueChanged()
   }
 
   int curIdx = comboBox->currentData().toInt();
-  // Lets set the combo pallete properly if the current index is 0 (Please Select) or
+  // Lets set the combo palette properly if the current index is 0 (Please Select) or
   // has been added to the combo box because the item is set to a value that is not
   // considered accessible due to the current category and advance level settings
-  // (indicated by having UserRole+1 data assugned to it) then set palette to be use red
+  // (indicated by having UserRole+1 data assigned to it) then set palette to be use red
   // else set it to be the same as the combo-box's parent widget
   if ((comboBox->currentIndex() == 0) || comboBox->currentData(Qt::UserRole + 1).isValid())
   {

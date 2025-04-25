@@ -16,6 +16,7 @@
 
 #include "smtk/extension/qt/Exports.h"
 #include "smtk/extension/qt/qtItem.h"
+#include <QComboBox>
 #include <QWidget>
 
 class qtDiscreteValueEditorInternals;
@@ -64,6 +65,9 @@ protected:
 private:
   qtDiscreteValueEditorInternals* Internals;
   bool m_useSelectionManager{ false };
+
+  /** \brief Repopulates the given QComboBox with updated items based on their current relevance. */
+  void repopulateComboBox(QComboBox* combo);
 
 }; // class
 }; // namespace extension
