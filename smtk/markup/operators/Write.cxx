@@ -225,6 +225,9 @@ bool Write::writeData(
     return false;
   }
 
+  // Ensure directory holding filename exists:
+  smtk::common::Paths::createDirectory(smtk::common::Paths::directory(filename));
+
   if (const auto* udata = dynamic_cast<const UnstructuredData*>(dataNode))
   {
     // Could use mimeType to determine file format (e.g., XML or Legacy)
