@@ -279,5 +279,32 @@ def importPythonOperation(module_name, operation_name):
     if opMgr:
         opMgr.registerOperation(module_name, operation_name);
 
+def activeProject(context = None):
+    import smtk.common
+    import smtk.project
+    import smtk.task
+    if context is None:
+        context = self.applicationContext()
+    if context is None:
+        return None
+    projMgr = context.get('smtk.project.Manager')
+    if projMgr is None:
+        return None
+    for proj in projMgr.projectsSet():
+        if proj is None:
+            continue
+        return proj
+    return None
+
+def activeTask(context = None):
+    import smtk.common
+    import smtk.project
+    import smtk.task
+    proj = activeProject(context)
+    if proj is None:
+        return None
+    task = proj.taskManager().active().task()
+    return task
+
 def wrappingProtocol():
     return 'pybind11'
