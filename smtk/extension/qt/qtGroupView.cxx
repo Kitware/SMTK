@@ -53,7 +53,7 @@ public:
   QList<smtk::extension::qtBaseView*> m_ChildViews, m_TabbedViews;
   QList<QWidget*> m_PageWidgets;
   QList<QIcon> m_PageIcons;
-  QList<QLabel*> m_Labels;
+  QList<QWidget*> m_Labels;
   qtGroupViewInternals::Style m_style{ TABBED };
   std::vector<smtk::view::ConfigurationPtr> m_activeViews;
   int m_currentTabSelected{ 0 };
@@ -603,6 +603,26 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   {
     return;
   }
+  // Find the scroll area for the view. If none exists, add it.
+  auto* area = frame->findChild<QScrollArea*>();
+  if (!area)
+  {
+    area = new QScrollArea(frame);
+    area->setObjectName("GroupViewScroll");
+    area->setWidgetResizable(true);
+    auto* inner = new QWidget;
+    inner->setObjectName("GroupViewInner");
+    auto* innerLayout = new QVBoxLayout;
+    innerLayout->setObjectName("GroupViewInnerLayout");
+    innerLayout->setAlignment(Qt::AlignTop);
+    innerLayout->setMargin(0);
+    inner->setLayout(innerLayout);
+    area->setWidget(inner);
+    frame->layout()->addWidget(area);
+    area->show();
+    inner->show();
+  }
+  // Add the child to the scroll-area's inner widget.
   QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
   QLabel* label = new QLabel(child->configuration()->label().c_str(), this->Widget);
   m_internals->m_Labels.append(label);
@@ -610,17 +630,13 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   titleFont.setBold(true);
   titleFont.setItalic(true);
   label->setFont(titleFont);
+  area->widget()->layout()->addWidget(label);
+  area->widget()->layout()->addWidget(child->widget());
 
-  QLayout* vLayout = this->Widget->layout();
-  vLayout->setMargin(0);
-  vLayout->addWidget(label);
-  vLayout->addWidget(child->widget());
-  vLayout->setAlignment(Qt::AlignTop);
-  if (child->isEmpty())
-  {
-    label->hide();
-    child->widget()->hide();
-  }
+  // For debugging.
+  // std::cout
+  //   << "Adding " << child->widget()->objectName().toStdString()
+  //   << " to " << area->widget()->layout()->objectName().toStdString() << "\n";
 }
 
 void qtGroupView::updateModelAssociation()
