@@ -696,6 +696,10 @@ void pqTaskControlView::updateWithActiveTask(smtk::task::Task* task)
       delete child;
     }
   }
+  if (!task)
+  {
+    return;
+  }
 
   // Now process all of this view's entries
   QLayout* activeLayout = nullptr;
