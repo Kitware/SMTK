@@ -22,6 +22,7 @@ directory of C++ header files.
 
 import os
 import sys
+from typing import List
 
 # Find out the file location within the sources tree
 this_module_dir_path = os.path.abspath(
@@ -231,7 +232,7 @@ def get_includes(global_ns, filename, project_source_directory):
     return sorted(includes)
 
 
-def parse_file(filename, project_source_directory, include_directories,
+def parse_file(filename, project_source_directory, include_directories: List[str],
                declaration_names, stream):
     """
     Entry point for parsing a file
@@ -242,7 +243,7 @@ def parse_file(filename, project_source_directory, include_directories,
     # Configure the xml generator
     config = parser.xml_generator_configuration_t(
         start_with_declarations=declaration_names.split(" "),
-        include_paths=include_directories.split(" "),
+        include_paths=include_directories,
         xml_generator_path=generator_path,
         xml_generator=generator_name,
         cflags='-std=c++11 -Wc++11-extensions')
@@ -567,7 +568,8 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-I', '--include-dirs',
                             help='Add an include directory to the parser',
-                            default="")
+                            action='append',
+                            default=[])
 
     arg_parser.add_argument('-d', '--declaration-name',
                             help='names of C++ classes and functions',
@@ -591,8 +593,8 @@ if __name__ == '__main__':
 
     args = arg_parser.parse_args()
 
-    if not args.include_dirs:
-        args.include_dirs = args.input_directory
+    if len(args.include_dirs) == 0:
+        args.include_dirs.append(os.path.getdirname(args.input))
 
     def stream_with_line_breaks(stream):
         def write(string):
