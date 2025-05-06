@@ -151,7 +151,7 @@ std::shared_ptr<PortData> TrivialProducerAgent::portData(const Port* port) const
   return nullptr;
 }
 
-bool TrivialProducerAgent::addObjectInRole(
+Port* TrivialProducerAgent::addObjectInRole(
   Task* task,
   const std::string& agentName,
   smtk::string::Token role,
@@ -159,7 +159,7 @@ bool TrivialProducerAgent::addObjectInRole(
 {
   if (!task || agentName.empty() || !object)
   {
-    return false;
+    return nullptr;
   }
   for (const auto& agent : task->agents())
   {
@@ -176,11 +176,11 @@ bool TrivialProducerAgent::addObjectInRole(
             trivialProducer, prev, trivialProducer->computeInternalState());
           trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
         }
-        return didAdd;
+        return trivialProducer->outputPort();
       }
     }
   }
-  return false;
+  return nullptr;
 }
 
 bool TrivialProducerAgent::addObjectInRole(
@@ -214,7 +214,7 @@ bool TrivialProducerAgent::addObjectInRole(
   return false;
 }
 
-bool TrivialProducerAgent::removeObjectFromRole(
+Port* TrivialProducerAgent::removeObjectFromRole(
   Task* task,
   const std::string& agentName,
   smtk::string::Token role,
@@ -222,7 +222,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
 {
   if (!task || agentName.empty() || !object)
   {
-    return false;
+    return nullptr;
   }
   // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const auto& agent : task->agents())
@@ -237,12 +237,12 @@ bool TrivialProducerAgent::removeObjectFromRole(
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
           trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
-          return true;
+          return trivialProducer->outputPort();
         }
       }
     }
   }
-  return false;
+  return nullptr;
 }
 
 bool TrivialProducerAgent::removeObjectFromRole(
@@ -276,12 +276,11 @@ bool TrivialProducerAgent::removeObjectFromRole(
   return false;
 }
 
-bool TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
+Port* TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
 {
-  bool didChange = false;
   if (!task || agentName.empty())
   {
-    return didChange;
+    return nullptr;
   }
   for (const auto& agent : task->agents())
   {
@@ -290,17 +289,17 @@ bool TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
       if (trivialProducer->name() == agentName)
       {
         State prev = trivialProducer->state();
-        didChange |= trivialProducer->m_data->clear();
-        if (didChange)
+        if (trivialProducer->m_data->clear())
         {
           trivialProducer->parent()->updateAgentState(
             trivialProducer, prev, trivialProducer->computeInternalState());
           trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+          return trivialProducer->outputPort();
         }
       }
     }
   }
-  return didChange;
+  return nullptr;
 }
 
 bool TrivialProducerAgent::resetData(Task* task, Port* port)

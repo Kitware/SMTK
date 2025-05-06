@@ -73,7 +73,7 @@ public:
   /// We notify downstream observers of the agent's output port with a call
   /// to portDataUpdated(); be careful as this call to add objects is expected
   /// to be called during an operation (which may run on a non-GUI thread).
-  static bool addObjectInRole(
+  static Port* addObjectInRole(
     Task* task,
     const std::string& agentName,
     smtk::string::Token role,
@@ -92,7 +92,7 @@ public:
   /// We notify downstream observers of the agent's output port with a call
   /// to portDataUpdated(); be careful as this call to add objects is expected
   /// to be called during an operation (which may run on a non-GUI thread).
-  static bool removeObjectFromRole(
+  static Port* removeObjectFromRole(
     Task* task,
     const std::string& agentName,
     smtk::string::Token role,
@@ -105,13 +105,17 @@ public:
 
   ///\brief A helper to reset a TrivialProducerAgent owned by a task.
   ///
-  /// Note that if multiple agents match the same \a agentName or \a port,
-  /// all of them will be reset.
+  /// Note that if multiple agents match the same \a agentName, the
+  /// first of them will be reset. If multiple agents match
+  /// the same \a port, all of them will be reset.
+  /// This is done so that the variant which accepts an \a agentName
+  /// can return the modified Port. (Operations which modify ports must
+  /// add them to the operation result.)
   ///
   /// We notify downstream observers of the agent's output port with a call
   /// to portDataUpdated(); be careful as this call to add objects is expected
   /// to be called during an operation (which may run on a non-GUI thread).
-  static bool resetData(Task* task, const std::string& agentName);
+  static Port* resetData(Task* task, const std::string& agentName);
   static bool resetData(Task* task, Port* port);
 
 protected:
