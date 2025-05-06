@@ -368,7 +368,7 @@ protected:
     const ObjectSet& objects);
 
   /// Check m_resourcesByRole to see if all requirements are met.
-  State computeInternalState();
+  virtual State computeInternalState();
 
   ParameterSpecMap m_parameterSpecs;
   ParameterWatchMap m_watching;
