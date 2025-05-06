@@ -144,7 +144,9 @@ std::shared_ptr<PortData> TrivialProducerAgent::portData(const Port* port) const
 {
   if (port == m_outputPort)
   {
-    return m_data;
+    auto result = std::make_shared<ObjectsInRoles>();
+    result->merge(m_data.get());
+    return result;
   }
   return nullptr;
 }
