@@ -231,6 +231,7 @@ void pqSMTKTaskResourceVisibility::handleProjectEvent(
   smtk::project::EventType event)
 {
   auto* taskManager = const_cast<smtk::task::Manager*>(&project.taskManager());
+  std::weak_ptr<smtk::task::Manager> weakTaskManager = taskManager->shared_from_this();
   QPointer<pqSMTKTaskResourceVisibility> self(this);
   switch (event)
   {
@@ -267,8 +268,9 @@ void pqSMTKTaskResourceVisibility::handleProjectEvent(
       m_currentTask = nullptr;
       m_activeTaskObserver.release();
       // Remove our observer key later.
-      QTimer::singleShot(0, [this, taskManager, self]() {
-        if (!self)
+      QTimer::singleShot(0, [this, weakTaskManager, self]() {
+        auto taskManager = weakTaskManager.lock();
+        if (!(self && taskManager))
         {
           return;
         }

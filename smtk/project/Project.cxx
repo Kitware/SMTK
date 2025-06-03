@@ -37,6 +37,11 @@ Project::Project(const std::string& typeName)
   smtk::plugin::Manager::instance()->registerPluginsTo(m_taskManager);
 }
 
+Project::~Project()
+{
+  smtk::plugin::Manager::instance()->unregisterPluginsFrom(m_taskManager);
+}
+
 std::shared_ptr<smtk::project::Project> Project::create(const std::string& typeName)
 {
   // No operation manager; try this although it will cause trouble because

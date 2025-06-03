@@ -45,12 +45,7 @@
 #include <iostream>
 #include <string>
 
-// There is some unresolved issue loading a second project in this session.
-// In the interest of time, the project is read back in a separate test
-// called TestReadTwoOperationProject
-#define READ_PROJECT 0
-
-/** \brief Creates a "TwoOperation" project instance.
+/** \brief Creates and Reads back a "TwoOperation" project instance.
  *
  * The project is initialized with one attribute resource, and the task manager
  * is loaded with a 5-task workflow containing a GatherResource task, 2 FillOutAttributes
@@ -79,7 +74,6 @@ void clearDirectory(const std::string& path)
   }
 }
 
-#if READ_PROJECT
 /** \brief Reads project from disk and does some minimal checks */
 void readProject(smtk::common::ManagersPtr managers)
 {
@@ -110,7 +104,6 @@ void readProject(smtk::common::ManagersPtr managers)
     "Input project wrong number of adaptors; should be " << ADAPTOR_COUNT << " not "
                                                          << taskManager.adaptorInstances().size());
 }
-#endif
 
 bool testInheritedAPI(const smtk::project::Project::Ptr& project)
 {
@@ -324,9 +317,7 @@ int TestCreateTwoOperationProject(int /*unused*/, char** const /*unused*/)
   project.reset();
   std::cerr << "Project reset!";
 
-#if READ_PROJECT
   readProject(managers);
-#endif
 
   // Finis
   return 0;
