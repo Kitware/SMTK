@@ -81,7 +81,7 @@ void ChildCategoriesAgent::configure(const Configuration& config)
 
 ChildCategoriesAgent::Configuration ChildCategoriesAgent::configuration() const
 {
-  Configuration config;
+  Configuration config = this->Superclass::configuration();
   if (m_expression.isSet())
   {
     if (m_expression.expression().empty())
