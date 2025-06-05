@@ -55,10 +55,10 @@ class pqServer;
   * + "port" (with the name of a port on the active task) if the type is "active task port".
   * + "roles" (with the name of a role for data on the port) if the type is "active task port".
   *
-  * The "filter" must be an dictionary holding:
+  * The "filter" must be an array holding:
   *
-  * + "resources", an optional array of accepted resource type-names or "*". If not present, "*" is assumed.
-  * + "components", an optional array of accepted component-filters or "*". If not present, only
+  * + dictionaries with a "resource" and "component" key or
+  * + arrays holding two strings (a resource and component filter, in that order).
   *
   * When a task is deactivated and no new task is activated at the same time,
   * (1) if the task-path is empty (i.e., the top-level tasks are showing), then the default
@@ -102,7 +102,8 @@ class pqServer;
   * + hide markup resources present on the "input" port of the active task (without toggling
   *   per-component visibility) when a task with the "example" style is deactivated; and
   * + show both resources and components (toggling as needed) on the active task's "output" port
-  *   when any task with the "example" style is deactivated.
+  *   when any task with the "example" style is deactivated. (This way, as long as the task is
+  *   active, its input port data is visible; when deactivated, its output port data is visible.)
   */
 class SMTKPQPROJECTEXT_EXPORT pqSMTKTaskResourceVisibility : public QObject
 {
@@ -135,20 +136,6 @@ protected: // NOLINT(readability-redundant-access-specifiers)
     bool show,
     smtk::task::Task* task,
     smtk::string::Token event);
-
-  /// Return a list of representations that are relevant to \a spec.
-  ///
-  /// These representations will correspond to a resources that match
-  /// a directive above because (a) they are part of the project owning the
-  /// task manager or (b) they are on input ports of the task referenced by
-  /// the \a spec.
-  std::map<pqRepresentation*, std::unordered_set<smtk::resource::PersistentObject*>>
-  relevantRepresentations(const nlohmann::json& spec);
-
-  /// Is the given resource relevant to the \a spec?
-  bool isResourceRelevant(
-    const std::shared_ptr<smtk::resource::Resource>& resource,
-    const nlohmann::json& filter);
 
   std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;
   smtk::task::Task* m_currentTask{ nullptr };

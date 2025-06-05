@@ -52,7 +52,10 @@ Write::Result Write::operateInternal()
   }
 
   {
-    std::ofstream file(resource->location());
+    // Ensure parent directory exists. It may not if we are part of a project
+    // that has organized us into an unrealized subdirectory.
+    auto location = resource->absoluteLocation(/*create directories*/ true);
+    std::ofstream file(location);
     if (!file.good())
     {
       smtkErrorMacro(log(), "Unable to open \"" << resource->location() << "\" for writing.");
@@ -80,6 +83,17 @@ void Write::markModifiedResources(Write::Result& /*unused*/)
     // Set the resource as unmodified from its persistent (i.e. on-disk) state
     resource->setClean(true);
   }
+}
+
+void Write::generateSummary(Result& res)
+{
+  if (smtk::operation::outcome(res) != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(res);
+  }
+  auto resourceItem = this->parameters()->associations();
+  auto resource = std::dynamic_pointer_cast<smtk::resource::Resource>(resourceItem->value());
+  smtkInfoMacro(this->log(), "Wrote \"" << resource->location() << "\".");
 }
 
 bool write(

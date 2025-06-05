@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::CreateEdgeFromPoints > pybind11
 {
   PySharedPtrClass< smtk::session::polygon::CreateEdgeFromPoints > instance(m, "CreateEdgeFromPoints", parent);
   instance
-    .def(py::init<::smtk::session::polygon::CreateEdgeFromPoints const &>())
-    .def("deepcopy", (smtk::session::polygon::CreateEdgeFromPoints & (smtk::session::polygon::CreateEdgeFromPoints::*)(::smtk::session::polygon::CreateEdgeFromPoints const &)) &smtk::session::polygon::CreateEdgeFromPoints::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateEdgeFromPoints> (*)()) &smtk::session::polygon::CreateEdgeFromPoints::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateEdgeFromPoints> (*)(::std::shared_ptr<smtk::session::polygon::CreateEdgeFromPoints> &)) &smtk::session::polygon::CreateEdgeFromPoints::create, py::arg("ref"))
     .def("process", &smtk::session::polygon::CreateEdgeFromPoints::process, py::arg("pnts"), py::arg("numCoordsPerPoint"), py::arg("parentModel"))

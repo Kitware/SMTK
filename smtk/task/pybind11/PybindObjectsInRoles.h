@@ -38,6 +38,11 @@ inline PySharedPtrClass< smtk::task::ObjectsInRoles > pybind11_init_smtk_task_Ob
       {
         return self.removeObject(object.get(), role);
       }, py::arg("object"), py::arg("role") = smtk::string::Token())
+    .def("firstObjectInRoleOfType", [](smtk::task::ObjectsInRoles& oir, const std::string& role, const std::string& type)
+      {
+        auto* obj = oir.firstObjectInRoleOfType(role, type);
+        return obj;
+      }, py::arg("role"), py::arg("type"))
     ;
   return instance;
 }

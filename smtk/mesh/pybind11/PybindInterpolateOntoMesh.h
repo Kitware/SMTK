@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOp
   PySharedPtrClass< smtk::mesh::InterpolateOntoMesh, smtk::operation::XMLOperation > instance(m, "InterpolateOntoMesh");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::mesh::InterpolateOntoMesh const &>())
-    .def("deepcopy", (smtk::mesh::InterpolateOntoMesh & (smtk::mesh::InterpolateOntoMesh::*)(::smtk::mesh::InterpolateOntoMesh const &)) &smtk::mesh::InterpolateOntoMesh::operator=)
     .def("ableToOperate", &smtk::mesh::InterpolateOntoMesh::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)()) &smtk::mesh::InterpolateOntoMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::InterpolateOntoMesh> (*)(::std::shared_ptr<smtk::mesh::InterpolateOntoMesh> &)) &smtk::mesh::InterpolateOntoMesh::create, py::arg("ref"))

@@ -139,6 +139,13 @@ Operation::Result Operation::operate()
 
 Operation::Result Operation::operate(const BaseKey& key)
 {
+  std::multimap<Priority, Handler> instanceHandlers;
+  {
+    std::lock_guard<std::mutex> guard(m_handlerLock);
+    instanceHandlers = m_handlers;
+    m_handlers.clear();
+  }
+
   // Gather all requested resources and their lock types.
   const auto resourcesAndLockTypes = this->identifyLocksRequired();
 
@@ -373,6 +380,14 @@ Operation::Result Operation::operate(const BaseKey& key)
   }
 
   // Execute post-operation observation
+  // Always call handlers, but based on the \a key, observers may be skipped.
+  // Handlers will always be invoked before other observers, but in priority order.
+  // In the future, we may attempt to interleave the handler and observer calls.
+  for (const auto& entry : instanceHandlers)
+  {
+    entry.second(*this, result);
+  }
+  instanceHandlers.clear();
   if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
   {
     manager->observers()(*this, EventType::DID_OPERATE, result);
@@ -527,6 +542,34 @@ Operation::Result Operation::createResult(Outcome outcome)
     result->findInt("outcome")->setValue(0, static_cast<int>(outcome));
   }
   return result;
+}
+
+void Operation::addHandler(Handler handler, Priority priority)
+{
+  std::lock_guard<std::mutex> guard(m_handlerLock);
+  m_handlers.emplace(priority, handler);
+}
+
+bool Operation::removeHandler(Handler handler, Priority priority)
+{
+  std::lock_guard<std::mutex> guard(m_handlerLock);
+  for (auto it = m_handlers.lower_bound(priority); it != m_handlers.upper_bound(priority); ++it)
+  {
+    if (it->second.target<Handler>() == handler.target<Handler>())
+    {
+      m_handlers.erase(it);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Operation::clearHandlers()
+{
+  std::lock_guard<std::mutex> guard(m_handlerLock);
+  bool didRemove = !m_handlers.empty();
+  m_handlers.clear();
+  return didRemove;
 }
 
 void Operation::markModifiedResources(Operation::Result& result)

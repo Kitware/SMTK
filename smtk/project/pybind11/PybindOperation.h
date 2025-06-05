@@ -26,7 +26,6 @@ inline PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation
 
   PySharedPtrClass< smtk::project::Operation, smtk::operation::XMLOperation > instance(m, "Operation");
   instance
-    .def("deepcopy", (smtk::project::Operation & (smtk::project::Operation::*)(::smtk::project::Operation const &)) &smtk::project::Operation::operator=)
     .def("typeName", &smtk::project::Operation::typeName)
     .def("shared_from_this", (std::shared_ptr<smtk::project::Operation> (smtk::project::Operation::*)()) &smtk::project::Operation::shared_from_this)
     .def("shared_from_this", (std::shared_ptr<const smtk::project::Operation> (smtk::project::Operation::*)() const) &smtk::project::Operation::shared_from_this)

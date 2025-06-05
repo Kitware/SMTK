@@ -24,7 +24,6 @@ inline PySharedPtrClass< smtk::session::vtk::Read > pybind11_init_smtk_session_v
   PySharedPtrClass< smtk::session::vtk::Read > instance(m, "Read", parent);
   instance
     .def(py::init<>())
-    .def("deepcopy", (smtk::session::vtk::Read & (smtk::session::vtk::Read::*)(::smtk::session::vtk::Read const &)) &smtk::session::vtk::Read::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::vtk::Read> (*)()) &smtk::session::vtk::Read::create)
     .def_static("create", (std::shared_ptr<smtk::session::vtk::Read> (*)(::std::shared_ptr<smtk::session::vtk::Read> &)) &smtk::session::vtk::Read::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::vtk::Read> (smtk::session::vtk::Read::*)() const) &smtk::session::vtk::Read::shared_from_this)

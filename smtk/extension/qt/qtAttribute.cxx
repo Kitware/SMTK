@@ -286,7 +286,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
       QString baseUnits = (att->definition()->units() == "*") ? att->units().c_str()
                                                               : att->definition()->units().c_str();
       auto* unitsWidget =
-        new qtUnitsLineEdit(baseUnits, att->definition()->unitsSystem(), uiManager, unitFrame);
+        new qtUnitsLineEdit(baseUnits, att->definition()->unitSystem(), uiManager, unitFrame);
       std::string unitsWidgetName = att->name() + "UnitsLineWidget";
       unitsWidget->setObjectName(unitsWidgetName.c_str());
       unitsLayout->addWidget(unitsWidget);

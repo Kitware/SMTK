@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOpera
   PySharedPtrClass< smtk::model::ExportModelJSON, smtk::operation::XMLOperation > instance(m, "ExportModelJSON");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::model::ExportModelJSON const &>())
-    .def("deepcopy", (smtk::model::ExportModelJSON & (smtk::model::ExportModelJSON::*)(::smtk::model::ExportModelJSON const &)) &smtk::model::ExportModelJSON::operator=)
     .def_static("create", (std::shared_ptr<smtk::model::ExportModelJSON> (*)()) &smtk::model::ExportModelJSON::create)
     .def_static("create", (std::shared_ptr<smtk::model::ExportModelJSON> (*)(::std::shared_ptr<smtk::model::ExportModelJSON> &)) &smtk::model::ExportModelJSON::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::model::ExportModelJSON> (smtk::model::ExportModelJSON::*)() const) &smtk::model::ExportModelJSON::shared_from_this)

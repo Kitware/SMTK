@@ -379,7 +379,7 @@ Related API
 * :smtk:`Definition::units` - method to return the units associated with the definition (either locally set or inherited from its derived definition)
 * :smtk:`Definition::localUnits` - method to return the local units explicitly associated with the definition
 * :smtk:`Definition::setLocalUnits` - method to set the units explicitly associated with the definition
-* :smtk:`Definition::unitsSystem` - method to return the units system associated with the definition
+* :smtk:`Definition::unitSystem` - method to return the units system associated with the definition
 
 Please see `unitAttributeUnits <https://gitlab.kitware.com/cmb/smtk/-/blob/master/smtk/attribute/testing/cxx/unitAttributeUnits.cxx>`_ for a simple example of using units with Attributes and Definitions.
 

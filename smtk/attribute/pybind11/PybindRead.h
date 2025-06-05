@@ -25,8 +25,6 @@ inline PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > 
   PySharedPtrClass< smtk::attribute::Read, smtk::operation::XMLOperation > instance(m, "Read");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::attribute::Read const &>())
-    .def("deepcopy", (smtk::attribute::Read & (smtk::attribute::Read::*)(::smtk::attribute::Read const &)) &smtk::attribute::Read::operator=)
     .def_static("create", (std::shared_ptr<smtk::attribute::Read> (*)()) &smtk::attribute::Read::create)
     .def_static("create", (std::shared_ptr<smtk::attribute::Read> (*)(::std::shared_ptr<smtk::attribute::Read> &)) &smtk::attribute::Read::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::attribute::Read> (smtk::attribute::Read::*)() const) &smtk::attribute::Read::shared_from_this)

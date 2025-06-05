@@ -47,5 +47,41 @@ AssignedIds* SpatialData::domainExtent(smtk::string::Token domainName) const
   return nullptr;
 }
 
+bool SpatialData::isBlanked() const
+{
+  const auto& boolProps = this->properties().get<bool>();
+  if (!boolProps.contains("_blanked"))
+  {
+    return false;
+  }
+  return boolProps.at("_blanked");
+}
+
+bool SpatialData::setBlanking(bool shouldBlank)
+{
+  if (!this->properties().contains<bool>("_blanked"))
+  {
+    // Already not blanked? Do nothing.
+    if (!shouldBlank)
+    {
+      return false;
+    }
+    this->properties().emplace<bool>("_blanked", true);
+    return true;
+  }
+  // Already blanked? Do nothing
+  if (this->properties().at<bool>("_blanked") == shouldBlank)
+  {
+    return false;
+  }
+  if (shouldBlank)
+  {
+    this->properties().emplace<bool>("_blanked", true);
+    return true;
+  }
+  this->properties().erase<bool>("_blanked");
+  return true;
+}
+
 } // namespace markup
 } // namespace smtk

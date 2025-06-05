@@ -25,6 +25,9 @@ class ObjectsInRoles;
 /// assign objects to a task. The downstream or child tasks of this
 /// agent's task will then be configured with the objects in the roles
 /// as configured.
+///
+/// Unless the task's configuration includes a minimum/maximum count
+/// of objects per role, the task will always be completable.
 class SMTKCORE_EXPORT TrivialProducerAgent : public Agent
 {
 public:
@@ -38,7 +41,10 @@ public:
 
   ///\brief Return the current state of the agent.
   ///
-  /// This agent will always be completable, even if no resources are assigned.
+  /// By default, this agent will always be completable, even if no resources are assigned.
+  /// However, if the agent's configuration contains minimum/maximum counts
+  /// for objects by role, the state will only be completable when the number of objects
+  /// in each specified role is in the allowed range.
   State state() const override;
 
   ///\brief Configure the agent based on a provided JSON configuration.
@@ -46,6 +52,9 @@ public:
 
   ///\brief Produce a JSON configuration object for the current task state.
   Configuration configuration() const override;
+
+  ///\brief Provide feedback to users on how to make this agent completable.
+  std::string troubleshoot() const override;
 
   ///\brief Return the port data from the agent.
   std::shared_ptr<PortData> portData(const Port* port) const override;
@@ -60,7 +69,11 @@ public:
   ///
   /// Note that if multiple agents match the same \a agentName or \a port,
   /// only the first occurence will have \a object inserted.
-  static bool addObjectInRole(
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
+  static Port* addObjectInRole(
     Task* task,
     const std::string& agentName,
     smtk::string::Token role,
@@ -75,7 +88,11 @@ public:
   ///
   /// Note that if multiple agents match the same \a agentName or \a port,
   /// only the first occurence will have \a object removed.
-  static bool removeObjectFromRole(
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
+  static Port* removeObjectFromRole(
     Task* task,
     const std::string& agentName,
     smtk::string::Token role,
@@ -88,13 +105,25 @@ public:
 
   ///\brief A helper to reset a TrivialProducerAgent owned by a task.
   ///
-  /// Note that if multiple agents match the same \a agentName or \a port,
-  /// all of them will be reset.
-  static bool resetData(Task* task, const std::string& agentName);
+  /// Note that if multiple agents match the same \a agentName, the
+  /// first of them will be reset. If multiple agents match
+  /// the same \a port, all of them will be reset.
+  /// This is done so that the variant which accepts an \a agentName
+  /// can return the modified Port. (Operations which modify ports must
+  /// add them to the operation result.)
+  ///
+  /// We notify downstream observers of the agent's output port with a call
+  /// to portDataUpdated(); be careful as this call to add objects is expected
+  /// to be called during an operation (which may run on a non-GUI thread).
+  static Port* resetData(Task* task, const std::string& agentName);
   static bool resetData(Task* task, Port* port);
 
 protected:
+  virtual State computeInternalState();
+
+  State m_internalState{ State::Completable };
   std::shared_ptr<ObjectsInRoles> m_data;
+  std::map<smtk::string::Token, std::pair<int, int>> m_requiredObjectCounts;
   Port* m_outputPort{ nullptr };
 };
 

@@ -27,6 +27,8 @@ inline PySharedPtrClass< smtk::markup::Resource> pybind11_init_smtk_markup_Resou
   instance
     .def_static("create", []() { return smtk::markup::Resource::create(); })
     .def("domains", [](smtk::markup::Resource& rr) { return rr.domains(); })
+    .def("lengthUnit", &smtk::markup::Resource::lengthUnit)
+    .def("setLengthUnit", &smtk::markup::Resource::setLengthUnit, py::arg("lengthUnit"))
     ;
   return instance;
 }

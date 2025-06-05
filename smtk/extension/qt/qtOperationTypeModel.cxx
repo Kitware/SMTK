@@ -481,7 +481,13 @@ void qtOperationTypeModel::runOperationWithDefaults(
     }
     else
     {
-      Q_EMIT this->editOperationParameters(typeIndex);
+      // Only offer to edit the parameters if they are not
+      // valid; operations may be unable to run for other
+      // reasons.
+      if (!operation->parameters()->isValid())
+      {
+        Q_EMIT this->editOperationParameters(typeIndex);
+      }
     }
   }
 }

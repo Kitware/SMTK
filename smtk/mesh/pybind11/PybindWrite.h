@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > pybi
   PySharedPtrClass< smtk::mesh::Write, smtk::operation::XMLOperation > instance(m, "Write");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::mesh::Write const &>())
-    .def("deepcopy", (smtk::mesh::Write & (smtk::mesh::Write::*)(::smtk::mesh::Write const &)) &smtk::mesh::Write::operator=)
     .def("ableToOperate", &smtk::mesh::Write::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::mesh::Write> (*)()) &smtk::mesh::Write::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::Write> (*)(::std::shared_ptr<smtk::mesh::Write> &)) &smtk::mesh::Write::create, py::arg("ref"))

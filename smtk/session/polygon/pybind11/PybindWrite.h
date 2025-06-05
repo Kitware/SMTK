@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::Write > pybind11_init_smtk_sess
 {
   PySharedPtrClass< smtk::session::polygon::Write > instance(m, "Write", parent);
   instance
-    .def(py::init<::smtk::session::polygon::Write const &>())
-    .def("deepcopy", (smtk::session::polygon::Write & (smtk::session::polygon::Write::*)(::smtk::session::polygon::Write const &)) &smtk::session::polygon::Write::operator=)
     .def("ableToOperate", &smtk::session::polygon::Write::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::Write> (*)()) &smtk::session::polygon::Write::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::Write> (*)(::std::shared_ptr<smtk::session::polygon::Write> &)) &smtk::session::polygon::Write::create, py::arg("ref"))

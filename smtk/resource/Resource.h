@@ -13,6 +13,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include "smtk/common/Deprecation.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/resource/Component.h"
@@ -170,6 +171,28 @@ public:
   /// This may change when a user chooses to "Save As…" a different filename.
   const std::string& location() const { return m_location; }
   virtual bool setLocation(const std::string& location);
+
+  /// As a convenience, fetch the absolute path to a resource from its location.
+  ///
+  /// For URLs with a protocol (e.g., "https://foo.com/resource.smtk") or local
+  /// paths with a leading slash (e.g., "/foo/resource.smtk"), this is exactly
+  /// the resource's location() string.
+  ///
+  /// However, if a resource has a relative path, we must look to see whether
+  /// it has a parent resource; if so, this method is recursively called on
+  /// the parent to find its absolute path so that the relative path of the
+  /// child resource can be determined.
+  ///
+  /// When a resource (the immediate one or any parent) has a relative location
+  /// but no parent, then the current working directory is used to determine
+  /// its absolute path.
+  ///
+  /// As an added convenience, you may pass "true" as a second argument to this
+  /// method to have it create the containing directory of the resource's
+  /// location for you. This is for use by Write operations.
+  ///
+  /// \sa smtk::common::Paths::isRelative, smtk::common::Paths::currentDirectory
+  std::string absoluteLocation(bool createDir = false) const;
   ///@}
 
   ///@name Naming
@@ -331,9 +354,17 @@ public:
   /// unit systems.
 
   /// \brief Sets the system of units used by this resource.
-  virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem);
+  virtual bool setUnitSystem(const shared_ptr<units::System>& unitSystem);
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+  {
+    return this->setUnitSystem(unitsSystem);
+  }
+
   /// \brief Gets the system of units used by this resource.
-  const shared_ptr<units::System>& unitsSystem() const { return m_unitsSystem; }
+  const shared_ptr<units::System>& unitSystem() const { return m_unitSystem; }
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  const shared_ptr<units::System>& unitsSystem() const { return m_unitSystem; }
   ///@}
 
   ///@name Resource Templates
@@ -489,7 +520,7 @@ protected:
   void copyLinks(const std::shared_ptr<const Resource>& rsrc, const CopyOptions& options);
 
   WeakManagerPtr m_manager;
-  std::shared_ptr<units::System> m_unitsSystem;
+  std::shared_ptr<units::System> m_unitSystem;
 
 private:
   /// Instances of this internal class are passed to resource::Manager to
@@ -594,6 +625,7 @@ SMTKCORE_NO_EXPORT QueryType& queryForObject(const PersistentObject& object)
   }
   throw query::BadTypeError(smtk::common::typeName<QueryType>());
 }
+
 } // namespace resource
 } // namespace smtk
 

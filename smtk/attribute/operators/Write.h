@@ -31,6 +31,7 @@ protected:
   Result operateInternal() override;
   const char* xmlDescription() const override;
   void markModifiedResources(Result&) override;
+  void generateSummary(Result&) override;
 };
 
 SMTKCORE_EXPORT bool write(

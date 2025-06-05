@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::operation::RemoveResource, smtk::operation::XMLOp
 {
   PySharedPtrClass< smtk::operation::RemoveResource, smtk::operation::XMLOperation > instance(m, "RemoveResource");
   instance
-    .def(py::init<::smtk::operation::RemoveResource const &>())
-    .def("deepcopy", (smtk::operation::RemoveResource & (smtk::operation::RemoveResource::*)(::smtk::operation::RemoveResource const &)) &smtk::operation::RemoveResource::operator=)
     .def_static("create", (std::shared_ptr<smtk::operation::RemoveResource> (*)()) &smtk::operation::RemoveResource::create)
     .def_static("create", (std::shared_ptr<smtk::operation::RemoveResource> (*)(::std::shared_ptr<smtk::operation::RemoveResource> &)) &smtk::operation::RemoveResource::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::operation::RemoveResource> (smtk::operation::RemoveResource::*)() const) &smtk::operation::RemoveResource::shared_from_this)

@@ -1,5 +1,6 @@
 set(smtkResourcePythonTests
   testResource
+  testResourceUnitSystem
 )
 
 # Additional tests that require SMTK_DATA_DIR

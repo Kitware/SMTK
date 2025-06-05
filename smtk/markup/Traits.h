@@ -147,6 +147,7 @@ struct SMTKMARKUP_EXPORT BoundariesToShapes
   static constexpr graph::OwnershipSemantics semantics =
     graph::OwnershipSemantics::ToNodeOwnsFromNode;
 };
+
 } // namespace arcs
 
 // Forward-declare domain types

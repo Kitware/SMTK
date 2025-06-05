@@ -21,6 +21,7 @@
 #include "smtk/attribute/Tag.h"
 
 #include "smtk/common/Categories.h"
+#include "smtk/common/Deprecation.h"
 
 #include "smtk/model/EntityRef.h"      //for EntityRef version of canBeAssociated
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
@@ -359,7 +360,7 @@ public:
     {
       std::size_t n = m_itemDefs.size();
       item = SharedTypes::RawPointerType::New(name);
-      this->setItemDefinitionUnitsSystem(item);
+      this->setItemDefinitionUnitSystem(item);
       m_itemDefs.push_back(item);
       m_itemDefPositions[name] = static_cast<int>(n);
       this->updateDerivedDefinitions();
@@ -481,7 +482,9 @@ public:
   bool setLocalUnits(const std::string& newUnits, bool force = false);
 
   /// \brief Gets the system of units used by this definition.
-  const std::shared_ptr<units::System>& unitsSystem() const;
+  const std::shared_ptr<units::System>& unitSystem() const;
+  SMTK_DEPRECATED_IN_NEXT("Use unitSystem() instead.")
+  const std::shared_ptr<units::System>& unitsSystem() const { return this->unitSystem(); }
 
 protected:
   friend class smtk::attribute::Resource;
@@ -510,7 +513,12 @@ protected:
     const unsigned int& readLevelFromParent,
     const unsigned int& writeLevelFromParent);
 
-  void setItemDefinitionUnitsSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const;
+  void setItemDefinitionUnitSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const;
+  SMTK_DEPRECATED_IN_NEXT("Use setItemDefinitionUnitSystem() instead.")
+  void setItemDefinitionUnitsSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const
+  {
+    this->setItemDefinitionUnitSystem(itemDef);
+  }
 
   smtk::attribute::WeakResourcePtr m_resource;
   smtk::common::UUID m_id;

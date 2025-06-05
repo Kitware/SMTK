@@ -69,6 +69,21 @@ public:
   virtual AssignedIds* domainExtent(Domain* domain) const;
   virtual AssignedIds* domainExtent(smtk::string::Token domainName) const;
 
+  /// Return whether or not this node has its geometry blanked (i.e., not rendered).
+  bool isBlanked() const;
+
+  /// Set whether or not this node has its geometry blanked.
+  ///
+  /// Blanking a node's geometry is usually performed by an operation that wishes to
+  /// keep the source geometry around but also permanently transform it in some reversible
+  /// or editable way. While the markup session also allows transform properties
+  /// attached to nodes to affect rendering, this can cause issues for downstream filters
+  /// that need access to the transformed geometry (and do not wish to perform the transform
+  /// themselves).
+  ///
+  /// This method returns true when the node's blanking state was modified.
+  bool setBlanking(bool shouldBlank);
+
 protected:
 };
 

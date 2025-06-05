@@ -6,6 +6,12 @@ set(smtkOperationPythonTests
 set(smtkOperationPythonDataTests
 )
 
+if (SMTK_ENABLE_POLYGON_SESSION)
+  list(APPEND smtkOperationPythonDataTests
+    testOperationHandler
+  )
+endif()
+
 if(SMTK_ENABLE_PARAVIEW_SUPPORT)
   list(APPEND smtkOperationPythonDataTests
     testOperationTracing

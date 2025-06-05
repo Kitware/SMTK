@@ -200,6 +200,39 @@ bool Resource::setLocation(const std::string& myLocation)
   return false;
 }
 
+std::string Resource::absoluteLocation(bool createDir) const
+{
+  auto url = this->location();
+  if (!smtk::common::Paths::isRelative(url))
+  {
+    if (createDir)
+    {
+      auto containingDir = smtk::common::Paths::directory(url);
+      smtk::common::Paths::createDirectory(containingDir);
+    }
+    return url;
+  }
+  const auto* parent = this->parentResource();
+  if (parent && parent != this)
+  {
+    auto parentUrl = parent->absoluteLocation();
+    // The parent URL contains the filename of the parent resource. Strip that:
+    auto parentDir = smtk::common::Paths::directory(parentUrl);
+    url = parentDir + "/" + url;
+  }
+  else
+  {
+    auto workDir = smtk::common::Paths::currentDirectory();
+    url = workDir + "/" + url;
+  }
+  if (createDir)
+  {
+    auto containingDir = smtk::common::Paths::directory(url);
+    smtk::common::Paths::createDirectory(containingDir);
+  }
+  return url;
+}
+
 std::string Resource::name() const
 {
   if (m_name.empty())
@@ -225,9 +258,9 @@ void Resource::setClean(bool state)
   m_clean = state;
 }
 
-bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+bool Resource::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
   return true;
 }
 
@@ -285,15 +318,15 @@ void Resource::copyUnitSystem(
       // Do not set a unit system.
       break;
     case CopyOptions::CopyType::Shallow:
-      this->setUnitsSystem(rsrc->unitsSystem());
+      this->setUnitSystem(rsrc->unitSystem());
       break;
     case CopyOptions::CopyType::Deep:
     {
-      if (auto unitSys = rsrc->unitsSystem())
+      if (auto unitSys = rsrc->unitSystem())
       {
         nlohmann::json spec = unitSys;
         shared_ptr<units::System> unitCopy = units::System::createFromSpec(spec.dump());
-        this->setUnitsSystem(unitCopy);
+        this->setUnitSystem(unitCopy);
       }
     }
     break;

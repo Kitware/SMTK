@@ -30,6 +30,8 @@
 #include "smtk/task/Task.h"
 #include "smtk/task/adaptor/Instances.h"
 
+#include "smtk/view/Configuration.h"
+
 #include "nlohmann/json.hpp"
 
 #include <array>
@@ -82,6 +84,13 @@ public:
   Manager(const Manager&) = delete;
   void operator=(const Manager&) = delete;
 
+  /// A map of objects grouped by their parent resource.
+  ///
+  /// If a resource itself is intended for selection, one
+  /// entry of its target set of objects will be the null pointer.
+  using ResourceObjectMap =
+    std::map<smtk::resource::Resource*, std::unordered_set<smtk::resource::PersistentObject*>>;
+
   /// Managed instances of Task objects (and a registry of Task classes).
   using TaskInstances = smtk::task::Instances;
 
@@ -131,6 +140,35 @@ public:
 
   /// If this manager is owned by a resource (typically a project), return it.
   smtk::resource::Resource* resource() const;
+
+  /// Given a filter \a spec, return a set of objects grouped by their parent resources.
+  ///
+  /// The objects are drawn – according to the \a spec – from either ports of the active
+  /// task or resources owned by the parent of this task manager (assuming it is a project).
+  /// If a resource itself is intended to be part of the result, one of the object pointers
+  /// in that resource's target set will be the null pointer.
+  ///
+  /// The variant that accepts a JSON \a spec is for use inside task-manager style.
+  /// The variant that accepts a Configuration::Component \a spec is for use inside
+  /// view-configuration XML.
+  /// The two forms of \a spec are similar but not identical in order to improve
+  /// readability and reduce maintenance overhead.
+  ResourceObjectMap workflowObjects(const nlohmann::json& spec, Task* task = nullptr);
+  ResourceObjectMap workflowObjects(
+    const smtk::view::Configuration::Component& spec,
+    Task* task = nullptr);
+
+  /// Return true if the \a resource matches the filter \a spec provided.
+  bool isResourceRelevant(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    const nlohmann::json& spec);
+  bool isResourceRelevant(smtk::resource::Resource* resource, const nlohmann::json& spec);
+  bool isResourceRelevant(
+    const std::shared_ptr<smtk::resource::Resource>& resource,
+    const smtk::view::Configuration::Component& spec);
+  bool isResourceRelevant(
+    smtk::resource::Resource* resource,
+    const smtk::view::Configuration::Component& spec);
 
   /// Return a gallery of Task Worklets
   Gallery& gallery() { return m_gallery; }

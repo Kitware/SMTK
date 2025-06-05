@@ -9,7 +9,13 @@ pybind11_add_module(${library_name}
 target_include_directories(${library_name} PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
 )
-target_link_libraries(${library_name} LINK_PUBLIC smtkCore smtkMarkup)
+target_link_libraries(${library_name}
+  LINK_PUBLIC
+    smtkMarkup
+    smtkCore
+    VTK::CommonCore
+    VTK::WrappingPythonCore
+)
 set_target_properties(${library_name}
   PROPERTIES
     CXX_VISIBILITY_PRESET hidden

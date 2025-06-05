@@ -21,7 +21,6 @@ inline PySharedPtrClass< smtk::session::polygon::CreateModel > pybind11_init_smt
 {
   PySharedPtrClass< smtk::session::polygon::CreateModel > instance(m, "CreateModel", parent);
   instance
-    .def(py::init<::smtk::session::polygon::CreateModel const &>())
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateModel> (*)()) &smtk::session::polygon::CreateModel::create)
     ;
   return instance;

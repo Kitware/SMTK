@@ -24,8 +24,6 @@ inline PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation 
   PySharedPtrClass< smtk::model::CloseModel, smtk::operation::XMLOperation > instance(m, "CloseModel");
   instance
     .def(py::init<>())
-    .def(py::init<::smtk::model::CloseModel const &>())
-    .def("deepcopy", (smtk::model::CloseModel & (smtk::model::CloseModel::*)(::smtk::model::CloseModel const &)) &smtk::model::CloseModel::operator=)
     .def("ableToOperate", &smtk::model::CloseModel::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::model::CloseModel> (*)()) &smtk::model::CloseModel::create)
     .def_static("create", (std::shared_ptr<smtk::model::CloseModel> (*)(::std::shared_ptr<smtk::model::CloseModel> &)) &smtk::model::CloseModel::create, py::arg("ref"))

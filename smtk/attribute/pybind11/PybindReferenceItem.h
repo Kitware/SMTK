@@ -57,6 +57,21 @@ inline PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item >
     .def("unset", &smtk::attribute::ReferenceItem::unset, py::arg("i") = 0)
     .def("valueAsString", (std::string (smtk::attribute::ReferenceItem::*)() const) &smtk::attribute::ReferenceItem::valueAsString)
     .def("valueAsString", (std::string (smtk::attribute::ReferenceItem::*)(::size_t) const) &smtk::attribute::ReferenceItem::valueAsString, py::arg("i"))
+    .def("setValues", [&](smtk::attribute::ReferenceItem* self, const std::vector<smtk::resource::PersistentObject::Ptr>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::ReferenceItem* self) -> std::vector<smtk::resource::PersistentObject::Ptr>
+      {
+        std::vector<smtk::resource::PersistentObject::Ptr> values;
+        std::size_t nn = self->numberOfValues();
+        values.reserve(nn);
+        for (std::size_t ii = 0; ii < nn; ++ii)
+        {
+          values.push_back(self->isSet(ii) ? self->value(ii) : smtk::resource::PersistentObject::Ptr());
+        }
+        return values;
+      })
     ;
   return instance;
 }

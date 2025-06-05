@@ -23,6 +23,8 @@
 #include "smtk/common/Paths.h"
 #include "smtk/common/StringUtil.h"
 
+#include "units/System.h"
+
 namespace smtk
 {
 namespace markup
@@ -135,6 +137,29 @@ std::function<bool(const smtk::resource::Component&)> Resource::queryOperation(
   const std::string& query) const
 {
   return smtk::resource::filter::Filter<smtk::graph::filter::Grammar>(query);
+}
+
+bool Resource::setLengthUnit(const std::string& unit)
+{
+  auto unitSys = this->unitSystem();
+  if (unit == m_lengthUnit || !unitSys)
+  {
+    return false;
+  }
+  bool ok = true;
+  auto uu = unitSys->unit(unit, &ok);
+  if (!ok)
+  {
+    // Unit must be a valid unit.
+    return false;
+  }
+  if (uu.dimension() != unitSys->dimension("L"))
+  {
+    // Units must be length.
+    return false;
+  }
+  m_lengthUnit = unit;
+  return true;
 }
 
 void Resource::initialize()

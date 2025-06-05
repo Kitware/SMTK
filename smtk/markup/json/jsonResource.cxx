@@ -217,6 +217,12 @@ void to_json(nlohmann::json& j, const smtk::markup::Resource::Ptr& resource)
     j["domains"] = domainData;
   }
 
+  // Record length unit (if one exists).
+  if (!resource->lengthUnit().empty())
+  {
+    j["length-unit"] = resource->lengthUnit();
+  }
+
   // Record string-token hashes.
   // Some nodes may use string tokens, so we must serialize that map if it exists.
   auto& tokenManager = smtk::string::Token::manager();
@@ -278,6 +284,13 @@ void from_json(const nlohmann::json& jj, smtk::markup::Resource::Ptr& resource)
     {
       from_json(*jNameManager, nameManager);
     }
+  }
+
+  // Deserialize length unit.
+  auto jLengthUnit = jj.find("length-unit");
+  if (jLengthUnit != jj.end())
+  {
+    resource->setLengthUnit(jLengthUnit->get<std::string>());
   }
 
   // Deserialize domains

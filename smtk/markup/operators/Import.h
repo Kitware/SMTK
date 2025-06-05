@@ -59,7 +59,8 @@ protected:
     const std::string& filename);
   virtual bool importVTKMesh(
     const std::shared_ptr<Resource>& resource,
-    const std::string& filename);
+    const std::string& filename,
+    bool consistency);
   virtual bool importOWL(const std::shared_ptr<Resource>& resource, const std::string& filename);
 
   static std::map<std::string, std::set<std::string>> supportedVTKFileFormats();

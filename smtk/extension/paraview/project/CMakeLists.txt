@@ -4,7 +4,9 @@ set(classes
   pqSMTKProjectMenu
   pqSMTKProjectPanel
   pqSMTKTaskResourceVisibility
+  pqTaskControlView
   Registrar
+  Utility
 )
 
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ProjectPanelConfiguration.json"

@@ -265,7 +265,12 @@ protected:
     const smtk::common::Categories::Stack& inheritedFromParent,
     smtk::common::Categories& inheritedToParent) override;
 
-  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override;
+  void setUnitSystem(const shared_ptr<units::System>& unitSystem) override;
+  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override
+  {
+    this->setUnitSystem(unitsSystem);
+  }
 
   /// Debug method that returns a description concerning the validity of the component
   std::string componentValidityCheck(const smtk::resource::Component* comp) const;

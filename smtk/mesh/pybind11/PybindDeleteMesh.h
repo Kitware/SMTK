@@ -23,7 +23,6 @@ inline PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation >
 {
   PySharedPtrClass< smtk::mesh::DeleteMesh, smtk::operation::XMLOperation > instance(m, "DeleteMesh");
   instance
-    .def("deepcopy", (smtk::mesh::DeleteMesh & (smtk::mesh::DeleteMesh::*)(::smtk::mesh::DeleteMesh const &)) &smtk::mesh::DeleteMesh::operator=)
     .def("ableToOperate", &smtk::mesh::DeleteMesh::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)()) &smtk::mesh::DeleteMesh::create)
     .def_static("create", (std::shared_ptr<smtk::mesh::DeleteMesh> (*)(::std::shared_ptr<smtk::mesh::DeleteMesh> &)) &smtk::mesh::DeleteMesh::create, py::arg("ref"))

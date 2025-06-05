@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::SplitEdge > pybind11_init_smtk_
 {
   PySharedPtrClass< smtk::session::polygon::SplitEdge > instance(m, "SplitEdge", parent);
   instance
-    .def(py::init<::smtk::session::polygon::SplitEdge const &>())
-    .def("deepcopy", (smtk::session::polygon::SplitEdge & (smtk::session::polygon::SplitEdge::*)(::smtk::session::polygon::SplitEdge const &)) &smtk::session::polygon::SplitEdge::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::SplitEdge> (*)()) &smtk::session::polygon::SplitEdge::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::SplitEdge> (*)(::std::shared_ptr<smtk::session::polygon::SplitEdge> &)) &smtk::session::polygon::SplitEdge::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::polygon::SplitEdge> (smtk::session::polygon::SplitEdge::*)() const) &smtk::session::polygon::SplitEdge::shared_from_this)

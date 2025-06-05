@@ -22,6 +22,43 @@
 
 #include "smtk/io/Logger.h"
 
+namespace smtk
+{
+namespace operation
+{
+
+/// A helper class that is a friend of smtk::operation::Operation so it
+/// can construct a Key to run "child" (nested) operations.
+class PythonRunChild
+{
+public:
+  using Result           = smtk::operation::Operation::Result;
+  using ObserverOption   = smtk::operation::Operation::ObserverOption;
+  using LockOption       = smtk::operation::Operation::LockOption;
+  using ParametersOption = smtk::operation::Operation::ParametersOption;
+
+  PythonRunChild(smtk::operation::Operation* self)
+    : m_self(self)
+  {
+  }
+
+  Result run(
+    const smtk::operation::Operation::Ptr& childOp,
+    ObserverOption observerOption,
+    LockOption lockOption,
+    ParametersOption paramsOption)
+  {
+    auto key = m_self->childKey(observerOption, lockOption, paramsOption);
+    return childOp->operate(key);
+  }
+
+protected:
+  smtk::operation::Operation* m_self{ nullptr };
+};
+
+} // namespace operation
+} // namespace smtk
+
 namespace py = pybind11;
 
 inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperation > pybind11_init_smtk_operation_Operation(py::module &m)
@@ -46,7 +83,6 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
 
   instance
     .def(py::init<>())
-    .def("deepcopy", (smtk::operation::Operation & (smtk::operation::Operation::*)(::smtk::operation::Operation const &)) &smtk::operation::Operation::operator=)
     .def_static("create", &smtk::operation::PyOperation::create)
     .def("typeName", &smtk::operation::Operation::typeName)
     .def("index", &smtk::operation::Operation::index)
@@ -101,7 +137,23 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
     .def("managers", &smtk::operation::Operation::managers)
+    .def("addHandler", &smtk::operation::Operation::addHandler, py::arg("handler"), py::arg("priority"))
+    .def("removeHandler", &smtk::operation::Operation::removeHandler, py::arg("handler"), py::arg("priority"))
+    .def("clearHandlers", &smtk::operation::Operation::clearHandlers)
     .def("restoreTrace", (bool (smtk::operation::Operation::*)(::std::string const &)) &smtk::operation::Operation::restoreTrace)
+    .def("runChildOp", [](smtk::operation::Operation* self, const smtk::operation::Operation::Ptr& childOp,
+        smtk::operation::Operation::ObserverOption observerOption,
+        smtk::operation::Operation::LockOption lockOption,
+        smtk::operation::Operation::ParametersOption paramsOption)
+      {
+        smtk::operation::PythonRunChild runner(self);
+        auto result = runner.run(childOp, observerOption, lockOption, paramsOption);
+        return result;
+      },
+      py::arg("childOp"),
+      py::arg("observerOption") = smtk::operation::Operation::ObserverOption::SkipObservers,
+      py::arg("lockOption") = smtk::operation::Operation::LockOption::ParentLocksOnly,
+      py::arg("paramsOption") = smtk::operation::Operation::ParametersOption::SkipValidation)
     ;
   py::enum_<smtk::operation::Operation::Outcome>(instance, "Outcome")
     .value("UNABLE_TO_OPERATE", smtk::operation::Operation::Outcome::UNABLE_TO_OPERATE)

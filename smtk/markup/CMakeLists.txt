@@ -10,6 +10,7 @@ set(headers
   testing/cxx/helpers.h
 )
 set(operations
+  ChangeUnits
   Create
   CreateArc
   CreateAnalyticShape

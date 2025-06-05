@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::TweakEdge > pybind11_init_smtk_
 {
   PySharedPtrClass< smtk::session::polygon::TweakEdge > instance(m, "TweakEdge", parent);
   instance
-    .def(py::init<::smtk::session::polygon::TweakEdge const &>())
-    .def("deepcopy", (smtk::session::polygon::TweakEdge & (smtk::session::polygon::TweakEdge::*)(::smtk::session::polygon::TweakEdge const &)) &smtk::session::polygon::TweakEdge::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::TweakEdge> (*)()) &smtk::session::polygon::TweakEdge::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::TweakEdge> (*)(::std::shared_ptr<smtk::session::polygon::TweakEdge> &)) &smtk::session::polygon::TweakEdge::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::polygon::TweakEdge> (smtk::session::polygon::TweakEdge::*)() const) &smtk::session::polygon::TweakEdge::shared_from_this)

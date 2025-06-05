@@ -53,7 +53,43 @@ public:
   /// Reset all the data in the role map.
   bool clear();
 
+  /// If \a other is also an instance of ObjectsInRoles, unite its data with \a this instance.
   bool merge(const PortData* other) override;
+
+  /// Find the first object of the given type in the given role.
+  smtk::resource::PersistentObject* firstObjectInRoleOfType(
+    smtk::string::Token role,
+    smtk::string::Token objectType);
+
+  template<typename T>
+  T* firstObjectInRoleAs(smtk::string::Token role, smtk::string::Token objectType)
+  {
+    T* value = dynamic_cast<T*>(this->firstObjectInRoleOfType(role, objectType));
+    return value;
+  }
+
+  /// This is a convenience for consumers of port data.
+  ///
+  /// It identifies a port on the task, fetches its port data, and then – assuming the
+  /// port data is an ObjectsInRoles instance – searches for an object in the given role
+  /// of the given type using firstObjectInRoleOfType().
+  static smtk::resource::PersistentObject* findTaskPortObjectInRoleOfType(
+    smtk::task::Task* task,
+    smtk::string::Token portName,
+    smtk::string::Token role,
+    smtk::string::Token objectType);
+
+  template<typename T>
+  static T* findTaskPortObjectInRoleAs(
+    smtk::task::Task* task,
+    smtk::string::Token portName,
+    smtk::string::Token role,
+    smtk::string::Token objectType)
+  {
+    T* value = dynamic_cast<T*>(
+      ObjectsInRoles::findTaskPortObjectInRoleOfType(task, portName, role, objectType));
+    return value;
+  }
 
 protected:
   RoleMap m_data;

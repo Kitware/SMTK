@@ -13,6 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKDiagramPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/project/Utility.h"
 #include "smtk/extension/qt/diagram/qtDiagram.h"
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/diagram/qtTaskPath.h"
@@ -36,93 +37,16 @@
 
 #include <QTimer>
 
+// Change "#undef" to "#define" to print messages as this behavior
+// responds to changes in tasks with 3-d view style.
+#undef SMTK_DBG_3D_STYLE
+
 using namespace smtk::string::literals;
 
 namespace
 {
+
 pqSMTKTaskResourceVisibility* gInstance = nullptr;
-
-bool resourceMatch(
-  const std::string& filter,
-  smtk::resource::PersistentObject* object,
-  smtk::resource::Resource*& rsrc)
-{
-  if (auto* resource = dynamic_cast<smtk::resource::Resource*>(object))
-  {
-    rsrc = resource;
-    if (filter == "*" || rsrc->matchesType(filter))
-    {
-      return true;
-    }
-  }
-  else if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
-  {
-    if ((rsrc = comp->parentResource()))
-    {
-      if (filter == "*" || rsrc->matchesType(filter))
-      {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-bool componentMatch(
-  const std::string& filter,
-  smtk::resource::PersistentObject* object,
-  smtk::resource::Resource* rsrc)
-{
-  // An empty filter string indicates only resources are allowed.
-  if (filter.empty())
-  {
-    return (object == rsrc);
-  }
-  // "*" allows any component:
-  else if (filter == "*")
-  {
-    // Assume that if object is not a pointer to the parent resource,
-    // it must be a component:
-    return (object != rsrc);
-  }
-  // We have a non-trivial filter string; we must have a component.
-  if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
-  {
-    auto query = rsrc->queryOperation(filter);
-    return query ? query(*comp) : false;
-  }
-  return false;
-}
-
-bool filterObject(const nlohmann::json::array_t& filter, smtk::resource::PersistentObject* object)
-{
-  for (const auto& filterTuple : filter)
-  {
-    try
-    {
-      if (filterTuple.is_array() && filterTuple.size() == 2)
-      {
-        smtk::resource::Resource* rsrc{ nullptr };
-        if (resourceMatch(filterTuple[0].get<std::string>(), object, rsrc))
-        {
-          auto compSpec = filterTuple[1].is_null() ? "" : filterTuple[1].get<std::string>();
-          if (componentMatch(compSpec, object, rsrc))
-          {
-            return true;
-          }
-        }
-      }
-    }
-    catch (nlohmann::json::exception& e)
-    {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(),
-        "Cannot process filter \"" << filterTuple.dump() << "\";" << e.what());
-      continue;
-    }
-  }
-  return false;
-}
 
 } // anonymous namespace
 
@@ -301,7 +225,6 @@ void pqSMTKTaskResourceVisibility::handleTaskEvent(
   {
     m_currentTask->observers().erase(m_currentTaskObserver);
     this->processTaskEvent(m_currentTask, "deactivated"_token);
-    std::cout << "Process \"deactivated\" event for \"" << m_currentTask->name() << "\".\n";
     // self->displayResource(nullptr);
   }
   m_currentTask = nextTask;
@@ -318,7 +241,7 @@ void pqSMTKTaskResourceVisibility::handleTaskEvent(
     auto* pqCore = pqApplicationCore::instance();
     if (pqCore)
     {
-      if (auto* panel = dynamic_cast<pqSMTKDiagramPanel*>(pqCore->manager("smtk task diagram")))
+      if (auto* panel = dynamic_cast<pqSMTKDiagramPanel*>(pqCore->manager("smtk task panel")))
       {
         for (const auto& generatorEntry : panel->diagram()->generators())
         {
@@ -333,8 +256,10 @@ void pqSMTKTaskResourceVisibility::handleTaskEvent(
       }
     }
   }
+#ifdef SMTK_DBG_3D_STYLE
   std::cout << "Process \"activated\" event for \""
             << (m_currentTask ? m_currentTask->name() : "(default)") << "\".\n";
+#endif
   this->processTaskEvent(m_currentTask, "activated"_token);
 }
 
@@ -398,7 +323,8 @@ void pqSMTKTaskResourceVisibility::applyColorBy(
         << spec.dump(2) << "\n");
     return;
   }
-  auto representations = this->relevantRepresentations(spec);
+  auto representations =
+    smtk::paraview::relevantRepresentations(spec, m_currentTaskManager, m_currentTask);
   auto mode(spec.at("mode").get<smtk::string::Token>());
   bool needsRender = false;
   for (const auto& entry : representations)
@@ -463,7 +389,8 @@ void pqSMTKTaskResourceVisibility::applyShowObjects(
           << spec.dump(2) << "\n");
       return;
     }
-    auto representations = this->relevantRepresentations(spec);
+    auto representations =
+      smtk::paraview::relevantRepresentations(spec, m_currentTaskManager, m_currentTask);
     for (const auto& entry : representations)
     {
       auto* representation = entry.first;
@@ -480,172 +407,4 @@ void pqSMTKTaskResourceVisibility::applyShowObjects(
   {
     pqActiveObjects::instance().activeView()->render();
   }
-}
-
-std::map<pqRepresentation*, std::unordered_set<smtk::resource::PersistentObject*>>
-pqSMTKTaskResourceVisibility::relevantRepresentations(const nlohmann::json& spec)
-{
-  // Filter representations by the \a spec.
-  std::map<pqRepresentation*, std::unordered_set<smtk::resource::PersistentObject*>>
-    representations;
-
-  nlohmann::json source;
-  nlohmann::json filter;
-  if (spec.contains("source"))
-  {
-    source = spec.at("source");
-    if (!source.is_object() || !source.contains("type"))
-    {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(),
-        "Spec source must be a dictionary with 'type' key, "
-        "got \""
-          << source.dump() << "\"");
-      return representations;
-    }
-  }
-  else
-  {
-    source = { { "type", "project resources" } };
-  }
-
-  if (spec.contains("filter"))
-  {
-    filter = spec.at("filter");
-    if (!filter.is_array())
-    {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(),
-        "Spec filter must be an array, got \"" << filter.dump() << "\".");
-      return representations;
-    }
-  }
-  else
-  {
-    // Accept any resource or component:
-    filter = nlohmann::json::array_t({ { "*", "*" }, { "*", nullptr } });
-  }
-
-  auto* behavior = pqSMTKBehavior::instance();
-  auto sourceType = source["type"].get<smtk::string::Token>();
-  std::unordered_set<smtk::resource::PersistentObject*> objects;
-  switch (sourceType.id())
-  {
-    default:
-      smtkErrorMacro(
-        smtk::io::Logger::instance(), "Unknown source type \"" << sourceType.data() << "\".");
-      // fall through
-    case "project resources"_hash:
-    {
-      if (!m_currentTaskManager)
-      {
-        return representations;
-      }
-
-      auto* project = dynamic_cast<smtk::project::Project*>(m_currentTaskManager->resource());
-      if (!project)
-      {
-        return representations;
-      }
-
-      for (const auto& resource : project->resources())
-      {
-        if (filterObject(filter, resource.get()))
-        {
-          objects.insert(resource.get());
-        }
-      }
-    }
-    break;
-    case "active task port"_hash:
-    {
-      if (!m_currentTask || !source.contains("port"))
-      {
-        smtkErrorMacro(smtk::io::Logger::instance(), "No active task or no \"port\" specified.");
-        return representations;
-      }
-
-      // We are asked to find objects on a port of the (now) active task.
-      // Determine whether we are filtering on role or not.
-      smtk::string::Token sourceRole;
-      if (source.contains("role"))
-      {
-        sourceRole = source.at("role").get<smtk::string::Token>();
-      }
-      // Find the correct port:
-      const auto& taskPortMap = m_currentTask->ports();
-      auto it = taskPortMap.find(source["port"]);
-      if (it == taskPortMap.end())
-      {
-        return representations;
-      }
-      // Fetch data from the port. We only understand ObjectsInRoles at this point:
-      auto portData = it->second->parent()->portData(it->second);
-      if (portData)
-      {
-        if (auto objectsInRoles = std::dynamic_pointer_cast<smtk::task::ObjectsInRoles>(portData))
-        {
-          for (const auto& entry : objectsInRoles->data())
-          {
-            if (sourceRole.valid() && entry.first != sourceRole)
-            { // Skip objects in unrequested roles.
-              continue;
-            }
-            // Filter objects as requested.
-            for (const auto& object : entry.second)
-            {
-              if (filterObject(filter, object))
-              {
-                objects.insert(object);
-              }
-            }
-          }
-        }
-        else
-        {
-          smtkErrorMacro(
-            smtk::io::Logger::instance(),
-            "Unhandled port data type \"" << portData->typeName() << "\".");
-        }
-      }
-    }
-    break;
-  }
-
-  for (const auto& object : objects)
-  {
-    smtk::resource::Resource* resource{ nullptr };
-    QPointer<pqSMTKResource> pvrsrc;
-    if ((resource = dynamic_cast<smtk::resource::Resource*>(object)))
-    {
-      pvrsrc = behavior->getPVResource(resource->shared_from_this());
-    }
-    else if (auto* comp = dynamic_cast<smtk::resource::Component*>(object))
-    {
-      resource = comp->resource().get();
-      pvrsrc = behavior->getPVResource(comp->resource());
-    }
-    if (!pvrsrc || !this->isResourceRelevant(resource->shared_from_this(), filter))
-    {
-      continue;
-    }
-
-    for (const auto& view : pvrsrc->getViews())
-    {
-      for (const auto& representation : pvrsrc->getRepresentations(view))
-      {
-        representations[representation].insert(object);
-      }
-    }
-  }
-
-  return representations;
-}
-
-bool pqSMTKTaskResourceVisibility::isResourceRelevant(
-  const std::shared_ptr<smtk::resource::Resource>& resource,
-  const nlohmann::json& filter)
-{
-  smtk::resource::Resource* rsrc = resource.get();
-  return filterObject(filter, rsrc);
 }

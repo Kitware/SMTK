@@ -124,21 +124,21 @@ bool DoubleItemDefinition::setDefaultValue(
       return false;
     }
     // do we have a unit system?
-    if (m_unitsSystem)
+    if (m_unitSystem)
     {
       // Are the units compatible?
       bool status;
-      auto defUnit = m_unitsSystem->unit(m_units, &status);
+      auto defUnit = m_unitSystem->unit(m_units, &status);
       if (!status)
       {
         return false; // Could not find the definition's units
       }
-      auto valUnit = m_unitsSystem->unit(units, &status);
+      auto valUnit = m_unitSystem->unit(units, &status);
       if (!status)
       {
         return false; // Could not find the default vals' units
       }
-      auto converter = m_unitsSystem->convert(valUnit, defUnit);
+      auto converter = m_unitSystem->convert(valUnit, defUnit);
       if (!converter)
       {
         return false; // Could not find a conversion between the units
@@ -257,11 +257,11 @@ bool DoubleItemDefinition::reevaluateDefaults()
   std::string units;
   units::Unit defUnit;
   bool convert = false;
-  if (m_unitsSystem)
+  if (m_unitSystem)
   {
     // If we have an units System, lets see if the definition's units
     // are valid?
-    defUnit = m_unitsSystem->unit(m_units, &convert);
+    defUnit = m_unitSystem->unit(m_units, &convert);
   }
 
   // Can we not do conversion?
@@ -302,7 +302,7 @@ bool DoubleItemDefinition::reevaluateDefaults()
     double convertedVal;
     for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
     {
-      auto valMeasure = m_unitsSystem->measurement(m_defaultValuesAsStrings[i], &status);
+      auto valMeasure = m_unitSystem->measurement(m_defaultValuesAsStrings[i], &status);
       if (!status)
       {
         // Could not parse the value
@@ -310,7 +310,7 @@ bool DoubleItemDefinition::reevaluateDefaults()
       }
       if (!valMeasure.m_units.dimensionless())
       {
-        auto convertedMeasure = m_unitsSystem->convert(valMeasure, defUnit, &status);
+        auto convertedMeasure = m_unitSystem->convert(valMeasure, defUnit, &status);
         if (!status)
         {
           return false;

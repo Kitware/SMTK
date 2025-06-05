@@ -340,7 +340,7 @@ bool ValueItem::isAcceptable(const smtk::attribute::AttributePtr& exp) const
     return false;
   }
 
-  const auto& unitSys = def->unitsSystem();
+  const auto& unitSys = def->unitSystem();
   // Can't determine if the units are compatible w/o units system
   if (!unitSys)
   {
@@ -976,11 +976,11 @@ std::string ValueItem::supportedUnits() const
 {
   bool status = false;
   auto munits = this->units();
-  auto unitsSystem = m_definition->unitsSystem();
+  auto unitSystem = m_definition->unitSystem();
 
-  if (!(munits.empty() || (unitsSystem == nullptr)))
+  if (!(munits.empty() || (unitSystem == nullptr)))
   {
-    auto myUnit = unitsSystem->unit(munits, &status);
+    auto myUnit = unitSystem->unit(munits, &status);
   }
   return (status ? munits : std::string());
 }

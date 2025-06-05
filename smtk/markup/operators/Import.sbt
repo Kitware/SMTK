@@ -20,10 +20,14 @@
           FileFilters="VTK Unstructured Grids (*.vtu);; VTK Polydata (*.vtp);; VTK Image Data (*.vti);; Web Ontology Language (*.owl);;">
         </File>
 
+        <Void Name="consistency" Label="enforce consistency" Optional="true" IsEnabledByDefault="false">
+          <BriefDescription>If enabled, force surfaces to have consistent, outward-pointing normals.</BriefDescription>
+        </Void>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
     <include href="smtk/operation/Result.xml"/>
+    <include href="smtk/operation/Hints.xml"/>
     <AttDef Type="result(import)" BaseType="result">
       <ItemDefinitions>
         <Void Name="allow camera reset" Optional="true" IsEnabledByDefault="true" AdvanceLevel="11"/>

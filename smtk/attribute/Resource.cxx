@@ -54,7 +54,7 @@ Resource::Resource(const smtk::common::UUID& myID, smtk::resource::ManagerPtr ma
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(myID, manager)
 {
   queries().registerQueries<QueryList>();
-  m_unitsSystem = units::System::
+  m_unitSystem = units::System::
     createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
 
   // Do not display resource views in the attribute panel automatically.
@@ -66,7 +66,7 @@ Resource::Resource(smtk::resource::ManagerPtr manager)
   : smtk::resource::DerivedFrom<Resource, smtk::geometry::Resource>(manager)
 {
   queries().registerQueries<QueryList>();
-  m_unitsSystem = units::System::
+  m_unitSystem = units::System::
     createWithDefaults(); // Create a unit system with some prefixes, dimensions, and units.
 
   // Do not display resource views in the attribute panel automatically.
@@ -84,20 +84,20 @@ Resource::~Resource()
   }
 }
 
-bool Resource::setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
+bool Resource::setUnitSystem(const shared_ptr<units::System>& unitSystem)
 {
-  if (m_unitsSystem == unitsSystem)
+  if (m_unitSystem == unitSystem)
   {
     return true;
   }
   // Since changing units systems can invalidate Item Definitions and Items
   // we only can change systems when there are no definitions or if there was not
   // currently an units system specified.
-  if (m_unitsSystem && !m_definitions.empty())
+  if (m_unitSystem && !m_definitions.empty())
   {
     return false;
   }
-  m_unitsSystem = unitsSystem;
+  m_unitSystem = unitSystem;
   return true;
 }
 

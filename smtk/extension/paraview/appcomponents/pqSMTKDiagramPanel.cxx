@@ -211,3 +211,21 @@ bool pqSMTKDiagramPanel::configure(const nlohmann::json& data)
   }
   return false;
 }
+
+void pqSMTKDiagramPanel::focusPanel()
+{
+  // If we are owned by a dock widget, ensure the dock is shown.
+  if (auto* dock = qobject_cast<QDockWidget*>(this->parent()))
+  {
+    auto* action = dock->toggleViewAction();
+    if (!action->isChecked())
+    {
+      action->trigger();
+    }
+  }
+  // Raise our parent widget.
+  if (auto* parent = qobject_cast<QWidget*>(this->parent()))
+  {
+    parent->raise();
+  }
+}

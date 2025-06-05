@@ -63,6 +63,10 @@ public:
 Q_SIGNALS:
   void titleChanged(QString title);
 
+public Q_SLOTS:
+  /// Bring this panel into focus (showing and raising it as required).
+  virtual void focusPanel();
+
 protected Q_SLOTS:
   virtual void resourceManagerAdded(pqSMTKWrapper* mgr, pqServer* server);
   virtual void resourceManagerRemoved(pqSMTKWrapper* mgr, pqServer* server);

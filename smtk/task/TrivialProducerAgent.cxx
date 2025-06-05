@@ -28,7 +28,7 @@ TrivialProducerAgent::TrivialProducerAgent(Task* owningTask)
 
 State TrivialProducerAgent::state() const
 {
-  return State::Completable;
+  return m_internalState;
 }
 
 void TrivialProducerAgent::configure(const Configuration& config)
@@ -54,8 +54,8 @@ void TrivialProducerAgent::configure(const Configuration& config)
         for (const auto& objectSpec : entry.value())
         {
           auto* obj = helper.objectFromJSONSpec(objectSpec, "port");
-          std::cout << "Port \"" << m_name.data() << "\" add obj " << obj << " role " << entry.key()
-                    << "\n";
+          // std::cout << "Port \"" << m_name.data() << "\" add obj " << obj << " role "
+          //           << entry.key() << "\n";
           if (obj)
           {
             addedData |= m_data->addObject(obj, role);
@@ -64,6 +64,29 @@ void TrivialProducerAgent::configure(const Configuration& config)
       }
     }
 #endif
+  }
+  it = config.find("required-counts");
+  if (it != config.end())
+  {
+    m_requiredObjectCounts = it->get<std::map<smtk::string::Token, std::pair<int, int>>>();
+  }
+  else
+  {
+    m_requiredObjectCounts.clear();
+  }
+  it = config.find("internal-state");
+  if (it != config.end())
+  {
+    bool valid = false;
+    m_internalState = stateEnum(it->get<std::string>(), &valid);
+    if (!valid)
+    {
+      m_internalState = State::Completable;
+    }
+  }
+  else
+  {
+    m_internalState = State::Completable;
   }
   it = config.find("output-port");
   if (it != config.end())
@@ -83,6 +106,7 @@ void TrivialProducerAgent::configure(const Configuration& config)
 TrivialProducerAgent::Configuration TrivialProducerAgent::configuration() const
 {
   auto config = this->Superclass::configuration();
+  config["internal-state"] = stateName(m_internalState);
   if (m_outputPort)
   {
     config["output-port"] = m_outputPort->name();
@@ -95,43 +119,72 @@ TrivialProducerAgent::Configuration TrivialProducerAgent::configuration() const
   {
     config["data"] = m_data;
   }
+  if (!m_requiredObjectCounts.empty())
+  {
+    config["required-counts"] = m_requiredObjectCounts;
+  }
   return config;
+}
+
+std::string TrivialProducerAgent::troubleshoot() const
+{
+  std::ostringstream msg;
+  switch (m_internalState)
+  {
+    default:
+      break;
+    case smtk::task::State::Incomplete:
+      msg << R"html(<li>Missing objects in roles.</li>)html";
+      break;
+  }
+  return msg.str();
 }
 
 std::shared_ptr<PortData> TrivialProducerAgent::portData(const Port* port) const
 {
   if (port == m_outputPort)
   {
-    return m_data;
+    auto result = std::make_shared<ObjectsInRoles>();
+    result->merge(m_data.get());
+    return result;
+  }
+  return nullptr;
+}
+
+Port* TrivialProducerAgent::addObjectInRole(
+  Task* task,
+  const std::string& agentName,
+  smtk::string::Token role,
+  smtk::resource::PersistentObject* object)
+{
+  if (!task || agentName.empty() || !object)
+  {
+    return nullptr;
+  }
+  for (const auto& agent : task->agents())
+  {
+    if (auto* trivialProducer = dynamic_cast<TrivialProducerAgent*>(agent))
+    {
+      if (trivialProducer->name() == agentName)
+      {
+        State prev = trivialProducer->state();
+        bool didAdd = trivialProducer->m_data->addObject(object, role);
+        if (didAdd)
+        {
+          // Tell the task to update state based on this agent.
+          trivialProducer->parent()->updateAgentState(
+            trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+        }
+        return trivialProducer->outputPort();
+      }
+    }
   }
   return nullptr;
 }
 
 bool TrivialProducerAgent::addObjectInRole(
   Task* task,
-  const std::string& agentName,
-  smtk::string::Token role,
-  smtk::resource::PersistentObject* object)
-{
-  if (!task || agentName.empty() || !object)
-  {
-    return false;
-  }
-  for (const auto& agent : task->agents())
-  {
-    if (auto* trivialProducer = dynamic_cast<TrivialProducerAgent*>(agent))
-    {
-      if (trivialProducer->name() == agentName)
-      {
-        return trivialProducer->m_data->addObject(object, role);
-      }
-    }
-  }
-  return false;
-}
-
-bool TrivialProducerAgent::addObjectInRole(
-  Task* task,
   Port* port,
   smtk::string::Token role,
   smtk::resource::PersistentObject* object)
@@ -146,14 +199,22 @@ bool TrivialProducerAgent::addObjectInRole(
     {
       if (trivialProducer->outputPort() == port)
       {
-        return trivialProducer->m_data->addObject(object, role);
+        State prev = trivialProducer->state();
+        bool didAdd = trivialProducer->m_data->addObject(object, role);
+        if (didAdd)
+        {
+          trivialProducer->parent()->updateAgentState(
+            trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+        }
+        return didAdd;
       }
     }
   }
   return false;
 }
 
-bool TrivialProducerAgent::removeObjectFromRole(
+Port* TrivialProducerAgent::removeObjectFromRole(
   Task* task,
   const std::string& agentName,
   smtk::string::Token role,
@@ -161,7 +222,7 @@ bool TrivialProducerAgent::removeObjectFromRole(
 {
   if (!task || agentName.empty() || !object)
   {
-    return false;
+    return nullptr;
   }
   // NOLINTNEXTLINE(readability-use-anyofallof)
   for (const auto& agent : task->agents())
@@ -170,14 +231,18 @@ bool TrivialProducerAgent::removeObjectFromRole(
     {
       if (trivialProducer->name() == agentName)
       {
+        State prev = trivialProducer->state();
         if (trivialProducer->m_data->removeObject(object, role))
         {
-          return true;
+          trivialProducer->parent()->updateAgentState(
+            trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+          return trivialProducer->outputPort();
         }
       }
     }
   }
-  return false;
+  return nullptr;
 }
 
 bool TrivialProducerAgent::removeObjectFromRole(
@@ -197,8 +262,12 @@ bool TrivialProducerAgent::removeObjectFromRole(
     {
       if (trivialProducer->outputPort() == port)
       {
+        State prev = trivialProducer->state();
         if (trivialProducer->m_data->removeObject(object, role))
         {
+          trivialProducer->parent()->updateAgentState(
+            trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
           return true;
         }
       }
@@ -207,12 +276,11 @@ bool TrivialProducerAgent::removeObjectFromRole(
   return false;
 }
 
-bool TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
+Port* TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
 {
-  bool didChange = false;
   if (!task || agentName.empty())
   {
-    return didChange;
+    return nullptr;
   }
   for (const auto& agent : task->agents())
   {
@@ -220,11 +288,18 @@ bool TrivialProducerAgent::resetData(Task* task, const std::string& agentName)
     {
       if (trivialProducer->name() == agentName)
       {
-        didChange |= trivialProducer->m_data->clear();
+        State prev = trivialProducer->state();
+        if (trivialProducer->m_data->clear())
+        {
+          trivialProducer->parent()->updateAgentState(
+            trivialProducer, prev, trivialProducer->computeInternalState());
+          trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+          return trivialProducer->outputPort();
+        }
       }
     }
   }
-  return didChange;
+  return nullptr;
 }
 
 bool TrivialProducerAgent::resetData(Task* task, Port* port)
@@ -238,10 +313,51 @@ bool TrivialProducerAgent::resetData(Task* task, Port* port)
   {
     if (auto* trivialProducer = dynamic_cast<TrivialProducerAgent*>(agent))
     {
+      State prev = trivialProducer->state();
       didChange |= trivialProducer->m_data->clear();
+      if (didChange)
+      {
+        trivialProducer->parent()->updateAgentState(
+          trivialProducer, prev, trivialProducer->computeInternalState());
+        trivialProducer->parent()->portDataUpdated(trivialProducer->outputPort());
+      }
     }
   }
   return didChange;
+}
+
+State TrivialProducerAgent::computeInternalState()
+{
+  State result = State::Completable;
+  for (const auto& entry : m_requiredObjectCounts)
+  {
+    auto it = m_data->data().find(entry.first);
+    if (it == m_data->data().end())
+    {
+      result = State::Incomplete;
+      break;
+    }
+    auto numObj = static_cast<int>(it->second.size());
+    if (numObj >= entry.second.first && numObj <= entry.second.second)
+    {
+      // We are in range, skip following checks.
+      continue;
+    }
+    if (entry.second.second < 0 && numObj >= entry.second.first)
+    {
+      // We are allowed to have any number as long as we exceed the minimum.
+      continue;
+    }
+    if (entry.second.first < 0 && entry.second.second < 0 && numObj == 0)
+    {
+      // We are required to have 0 objects in this role.
+      continue;
+    }
+    result = State::Incomplete;
+    break;
+  }
+  m_internalState = result;
+  return result;
 }
 
 } // namespace task

@@ -75,7 +75,16 @@ public:
 
   /// Assign the \a mesh data as this object's shape and update Field children to match.
   bool setShapeData(vtkSmartPointer<vtkDataObject> mesh, ShapeOptions& options);
+  /// Return the geometric content for this node as a vtkDataObject.
+  ///
+  /// Because unstructured data may be modeled with vtkPolyData, vtkUnstructuredGrid,
+  /// or vtkCellGrid data, there is no better type to return.
   vtkSmartPointer<vtkDataObject> shapeData() const;
+  /// Return the geometric content for this node.
+  ///
+  /// This method is inherited from DiscreteGeometry and does not make any assumptions
+  /// about the type of data returned.
+  vtkSmartPointer<vtkDataObject> shape() const override { return m_mesh; }
 
   const AssignedIds& pointIds() const { return *m_pointIds; }
   const AssignedIds& cellIds() const { return *m_cellIds; }

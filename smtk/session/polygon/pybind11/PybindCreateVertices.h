@@ -23,8 +23,6 @@ inline PySharedPtrClass< smtk::session::polygon::CreateVertices> pybind11_init_s
 {
   PySharedPtrClass< smtk::session::polygon::CreateVertices > instance(m, "CreateVertices", parent);
   instance
-    .def(py::init<::smtk::session::polygon::CreateVertices const &>())
-    .def("deepcopy", (smtk::session::polygon::CreateVertices & (smtk::session::polygon::CreateVertices::*)(::smtk::session::polygon::CreateVertices const &)) &smtk::session::polygon::CreateVertices::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateVertices> (*)()) &smtk::session::polygon::CreateVertices::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::CreateVertices> (*)(::std::shared_ptr<smtk::session::polygon::CreateVertices> &)) &smtk::session::polygon::CreateVertices::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<const smtk::session::polygon::CreateVertices> (smtk::session::polygon::CreateVertices::*)() const) &smtk::session::polygon::CreateVertices::shared_from_this)

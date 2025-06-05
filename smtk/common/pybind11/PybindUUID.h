@@ -31,6 +31,8 @@ inline py::class_< smtk::common::UUID > pybind11_init_smtk_common_UUID(py::modul
     .def("__ne__", (bool (smtk::common::UUID::*)(::smtk::common::UUID const &) const) &smtk::common::UUID::operator!=)
     .def("__eq__", (bool (smtk::common::UUID::*)(::smtk::common::UUID const &) const) &smtk::common::UUID::operator==)
     .def("__lt__", (bool (smtk::common::UUID::*)(::smtk::common::UUID const &) const) &smtk::common::UUID::operator<)
+    .def("__hash__", [](const smtk::common::UUID& uid) { return uid.hash(); })
+    .def("__repr__", [](const smtk::common::UUID& uid) { return "UUID('" + uid.toString() + "')"; })
     .def("deepcopy", (smtk::common::UUID & (smtk::common::UUID::*)(::smtk::common::UUID const &)) &smtk::common::UUID::operator=)
     .def_static("random", &smtk::common::UUID::random)
     .def_static("null", &smtk::common::UUID::null)

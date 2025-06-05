@@ -21,8 +21,6 @@ inline PySharedPtrClass< smtk::session::polygon::LegacyRead > pybind11_init_smtk
 {
   PySharedPtrClass< smtk::session::polygon::LegacyRead > instance(m, "LegacyRead", parent);
   instance
-    .def(py::init<::smtk::session::polygon::LegacyRead const &>())
-    .def("deepcopy", (smtk::session::polygon::LegacyRead & (smtk::session::polygon::LegacyRead::*)(::smtk::session::polygon::LegacyRead const &)) &smtk::session::polygon::LegacyRead::operator=)
     .def("ableToOperate", &smtk::session::polygon::LegacyRead::ableToOperate)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::LegacyRead> (*)()) &smtk::session::polygon::LegacyRead::create)
     .def_static("create", (std::shared_ptr<smtk::session::polygon::LegacyRead> (*)(::std::shared_ptr<smtk::session::polygon::LegacyRead> &)) &smtk::session::polygon::LegacyRead::create, py::arg("ref"))

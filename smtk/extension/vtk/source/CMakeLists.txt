@@ -7,7 +7,9 @@ set(classes
   vtkAttributeMultiBlockSource
   vtkCmbLayeredConeSource
   vtkConeFrustum
+  vtkDisk
   vtkImplicitConeFrustum
+  vtkImplicitDisk
   vtkModelMultiBlockSource
   vtkModelView
   vtkResourceMultiBlockSource)

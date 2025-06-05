@@ -1208,7 +1208,7 @@ bool Attribute::setLocalUnits(const std::string& newUnits)
     return false;
   }
 
-  const auto& unitSys = m_definition->unitsSystem();
+  const auto& unitSys = m_definition->unitSystem();
   // Can't determine if the units are compatible w/o units system
   if (!unitSys)
   {

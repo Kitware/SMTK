@@ -23,9 +23,7 @@ inline PySharedPtrClass< smtk::session::mesh::Import, smtk::operation::XMLOperat
 {
   PySharedPtrClass< smtk::session::mesh::Import, smtk::operation::XMLOperation > instance(m, "Import");
   instance
-    .def(py::init<::smtk::session::mesh::Import const &>())
     .def(py::init<>())
-    .def("deepcopy", (smtk::session::mesh::Import & (smtk::session::mesh::Import::*)(::smtk::session::mesh::Import const &)) &smtk::session::mesh::Import::operator=)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::Import> (*)()) &smtk::session::mesh::Import::create)
     .def_static("create", (std::shared_ptr<smtk::session::mesh::Import> (*)(::std::shared_ptr<smtk::session::mesh::Import> &)) &smtk::session::mesh::Import::create, py::arg("ref"))
     .def("shared_from_this", (std::shared_ptr<smtk::session::mesh::Import> (smtk::session::mesh::Import::*)()) &smtk::session::mesh::Import::shared_from_this)

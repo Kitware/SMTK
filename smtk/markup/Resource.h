@@ -98,6 +98,21 @@ public:
     */
   static DomainFactory& domainFactory() { return s_domainFactory; }
 
+  /**\brief Set/get the default units of length for geometric data in this resource.
+    *
+    * When the default is empty (which it is by default), no units are provided.
+    * Otherwise, all geometric data is assumed to be in these units.
+    *
+    * You should not modify the length unit while geometric data exists inside
+    * the resource.
+    *
+    * If there is no valid unit system or if \a unit is invalid
+    * (i.e., not a valid unit or with dimensions other than length),
+    * setLengthUnit() will fail.
+    */
+  std::string lengthUnit() const { return m_lengthUnit; }
+  bool setLengthUnit(const std::string& unit);
+
 protected:
   friend class Component;
 
@@ -111,6 +126,8 @@ protected:
 
   DomainMap m_domains;
   static DomainFactory s_domainFactory;
+
+  std::string m_lengthUnit;
 };
 
 template<typename Modifier>

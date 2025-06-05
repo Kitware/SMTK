@@ -18,6 +18,8 @@
 
 #include "smtk/extension/vtk/io/ImportAsVTKData.h"
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/FileItem.h"
@@ -28,6 +30,7 @@
 #include "smtk/attribute/ResourceItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/operation/Hints.h"
 #include "smtk/operation/MarkGeometry.h"
 
 #include "smtk/resource/Manager.h"
@@ -51,6 +54,7 @@
 #include "vtkLookupTable.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkMultiThreshold.h"
+#include "vtkOrientPolyData.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
@@ -172,6 +176,20 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
     }
   }
 
+  return result;
+}
+
+vtkSmartPointer<vtkPolyData> makeConsistent(const vtkSmartPointer<vtkPolyData>& surface)
+{
+  vtkNew<vtkOrientPolyData> orient;
+  orient->SetInputDataObject(surface);
+  orient->ConsistencyOn();
+  orient->AutoOrientNormalsOn();
+  orient->NonManifoldTraversalOn();
+  orient->Update();
+
+  auto result = vtkSmartPointer<vtkPolyData>::New();
+  result->ShallowCopy(orient->GetOutput());
   return result;
 }
 
@@ -368,6 +386,7 @@ Import::Result Import::operateInternal()
   }
 
   bool ok = true;
+  bool consistency = this->parameters()->findVoid("consistency")->isEnabled();
   smtk::attribute::FileItem::Ptr filenameItem = this->parameters()->findFile("filename");
   for (std::size_t ii = 0; ii < filenameItem->numberOfValues(); ++ii)
   {
@@ -396,7 +415,7 @@ Import::Result Import::operateInternal()
       case ".vtp"_hash: // fall through
       case ".vtu"_hash: // fall through
       case ".vtk"_hash:
-        ok &= this->importVTKMesh(resource, filename);
+        ok &= this->importVTKMesh(resource, filename, consistency);
         break;
       default:
       {
@@ -414,6 +433,12 @@ Import::Result Import::operateInternal()
   {
     m_result->findInt("outcome")->setValue(0, static_cast<int>(Import::Outcome::SUCCEEDED));
     m_result->findResource("resourcesCreated")->appendValue(resource);
+
+    auto created = m_result->findComponent("created");
+    std::set<smtk::resource::Component::Ptr> importedComponents;
+    importedComponents.insert(created->begin(), created->end());
+    smtk::operation::addSelectionHint(
+      m_result, importedComponents, smtk::view::SelectionAction::UNFILTERED_REPLACE);
   }
   return m_result;
 }
@@ -502,13 +527,25 @@ bool Import::importVTKImage(const Resource::Ptr& resource, const std::string& fi
   return true;
 }
 
-bool Import::importVTKMesh(const Resource::Ptr& resource, const std::string& filename)
+bool Import::importVTKMesh(
+  const Resource::Ptr& resource,
+  const std::string& filename,
+  bool consistency)
 {
   smtk::extension::vtk::io::ImportAsVTKData vtkImporter;
   auto data = vtkImporter(filename);
   if (!data)
   {
     return false;
+  }
+  if (consistency)
+  {
+    auto* pp = vtkPolyData::SafeDownCast(data.GetPointer());
+    if (pp)
+    {
+      vtkSmartPointer<vtkPolyData> pdata(pp);
+      data = makeConsistent(pdata);
+    }
   }
 
   auto createdItems = m_result->findComponent("created");
