@@ -21,6 +21,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindRegistrar.h"
 #include "PybindResource.h"
 #include "PybindComponent.h"
 #include "PybindSpatialData.h"
@@ -39,9 +40,12 @@ PYBIND11_MODULE(_smtkPybindMarkup, markup)
   py::module::import("smtk.common");
   py::module::import("smtk.string");
   py::module::import("smtk.resource");
+  py::module::import("smtk.operation");
   py::module::import("smtk.geometry");
   py::module::import("smtk.graph");
+  py::module::import("smtk.view");
 
+  auto smtk_markup_Registrar = pybind11_init_smtk_markup_Registrar(markup);
   auto smtk_markup_Resource = pybind11_init_smtk_markup_Resource(markup);
   auto smtk_markup_Component = pybind11_init_smtk_markup_Component(markup);
   auto smtk_markup_Domain = pybind11_init_smtk_markup_Domain(markup);
