@@ -40,6 +40,20 @@ inline PySharedPtrClass< smtk::attribute::ValueItemTemplate<int>, smtk::attribut
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("element") = 0)
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("log"))
     .def("value", (int (smtk::attribute::ValueItemTemplate<int>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<int>::value, py::arg("element"), py::arg("log"))
+    .def("setValues", [&](smtk::attribute::ValueItemTemplate<int>* self, const std::vector<int>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::ValueItemTemplate<int>* self) -> std::vector<int>
+      {
+        std::vector<int> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     ;
   return instance;
 }
@@ -66,6 +80,20 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<double>, smtk::attrib
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("element") = 0)
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("log"))
     .def("value", (double (smtk::attribute::ValueItemTemplate<double>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<double>::value, py::arg("element"), py::arg("log"))
+    .def("setValues", [&](smtk::attribute::ValueItemTemplate<double>* self, const std::vector<double>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::ValueItemTemplate<double>* self) -> std::vector<double>
+      {
+        std::vector<double> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     ;
   return instance;
 }
@@ -92,9 +120,22 @@ inline PySharedPtrClass<smtk::attribute::ValueItemTemplate<std::string>, smtk::a
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(::size_t) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("element") = 0)
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("log"))
     .def("value", (std::string (smtk::attribute::ValueItemTemplate<std::string>::*)(::size_t, smtk::io::Logger&) const) &smtk::attribute::ValueItemTemplate<std::string>::value, py::arg("element"), py::arg("log"))
+    .def("setValues", [&](smtk::attribute::ValueItemTemplate<std::string>* self, const std::vector<std::string>& values)
+      {
+        return self->setValues(values.begin(), values.end());
+      }, py::arg("values"))
+    .def("values", [&](smtk::attribute::ValueItemTemplate<std::string>* self) -> std::vector<std::string>
+      {
+        std::vector<std::string> values;
+        values.reserve(self->numberOfValues());
+        for (const auto& vv : *self)
+        {
+          values.push_back(vv);
+        }
+        return values;
+      })
     ;
   return instance;
-
 }
 
 #endif

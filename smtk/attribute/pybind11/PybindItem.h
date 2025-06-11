@@ -20,7 +20,15 @@
 #include "smtk/io/Logger.h"
 #include "smtk/simulation/UserData.h"
 
+#include <sstream>
+#include <unordered_set>
+
 namespace py = pybind11;
+
+namespace
+{
+  std::unordered_set<const smtk::attribute::Item*> allItems;
+}
 
 inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_Item(py::module &m)
 {
@@ -81,6 +89,24 @@ inline PySharedPtrClass< smtk::attribute::Item > pybind11_init_smtk_attribute_It
         auto result = item.assign(sourceItem, options, logger);
         return result.success();
       }, py::arg("sourceItem"), py::arg("options"), py::arg("logger"))
+    .def("pointer", [](const smtk::attribute::Item& self)
+      {
+        std::ostringstream addr;
+        addr << std::hex << &self;
+        allItems.insert(&self);
+        return addr.str();
+      })
+    .def_static("fromPointer", [](const std::string& ptrStr)
+      {
+        char* end = const_cast<char*>(ptrStr.c_str() + ptrStr.size());
+        // NOLINTNEXTLINE(performance-no-int-to-ptr)
+        auto* ptr = reinterpret_cast<smtk::attribute::Item*>(strtoull(ptrStr.c_str(), &end, 16));
+        if (ptr && allItems.find(ptr) != allItems.end())
+        {
+          return ptr->shared_from_this();
+        }
+        return smtk::attribute::Item::Ptr();
+      })
     .def_static("type2String", &smtk::attribute::Item::type2String, py::arg("t"))
     .def_static("string2Type", &smtk::attribute::Item::string2Type, py::arg("s"))
     ;

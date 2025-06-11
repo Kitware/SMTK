@@ -17,6 +17,7 @@
 
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 #include <memory>
 #include <string>
 
@@ -25,9 +26,11 @@ namespace smtk
 namespace view
 {
 /// @brief Configure a view, specifying types and attributes, without specifying a UI library.
-class SMTKCORE_EXPORT Configuration
+class SMTKCORE_EXPORT Configuration : smtkEnableSharedPtr(Configuration)
 {
 public:
+  smtkTypeMacroBase(smtk::view::Configuration);
+
   /// @brief Configure one item in a view, which may contain children.
   class SMTKCORE_EXPORT Component
   {
