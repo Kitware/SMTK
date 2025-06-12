@@ -604,7 +604,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
     return;
   }
   // Find the scroll area for the view. If none exists, add it.
-  auto* area = frame->findChild<QScrollArea*>();
+  auto* area = frame->findChild<QScrollArea*>(QString(), Qt::FindDirectChildrenOnly);
   if (!area)
   {
     area = new QScrollArea(frame);
