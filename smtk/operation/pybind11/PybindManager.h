@@ -57,6 +57,10 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
       }, py::arg("module"))
     .def("managers", &smtk::operation::Manager::managers)
     .def("setManagers", &smtk::operation::Manager::setManagers, py::arg("managers"))
+    .def("launch", [](smtk::operation::Manager& manager, const std::shared_ptr<smtk::operation::Operation>& op)
+      {
+        manager.launchers()(op);
+      }, py::arg("operation"))
     ;
   return instance;
 }
