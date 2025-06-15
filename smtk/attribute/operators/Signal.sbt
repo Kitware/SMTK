@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Description of the "associate" Operation -->
+<!-- Description of the "signal" Operation -->
 <SMTK_AttributeResource Version="3">
   <Definitions>
 

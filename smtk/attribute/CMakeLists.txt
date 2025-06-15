@@ -75,12 +75,13 @@ set(jsonAttributeSrcs
 set(attributeOperators
   Associate
   Dissociate
+  EditAttributeItem
   Export
   Import
   Read
   Signal
   Write
-  )
+)
 
 set(attributeHeaders
   ${jsonAttributeHeaders}

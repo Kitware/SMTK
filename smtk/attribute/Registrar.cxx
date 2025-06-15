@@ -19,6 +19,7 @@
 
 #include "smtk/attribute/operators/Associate.h"
 #include "smtk/attribute/operators/Dissociate.h"
+#include "smtk/attribute/operators/EditAttributeItem.h"
 #include "smtk/attribute/operators/Export.h"
 #include "smtk/attribute/operators/Import.h"
 #include "smtk/attribute/operators/Read.h"
@@ -43,8 +44,19 @@ namespace attribute
 {
 namespace
 {
-typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> OperationList;
-}
+// clang-format off
+using OperationList = std::tuple<
+  Associate,
+  Dissociate,
+  EditAttributeItem,
+  Export,
+  Import,
+  Read,
+  Signal,
+  Write
+>;
+// clang-format on
+} // namespace
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
