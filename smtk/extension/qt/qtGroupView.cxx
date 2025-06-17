@@ -53,7 +53,7 @@ public:
   QList<smtk::extension::qtBaseView*> m_ChildViews, m_TabbedViews;
   QList<QWidget*> m_PageWidgets;
   QList<QIcon> m_PageIcons;
-  QList<QWidget*> m_Labels;
+  QList<QLabel*> m_Labels;
   qtGroupViewInternals::Style m_style{ TABBED };
   std::vector<smtk::view::ConfigurationPtr> m_activeViews;
   int m_currentTabSelected{ 0 };
@@ -634,7 +634,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   area->widget()->layout()->addWidget(child->widget());
 
   // For debugging.
-  // std::cout
+  // std::cerr
   //   << "Adding " << child->widget()->objectName().toStdString()
   //   << " to " << area->widget()->layout()->objectName().toStdString() << "\n";
 }

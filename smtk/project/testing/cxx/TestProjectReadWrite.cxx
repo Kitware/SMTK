@@ -32,6 +32,8 @@
 
 #include "smtk/model/Registrar.h"
 
+#include "smtk/session/vtk/Registrar.h"
+
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
@@ -87,6 +89,9 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
     smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager, operationManager);
   auto operationRegistry =
     smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
+
+  auto vtkSessionRegistry =
+    smtk::plugin::addToManagers<smtk::session::vtk::Registrar>(resourceManager, operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
