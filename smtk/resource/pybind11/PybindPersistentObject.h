@@ -31,6 +31,22 @@ inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_r
 {
   PySharedPtrClass< smtk::resource::PersistentObject > instance(m, "PersistentObject");
   instance
+    .def("__enter__", [](smtk::resource::PersistentObject& self)
+      {
+        return self.shared_from_this();
+      }, "Enter the runtime context related to this object."
+    )
+    .def("__exit__", [](smtk::resource::PersistentObject& self,
+        const std::optional<pybind11::type>& exc_type,
+        const std::optional<pybind11::object>& exc_value,
+        const std::optional<pybind11::object>& traceback)
+      {
+        (void)self;
+        (void)exc_type;
+        (void)exc_value;
+        (void)traceback;
+      }, "Exit the runtime context related to this object."
+    )
     .def("deepcopy", (smtk::resource::PersistentObject & (smtk::resource::PersistentObject::*)(::smtk::resource::PersistentObject const &)) &smtk::resource::PersistentObject::operator=)
     .def("typeName", &smtk::resource::PersistentObject::typeName)
     .def("id", &smtk::resource::PersistentObject::id)
