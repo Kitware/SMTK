@@ -10,8 +10,8 @@
 #
 #=============================================================================
 
-# Our only test here requires the mesh session.
-if (SMTK_ENABLE_MARKUP)
+# Our only test here requires the markup resource.
+if (SMTK_MARKUP_SUPPORT_ENABLED)
   set(smtkExtensionVTKSourcePythonDataTests
     iterateMultiBlockModel
   )
