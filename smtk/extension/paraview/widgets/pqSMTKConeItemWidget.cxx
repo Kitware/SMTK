@@ -32,7 +32,11 @@
 #include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
 #include "vtkVector.h"
+#include "vtkVersionMacros.h"
+
+#if VTK_VERSION_NUMBER < VTK_VERSION_CHECK(9, 5, 0)
 #include "vtkVectorOperators.h"
+#endif
 
 using qtItem = smtk::extension::qtItem;
 using qtAttributeItemInfo = smtk::extension::qtAttributeItemInfo;

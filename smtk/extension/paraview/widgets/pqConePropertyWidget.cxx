@@ -22,7 +22,11 @@
 #include "vtkCommand.h"
 #include "vtkMath.h"
 #include "vtkVector.h"
+#include "vtkVersionMacros.h"
+
+#if VTK_VERSION_NUMBER < VTK_VERSION_CHECK(9, 5, 0)
 #include "vtkVectorOperators.h"
+#endif
 
 class pqConePropertyWidget::Internals
 {

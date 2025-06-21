@@ -45,7 +45,11 @@
 #include "vtkXMLImageDataWriter.h"
 
 #include "vtkVector.h"
+#include "vtkVersionMacros.h"
+
+#if VTK_VERSION_NUMBER < VTK_VERSION_CHECK(9, 5, 0)
 #include "vtkVectorOperators.h"
+#endif
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
