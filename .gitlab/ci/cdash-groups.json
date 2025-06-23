@@ -1,15 +1,15 @@
 {
-    "latest-master": [
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_asan" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_coverage" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_nodata" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_paraview" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_plain" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_tidy" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_ubsan" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_vtk_python3" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_arm64" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_x86_64" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-windows_vs2022_ninja" }
+    "latest-release": [
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_asan" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_coverage" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_nodata" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_paraview" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_plain" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_tidy" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_ubsan" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-fedora41_vtk_python3" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-macos_arm64" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-macos_x86_64" },
+        { "group": "release", "site": "gitlab-ci", "buildname": "smtk-windows_vs2022_ninja" }
     ]
 }
