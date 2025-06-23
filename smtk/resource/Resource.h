@@ -355,7 +355,7 @@ public:
 
   /// \brief Sets the system of units used by this resource.
   virtual bool setUnitSystem(const shared_ptr<units::System>& unitSystem);
-  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use setUnitSystem() instead.")
   virtual bool setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
   {
     return this->setUnitSystem(unitsSystem);
@@ -363,7 +363,7 @@ public:
 
   /// \brief Gets the system of units used by this resource.
   const shared_ptr<units::System>& unitSystem() const { return m_unitSystem; }
-  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use setUnitSystem() instead.")
   const shared_ptr<units::System>& unitsSystem() const { return m_unitSystem; }
   ///@}
 

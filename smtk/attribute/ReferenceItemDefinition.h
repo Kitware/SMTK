@@ -266,7 +266,7 @@ protected:
     smtk::common::Categories& inheritedToParent) override;
 
   void setUnitSystem(const shared_ptr<units::System>& unitSystem) override;
-  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use setUnitSystem() instead.")
   void setUnitsSystem(const shared_ptr<units::System>& unitsSystem) override
   {
     this->setUnitSystem(unitsSystem);

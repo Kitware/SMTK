@@ -94,7 +94,7 @@ public:
   ///
   /// Note that this method will take light/dark mode into
   /// consideration.
-  SMTK_DEPRECATED_IN_NEXT("Use qtDiagramViewConfiguration::colorFromToken instead.")
+  SMTK_DEPRECATED_IN_25_06("Use qtDiagramViewConfiguration::colorFromToken instead.")
   QColor colorForArcType(smtk::string::Token arcType) const
   {
     return this->colorFromToken(arcType);
