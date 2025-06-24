@@ -170,7 +170,7 @@ public:
 
   ///\brief Return the unitSystem of the Definition
   const shared_ptr<units::System>& unitSystem() const { return m_unitSystem; }
-  SMTK_DEPRECATED_IN_NEXT("Use unitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use unitSystem() instead.")
   const shared_ptr<units::System>& unitsSystem() const { return m_unitSystem; }
 
   virtual smtk::attribute::ItemPtr buildItem(Attribute* owningAttribute, int itemPosition)
@@ -196,7 +196,7 @@ protected:
   ///
   /// Note that this should be done before units are specified in the Definition
   virtual void setUnitSystem(const shared_ptr<units::System>& unitSystem);
-  SMTK_DEPRECATED_IN_NEXT("Use setUnitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use setUnitSystem() instead.")
   virtual void setUnitsSystem(const shared_ptr<units::System>& unitsSystem)
   {
     this->setUnitSystem(unitsSystem);

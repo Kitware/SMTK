@@ -483,7 +483,7 @@ public:
 
   /// \brief Gets the system of units used by this definition.
   const std::shared_ptr<units::System>& unitSystem() const;
-  SMTK_DEPRECATED_IN_NEXT("Use unitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use unitSystem() instead.")
   const std::shared_ptr<units::System>& unitsSystem() const { return this->unitSystem(); }
 
 protected:
@@ -514,7 +514,7 @@ protected:
     const unsigned int& writeLevelFromParent);
 
   void setItemDefinitionUnitSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const;
-  SMTK_DEPRECATED_IN_NEXT("Use setItemDefinitionUnitSystem() instead.")
+  SMTK_DEPRECATED_IN_25_06("Use setItemDefinitionUnitSystem() instead.")
   void setItemDefinitionUnitsSystem(const smtk::attribute::ItemDefinitionPtr& itemDef) const
   {
     this->setItemDefinitionUnitSystem(itemDef);
