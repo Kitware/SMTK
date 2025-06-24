@@ -74,11 +74,14 @@ set(jsonAttributeSrcs
 
 set(attributeOperators
   Associate
+  CreateAttribute
+  DeleteAttribute
   Dissociate
   EditAttributeItem
   Export
   Import
   Read
+  RenameAttribute
   Signal
   Write
 )

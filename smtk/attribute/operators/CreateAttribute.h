@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_operation_operators_EditAttributeItem_h
-#define smtk_operation_operators_EditAttributeItem_h
+#ifndef smtk_operation_operators_CreateAttribute_h
+#define smtk_operation_operators_CreateAttribute_h
 
 #include "smtk/operation/XMLOperation.h"
 
@@ -17,19 +17,13 @@ namespace smtk
 namespace attribute
 {
 
-/**\brief An operation to edit one item of one attribute.
-
-   If the item is optional, it may be enabled/disabled.
-   If the item is extensible, the number of values may be modified.
-   If the item has values, those values may be modified.
-   If any edits are performed, the operation succeeds and
-   the corresponding attribute is marked modified.
+/**\brief An operation to create an attribute according to a concrete definition.
   */
-class SMTKCORE_EXPORT EditAttributeItem : public smtk::operation::XMLOperation
+class SMTKCORE_EXPORT CreateAttribute : public smtk::operation::XMLOperation
 {
 public:
-  smtkTypeMacro(smtk::attribute::EditAttributeItem);
-  smtkCreateMacro(EditAttributeItem);
+  smtkTypeMacro(smtk::attribute::CreateAttribute);
+  smtkCreateMacro(CreateAttribute);
   smtkSharedFromThisMacro(smtk::operation::Operation);
   smtkSuperclassMacro(smtk::operation::XMLOperation);
 
@@ -41,4 +35,4 @@ protected:
 } // namespace attribute
 } // namespace smtk
 
-#endif // smtk_operation_operators_EditAttributeItem_h
+#endif // smtk_operation_operators_CreateAttribute_h
