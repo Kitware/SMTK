@@ -12,6 +12,7 @@
 #define pybind_smtk_operation_Observer_h
 
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 
 #include "smtk/attribute/Attribute.h"
 
@@ -41,6 +42,7 @@ inline py::class_< smtk::operation::Observers > pybind11_init_smtk_operation_Obs
   py::class_< smtk::operation::Observers::Key >(instance, "Key")
     .def(py::init<>())
     .def("assigned", &smtk::operation::Observers::Key::assigned)
+    .def("release", &smtk::operation::Observers::Key::release)
     ;
   return instance;
 }
