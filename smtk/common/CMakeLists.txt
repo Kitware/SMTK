@@ -24,6 +24,7 @@ set(commonClasses
   RangeDetector
   RuntimeTypeContainer
   Singleton
+  Singletons
   Status
   StringUtil
   ThreadPool

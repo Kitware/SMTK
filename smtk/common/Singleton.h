@@ -15,6 +15,12 @@ namespace smtk
 {
 namespace common
 {
+
+/// This is a base class for objects that should have a single instance per process.
+///
+/// The template provides an `instance()` method for creating or fetching the instance.
+/// This is distinct from the the Singletons (plural) class also in `smtk/common`, which
+/// is a container that can hold a single instance of any given type for access as needed.
 template<typename T>
 class Singleton
 {
