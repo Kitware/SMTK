@@ -16,16 +16,12 @@
 #include "smtk/resource/PersistentObject.h"
 
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/view/HandleManager.h"
 
 #include <sstream>
 #include <unordered_set>
 
 namespace py = pybind11;
-
-namespace
-{
-  std::unordered_set<const smtk::resource::PersistentObject*> allObjects;
-}
 
 inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_resource_PersistentObject(py::module &m)
 {
@@ -58,23 +54,18 @@ inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_r
     .def("classHierarchy", &smtk::resource::PersistentObject::classHierarchy)
     .def("matchesType", &smtk::resource::PersistentObject::matchesType, py::arg("candidate"))
     .def("generationsFromBase", &smtk::resource::PersistentObject::generationsFromBase, py::arg("base"))
-    .def("pointer", [](const smtk::resource::PersistentObject& self)
+    .def("pointer", [](smtk::resource::PersistentObject& self)
       {
-        std::ostringstream addr;
-        addr << std::hex << &self;
-        allObjects.insert(&self);
-        return addr.str();
+        return smtk::view::HandleManager::instance()->handle(&self);
       })
     .def_static("fromPointer", [](const std::string& ptrStr)
       {
-        char* end = const_cast<char*>(ptrStr.c_str() + ptrStr.size());
-        // NOLINTNEXTLINE(performance-no-int-to-ptr)
-        auto* ptr = reinterpret_cast<smtk::resource::PersistentObject*>(strtoull(ptrStr.c_str(), &end, 16));
-        if (ptr && allObjects.find(ptr) != allObjects.end())
+        auto* obj = smtk::view::HandleManager::instance()->fromHandle<smtk::resource::PersistentObject>(ptrStr);
+        if (!obj)
         {
-          return ptr->shared_from_this();
+          return smtk::resource::PersistentObject::Ptr();
         }
-        return smtk::resource::PersistentObject::Ptr();
+        return obj->shared_from_this();
       })
     ;
   return instance;

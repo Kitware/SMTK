@@ -22,6 +22,7 @@ template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindDescriptivePhrase.h"
+#include "PybindHandleManager.h"
 #include "PybindSubphraseGenerator.h"
 #include "PybindSelection.h"
 #include "PybindSelectionObserver.h"
@@ -50,4 +51,8 @@ PYBIND11_MODULE(_smtkPybindView, view)
   PySharedPtrClass< smtk::view::Configuration > smtk_view_View = pybind11_init_smtk_view_View(view);
   py::class_< smtk::view::SelectionObservers > smtk_view_SelectionObserver = pybind11_init_smtk_view_SelectionObservers(view);
   py::class_< smtk::view::Selection > smtk_view_Selection = pybind11_init_smtk_view_Selection(view);
+  PySharedPtrClass<smtk::view::HandleManager> smtk_view_HandleManager =  pybind11_init_smtk_view_HandleManager(view);
+  py::class_<smtk::view::HandleManager::Observers> smtk_view_HandleManager_Observers = pybind11_init_smtk_view_HandleManager_Observers(view);
+  py::class_<smtk::view::HandleManager::Observers::Key> smtk_view_HandleManager_Observers_Key = pybind11_init_smtk_view_HandleManager_Observers_Key(view);
+
 }

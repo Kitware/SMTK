@@ -9,6 +9,7 @@ set(viewClasses
   Configuration
   DescriptivePhrase
   EmptySubphraseGenerator
+  HandleManager
   Information
   LockedResourceBadge
   Manager

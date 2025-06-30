@@ -14,16 +14,12 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/HandleManager.h"
 
 #include <sstream>
 #include <unordered_set>
 
 namespace py = pybind11;
-
-namespace
-{
-  std::unordered_set<const smtk::view::Configuration*> allViews;
-}
 
 inline PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_View(py::module &m)
 {
@@ -38,23 +34,18 @@ inline PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_Vie
     .def("iconName", &smtk::view::Configuration::iconName)
     .def("setIconName", &smtk::view::Configuration::setIconName, py::arg("name"))
     .def("details", (smtk::view::Configuration::Component& (smtk::view::Configuration::*)()) &smtk::view::Configuration::details, py::return_value_policy::reference)
-    .def("pointer", [](const smtk::view::Configuration& self)
+    .def("pointer", [](smtk::view::Configuration& self)
       {
-        std::ostringstream addr;
-        addr << std::hex << &self;
-        allViews.insert(&self);
-        return addr.str();
+        return smtk::view::HandleManager::instance()->handle(&self);
       })
     .def_static("fromPointer", [](const std::string& ptrStr)
-      { // FIXME: DO NOT COMMIT THIS
-        char* end = const_cast<char*>(ptrStr.c_str() + ptrStr.size());
-        // NOLINTNEXTLINE(performance-no-int-to-ptr)
-        auto* ptr = reinterpret_cast<smtk::view::Configuration*>(strtoull(ptrStr.c_str(), &end, 16));
-        if (ptr && allViews.find(ptr) != allViews.end())
+      {
+        auto* view = smtk::view::HandleManager::instance()->fromHandle<smtk::view::Configuration>(ptrStr);
+        if (!view)
         {
-          return ptr->shared_from_this();
+          return smtk::view::Configuration::Ptr();
         }
-        return smtk::view::Configuration::Ptr();
+        return view->shared_from_this();
       })
     ;
   py::class_< smtk::view::Configuration::Component >(instance, "Component")

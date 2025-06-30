@@ -20,6 +20,7 @@
 #include "smtk/view/ComponentPhraseModel.h"
 #include "smtk/view/DefaultOperationIcon.h"
 #include "smtk/view/EmptySubphraseGenerator.h"
+#include "smtk/view/HandleManager.h"
 #include "smtk/view/LockedResourceBadge.h"
 #include "smtk/view/ObjectIconBadge.h"
 #include "smtk/view/PhraseModel.h"
@@ -65,6 +66,47 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   managers->erase<smtk::view::Manager::Ptr>();
+}
+
+void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
+{
+  // Add some string hashes to the token manager to avoid
+  // "Hash does not exist in database" errors.
+  (void)smtk::string::Token("smtk::resource::PersistentObject");
+  (void)smtk::string::Token("smtk::resource::Component");
+  (void)smtk::string::Token("smtk::resource::Resource");
+  (void)smtk::string::Token("smtk::geometry::Resource");
+  (void)smtk::string::Token("smtk::attribute::Resource");
+  (void)smtk::string::Token("smtk::attribute::Attribute");
+  (void)smtk::string::Token("smtk::attribute::Item");
+  (void)smtk::string::Token("smtk::attribute::ValueItem");
+  (void)smtk::string::Token("smtk::attribute::ValueItemTemplate<int>");
+  (void)smtk::string::Token("smtk::attribute::ValueItemTemplate<std::string>");
+  (void)smtk::string::Token("smtk::attribute::ValueItemTemplate<double>");
+  (void)smtk::string::Token("smtk::attribute::IntItem");
+  (void)smtk::string::Token("smtk::attribute::StringItem");
+  (void)smtk::string::Token("smtk::attribute::DoubleItem");
+  (void)smtk::string::Token("smtk::attribute::VoidItem");
+  (void)smtk::string::Token("smtk::attribute::ReferenceItem");
+  (void)smtk::string::Token("smtk::attribute::ResourceItem");
+  (void)smtk::string::Token("smtk::attribute::ComponentItem");
+  (void)smtk::string::Token("smtk::attribute::FileSystemItem");
+  (void)smtk::string::Token("smtk::attribute::FileItem");
+  (void)smtk::string::Token("smtk::attribute::DirectoryItem");
+  (void)smtk::string::Token("smtk::attribute::DateTimeItem");
+  (void)smtk::string::Token("smtk::model::Resource");
+  (void)smtk::string::Token("smtk::view::Configuration");
+  (void)smtk::string::Token("smtk::view::View");
+
+  auto handleManager = smtk::view::HandleManager::instance();
+  handleManager->registerOperationManager(operationManager);
+}
+
+void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  (void)operationManager;
+  auto handleManager = smtk::view::HandleManager::instance();
+  handleManager->registerOperationManager(nullptr);
 }
 
 void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)

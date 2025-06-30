@@ -137,7 +137,7 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
     .def("managers", &smtk::operation::Operation::managers)
-    .def("addHandler", &smtk::operation::Operation::addHandler, py::arg("handler"), py::arg("priority"))
+    .def("addHandler", &smtk::operation::Operation::addHandler, py::arg("handler"), py::arg("priority") = 0)
     .def("removeHandler", &smtk::operation::Operation::removeHandler, py::arg("handler"), py::arg("priority"))
     .def("clearHandlers", &smtk::operation::Operation::clearHandlers)
     .def("restoreTrace", (bool (smtk::operation::Operation::*)(::std::string const &)) &smtk::operation::Operation::restoreTrace)

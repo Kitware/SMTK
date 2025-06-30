@@ -29,6 +29,14 @@ if (SMTK_ENABLE_VTK_SESSION)
   list(APPEND vtk_tests buildAttributeTest)
 endif()
 
+# Tests that require plugins to be loaded currently require ParaView.
+set(paraview_tests)
+if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+  list(APPEND paraview_tests
+    attributeOperationsAndHandlesTest
+  )
+endif()
+
 # Tests that require SMTK_DATA_DIR
 set(smtkAttributePythonDataTests
   copyDefinitionTest
@@ -45,6 +53,7 @@ set(smtkAttributePythonNewDataTests
   valueItemRotateTest
   vectorExpressionTest
   ${vtk_tests}
+  ${paraview_tests}
 )
 
 if (SMTK_DATA_DIR)
