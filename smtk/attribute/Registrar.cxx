@@ -154,6 +154,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::attribute::Resource");
   resourceManager->registerResource<smtk::attribute::Resource>(read, write);
 
   auto& typeLabels = resourceManager->objectTypeLabels();

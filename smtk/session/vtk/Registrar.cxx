@@ -40,6 +40,7 @@ typedef std::tuple<Export, Import, LegacyRead, Read, Write> OperationList;
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::session::vtk::Resource");
   resourceManager->registerResource<smtk::session::vtk::Resource>(read, write);
   RegisterVTKBackend::registerClass();
 }

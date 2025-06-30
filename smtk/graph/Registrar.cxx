@@ -54,6 +54,9 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   auto& typeLabels = resourceManager->objectTypeLabels();
   typeLabels[smtk::common::typeName<smtk::graph::ResourceBase>()] = "graph resource";
   typeLabels[smtk::common::typeName<smtk::graph::Component>()] = "graph node";
+  // We need to create an entry in the string-token manager for this type-name
+  // so that it exists when referenced by DeleteArc::registerDeleter():
+  smtk::string::Token dummy("smtk::graph::ResourceBase");
 }
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager)

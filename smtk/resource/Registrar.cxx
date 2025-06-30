@@ -35,6 +35,9 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   typeLabels[smtk::common::typeName<smtk::resource::Component>()] = "component";
   typeLabels[smtk::common::typeName<smtk::resource::Resource>()] = "resource";
   typeLabels[smtk::common::typeName<smtk::resource::PersistentObject>()] = "object";
+  smtk::string::Token dummy1("smtk::resource::Resource");
+  smtk::string::Token dummy2("smtk::resource::Component");
+  smtk::string::Token dummy3("smtk::resource::PersistentObject");
 }
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
