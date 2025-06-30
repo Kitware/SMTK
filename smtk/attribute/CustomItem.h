@@ -37,7 +37,8 @@ namespace attribute
 class SMTKCORE_EXPORT CustomItemBase : public Item
 {
 public:
-  smtkTypeMacro(CustomItemBase);
+  smtkTypeMacro(smtk::attribute::CustomItemBase);
+  smtkSuperclassMacro(smtk::attribute::Item);
 
   CustomItemBase(smtk::attribute::Attribute* owningAttribute, int itemPosition)
     : Item(owningAttribute, itemPosition)
@@ -62,8 +63,23 @@ template<typename ItemType>
 class CustomItem : public CustomItemBase
 {
 public:
-  typedef std::shared_ptr<ItemType> Ptr;
+  smtkTypedefs(smtk::attribute::CustomItem<ItemType>);
+  std::string typeName() const override
+  {
+    std::ostringstream tname;
+    tname << "smtk::attribute::CustomItem<" << smtk::common::typeName<ItemType>() << ">";
+    return tname.str();
+  }
+  smtk::string::Token typeToken() const override { return smtk::string::Token(this->typeName()); }
+  smtkInheritanceHierarchy(smtk::attribute::CustomItem<ItemType>);
+  smtkSuperclassMacro(smtk::attribute::CustomItemBase);
 
+private:
+  // Prevent smtk::common::typeName<Self>() from grabbing our subclass's type_name
+  // by changing its access specifier:
+  using CustomItemBase::type_name;
+
+public:
   static Ptr New(const std::string& myName) { return Ptr(new ItemType(myName)); }
 
   CustomItem(smtk::attribute::Attribute* owningAttribute, int itemPosition)

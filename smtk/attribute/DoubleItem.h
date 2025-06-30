@@ -29,6 +29,7 @@ class SMTKCORE_EXPORT DoubleItem : public ValueItemTemplate<double>
 
 public:
   smtkTypeMacro(smtk::attribute::DoubleItem);
+  smtkSuperclassMacro(smtk::attribute::ValueItemTemplate<double>);
   ~DoubleItem() override;
   Item::Type type() const override;
 

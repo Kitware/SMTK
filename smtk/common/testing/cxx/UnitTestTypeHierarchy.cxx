@@ -14,6 +14,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/common/testing/cxx/helpers.h"
 
@@ -149,6 +150,13 @@ int UnitTestTypeHierarchy(int /*unused*/, char** const /*unused*/)
                                                "smtk::resource::Resource",
                                                "smtk::resource::PersistentObject" }),
     "Failed resource hierarchy");
+
+  test(
+    validateHierarchy<smtk::attribute::DoubleItem>({ "smtk::attribute::DoubleItem",
+                                                     "smtk::attribute::ValueItemTemplate<double>",
+                                                     "smtk::attribute::ValueItem",
+                                                     "smtk::attribute::Item" }),
+    "Failed attribute-item hierarchy");
 
   test(
     validateHierarchy<smtk::model::Entity>(

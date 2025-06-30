@@ -34,6 +34,7 @@ public:
   typedef std::vector<std::string>::const_iterator const_iterator;
 
   smtkTypeMacro(smtk::attribute::FileSystemItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
   ~FileSystemItem() override;
   Item::Type type() const override = 0;
 

@@ -39,6 +39,14 @@ public:
   typedef typename value_type::const_iterator const_iterator;
   typedef ValueItemDefinitionTemplate<DataType> DefType;
 
+  smtkSuperclassMacro(smtk::attribute::ValueItem);
+  std::string typeName() const override
+  {
+    std::ostringstream tname;
+    tname << "smtk::attribute::ValueItemTemplate<" << smtk::common::typeName<DataT>() << ">";
+    return tname.str();
+  }
+
   ~ValueItemTemplate() override = default;
   const_iterator begin() const { return m_values.begin(); }
   const_iterator end() const { return m_values.end(); }
@@ -131,6 +139,11 @@ protected:
   const std::vector<DataT> m_dummy; //(1, DataT());
 
   std::string streamValue(const DataT& val) const;
+
+private:
+  // Prevent smtk::common::typeName<Self>() from grabbing our subclass's type_name
+  // by changing its access specifier:
+  using ValueItem::type_name;
 };
 
 template<typename DataT>

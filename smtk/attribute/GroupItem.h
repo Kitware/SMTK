@@ -53,6 +53,7 @@ public:
   typedef std::vector<std::vector<smtk::attribute::ItemPtr>>::const_iterator const_iterator;
 
   smtkTypeMacro(smtk::attribute::GroupItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
   ~GroupItem() override;
   Item::Type type() const override;
 

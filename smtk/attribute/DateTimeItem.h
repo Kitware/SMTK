@@ -32,6 +32,7 @@ class SMTKCORE_EXPORT DateTimeItem : public Item
 
 public:
   smtkTypeMacro(smtk::attribute::DateTimeItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
   ~DateTimeItem() override;
   Item::Type type() const override;
 
