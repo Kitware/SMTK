@@ -16,18 +16,26 @@
 
 #include "smtk/plugin/Manager.h"
 
+namespace
+{
+bool didCreateResourceManager = false;
+}
+
 namespace smtk
 {
 namespace resource
 {
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
-  managers->insert(smtk::resource::Manager::create());
+  if (!managers->contains<smtk::resource::Manager::Ptr>())
+  {
+    managers->insert(smtk::resource::Manager::create());
+    didCreateResourceManager = true;
+  }
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   smtk::plugin::Manager::instance()->registerPluginsTo(resourceManager);
 
-  managers->insert(
-    smtk::resource::query::Manager::create(managers->get<smtk::resource::Manager::Ptr>()));
+  managers->insert(smtk::resource::query::Manager::create(resourceManager));
   smtk::plugin::Manager::instance()->registerPluginsTo(
     managers->get<smtk::resource::query::Manager::Ptr>());
 
@@ -42,7 +50,11 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
-  managers->erase<smtk::resource::Manager::Ptr>();
+  if (didCreateResourceManager)
+  {
+    managers->erase<smtk::resource::Manager::Ptr>();
+  }
 }
+
 } // namespace resource
 } // namespace smtk
