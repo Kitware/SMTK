@@ -18,7 +18,6 @@
 #include "smtk/common/UUID.h"
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
 #include "smtk/io/Logger.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/AuxiliaryGeometry.h"
@@ -172,7 +171,6 @@ inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resourc
     .def("integerProperty", (smtk::model::IntegerList & (smtk::model::Resource::*)(::smtk::common::UUID const &, ::std::string const &)) &smtk::model::Resource::integerProperty, py::arg("entity"), py::arg("propName"))
     .def("log", &smtk::model::Resource::log)
     .def("lowerDimensionalBoundaries", &smtk::model::Resource::lowerDimensionalBoundaries, py::arg("ofEntity"), py::arg("lowerDimension"))
-    .def("meshTessellations", &smtk::model::Resource::meshTessellations)
     .def("modelOwningEntity", &smtk::model::Resource::modelOwningEntity, py::arg("uid"))
     .def("name", (std::string (smtk::model::Resource::*)() const) &smtk::resource::Resource::name)
     .def("name", (std::string (smtk::model::Resource::*)(const smtk::common::UUID& ) const) &smtk::model::Resource::name, py::arg("ofEntity"))
@@ -202,7 +200,6 @@ inline PySharedPtrClass< smtk::model::Resource> pybind11_init_smtk_model_Resourc
     .def("setIntegerProperty", (void (smtk::model::Resource::*)(::smtk::common::UUID const &, ::std::string const &, ::smtk::model::IntegerList const &)) &smtk::model::Resource::setIntegerProperty, py::arg("entity"), py::arg("propName"), py::arg("propValue"))
     .def("setLoop", (smtk::model::Loop (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::FaceUse const &)) &smtk::model::Resource::setLoop, py::arg("uid"), py::arg("use"))
     .def("setLoop", (smtk::model::Loop (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::Loop const &)) &smtk::model::Resource::setLoop, py::arg("uid"), py::arg("parent"))
-    .def("setMeshTessellations", &smtk::model::Resource::setMeshTessellations)
     .def("setShell", (smtk::model::Shell (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::VolumeUse const &)) &smtk::model::Resource::setShell, py::arg("uid"), py::arg("use"))
     .def("setShell", (smtk::model::Shell (smtk::model::Resource::*)(::smtk::common::UUID const &, ::smtk::model::Shell const &)) &smtk::model::Resource::setShell, py::arg("uid"), py::arg("parent"))
     .def("setStringProperty", (void (smtk::model::Resource::*)(::smtk::common::UUID const &, ::std::string const &, ::smtk::model::String const &)) &smtk::model::Resource::setStringProperty, py::arg("entity"), py::arg("propName"), py::arg("propValue"))

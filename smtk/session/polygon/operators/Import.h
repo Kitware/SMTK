@@ -26,9 +26,6 @@ namespace polygon
 
 /**\brief Import a CMB polygon model file.
   *
-  * The supported file extensions currently:
-  *    "Moab files (*.h5m *.sat *.brep *.stp *.cub *.exo)
-  *
   * NOT YET:
   *    "VTK data files (*.vtk *.vtu *.vtp)
   *    "Solids (*.2dm *.3dm *.sol *.stl *.tin *.obj)

@@ -32,9 +32,6 @@
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
-
 namespace smtk
 {
 namespace view
@@ -139,7 +136,6 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
   {
     constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
@@ -222,18 +218,6 @@ void TwoLevelSubphraseGenerator::childrenOfResource(
         result.push_back(ComponentPhraseContent::createPhrase(attr, 0, src));
       }
     }
-    std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTypeThenTitle);
-  }
-  else if (meshRsrc)
-  {
-    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
-    smtk::resource::Component::Visitor visitor = [&](const smtk::resource::Component::Ptr& entry) {
-      if (entry)
-      {
-        result.push_back(ComponentPhraseContent::createPhrase(entry, mutability, src));
-      }
-    };
-    meshRsrc->visit(visitor);
     std::sort(result.begin(), result.end(), DescriptivePhrase::compareByTypeThenTitle);
   }
 }

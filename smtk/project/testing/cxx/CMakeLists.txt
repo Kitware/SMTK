@@ -9,7 +9,6 @@ set(unit_tests
 )
 set(unit_tests_which_require_data
   TestProjectPortability.cxx
-  TestProjectReadWrite.cxx
   TestProjectReadWrite2.cxx
   TestProjectReadWriteEmpty.cxx
 )
@@ -23,6 +22,9 @@ set(extra_libs)
 if (SMTK_ENABLE_VTK_SUPPORT)
   add_compile_definitions(VTK_SUPPORT)
   list(APPEND extra_libs smtkVTKSession)
+  list(APPEND unit_tests_which_require_data
+    TestProjectReadWrite.cxx
+  )
 endif()
 
 smtk_unit_tests(

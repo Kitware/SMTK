@@ -42,7 +42,6 @@ function(smtk_unit_tests)
     target_include_directories(${test_prog}
         PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
-        ${MOAB_INCLUDE_DIRS}
         ${VTK_INCLUDE_DIRS}
         )
 
@@ -130,7 +129,6 @@ function(smtk_build_failure_tests)
         target_include_directories(${tname}
           PRIVATE
             ${CMAKE_CURRENT_BINARY_DIR}
-            ${MOAB_INCLUDE_DIRS}
             ${VTK_INCLUDE_DIRS}
         )
         add_test(

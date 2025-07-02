@@ -14,7 +14,6 @@
 #include "smtk/attribute/json/jsonReferenceItemDefinition.h"
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Entity.h"
 
 #include "nlohmann/json.hpp"
@@ -97,38 +96,5 @@ SMTKCORE_EXPORT void processFromRefItemDef(
   }
 }
 
-SMTKCORE_EXPORT void processFromMeshItemDef(
-  const nlohmann::json& j,
-  smtk::attribute::ComponentItemDefinitionPtr& defPtr)
-{
-  // The caller should make sure that defPtr is valid since it's not default constructible
-  if (!defPtr.get())
-  {
-    return;
-  }
-  // Create the appropriate query for mesh sets
-  defPtr->setAcceptsEntries(smtk::common::typeName<smtk::mesh::Resource>(), "meshset", true);
-
-  auto itemDef = smtk::dynamic_pointer_cast<ItemDefinition>(defPtr);
-  smtk::attribute::from_json(j, itemDef);
-
-  auto result = j.find("NumberOfRequiredValues");
-  if (result != j.end())
-  {
-    defPtr->setNumberOfRequiredValues(*result);
-  }
-
-  result = j.find("Extensible");
-  if (result != j.end())
-  {
-    defPtr->setIsExtensible(*result);
-  }
-
-  result = j.find("MaxNumberOfValues");
-  if (result != j.end())
-  {
-    defPtr->setMaxNumberOfValues(*result);
-  }
-}
 } // namespace attribute
 } // namespace smtk

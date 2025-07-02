@@ -39,7 +39,7 @@
 #include "smtk/session/polygon/operators/Delete.h"
 #include "smtk/session/polygon/operators/Import.h"
 
-#include "smtk/mesh/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 
 #include "smtk/extension/vtk/source/vtkModelMultiBlockSource.h"
 #include "vtkActor.h"

@@ -30,7 +30,6 @@ target_link_libraries(smtkPQLegacyOperationsPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
-    vtkSMTKMeshExt
     vtkSMTKSourceExt
     vtkSMTKOperationsExt
 )

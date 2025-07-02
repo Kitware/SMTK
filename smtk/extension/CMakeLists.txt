@@ -3,9 +3,6 @@ if(SMTK_ENABLE_QT_SUPPORT)
   add_subdirectory(qt)
 endif()
 
-# Add operators that use Delaunay 2d meshing
-add_subdirectory(delaunay)
-
 set(SMTK_VTK_SUPPORT_ENABLED "False")
 
 if (SMTK_ENABLE_VTK_SUPPORT)
@@ -28,13 +25,5 @@ if(SMTK_ENABLE_PARAVIEW_SUPPORT)
 endif()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
-
-  option(SMTK_ENABLE_MATPLOTLIB "Enable matplotlib" OFF)
-  set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "False")
-  if(SMTK_ENABLE_MATPLOTLIB)
-    set(SMTK_MATPLOTLIB_SUPPORT_ENABLED "True")
-    add_subdirectory(matplotlib)
-  endif()
-
   add_subdirectory(pybind11)
 endif()

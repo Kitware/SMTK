@@ -13,7 +13,6 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"
 

@@ -37,9 +37,6 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/view/Configuration.h"
 
-#include "smtk/mesh/core/Resource.h"
-#include "smtk/mesh/json/jsonHandleRange.h"
-
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Group.h"

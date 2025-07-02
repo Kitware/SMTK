@@ -35,11 +35,9 @@ public:
   virtual ~Query() = default;
 
 protected:
-  static int numberOfGenerationsFromType(const std::size_t index)
-  {
-    return (Query::typeIndex() == index ? 0 : std::numeric_limits<int>::lowest());
-  }
+  static int numberOfGenerationsFromType(std::size_t index);
 };
+
 } // namespace query
 } // namespace resource
 } // namespace smtk

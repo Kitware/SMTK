@@ -137,9 +137,6 @@ if (SPHINX_FOUND)
     userguide/graph/filtering-and-searching.rst
     userguide/graph/index.rst
     userguide/graph/nodes-and-arcs.rst
-    userguide/mesh/concepts.rst
-    userguide/mesh/index.rst
-    userguide/mesh/IO.rst
     userguide/model/concepts.rst
     userguide/model/index.rst
     userguide/model/operators.rst

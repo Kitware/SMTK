@@ -25,9 +25,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/UseEntity.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Resource.h"
 
@@ -198,7 +195,6 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
     {
       auto attr = dynamic_pointer_cast<smtk::attribute::Attribute>(comp);
       auto modelEnt = dynamic_pointer_cast<smtk::model::Entity>(comp);
-      // auto meshSet = dynamic_pointer_cast<smtk::mesh::Component>(comp);
       if (attr)
       {
         SubphraseGenerator::itemsOfAttribute(src, attr, result);
@@ -207,10 +203,6 @@ DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
       {
         SubphraseGenerator::childrenOfModelEntity(src, modelEnt, result);
       }
-      // else if (meshSet)
-      // {
-      //   SubphraseGenerator::subsetsOfMeshSet(src, meshSet, result);
-      // }
     }
   }
   return result;
@@ -248,11 +240,6 @@ bool SubphraseGenerator::hasChildren(const DescriptivePhrase& src) const
   {
     return SubphraseGenerator::modelEntityHasChildren(modelEnt);
   }
-  // auto meshSet = dynamic_pointer_cast<smtk::mesh::Component>(comp);
-  // if (meshSet)
-  // {
-  //   ???
-  // }
   return false;
 }
 
@@ -273,16 +260,11 @@ int MutabilityOfComponent(const T& comp)
 {
   constexpr int modelMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
     static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
-  constexpr int meshMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
   constexpr int attrMutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE);
 
   if (std::dynamic_pointer_cast<smtk::model::Entity>(comp))
   {
     return modelMutability;
-  }
-  else if (std::dynamic_pointer_cast<smtk::mesh::Component>(comp))
-  {
-    return meshMutability;
   }
   else if (std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp))
   {
@@ -469,20 +451,18 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
 
   smtk::resource::ResourcePtr rsrc;
   smtk::attribute::AttributePtr attr;
-  smtk::mesh::ComponentPtr mcmp;
   smtk::model::EntityPtr ment;
   bool added = false;
   // Determine if the component is a direct-ish child of parent
   if (!actualParent->relatedComponent() && actualParent->relatedResource())
   {
     rsrc = comp->resource();
-    // Attribute and mesh resources own all their components directly.
+    // Attribute resources own all their components directly.
     // Model resources have only _free_ models as direct children.
     if (rsrc == actualParent->relatedResource())
     {
       if (
         std::dynamic_pointer_cast<smtk::attribute::Attribute>(comp) ||
-        std::dynamic_pointer_cast<smtk::mesh::Component>(comp) ||
         ((ment = std::dynamic_pointer_cast<smtk::model::Entity>(comp)) && ment->isModel() &&
          !smtk::model::Model(ment).owningModel().isValid()))
       {
@@ -491,8 +471,7 @@ SubphraseGenerator::Path SubphraseGenerator::indexOfObjectInParent(
       }
       else if (
         !std::dynamic_pointer_cast<smtk::attribute::Resource>(rsrc) &&
-        !std::dynamic_pointer_cast<smtk::model::Resource>(rsrc) &&
-        !std::dynamic_pointer_cast<smtk::mesh::Resource>(rsrc))
+        !std::dynamic_pointer_cast<smtk::model::Resource>(rsrc))
       {
         // Resources of unknown type... plop all the components in the top-level
         PreparePath(result, parentPath, IndexFromTitle(comp->name(), actualParent->subphrases()));
@@ -710,24 +689,6 @@ bool SubphraseGenerator::findSortedLocation(
   return false;
 }
 
-bool SubphraseGenerator::findSortedLocation(
-  Path& pathOut,
-  smtk::mesh::ComponentPtr comp,
-  DescriptivePhrase::Ptr& phr,
-  const DescriptivePhrase::Ptr& parent) const
-{
-  (void)phr;
-  if (!comp || !parent || !parent->areSubphrasesBuilt())
-  {
-    // If the user has not opened the parent phrase, do not
-    // add to it; when subphrases are generated later (on demand)
-    // they should include \a attr.
-    return false;
-  }
-  (void)pathOut;
-  return false;
-}
-
 void SubphraseGenerator::componentsOfResource(
   DescriptivePhrase::Ptr src,
   smtk::resource::ResourcePtr rsrc,
@@ -735,7 +696,6 @@ void SubphraseGenerator::componentsOfResource(
 {
   auto modelRsrc = dynamic_pointer_cast<smtk::model::Resource>(rsrc);
   auto attrRsrc = dynamic_pointer_cast<smtk::attribute::Resource>(rsrc);
-  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
   if (modelRsrc)
   {
     // By default, make model component names and colors editable but not visibility
@@ -758,15 +718,6 @@ void SubphraseGenerator::componentsOfResource(
     {
       result.push_back(ComponentPhraseContent::createPhrase(attr, mutability, src));
     }
-  }
-  else if (meshRsrc)
-  {
-    constexpr int mutability = static_cast<int>(smtk::view::PhraseContent::ContentType::TITLE) |
-      static_cast<int>(smtk::view::PhraseContent::ContentType::COLOR);
-    smtk::resource::Component::Visitor visitor = [&](const smtk::resource::Component::Ptr& entry) {
-      result.push_back(ComponentPhraseContent::createPhrase(entry, mutability, src));
-    };
-    meshRsrc->visit(visitor);
   }
   else
   { // Some random resource...
@@ -809,19 +760,13 @@ bool SubphraseGenerator::resourceHasChildren(const smtk::resource::ResourcePtr& 
     return attrRsrc->hasAttributes();
   }
 
-  auto meshRsrc = dynamic_pointer_cast<smtk::mesh::Resource>(rsrc);
-  if (meshRsrc)
-  {
-    return (meshRsrc->numberOfMeshes() > 0);
-  }
-  else
-  { // Some random resource...
-    bool hasChild = false;
-    smtk::resource::Component::Visitor visitor =
-      [&hasChild](const smtk::resource::Component::Ptr&) { hasChild = true; };
-    rsrc->visit(visitor);
-    return hasChild;
-  }
+  // Some random resource...
+  bool hasChild = false;
+  smtk::resource::Component::Visitor visitor = [&hasChild](const smtk::resource::Component::Ptr&) {
+    hasChild = true;
+  };
+  rsrc->visit(visitor);
+  return hasChild;
 }
 
 void SubphraseGenerator::itemsOfAttribute(
@@ -1194,69 +1139,6 @@ void SubphraseGenerator::modelsOfModelSession(
   // We need the models to be unique, no duplicated entries.
   std::set<smtk::model::Model> modelsOf = sess.models<std::set<smtk::model::Model> >();
   this->addModelEntityPhrases(modelsOf, src, this->directLimit(), result);
-}
-
-void SubphraseGenerator::meshesOfModelModel(
-  DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result)
-{
-  std::vector<smtk::mesh::ResourcePtr> meshResources =
-    mod.resource()->meshes()->associatedResources(mod);
-  // We need to sort the meshes before we add them to the result since if
-  // we sort the result itself we could be intermixing the mesh and model
-  // information
-  DescriptivePhrases meshPhrases;
-  addMeshPhrases(meshResources, src, this->directLimit(), meshPhrases);
-  std::sort(meshPhrases.begin(), meshPhrases.end(), DescriptivePhrase::compareByTitle);
-  result.insert(result.end(), meshPhrases.begin(), meshPhrases.end());
-}
-
-void SubphraseGenerator::meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result)
-{
-  smtk::mesh::MeshSet meshes = meshphr->relatedMesh();
-  // if this is a mesh resource
-  if (meshphr->isResource())
-  {
-    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims3, result);
-    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims2, result);
-    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims1, result);
-    this->meshsetsOfResourceByDim(meshphr, smtk::mesh::Dims0, result);
-  }
-  // if this is a MeshSet
-  else if (meshes.size() > 1)
-  {
-    // if the MeshSet contains more than one mesh, we need to create subphrases for
-    // each subset, otherwise the meshphr will represent the relatedMesh.
-    for (std::size_t i = 0; i < meshes.size(); ++i)
-    {
-      result.push_back(MeshPhraseContent::createPhrase(meshes.subset(i), meshphr));
-    }
-  }
-}
-
-void SubphraseGenerator::meshsetsOfResourceByDim(
-  MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result)
-{
-  if (meshphr->isResource())
-  {
-    smtk::mesh::ResourcePtr meshresource = meshphr->relatedMeshResource();
-    smtk::mesh::MeshSet dimMeshes = meshresource->meshes(dim);
-    if (!dimMeshes.is_empty())
-    {
-      result.push_back(MeshPhraseContent::createPhrase(dimMeshes, meshphr));
-    }
-  }
-}
-
-void SubphraseGenerator::meshesOfMeshList(MeshListPhrase::Ptr src, DescriptivePhrases& result)
-{
-  if (src->relatedResources().size() > 0)
-  {
-    addMeshPhrases(src->relatedResources(), src, this->directLimit(), result);
-  }
-  else if (src->relatedMeshes().size() > 0)
-  {
-    addMeshPhrases(src->relatedMeshes(), src, this->directLimit(), result);
-  }
 }
 
 /// Add subphrases (or a list of them) to \a result for the specified properties.

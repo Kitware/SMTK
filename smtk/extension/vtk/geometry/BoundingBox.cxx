@@ -73,7 +73,7 @@ std::array<double, 6> BoundingBox::operator()(
 
   return returnValue;
 }
-}; // namespace geometry
+} // namespace geometry
 } // namespace vtk
 } // namespace extension
 } // namespace smtk

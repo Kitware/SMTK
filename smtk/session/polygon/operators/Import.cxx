@@ -10,7 +10,7 @@
 
 #include "Import.h"
 
-#include "smtk/Options.h" // for SMTK_ENABLE_REMUS_SUPPORT
+#include "smtk/Options.h"
 
 #include "smtk/session/polygon/Session.h"
 #include "smtk/session/polygon/internal/Model.h"

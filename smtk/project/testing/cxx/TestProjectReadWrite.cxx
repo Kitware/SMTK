@@ -13,13 +13,14 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
+#include "smtk/model/Entity.h"
+#include "smtk/model/Model.h"
+#include "smtk/model/Resource.h"
+
 #include "smtk/common/UUIDGenerator.h"
 #include "smtk/resource/Component.h"
 #include "smtk/resource/DerivedFrom.h"
 #include "smtk/resource/Manager.h"
-
-#include "smtk/mesh/core/Resource.h"
-#include "smtk/mesh/resource/Registrar.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
@@ -28,6 +29,10 @@
 #include "smtk/operation/operators/WriteResource.h"
 
 #include "smtk/plugin/Registry.h"
+
+#include "smtk/model/Registrar.h"
+
+#include "smtk/session/vtk/Registrar.h"
 
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -42,7 +47,7 @@
 using namespace boost::filesystem;
 
 // This test verifies that projects can be serialized to the file system
-// and unserialized back. The test project contains an SMTK mesh resource.
+// and unserialized back. The test project contains an SMTK model resource.
 
 namespace
 {
@@ -80,10 +85,13 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
 
   auto attributeRegistry =
     smtk::plugin::addToManagers<smtk::attribute::Registrar>(resourceManager, operationManager);
-  auto meshRegistry =
-    smtk::plugin::addToManagers<smtk::mesh::Registrar>(resourceManager, operationManager);
+  auto modelRegistry =
+    smtk::plugin::addToManagers<smtk::model::Registrar>(resourceManager, operationManager);
   auto operationRegistry =
     smtk::plugin::addToManagers<smtk::operation::Registrar>(operationManager);
+
+  auto vtkSessionRegistry =
+    smtk::plugin::addToManagers<smtk::session::vtk::Registrar>(resourceManager, operationManager);
 
   // Register the resource manager to the operation manager (newly created
   // resources will be automatically registered to the resource manager).
@@ -103,7 +111,7 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
   // Create a project and write it to disk.
   std::string projectDirectory = write_root + "/TestProjectReadWrite/";
   std::string projectLocation;
-  std::size_t numberOfMeshes;
+  std::size_t numberOfModels;
   {
     smtk::project::Project::Ptr project = projectManager->create("foo");
     if (!project)
@@ -141,13 +149,13 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
         return 1;
       }
 
-      // Add the mesh resource to the project
+      // Add the model resource to the project
       smtk::attribute::ResourceItemPtr resourceItem =
         std::dynamic_pointer_cast<smtk::attribute::ResourceItem>(
           importOpResult->findResource("resourcesCreated"));
 
       project->resources().add(
-        std::dynamic_pointer_cast<smtk::mesh::Resource>(resourceItem->value()), "my mesh");
+        std::dynamic_pointer_cast<smtk::model::Resource>(resourceItem->value()), "my model");
 
       // Create resource with non-unique role
       for (int i = 0; i < 2; i++)
@@ -170,9 +178,12 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
     }
 
     {
-      std::set<smtk::mesh::Resource::Ptr> myMesh =
-        project->resources().findByRole<smtk::mesh::Resource>("my mesh");
-      numberOfMeshes = (*(myMesh.begin()))->meshes().size();
+      std::set<smtk::model::Resource::Ptr> myModel =
+        project->resources().findByRole<smtk::model::Resource>("my model");
+      numberOfModels = (*(myModel.begin()))
+                         ->entitiesMatchingFlagsAs<smtk::model::Models>(
+                           smtk::model::EntityTypeBits::MODEL_ENTITY, false)
+                         .size();
     }
 
     {
@@ -288,25 +299,27 @@ int TestProjectReadWrite(int /*unused*/, char** const /*unused*/)
     }
   }
 
-  std::set<smtk::mesh::Resource::Ptr> myMeshSet =
-    project->resources().findByRole<smtk::mesh::Resource>("my mesh");
-
-  if (myMeshSet.empty())
+  auto myModelRsrc = project->resources().findByRole<smtk::model::Resource>("my model");
+  if (myModelRsrc.empty())
   {
-    std::cerr << "Resulting project does not contain mesh resource\n";
+    std::cerr << "Resulting project does not contain model resource\n";
     return 1;
   }
 
-  if (myMeshSet.size() > 1)
+  if (myModelRsrc.size() > 1)
   {
     std::cerr
-      << "Resulting project contains more than one(1) mesh resource with role \"my mesh\"\n";
+      << "Resulting project contains more than one(1) model resource with role \"my model\"\n";
     return 1;
   }
-  smtk::mesh::Resource::Ptr myMesh = *(myMeshSet.begin());
-  if (myMesh->meshes().size() != numberOfMeshes)
+  smtk::model::Resource::Ptr myModel = *(myModelRsrc.begin());
+  if (
+    myModel
+      ->entitiesMatchingFlagsAs<smtk::model::Models>(
+        smtk::model::EntityTypeBits::MODEL_ENTITY, false)
+      .size() != numberOfModels)
   {
-    std::cerr << "Resulting project's mesh resource was incorrectly transcribed\n";
+    std::cerr << "Resulting project's model resource was incorrectly transcribed\n";
     return 1;
   }
 

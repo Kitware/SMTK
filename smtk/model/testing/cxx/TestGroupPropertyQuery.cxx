@@ -18,9 +18,6 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/VoidItem.h"
 
-#include "smtk/session/mesh/Resource.h"
-#include "smtk/session/mesh/operators/Import.h"
-
 #include "smtk/model/EntityRef.h"
 #include "smtk/model/Face.h"
 #include "smtk/model/Group.h"

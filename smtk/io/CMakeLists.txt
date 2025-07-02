@@ -7,7 +7,6 @@ set(ioSrcs
   json/jsonComponentSet.cxx
   json/jsonSelectionMap.cxx
   Logger.cxx
-  ModelToMesh.cxx
   TemplateInfo.cxx
   XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
@@ -34,7 +33,6 @@ set(ioHeaders
   json/jsonComponentSet.h
   json/jsonSelectionMap.h
   Logger.h
-  ModelToMesh.h
   TemplateInfo.h
   XmlDocV1Parser.h
   XmlDocV2Parser.h
@@ -52,28 +50,6 @@ set(ioHeaders
   XmlV6StringWriter.h
   XmlV7StringWriter.h
   XmlV8StringWriter.h
-)
-
-# mesh-related I/O
-list(APPEND ioSrcs
-  ExportMesh.cxx
-  ImportMesh.cxx
-  ReadMesh.cxx
-  WriteMesh.cxx
-  mesh/Format.cxx
-  mesh/MeshIOMoab.cxx
-  mesh/MeshIOXMS.cxx
-)
-
-list(APPEND ioHeaders
-  ExportMesh.h
-  ImportMesh.h
-  ReadMesh.h
-  WriteMesh.h
-  mesh/Format.h
-  mesh/MeshIO.h
-  mesh/MeshIOMoab.h
-  mesh/MeshIOXMS.h
 )
 
 #install the headers

@@ -134,9 +134,6 @@ public:
   UUIDsToTessellations& analysisMesh();
   const UUIDsToTessellations& analysisMesh() const;
 
-  bool setMeshTessellations(const smtk::mesh::ResourcePtr&);
-  smtk::mesh::ResourcePtr meshTessellations() const;
-
   /// Remove all entities and properties from this object. Does not change id or emit signals.
   void clear();
 

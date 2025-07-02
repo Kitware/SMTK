@@ -34,7 +34,6 @@ set(modelSrcs
   Face.cxx
   FaceUse.cxx
   Group.cxx
-  GridInfo.cxx
   Instance.cxx
   Loop.cxx
   Model.cxx
@@ -88,7 +87,6 @@ set(modelHeaders
   FaceUse.h
   FilterGrammar.h
   FloatData.h
-  GridInfo.h
   Group.h
   Instance.h
   IntegerData.h

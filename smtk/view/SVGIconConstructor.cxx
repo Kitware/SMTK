@@ -14,10 +14,9 @@
 
 #include "smtk/common/Color.h"
 
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
+#include "smtk/model/Resource.h"
 
 #include "smtk/resource/PersistentObject.h"
 
@@ -26,8 +25,6 @@
 #include "smtk/view/icons/edge_cpp.h"
 #include "smtk/view/icons/face_cpp.h"
 #include "smtk/view/icons/loop_cpp.h"
-#include "smtk/view/icons/meshResource_cpp.h"
-#include "smtk/view/icons/mesh_cpp.h"
 #include "smtk/view/icons/modelResource_cpp.h"
 #include "smtk/view/icons/model_cpp.h"
 #include "smtk/view/icons/resource_cpp.h"
@@ -97,19 +94,6 @@ std::string AttributeIconConstructor::svg(const smtk::resource::PersistentObject
   else
   {
     return attribute_svg();
-  }
-}
-
-std::string MeshIconConstructor::svg(const smtk::resource::PersistentObject& object) const
-{
-  if (const auto* resource = dynamic_cast<const smtk::mesh::Resource*>(&object))
-  {
-    (void)resource;
-    return meshResource_svg();
-  }
-  else
-  {
-    return mesh_svg();
   }
 }
 

@@ -15,7 +15,6 @@
 
 #include "smtk/attribute/Resource.h"
 #include "smtk/io/Logger.h"
-#include "smtk/model/GridInfo.h"
 #include "smtk/simulation/ExportSpec.h"
 
 #include <cstdint>

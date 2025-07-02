@@ -26,9 +26,6 @@
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/mesh/core/MeshSet.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/geometry/Geometry.h"
 
 #include <boost/functional/hash.hpp>
@@ -822,26 +819,6 @@ Tessellation* EntityRef::resetTessellation()
   Tessellation blank;
   UUIDsToTessellations::iterator tessit = rsrc->setTessellation(m_entity, blank);
   return &tessit->second;
-}
-
-/**\brief Return the entity's mesh tessellation.
-  *
-  * Each entity has a single meshset describing its tessellation. The meshset
-  * could, but does not have to, contain sub-meshsets within it.
-  */
-smtk::mesh::MeshSet EntityRef::meshTessellation() const
-{
-  ResourcePtr rsrc = m_resource.lock();
-  if (rsrc && !m_entity.isNull())
-  {
-    smtk::mesh::ResourcePtr resource = rsrc->meshTessellations();
-
-    if (resource && resource->isValid())
-    {
-      return resource->findAssociatedMeshes(*this);
-    }
-  }
-  return smtk::mesh::MeshSet();
 }
 
 /**\brief Return the entity's tessellation if one exists or nullptr otherwise.

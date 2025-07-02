@@ -12,8 +12,6 @@
 #include "smtk/session/oscillator/Resource.h"
 #include "smtk/session/oscillator/SimulationAttribute.h"
 
-#include "smtk/session/mesh/operators/CreateUniformGrid.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -26,11 +24,6 @@
 #include "smtk/model/Model.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
-
-#include "smtk/mesh/core/CellTraits.h"
-#include "smtk/mesh/core/CellTypes.h"
-
-#include "smtk/mesh/utility/Create.h"
 
 #include "smtk/session/oscillator/operators/EditDomain_xml.h"
 

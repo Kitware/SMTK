@@ -8,27 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/resource/query/Query.h"
-
-#include <typeindex>
+#include "smtk/geometry/queries/BoundingBox.h"
 
 namespace smtk
 {
-namespace resource
-{
-namespace query
+namespace geometry
 {
 
-std::size_t Query::typeIndex()
+std::array<double, 6> BoundingBox::operator()(const smtk::resource::PersistentObject::Ptr&) const
 {
-  return std::type_index(typeid(Query)).hash_code();
+  return { { 1., 0., 1., 0., 1., 0. } };
 }
 
-int Query::numberOfGenerationsFromType(std::size_t index)
-{
-  return (Query::typeIndex() == index ? 0 : std::numeric_limits<int>::lowest());
-}
-
-} // namespace query
-} // namespace resource
+} // namespace geometry
 } // namespace smtk

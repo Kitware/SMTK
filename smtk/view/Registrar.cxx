@@ -12,7 +12,6 @@
 #include "smtk/view/Registrar.h"
 
 #include "smtk/attribute/Resource.h"
-#include "smtk/mesh/core/Resource.h"
 #include "smtk/model/Resource.h"
 
 #include "smtk/plugin/Manager.h"
@@ -78,7 +77,6 @@ void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
     ResourceIconConstructor());
   viewManager->objectIcons().registerIconConstructor<smtk::attribute::Resource>(
     AttributeIconConstructor());
-  viewManager->objectIcons().registerIconConstructor<smtk::mesh::Resource>(MeshIconConstructor());
   viewManager->objectIcons().registerIconConstructor<smtk::model::Resource>(ModelIconConstructor());
 
   // Per-operation icons

@@ -84,5 +84,4 @@ smtk_unit_tests(
     Qt5::Test
     ${Boost_LIBRARIES}
     Threads::Threads
-    MOAB
 )

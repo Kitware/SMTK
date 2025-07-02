@@ -39,7 +39,6 @@ target_link_libraries(smtkPQOperationsPanelPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
-    vtkSMTKMeshExt
     vtkSMTKSourceExt
     vtkSMTKOperationsExt
 )

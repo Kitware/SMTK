@@ -27,9 +27,6 @@ smtk_source_group(operation)
 add_subdirectory(project)
 smtk_source_group(project)
 
-add_subdirectory(mesh)
-smtk_source_group(mesh)
-
 add_subdirectory(model)
 smtk_source_group(model)
 
@@ -59,7 +56,6 @@ set(smtk_headers
   ${graphHeaders}
   ${attributeHeaders}
   ${operationHeaders}
-  ${meshHeaders}
   ${modelHeaders}
   ${projectHeaders}
   ${viewHeaders}
@@ -78,7 +74,6 @@ set(smtk_srcs
   ${attributeSrcs}
   ${operationSrcs}
   ${projectSrcs}
-  ${meshSrcs}
   ${modelSrcs}
   ${viewSrcs}
   ${workflowSrcs}
@@ -95,7 +90,6 @@ set(smtkCore_public_include_directories
 )
 
 set(smtkCore_public_link_libraries
-  MOAB
   nlohmann_json
   taocpp::pegtl
   Threads::Threads
@@ -133,7 +127,6 @@ target_compile_features(smtkCore
 add_dependencies(smtkCore
   attributeGenHeaders
   graphGenHeaders
-  meshGenHeaders
   modelGenHeaders
   operationGenHeaders
   projectGenHeaders

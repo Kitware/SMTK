@@ -33,11 +33,6 @@ struct SMTKCORE_EXPORT BoundingBox
   virtual std::array<double, 6> operator()(const smtk::resource::PersistentObject::Ptr&) const = 0;
 };
 
-inline std::array<double, 6> BoundingBox::operator()(
-  const smtk::resource::PersistentObject::Ptr&) const
-{
-  return { { 1., 0., 1., 0., 1., 0. } };
-}
 } // namespace geometry
 } // namespace smtk
 

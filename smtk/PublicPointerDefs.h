@@ -109,28 +109,6 @@ class qtSelectionManager;
 typedef smtk::shared_ptr<smtk::extension::qtSelectionManager> qtSelectionManagerPtr;
 } // namespace extension
 
-namespace mesh
-{
-class Resource;
-class Component;
-class Interface;
-class Allocator;
-class BufferedCellAllocator;
-class IncrementalAllocator;
-class ConnectivityStorage;
-class PointLocatorImpl;
-
-namespace moab
-{
-class Interface;
-}
-
-namespace json
-{
-class Interface;
-}
-} // namespace mesh
-
 namespace model
 {
 class Arrangement;
@@ -183,9 +161,6 @@ typedef std::set<smtk::model::Face> FaceSet;
 class FaceUse;
 /// @see smtk::model::FaceUse
 typedef std::vector<smtk::model::FaceUse> FaceUses;
-class GridInfo;
-class GridInfo2D;
-class GridInfo3D;
 class Instance;
 /// @see smtk::model::Instance
 typedef std::vector<smtk::model::Instance> Instances;
@@ -357,40 +332,6 @@ typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
 typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
 } // namespace operation
 
-namespace mesh
-{
-/// @see smtk::mesh::Resource
-typedef smtk::shared_ptr<smtk::mesh::Resource> ResourcePtr;
-/// @see smtk::mesh::Resource
-typedef smtk::shared_ptr<const smtk::mesh::Resource> ConstResourcePtr;
-/// @see smtk::mesh::Component
-typedef smtk::shared_ptr<smtk::mesh::Component> ComponentPtr;
-/// @see smtk::mesh::Interface
-typedef smtk::shared_ptr<smtk::mesh::Interface> InterfacePtr;
-/// @see smtk::mesh::Allocator
-typedef smtk::shared_ptr<smtk::mesh::Allocator> AllocatorPtr;
-/// @see smtk::mesh::BufferedCellAllocator
-typedef smtk::shared_ptr<smtk::mesh::BufferedCellAllocator> BufferedCellAllocatorPtr;
-/// @see smtk::mesh::IncrementalAllocator
-typedef smtk::shared_ptr<smtk::mesh::IncrementalAllocator> IncrementalAllocatorPtr;
-/// @see smtk::mesh::ConnectivityStorage
-typedef smtk::shared_ptr<smtk::mesh::ConnectivityStorage> ConnectivityStoragePtr;
-/// @see smtk::mesh::PointLocatorImpl
-typedef smtk::shared_ptr<smtk::mesh::PointLocatorImpl> PointLocatorImplPtr;
-
-namespace moab
-{
-/// @see smtk::mesh::moab::Interface
-typedef smtk::shared_ptr<smtk::mesh::moab::Interface> InterfacePtr;
-} // namespace moab
-
-namespace json
-{
-/// @see smtk::mesh::json::Interface
-typedef smtk::shared_ptr<smtk::mesh::json::Interface> InterfacePtr;
-} // namespace json
-} // namespace mesh
-
 namespace model
 {
 // Model Related Pointer Classes
@@ -440,14 +381,6 @@ typedef smtk::weak_ptr<smtk::model::Arrangement> WeakArrangementPtr;
 typedef smtk::shared_ptr<smtk::model::Tessellation> TessellationPtr;
 /// @see smtk::model::Tessellation
 typedef smtk::weak_ptr<smtk::model::Tessellation> WeakTessellationPtr;
-
-// class for making the analysis grid information available in SMTK
-/// @see smtk::model::GridInfo
-typedef smtk::shared_ptr<smtk::model::GridInfo> GridInfoPtr;
-/// @see smtk::model::GridInfo2D
-// typedef smtk::shared_ptr<smtk::model::GridInfo2D> GridInfo2DPtr;
-/// @see smtk::model::GridInfo3D
-// typedef smtk::shared_ptr<smtk::model::GridInfo3D> GridInfo3DPtr;
 } // namespace model
 
 namespace attribute

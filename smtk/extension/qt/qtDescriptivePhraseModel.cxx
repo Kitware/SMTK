@@ -23,9 +23,6 @@
 #include "smtk/model/Resource.h"
 #include "smtk/model/StringData.h"
 
-#include "smtk/mesh/core/Component.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Resource.h"

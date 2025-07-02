@@ -179,11 +179,6 @@ protected:
     smtk::model::EntityPtr entity,
     DescriptivePhrase::Ptr& phr,
     const DescriptivePhrase::Ptr& parent) const;
-  virtual bool findSortedLocation(
-    Path& pathOut,
-    smtk::mesh::ComponentPtr comp,
-    DescriptivePhrase::Ptr& phr,
-    const DescriptivePhrase::Ptr& parent) const;
 
   /// Return true if the resource would cause subphrases to be generated
   bool resourceHasChildren(const smtk::resource::ResourcePtr& rsrc) const;
@@ -363,12 +358,6 @@ protected:
 
   void modelsOfModelSession(
     DescriptivePhrase::Ptr src, const SessionRef& sess, DescriptivePhrases& result);
-
-  void meshesOfModelModel(DescriptivePhrase::Ptr src, const Model& mod, DescriptivePhrases& result);
-  void meshsetsOfMesh(MeshPhrase::Ptr meshphr, DescriptivePhrases& result);
-  void meshesOfMeshList(MeshListPhrase::Ptr src, DescriptivePhrases& result);
-  void meshsetsOfCollectionByDim(
-    MeshPhrase::Ptr meshphr, smtk::mesh::DimensionType dim, DescriptivePhrases& result);
 
   void addEntityProperties(smtk::resource::PropertyType ptype, std::set<std::string>& props,
     DescriptivePhrase::Ptr parent, DescriptivePhrases& result);

@@ -14,4 +14,3 @@ PRIVATE_DEPENDS
   VTK::CommonTransforms
   VTK::RenderingOpenGL2
   vtkSMTKSourceExt
-  vtkSMTKMeshExt

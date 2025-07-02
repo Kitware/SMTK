@@ -35,8 +35,6 @@
 #include "smtk/model/VolumeUse.h"
 #include "smtk/model/queries/SelectionFootprint.h"
 
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/common/UUIDGenerator.h"
 
 #include "smtk/resource/Manager.h"
@@ -175,49 +173,11 @@ const UUIDsToTessellations& Resource::analysisMesh() const
   return *m_analysisMesh;
 }
 
-bool Resource::setMeshTessellations(const smtk::mesh::ResourcePtr& meshResource)
-{
-  // We reset the mesh tessellation by first unsetting the existing mesh
-  // tessellation (if it exists) and then adding a new link to the input
-  // mesh resource. If this becomes a bottleneck, we could add API to
-  // smtk::resource::Links to modify the RHS id of the current link,
-  // facilitating link modification in place.
-  smtk::mesh::ResourcePtr currentMeshTessellations = this->meshTessellations();
-  if (currentMeshTessellations != nullptr)
-  {
-    this->links().removeLinksTo(
-      std::static_pointer_cast<smtk::resource::Resource>(currentMeshTessellations),
-      TessellationRole);
-  }
-  return this->links()
-           .addLinkTo(
-             std::static_pointer_cast<smtk::resource::Resource>(meshResource), TessellationRole)
-           .first != smtk::common::UUID::null();
-}
-
-smtk::mesh::ResourcePtr Resource::meshTessellations() const
-{
-  auto tessellationObjects = this->links().linkedTo(TessellationRole);
-  return (
-    !tessellationObjects.empty()
-      ? std::dynamic_pointer_cast<smtk::mesh::Resource>(*tessellationObjects.begin())
-      : smtk::mesh::ResourcePtr());
-}
-
 void Resource::clear()
 {
   m_topology->clear();
   m_tessellations->clear();
   m_analysisMesh->clear();
-  {
-    smtk::mesh::ResourcePtr currentMeshTessellations = this->meshTessellations();
-    if (currentMeshTessellations != nullptr)
-    {
-      this->links().removeLinksTo(
-        std::static_pointer_cast<smtk::resource::Resource>(currentMeshTessellations),
-        TessellationRole);
-    }
-  }
   m_attributeAssignments->clear();
   m_sessions->clear();
   m_attributeResources.clear();

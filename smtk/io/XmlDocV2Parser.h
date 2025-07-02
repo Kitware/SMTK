@@ -42,8 +42,6 @@ protected:
   void processFileDef(pugi::xml_node& node, smtk::attribute::FileItemDefinitionPtr idef) override;
   void processModelEntityItem(pugi::xml_node& node, smtk::attribute::ComponentItemPtr item)
     override;
-  void processMeshEntityDef(pugi::xml_node& node, smtk::attribute::ComponentItemDefinitionPtr idef)
-    override;
   void processStringDefAtts(
     pugi::xml_node& node,
     const smtk::attribute::StringItemDefinitionPtr& idef) override;

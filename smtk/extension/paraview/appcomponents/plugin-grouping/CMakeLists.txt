@@ -35,7 +35,6 @@ target_link_libraries(smtkPQGroupingPlugin
     smtkPVServerExt
     smtkCore
     smtkQtExt
-    vtkSMTKMeshExt
     vtkSMTKSourceExt
     vtkSMTKOperationsExt
 )

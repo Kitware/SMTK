@@ -3,6 +3,7 @@ set(geometrySrcs
   Registrar.cxx
   Resource.cxx
   Manager.cxx
+  queries/BoundingBox.cxx
 )
 
 set(geometryHeaders

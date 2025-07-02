@@ -16,11 +16,6 @@
 
 #include "smtk/extension/vtk/filter/vtkImageSpacingFlip.h"
 
-#include "smtk/extension/vtk/io/mesh/ExportVTKData.h"
-
-#include "smtk/mesh/core/MeshSet.h"
-#include "smtk/mesh/core/Resource.h"
-
 #include "smtk/model/AuxiliaryGeometry.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -373,13 +368,6 @@ vtkSmartPointer<vtkDataObject> vtkModelMultiBlockSource::GenerateRepresentationF
     this->SetCachedData(entity.entity(), obj, sequence);
     return obj;
   }
-  else if (!entity.meshTessellation().is_empty())
-  {
-    obj = this->GenerateRepresentationFromMeshTessellation(entity, genNormals);
-    entity.as<EntityRef>().setIntegerProperty(SMTK_TESS_GEN_PROP, 1);
-    this->SetCachedData(entity.entity(), obj, sequence);
-    return obj;
-  }
 
   smtk::model::AuxiliaryGeometry aux(entity);
   std::string url;
@@ -448,56 +436,6 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
 
     vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   }
-  return pd;
-}
-
-vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFromMeshTessellation(
-  const smtk::model::EntityRef& entity,
-  bool genNormals)
-{
-  vtkSmartPointer<vtkPolyData> pd = vtkSmartPointer<vtkPolyData>::New();
-  if (!entity.isValid())
-  {
-    return pd;
-  }
-  smtk::extension::vtk::io::mesh::ExportVTKData exportVTKData;
-  if (entity.dimension() == 3)
-  {
-    //To preserve the state of the mesh database, we track
-    //whether or not a new meshset was created to represent
-    //the 3d shell; if it was created, we delete it when we
-    //are finished with it.
-    bool created;
-    smtk::mesh::MeshSet shell = entity.meshTessellation().extractShell(created);
-    exportVTKData(shell, pd);
-    if (created)
-    {
-      entity.meshTessellation().resource()->removeMeshes(shell);
-    }
-  }
-  else
-  {
-    exportVTKData(entity.meshTessellation(), pd);
-  }
-
-  AddColorWithDefault(pd, entity, this->DefaultColor);
-  if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
-  {
-    bool reallyNeedNormals = genNormals;
-    if (entity.hasIntegerProperty("generate normals"))
-    { // Allow per-entity setting to override per-model setting
-      const IntegerList& prop(entity.integerProperty("generate normals"));
-      reallyNeedNormals = (!prop.empty() && prop[0]);
-    }
-    if (reallyNeedNormals)
-    {
-      this->NormalGenerator->SetInputDataObject(pd);
-      this->NormalGenerator->Update();
-      pd->ShallowCopy(this->NormalGenerator->GetOutput());
-    }
-  }
-
-  vtkModelMultiBlockSource::AddPointsAsAttribute(pd);
   return pd;
 }
 
