@@ -106,6 +106,11 @@ set(smtkCore_private_link_libraries
   fmt::fmt
 )
 
+if (TARGET Boost::dll)
+  list(APPEND smtkCore_private_link_libraries
+    Boost::dll)
+endif ()
+
 if(SMTK_ENABLE_PYTHON_WRAPPING)
   set_property(SOURCE common/PythonInterpreter.cxx APPEND PROPERTY COMPILE_DEFINITIONS
     "PYTHON_MODULEDIR=\"${SMTK_PYTHON_MODULEDIR}\"")
