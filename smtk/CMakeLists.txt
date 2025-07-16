@@ -111,6 +111,11 @@ if (TARGET Boost::dll)
     Boost::dll)
 endif ()
 
+if (NOT TARGET Boost::dll OR Boost_VERSION VERSION_LESS "1.88.0")
+  list(APPEND smtkCore_private_link_libraries
+    ${CMAKE_DL_LIBS})
+endif ()
+
 if(SMTK_ENABLE_PYTHON_WRAPPING)
   set_property(SOURCE common/PythonInterpreter.cxx APPEND PROPERTY COMPILE_DEFINITIONS
     "PYTHON_MODULEDIR=\"${SMTK_PYTHON_MODULEDIR}\"")
