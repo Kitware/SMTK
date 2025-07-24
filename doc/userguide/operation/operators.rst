@@ -15,6 +15,11 @@ may run in parallel in other threads.
 By using the locking mechanism which operations provide, you avoid race conditions,
 memory stomping, and many other issues encountered with parallel code.
 
+All exceptions thrown inside an operation or an operation handler/observer (described
+below) will be caught and logged as errors.
+This is done to avoid situations where resource locks are never released because an
+exception thrown inside these code segments.
+
 The next sections describe in detail: first, how operators specify the inputs they require
 and outputs they produce; and second, how operators register themselves for introspection
 by applications and scripts.

@@ -331,6 +331,10 @@ Operation::Result Operation::operate(const BaseKey& key)
       smtk::attribute::IntItem::Ptr debugItem = this->parameters()->findInt("debug level");
       m_debugLevel = ((debugItem && debugItem->isEnabled()) ? debugItem->value() : 0);
 
+      // We catch all exceptions here to avoid situations where resource
+      // locks are never released. You should never expect exceptions to
+      // be thrown out of an operation in any event because operations
+      // are run in separate threads.
       try
       {
         // Perform the derived operation.
@@ -342,6 +346,7 @@ Operation::Result Operation::operate(const BaseKey& key)
         // This allows the operation to return normally so that
         // any threads do not continue to be blocked.
         result = this->createResult(Outcome::FAILED);
+        this->log().setFlushToStderr(true);
         smtkErrorMacro(
           this->log(),
           "An unhandled exception (" << e.what() << ") occurred in " << this->typeName() << ".");
@@ -379,18 +384,29 @@ Operation::Result Operation::operate(const BaseKey& key)
     }
   }
 
-  // Execute post-operation observation
-  // Always call handlers, but based on the \a key, observers may be skipped.
-  // Handlers will always be invoked before other observers, but in priority order.
-  // In the future, we may attempt to interleave the handler and observer calls.
-  for (const auto& entry : instanceHandlers)
+  // We catch all exceptions here as well to avoid situations where resource
+  // locks are never released.
+  try
   {
-    entry.second(*this, result);
+    // Execute post-operation observation
+    // Always call handlers, but based on the \a key, observers may be skipped.
+    // Handlers will always be invoked before other observers, but in priority order.
+    // In the future, we may attempt to interleave the handler and observer calls.
+    for (const auto& entry : instanceHandlers)
+    {
+      entry.second(*this, result);
+    }
+    instanceHandlers.clear();
+    if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
+    {
+      manager->observers()(*this, EventType::DID_OPERATE, result);
+    }
   }
-  instanceHandlers.clear();
-  if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
+  catch (std::exception& e)
   {
-    manager->observers()(*this, EventType::DID_OPERATE, result);
+    this->log().setFlushToStderr(true);
+    smtkErrorMacro(
+      this->log(), "Caught exception \"" << e.what() << "\" during handler/observer invocation.");
   }
 
   // Un-manage any resources marked for removal before releasing locks.
