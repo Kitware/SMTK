@@ -74,6 +74,10 @@ int TestRuntimeJSON(int, char*[])
   using namespace smtk::test;
   using namespace smtk::graph;
 
+  // We need to create an entry in the string-token manager for this type-name
+  // so that it exists when referenced by DeleteArc::registerDeleter():
+  smtk::string::Token dummy("smtk::graph::ResourceBase");
+
   // DirectedDistinct: Notable → Comment
   // DirectedSelfArc: Thingy → Thingy
   // UndirectedSelfArc: Thingy — Thingy

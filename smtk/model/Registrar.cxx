@@ -77,6 +77,7 @@ void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationMan
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::model::Resource");
   resourceManager->registerResource<smtk::model::Resource>();
 
   auto& typeLabels = resourceManager->objectTypeLabels();

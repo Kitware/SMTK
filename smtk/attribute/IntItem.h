@@ -29,6 +29,7 @@ class SMTKCORE_EXPORT IntItem : public ValueItemTemplate<int>
 
 public:
   smtkTypeMacro(smtk::attribute::IntItem);
+  smtkSuperclassMacro(smtk::attribute::ValueItemTemplate<int>);
   ~IntItem() override;
   Item::Type type() const override;
 

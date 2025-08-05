@@ -33,6 +33,7 @@
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkVersionMacros.h"
 
 namespace smtk
 {
@@ -99,10 +100,12 @@ void Geometry::queryGeometry(const smtk::resource::PersistentObject::Ptr& obj, C
     switch (data->GetDataObjectType())
     {
       case VTK_COMPOSITE_DATA_SET:
-      case VTK_MULTIGROUP_DATA_SET:
       case VTK_MULTIBLOCK_DATA_SET:
+#if VTK_VERSION_NUMBER < VTK_VERSION_CHECK(9, 5, 0)
+      case VTK_MULTIGROUP_DATA_SET:
       case VTK_HIERARCHICAL_DATA_SET:
       case VTK_HIERARCHICAL_BOX_DATA_SET:
+#endif
         // The VTK session doesn't support composite data yet:
         entry.m_geometry = nullptr;
         entry.m_generation = Invalid;

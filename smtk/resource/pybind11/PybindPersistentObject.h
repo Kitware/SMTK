@@ -16,6 +16,10 @@
 #include "smtk/resource/PersistentObject.h"
 
 #include "smtk/common/pybind11/PybindUUIDTypeCaster.h"
+#include "smtk/view/HandleManager.h"
+
+#include <sstream>
+#include <unordered_set>
 
 namespace py = pybind11;
 
@@ -23,6 +27,22 @@ inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_r
 {
   PySharedPtrClass< smtk::resource::PersistentObject > instance(m, "PersistentObject");
   instance
+    .def("__enter__", [](smtk::resource::PersistentObject& self)
+      {
+        return self.shared_from_this();
+      }, "Enter the runtime context related to this object."
+    )
+    .def("__exit__", [](smtk::resource::PersistentObject& self,
+        const std::optional<pybind11::type>& exc_type,
+        const std::optional<pybind11::object>& exc_value,
+        const std::optional<pybind11::object>& traceback)
+      {
+        (void)self;
+        (void)exc_type;
+        (void)exc_value;
+        (void)traceback;
+      }, "Exit the runtime context related to this object."
+    )
     .def("deepcopy", (smtk::resource::PersistentObject & (smtk::resource::PersistentObject::*)(::smtk::resource::PersistentObject const &)) &smtk::resource::PersistentObject::operator=)
     .def("typeName", &smtk::resource::PersistentObject::typeName)
     .def("id", &smtk::resource::PersistentObject::id)
@@ -34,6 +54,19 @@ inline PySharedPtrClass< smtk::resource::PersistentObject > pybind11_init_smtk_r
     .def("classHierarchy", &smtk::resource::PersistentObject::classHierarchy)
     .def("matchesType", &smtk::resource::PersistentObject::matchesType, py::arg("candidate"))
     .def("generationsFromBase", &smtk::resource::PersistentObject::generationsFromBase, py::arg("base"))
+    .def("pointer", [](smtk::resource::PersistentObject& self)
+      {
+        return smtk::view::HandleManager::instance()->handle(&self);
+      })
+    .def_static("fromPointer", [](const std::string& ptrStr)
+      {
+        auto* obj = smtk::view::HandleManager::instance()->fromHandle<smtk::resource::PersistentObject>(ptrStr);
+        if (!obj)
+        {
+          return smtk::resource::PersistentObject::Ptr();
+        }
+        return obj->shared_from_this();
+      })
     ;
   return instance;
 }

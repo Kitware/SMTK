@@ -40,7 +40,7 @@ public:
   using const_iterator = ReferenceItemConstIteratorTemplate<Resource>;
   using value_type = ResourcePtr;
   smtkTypeMacro(smtk::attribute::ResourceItem);
-  smtkSuperclassMacro(ReferenceItem);
+  smtkSuperclassMacro(smtk::attribute::ReferenceItem);
 
   /// Destructor
   ~ResourceItem() override;

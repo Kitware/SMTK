@@ -31,6 +31,7 @@ class SMTKCORE_EXPORT FileItem : public FileSystemItem
 
 public:
   smtkTypeMacro(smtk::attribute::FileItem);
+  smtkSuperclassMacro(smtk::attribute::FileSystemItem);
   ~FileItem() override;
 
   Item::Type type() const override;

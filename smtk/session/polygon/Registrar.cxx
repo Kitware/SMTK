@@ -77,6 +77,7 @@ typedef std::tuple<
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::session::polygon::Resource");
   resourceManager->registerResource<smtk::session::polygon::Resource>(read, write);
 }
 

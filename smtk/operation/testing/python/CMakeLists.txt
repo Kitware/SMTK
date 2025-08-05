@@ -9,6 +9,7 @@ set(smtkOperationPythonDataTests
 if (SMTK_ENABLE_POLYGON_SESSION)
   list(APPEND smtkOperationPythonDataTests
     testOperationHandler
+    testOperationObserver
   )
 endif()
 

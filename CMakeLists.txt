@@ -432,19 +432,23 @@ if(SMTK_ENABLE_PYTHON_WRAPPING)
   # Note that SMTK_PYTHON_MODULEDIR may be provided if SMTK is being
   # built as a submodule or as part of a superbuild.
   if (NOT DEFINED SMTK_PYTHON_MODULEDIR)
-    if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
-        execute_process(
-          COMMAND
-          "$<TARGET_FILE:Python3::Interpreter>"
-          -c "import site; print(site.getsitepackages())[-1]"
-          RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
-          )
-    elseif(WIN32)
-        set(SMTK_PYTHON_MODULEDIR
-          "bin/Lib/site-packages")
+    if (DEFINED SKBUILD)
+      set(SMTK_PYTHON_MODULEDIR "${SKBUILD_PLATLIB_DIR}")
     else()
-        set(SMTK_PYTHON_MODULEDIR
-          "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages")
+      if (SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
+          execute_process(
+            COMMAND
+            "$<TARGET_FILE:Python3::Interpreter>"
+            -c "import site; print(site.getsitepackages())[-1]"
+            RESULT_VARIABLE SMTK_PYTHON_MODULEDIR
+            )
+      elseif(WIN32)
+          set(SMTK_PYTHON_MODULEDIR
+            "bin/Lib/site-packages")
+      else()
+          set(SMTK_PYTHON_MODULEDIR
+            "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages")
+      endif()
     endif()
   endif()
 

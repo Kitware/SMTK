@@ -47,6 +47,7 @@ class SMTKCORE_EXPORT ModelEntityItem : public ComponentItem
 
 public:
   smtkTypeMacro(smtk::attribute::ModelEntityItem);
+  smtkSuperclassMacro(smtk::attribute::ComponentItem);
   ~ModelEntityItem() override;
 
   using ComponentItem::appendValue;

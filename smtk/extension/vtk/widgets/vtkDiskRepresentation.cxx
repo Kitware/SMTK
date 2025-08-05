@@ -45,8 +45,12 @@
 #include "vtkSphereSource.h"
 #include "vtkTransform.h"
 #include "vtkTubeFilter.h"
-#include "vtkVectorOperators.h"
+#include "vtkVersionMacros.h"
 #include "vtkWindow.h"
+
+#if VTK_VERSION_NUMBER < VTK_VERSION_CHECK(9, 5, 0)
+#include "vtkVectorOperators.h"
+#endif
 
 #include <algorithm>
 #include <cfloat> //for FLT_EPSILON

@@ -37,6 +37,24 @@ inline PySharedPtrClass< smtk::common::Managers > pybind11_init_smtk_common_Mana
   PySharedPtrClass< smtk::common::Managers > instance(m, "Managers");
   instance
     .def_static("create", (std::shared_ptr<smtk::common::Managers> (*)()) &smtk::common::Managers::create)
+    .def("__enter__", [](smtk::common::Managers& self)
+      {
+        // Keep the instance alive for the duration of the context.
+        return self.shared_from_this();
+      }, "Enter the runtime context related to this object."
+    )
+    .def("__exit__", [](smtk::common::Managers& self,
+        const std::optional<pybind11::type>& exc_type,
+        const std::optional<pybind11::object>& exc_value,
+        const std::optional<pybind11::object>& traceback
+        )
+      {
+        (void)self;
+        (void)exc_type;
+        (void)exc_value;
+        (void)traceback;
+      }, "Exit the runtime context related to this object."
+    )
     .def("insert_or_assign", [](smtk::common::Managers& managers, std::shared_ptr<smtk::operation::Manager>& operationManager)
       {
         std::cerr << "Deprecated after 23.08; use insertOrAssign() instead.\n";

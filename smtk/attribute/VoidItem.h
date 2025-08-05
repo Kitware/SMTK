@@ -30,6 +30,7 @@ class SMTKCORE_EXPORT VoidItem : public Item
 
 public:
   smtkTypeMacro(smtk::attribute::VoidItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
   ~VoidItem() override;
   Item::Type type() const override;
 

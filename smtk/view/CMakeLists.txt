@@ -9,6 +9,7 @@ set(viewClasses
   Configuration
   DescriptivePhrase
   EmptySubphraseGenerator
+  HandleManager
   Information
   LockedResourceBadge
   Manager
@@ -56,8 +57,12 @@ set(viewHeaders
 )
 
 foreach(class ${viewClasses})
-  list(APPEND viewHeaders ${class}.h)
-  list(APPEND viewSrcs ${class}.cxx)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.h")
+    list(APPEND viewHeaders "${class}.h")
+  endif()
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.cxx")
+    list(APPEND viewSrcs "${class}.cxx")
+  endif()
 endforeach()
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

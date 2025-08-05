@@ -54,6 +54,13 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
 {
   common.doc() = "<description>";
 
+  // Import modules so that return types of smtk.common.Managers' get() method are known.
+  py::module::import("smtk.string");
+  py::module::import("smtk.resource");
+  py::module::import("smtk.operation");
+  py::module::import("smtk.geometry");
+  py::module::import("smtk.view");
+
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
   py::class_< smtk::common::Categories > smtk_common_Categories = pybind11_init_smtk_common_Categories(common);

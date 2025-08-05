@@ -22,8 +22,12 @@ inline py::class_< smtk::operation::Registrar > pybind11_init_smtk_operation_Reg
   py::class_< smtk::operation::Registrar > instance(m, "Registrar");
   instance
     .def(py::init<>())
+    .def_static("registerTo", (void (*)(std::shared_ptr<::smtk::common::Managers> const &)) &smtk::operation::Registrar::registerTo)
+    .def_static("unregisterFrom", (void (*)(std::shared_ptr<::smtk::common::Managers> const &)) &smtk::operation::Registrar::unregisterFrom)
     .def_static("registerTo", (void (*)(std::shared_ptr<::smtk::operation::Manager> const &)) &smtk::operation::Registrar::registerTo)
     .def_static("unregisterFrom", (void (*)(std::shared_ptr<::smtk::operation::Manager> const &)) &smtk::operation::Registrar::unregisterFrom)
+    .def_static("registerTo", (void (*)(std::shared_ptr<::smtk::view::Manager> const &)) &smtk::operation::Registrar::registerTo)
+    .def_static("unregisterFrom", (void (*)(std::shared_ptr<::smtk::view::Manager> const &)) &smtk::operation::Registrar::unregisterFrom)
     ;
   return instance;
 }

@@ -1,90 +1,81 @@
 # set up sources to build
+set(commonClasses
+  Archive
+  Categories
+  Color
+  CompilerInformation
+  DateTime
+  DateTimeZonePair
+  Environment
+  Extension
+  Factory
+  FileLocation
+  Generator
+  GeometryUtilities
+  InfixExpressionError
+  InfixExpressionEvaluation
+  InfixExpressionGrammar
+  InfixExpressionGrammarImpl
+  Instances
+  Links
+  Managers
+  Observers
+  Paths
+  RangeDetector
+  RuntimeTypeContainer
+  Singleton
+  Singletons
+  Status
+  StringUtil
+  ThreadPool
+  TimeZone
+  timezonespec
+  TypeHierarchy
+  TypeMap
+  TypeName
+  TypeContainer
+  TypeTraits
+  URL
+  UUID
+  UUIDGenerator
+  VersionNumber
+  WeakReferenceWrapper
+
+  categories/Actions
+  categories/Evaluators
+  categories/Grammar
+
+  json/Helper
+  json/jsonLinks
+  json/jsonTypeMap
+  json/jsonUUID
+  json/jsonVersionNumber
+
+  testing/cxx/helpers
+
+  update/Factory
+)
+
 set(commonSrcs
-  Archive.cxx
-  Categories.cxx
-  Color.cxx
-  DateTime.cxx
-  DateTimeZonePair.cxx
-  Environment.cxx
-  Extension.cxx
-  FileLocation.cxx
-  InfixExpressionGrammar.cxx
-  Managers.cxx
-  Paths.cxx
-  RuntimeTypeContainer.cxx
-  Status.cxx
-  StringUtil.cxx
-  TimeZone.cxx
-  timezonespec.cxx
-  TypeContainer.cxx
-  URL.cxx
-  UUID.cxx
-  UUIDGenerator.cxx
-  VersionNumber.cxx
-  json/Helper.cxx
-  json/jsonLinks.cxx
-  json/jsonUUID.cxx
-  json/jsonVersionNumber.cxx
 )
 
 set(commonHeaders
-  Archive.h
-  Categories.h
-  Color.h
-  CompilerInformation.h
-  DateTime.h
-  DateTimeZonePair.h
   Deprecation.h
-  Environment.h
-  Extension.h
-  Factory.h
-  FileLocation.h
-  Generator.h
-  GeometryUtilities.h
-  InfixExpressionError.h
-  InfixExpressionEvaluation.h
-  InfixExpressionGrammar.h
-  InfixExpressionGrammarImpl.h
-  Instances.h
-  Links.h
-  Managers.h
-  Observers.h
-  Paths.h
   Processing.h
-  RangeDetector.h
-  RuntimeTypeContainer.h
-  Singleton.h
-  Status.h
-  StringUtil.h
-  ThreadPool.h
-  TimeZone.h
-  timezonespec.h
-  TypeHierarchy.h
-  TypeMap.h
-  TypeName.h
-  TypeContainer.h
-  TypeTraits.h
-  URL.h
-  UUID.h
-  UUIDGenerator.h
-  VersionNumber.h
   VersionMacros.h
   Visit.h
-  WeakReferenceWrapper.h
-  categories/Actions.h
-  categories/Evaluators.h
-  categories/Grammar.h
-  json/Helper.h
-  json/jsonLinks.h
-  json/jsonTypeMap.h
-  json/jsonUUID.h
-  json/jsonVersionNumber.h
-  testing/cxx/helpers.h
-
-  update/Factory.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/Version.h
 )
+
+foreach(class ${commonClasses})
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.h")
+    list(APPEND commonHeaders "${class}.h")
+  endif()
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.cxx")
+    list(APPEND commonSrcs "${class}.cxx")
+  endif()
+endforeach()
 
 if (APPLE)
   set(commonSrcs ${commonSrcs} PathsHelperMacOSX.mm)

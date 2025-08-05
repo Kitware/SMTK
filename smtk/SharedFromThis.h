@@ -30,10 +30,6 @@
 
 /// Used by smtkTypeMacro and smtkTypeMacroBase to provide access to the inheritance hierarchy.
 #define smtkInheritanceHierarchyBase(...)                                                          \
-  virtual smtk::string::Token typeToken() const                                                    \
-  {                                                                                                \
-    return smtk::string::Token(type_name);                                                         \
-  }                                                                                                \
   virtual std::vector<smtk::string::Token> classHierarchy() const                                  \
   {                                                                                                \
     static std::vector<smtk::string::Token> baseTypes;                                             \
@@ -71,10 +67,6 @@
   }
 
 #define smtkInheritanceHierarchy(...)                                                              \
-  smtk::string::Token typeToken() const override                                                   \
-  {                                                                                                \
-    return smtk::string::Token(type_name);                                                         \
-  }                                                                                                \
   std::vector<smtk::string::Token> classHierarchy() const override                                 \
   {                                                                                                \
     static std::vector<smtk::string::Token> baseTypes;                                             \
@@ -111,12 +103,22 @@
   {                                                                                                \
     return type_name;                                                                              \
   }                                                                                                \
+  virtual smtk::string::Token typeToken() const                                                    \
+  {                                                                                                \
+    using namespace smtk::string::literals;                                                        \
+    return smtk::string::Token::fromHash(#__VA_ARGS__##_hash);                                     \
+  }                                                                                                \
   smtkInheritanceHierarchyBase(__VA_ARGS__);
 #define smtkTypenameMacro(...)                                                                     \
   static constexpr const char* const type_name = #__VA_ARGS__;                                     \
   std::string typeName() const override                                                            \
   {                                                                                                \
     return type_name;                                                                              \
+  }                                                                                                \
+  smtk::string::Token typeToken() const override                                                   \
+  {                                                                                                \
+    using namespace smtk::string::literals;                                                        \
+    return smtk::string::Token::fromHash(#__VA_ARGS__##_hash);                                     \
   }                                                                                                \
   smtkInheritanceHierarchy(__VA_ARGS__);
 ///@}

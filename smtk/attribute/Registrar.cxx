@@ -18,10 +18,14 @@
 #include "smtk/attribute/UpdateManager.h"
 
 #include "smtk/attribute/operators/Associate.h"
+#include "smtk/attribute/operators/CreateAttribute.h"
+#include "smtk/attribute/operators/DeleteAttribute.h"
 #include "smtk/attribute/operators/Dissociate.h"
+#include "smtk/attribute/operators/EditAttributeItem.h"
 #include "smtk/attribute/operators/Export.h"
 #include "smtk/attribute/operators/Import.h"
 #include "smtk/attribute/operators/Read.h"
+#include "smtk/attribute/operators/RenameAttribute.h"
 #include "smtk/attribute/operators/Signal.h"
 #include "smtk/attribute/operators/Write.h"
 
@@ -29,9 +33,11 @@
 #include "smtk/attribute/PythonRule.h"
 #endif
 
+#include "smtk/operation/groups/DeleterGroup.h"
 #include "smtk/operation/groups/ExporterGroup.h"
 #include "smtk/operation/groups/ImporterGroup.h"
 #include "smtk/operation/groups/InternalGroup.h"
+#include "smtk/operation/groups/NamingGroup.h"
 #include "smtk/operation/groups/ReaderGroup.h"
 #include "smtk/operation/groups/WriterGroup.h"
 
@@ -43,8 +49,22 @@ namespace attribute
 {
 namespace
 {
-typedef std::tuple<Associate, Dissociate, Export, Import, Read, Signal, Write> OperationList;
-}
+// clang-format off
+using OperationList = std::tuple<
+  Associate,
+  CreateAttribute,
+  DeleteAttribute,
+  Dissociate,
+  EditAttributeItem,
+  Export,
+  Import,
+  Read,
+  RenameAttribute,
+  Signal,
+  Write
+>;
+// clang-format on
+} // namespace
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
@@ -106,38 +126,35 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
 {
   operationManager->registerOperations<OperationList>();
 
-  smtk::operation::ReaderGroup(operationManager)
-    .registerOperation<smtk::attribute::Resource, smtk::attribute::Read>();
-
-  smtk::operation::ExporterGroup(operationManager)
-    .registerOperation<smtk::attribute::Resource, smtk::attribute::Export>();
-
-  smtk::operation::ImporterGroup(operationManager)
-    .registerOperation<smtk::attribute::Resource, smtk::attribute::Import>();
-
-  smtk::operation::WriterGroup(operationManager)
-    .registerOperation<smtk::attribute::Resource, smtk::attribute::Write>();
-
+  // clang-format off
+  smtk::operation::ReaderGroup(operationManager).registerOperation<smtk::attribute::Resource, smtk::attribute::Read>();
+  smtk::operation::ExporterGroup(operationManager).registerOperation<smtk::attribute::Resource, smtk::attribute::Export>();
+  smtk::operation::ImporterGroup(operationManager).registerOperation<smtk::attribute::Resource, smtk::attribute::Import>();
+  smtk::operation::WriterGroup(operationManager).registerOperation<smtk::attribute::Resource, smtk::attribute::Write>();
+  smtk::operation::NamingGroup(operationManager).registerOperation<smtk::attribute::Resource, smtk::attribute::RenameAttribute>();
   smtk::operation::InternalGroup(operationManager).registerOperation<smtk::attribute::Signal>();
+  smtk::operation::DeleterGroup(operationManager).registerOperation<smtk::attribute::DeleteAttribute>();
+  // clang-format on
 }
 
 void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
 {
+  // clang-format off
   smtk::operation::ReaderGroup(operationManager).unregisterOperation<smtk::attribute::Read>();
-
   smtk::operation::ExporterGroup(operationManager).unregisterOperation<smtk::attribute::Export>();
-
   smtk::operation::ImporterGroup(operationManager).unregisterOperation<smtk::attribute::Import>();
-
   smtk::operation::WriterGroup(operationManager).unregisterOperation<smtk::attribute::Write>();
-
+  smtk::operation::NamingGroup(operationManager).unregisterOperation<smtk::attribute::RenameAttribute>();
   smtk::operation::InternalGroup(operationManager).unregisterOperation<smtk::attribute::Signal>();
+  smtk::operation::DeleterGroup(operationManager).unregisterOperation<smtk::attribute::DeleteAttribute>();
+  // clang-format on
 
   operationManager->unregisterOperations<OperationList>();
 }
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::attribute::Resource");
   resourceManager->registerResource<smtk::attribute::Resource>(read, write);
 
   auto& typeLabels = resourceManager->objectTypeLabels();

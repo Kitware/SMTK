@@ -38,6 +38,7 @@ class SMTKCORE_EXPORT ValueItem : public smtk::attribute::Item
 {
 public:
   smtkTypeMacro(smtk::attribute::ValueItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
   friend class ValueItemDefinition;
 
   ~ValueItem() override;

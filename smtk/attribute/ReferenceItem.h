@@ -120,8 +120,8 @@ public:
   /// and the second one is the id of the component link.
   using Key = std::pair<smtk::common::UUID, smtk::common::UUID>;
 
-  smtkTypeMacro(ReferenceItem);
-  smtkSuperclassMacro(Item);
+  smtkTypeMacro(smtk::attribute::ReferenceItem);
+  smtkSuperclassMacro(smtk::attribute::Item);
 
   ReferenceItem(const ReferenceItem&);
   ~ReferenceItem() override;

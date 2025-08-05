@@ -14,6 +14,10 @@
 #include <pybind11/pybind11.h>
 
 #include "smtk/view/Configuration.h"
+#include "smtk/view/HandleManager.h"
+
+#include <sstream>
+#include <unordered_set>
 
 namespace py = pybind11;
 
@@ -30,6 +34,19 @@ inline PySharedPtrClass< smtk::view::Configuration > pybind11_init_smtk_view_Vie
     .def("iconName", &smtk::view::Configuration::iconName)
     .def("setIconName", &smtk::view::Configuration::setIconName, py::arg("name"))
     .def("details", (smtk::view::Configuration::Component& (smtk::view::Configuration::*)()) &smtk::view::Configuration::details, py::return_value_policy::reference)
+    .def("pointer", [](smtk::view::Configuration& self)
+      {
+        return smtk::view::HandleManager::instance()->handle(&self);
+      })
+    .def_static("fromPointer", [](const std::string& ptrStr)
+      {
+        auto* view = smtk::view::HandleManager::instance()->fromHandle<smtk::view::Configuration>(ptrStr);
+        if (!view)
+        {
+          return smtk::view::Configuration::Ptr();
+        }
+        return view->shared_from_this();
+      })
     ;
   py::class_< smtk::view::Configuration::Component >(instance, "Component")
     .def(py::init<::std::string const &>())

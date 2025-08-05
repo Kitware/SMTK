@@ -40,6 +40,7 @@ typedef std::tuple<CreateModel, EditDomain, EditSource, Export, Read, Write> Ope
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
+  smtk::string::Token dummy("smtk::session::oscillator::Resource");
   // Providing a write method to the resource manager is what allows
   // modelbuilder's pqSMTKSaveResourceBehavior to determine how to write
   // the resource when users click "Save Resource" or ⌘ S/⌃ S.

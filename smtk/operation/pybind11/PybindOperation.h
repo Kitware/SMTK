@@ -137,7 +137,22 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
     .def("managers", &smtk::operation::Operation::managers)
-    .def("addHandler", &smtk::operation::Operation::addHandler, py::arg("handler"), py::arg("priority"))
+    .def("addHandler",
+      [](smtk::operation::Operation& op, smtk::operation::Handler handler, int priority)
+      {
+        // Wrap the \a handler in a new function object which obtains the GIL as the operation will
+        // not hold the GIL at the point handlers are invoked and the only \a handler that can be
+        // passed to us is a python function object (which requires the GIL). Add this wrapped handler
+        // to the operation rather than the one we are passed.
+        smtk::operation::Handler pyHandler = [handler](
+          smtk::operation::Operation& op, const std::shared_ptr<smtk::attribute::Attribute>& result)
+          {
+            py::gil_scoped_acquire guard;
+            handler(op, result);
+          };
+        op.addHandler(pyHandler, priority);
+      },
+      py::arg("handler"), py::arg("priority") = 0)
     .def("removeHandler", &smtk::operation::Operation::removeHandler, py::arg("handler"), py::arg("priority"))
     .def("clearHandlers", &smtk::operation::Operation::clearHandlers)
     .def("restoreTrace", (bool (smtk::operation::Operation::*)(::std::string const &)) &smtk::operation::Operation::restoreTrace)
