@@ -95,6 +95,12 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
   (void)smtk::string::Token("smtk::attribute::DirectoryItem");
   (void)smtk::string::Token("smtk::attribute::DateTimeItem");
   (void)smtk::string::Token("smtk::model::Resource");
+  (void)smtk::string::Token("smtk::task::Worklet");
+  (void)smtk::string::Token("smtk::task::Task");
+  (void)smtk::string::Token("smtk::task::Agent");
+  (void)smtk::string::Token("smtk::task::FillOutAttributesAgent");
+  (void)smtk::string::Token("smtk::task::GatherResourcesAgent");
+  (void)smtk::string::Token("smtk::task::SubmitOperationAgent");
   (void)smtk::string::Token("smtk::view::Configuration");
   (void)smtk::string::Token("smtk::view::View");
 
