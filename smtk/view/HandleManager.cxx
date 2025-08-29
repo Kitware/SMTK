@@ -158,7 +158,7 @@ void HandleManager::handleOperation(
   for (auto obj : *result->findComponent("created"))
   {
     // TODO: Check that handle should be created by manager.
-    handleGroup[obj->typeToken()].insert(this->handle(obj.get()));
+    // handleGroup[obj->typeToken()].insert(this->handle(obj.get()));
   }
   for (auto obj : *result->findResource("resourcesCreated"))
   {
