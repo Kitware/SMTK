@@ -1,5 +1,6 @@
 set(smtkOperationPythonTests
   testConstructedAPI
+  testAsyncIOObserverOverride
 )
 
 # tests that require SMTK_DATA_DIR

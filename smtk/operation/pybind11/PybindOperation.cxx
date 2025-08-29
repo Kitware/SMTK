@@ -60,10 +60,30 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
   PySharedPtrClass< smtk::operation::SetProperty, smtk::operation::XMLOperation > smtk_operation_SetProperty = pybind11_init_smtk_operation_SetProperty(operation);
   PySharedPtrClass< smtk::operation::WriteResource, smtk::operation::XMLOperation > smtk_operation_WriteResource = pybind11_init_smtk_operation_WriteResource(operation);
 
-  operation.def("outcome", &smtk::operation::outcome,
-    py::arg("result"), "Return the outcome of an operation given its result object.");
-  operation.def("setOutcome", &smtk::operation::setOutcome,
-    py::arg("result"), py::arg("outcome"), "Set the outcome of an operation result object.");
+  operation
+    .def("outcome", &smtk::operation::outcome,
+      py::arg("result"), "Return the outcome of an operation given its result object.")
+    .def("setOutcome", &smtk::operation::setOutcome,
+      py::arg("result"), py::arg("outcome"), "Set the outcome of an operation result object.")
+    .def("invokeObservers", [](
+        const smtk::operation::Operation& op,
+        smtk::operation::EventType event,
+        smtk::operation::Operation::Result result,
+        const smtk::operation::Manager::Ptr& manager,
+        std::promise<int>& observersCalled) -> int
+      {
+        if (!manager)
+        {
+          observersCalled.set_value(0);
+          return 0;
+        }
+        int value = manager->observers().callObserversDirectly(op, event, result);
+        observersCalled.set_value(value);
+        return value;
+      }
+    )
+    ;
+
 
   py::class_< smtk::operation::Registrar > smtk_operation_Registrar = pybind11_init_smtk_operation_Registrar(operation);
 }

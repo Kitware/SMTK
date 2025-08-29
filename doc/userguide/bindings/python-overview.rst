@@ -131,3 +131,66 @@ each time you start modelbuilder, just click on the "Auto-load"
 option in the plugin manager and exit modelbuilder;
 the setting will be saved and your module will be imported
 on subsequent runs.
+
+.. _python-asyncio:
+
+Python applications using asyncio
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SMTK's python bindings accommodate running threaded C++ operations
+in the background while notifying python scripts of results using the
+``asyncio`` module's event loop.
+
+If you are developing a python application that uses event loops, you
+should call your operation manager's ``overrideObserversUsingAsyncIO()``
+method with the event loop before launching operations.
+
+.. code-block:: python
+
+import asyncio
+import smtk
+import smtk.string
+import smtk.common
+import smtk.resource
+import smtk.attribute
+import smtk.operation
+
+app = smtk.common.Managers.create()
+smtk.resource.Registrar.registerTo(app)
+smtk.operation.Registrar.registerTo(app)
+rsrcMgr = app.get('smtk.resource.Manager')
+operMgr = app.get('smtk.operation.Manager')
+smtk.attribute.Registrar.registerTo(app)
+smtk.attribute.Registrar.registerTo(rsrcMgr)
+smtk.attribute.Registrar.registerTo(operMgr)
+# Create an event loop (or grab the existing one)
+# and tell SMTK to force operation observations
+# to be queued on the thread associated with the
+# loop (usually, the thread running the main
+# python interpreter).
+loop = asyncio.new_event_loop()
+operMgr.overrideObserversUsingAsyncIO(loop)
+def doStuff():
+    # Create operations, launch them, and
+    # await them all before returning
+    op = operMgr.create('yourOperation')
+    resultFuture = operMgr.launch(op)
+    # Awaiting the operation result doesn't
+    # have to be done here, but you shouldn't
+    # allow the event loop to exit before
+    # all operations have completed.
+    await resultFuture
+    print('Operation(s) completed.')
+    return resultFuture
+loop.run_until_complete(doStuff())
+loop.run_until_complete(loop.shutdown_asyncgens())
+loop.close()
+# After shutting down the loop, remove the
+# observer override:
+operMgr.removeObserversOverride()
+
+The above allows both Python and C++ operations to run (though
+Python operations will compete with other coroutines being
+processed in the loop's thread).
+All operation observations will be run in the ``loop``'s thread
+and may include C++ and Python observers and operation-handlers.

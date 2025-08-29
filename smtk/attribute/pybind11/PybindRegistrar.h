@@ -22,10 +22,20 @@ inline py::class_< smtk::attribute::Registrar > pybind11_init_smtk_attribute_Reg
   py::class_< smtk::attribute::Registrar > instance(m, "Registrar");
   instance
     .def(py::init<>())
+    .def_static("registerTo", (void (*)(std::shared_ptr<smtk::common::Managers> const&)) &smtk::attribute::Registrar::registerTo )
+    .def_static("unregisterFrom", (void (*)(std::shared_ptr<smtk::common::Managers> const&)) &smtk::attribute::Registrar::unregisterFrom)
+
     .def_static("registerTo", (void (*)(std::shared_ptr<::smtk::resource::Manager> const &)) &smtk::attribute::Registrar::registerTo)
     .def_static("unregisterFrom", (void (*)(std::shared_ptr<::smtk::resource::Manager> const &)) &smtk::attribute::Registrar::unregisterFrom)
+
     .def_static("registerTo", (void (*)(std::shared_ptr<::smtk::operation::Manager> const &)) &smtk::attribute::Registrar::registerTo)
     .def_static("unregisterFrom", (void (*)(std::shared_ptr<::smtk::operation::Manager> const &)) &smtk::attribute::Registrar::unregisterFrom)
+
+    .def_static("registerTo", (void (*)(std::shared_ptr<smtk::attribute::AssociationRuleManager> const&)) &smtk::attribute::Registrar::registerTo)
+    .def_static("unregisterFrom", (void (*)(std::shared_ptr<smtk::attribute::AssociationRuleManager> const&)) &smtk::attribute::Registrar::unregisterFrom)
+
+    .def_static("registerTo", (void (*)(std::shared_ptr<smtk::attribute::EvaluatorManager> const&)) &smtk::attribute::Registrar::registerTo)
+    .def_static("unregisterFrom", (void (*)(std::shared_ptr<smtk::attribute::EvaluatorManager> const&)) &smtk::attribute::Registrar::unregisterFrom);
     ;
   return instance;
 }
