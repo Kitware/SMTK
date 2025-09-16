@@ -9,7 +9,6 @@
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_ubsan" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-fedora41_vtk_python3" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_arm64" },
-        { "group": "master", "site": "gitlab-ci", "buildname": "smtk-macos_x86_64" },
         { "group": "master", "site": "gitlab-ci", "buildname": "smtk-windows_vs2022_ninja" }
     ]
 }

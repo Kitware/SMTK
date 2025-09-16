@@ -32,22 +32,7 @@
         CMAKE_CONFIGURATION: macos_arm64
         CTEST_NO_WARNINGS_ALLOWED: 1
 
-.macos_x86_64:
-    extends: .macos_build
-
-    variables:
-        CMAKE_CONFIGURATION: macos_x86_64
-        CTEST_NO_WARNINGS_ALLOWED: 1
-
 ## Tags
-
-.macos_x86_64_builder_tags:
-    tags:
-        - cmb
-        - macos-x86_64
-        - shell
-        - xcode-16.1
-        - nonconcurrent
 
 .macos_arm64_builder_tags:
     tags:
