@@ -121,6 +121,17 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
         return self.log();
       }, pybind11::return_value_policy::reference
     )
+    .def("identifyLocksRequired", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as identifyLocksRequired() will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->identifyLocksRequired();
+        }
+        return smtk::operation::ResourceAccessMap{}; // self.identifyLocksRequired();
+      }
+    )
     .def("specification", [](smtk::operation::Operation& self)
       {
         if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))

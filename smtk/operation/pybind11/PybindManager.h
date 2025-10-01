@@ -26,6 +26,8 @@
 #include "smtk/resource/Component.h"
 #include "smtk/resource/Manager.h"
 
+#include "smtk/io/Logger.h"
+
 #include <chrono>
 #include <vector>
 
@@ -67,11 +69,11 @@ void future_awaiter_function(
 
 } // anonymous namespace
 
-inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manager(py::module &m)
+inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation_Manager(py::module& opModule)
 {
   // First, wrap the future object returned by the manager's operation launcher.
   // We need this so that applications/tests can wait on operations to complete before exiting.
-  py::class_<std::shared_future<smtk::attribute::Attribute::Ptr>> futureObject(m, "ResultFuture");
+  py::class_<std::shared_future<smtk::attribute::Attribute::Ptr>> futureObject(opModule, "ResultFuture");
   futureObject
     .def("__await__", [](const std::shared_future<smtk::attribute::Attribute::Ptr>& self)
       {
@@ -118,7 +120,7 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
   // This is needed so that smtk.operation.invokeObservers() can be passed a promise
   // that blocks the operation's thread until observers have completed running
   // (preventing locks from being released during observation).
-  py::class_<std::promise<int>, std::shared_ptr<std::promise<int>>> intPromiseObject(m, "IntPromise");
+  py::class_<std::promise<int>, std::shared_ptr<std::promise<int>>> intPromiseObject(opModule, "IntPromise");
   intPromiseObject
     .def("set_value",
       [](std::promise<int>& self, int value) { self.set_value(value); }, py::arg("value"), R"(
@@ -130,7 +132,7 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
     ;
 
   // Now we can wrap the Manager class whose methods may produce "ResultFuture" and "IntPromise" objects.
-  PySharedPtrClass< smtk::operation::Manager > instance(m, "Manager");
+  PySharedPtrClass< smtk::operation::Manager > instance(opModule, "Manager");
   instance
     .def("availableOperations", (std::set<std::string> (smtk::operation::Manager::*)() const) &smtk::operation::Manager::availableOperations)
     .def("availableOperations", (std::set<smtk::operation::Operation::Index> (smtk::operation::Manager::*)(const smtk::resource::ComponentPtr&) const) &smtk::operation::Manager::availableOperations)
@@ -172,7 +174,7 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
         return resultFuture;
       }, py::arg("operation"), R"(
       Queue an operation to run in separate threads and return a future for its result.)")
-    .def("overrideObserversUsingAsyncIO", [m](smtk::operation::Manager& manager, py::object eventLoop)
+    .def("overrideObserversUsingAsyncIO", [opModule](smtk::operation::Manager& manager, py::object eventLoop)
       {
         // If the \a eventLoop is None, fetch the running one on the current thread.
         auto asyncio = py::module::import("asyncio");
@@ -186,10 +188,28 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
           smtkErrorMacro(smtk::io::Logger::instance(), "Invalid event loop!");
           return false;
         }
+
+        // Fetch the "promiseToRun" function. This must be a python callable
+        // since it will be passed to "call_soon_threadsafe".
+        auto promiseToRun = opModule.attr("promiseToRun");
+        smtk::operation::PyOperation::runOnMainThread = [eventLoop, promiseToRun](std::function<void(void)> fn)
+        {
+          auto functionRun = std::make_shared<std::promise<int>>();
+          auto done = functionRun->get_future();
+          {
+            // Acquire the GIL as call_soon_threadsafe needs it.
+            pybind11::gil_scoped_acquire gil;
+            eventLoop.attr("call_soon_threadsafe")(promiseToRun, fn, functionRun);
+          }
+          // Now wait until the function has been invoked on the eventLoop (i.e., the
+          // local thread should block until the main thread has run the function).
+          done.wait();
+        };
+
         // Fetch the "invokeObservers" function. This must be a python callable
         // since it will be passed to "call_soon_threadsafe" (which is how one
         // adds tasks to an event loop).
-        auto invokeObservers = m.attr("invokeObservers");
+        auto invokeObservers = opModule.attr("invokeObservers");
         auto self = manager.shared_from_this();
         // Provide the \a manager's observers with an override that blocks on
         // the calling thread until the observers have been invoked on the event-loop's
@@ -236,6 +256,10 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
     .def("removeObserversOverride", [](smtk::operation::Manager& manager)
       {
         manager.observers().removeOverride();
+        smtk::operation::PyOperation::runOnMainThread = [](std::function<void(void)> fn)
+        {
+          fn();
+        };
       }, R"(
       Remove any overrides for operation observers (including but not limited
       to the one created by calling manager.overrideObserversUsingAsyncIO()).)"
@@ -245,36 +269,68 @@ inline PySharedPtrClass< smtk::operation::Manager > pybind11_init_smtk_operation
   // Add an invokeObservers function to the module that calls observers directly
   // and resolves a promise so that resource locks on the operation's thread can
   // be released.
-  m.def("invokeObservers",
-    [](const smtk::operation::Operation::Ptr& op,
-      smtk::operation::EventType event,
-      const smtk::operation::Operation::Result& result,
-      const smtk::operation::Manager::Ptr& operationManager,
-      std::shared_ptr<std::promise<int>>& observersCalled)
-    {
-      // Release the GIL as any python observers will re-acquire it:
-      pybind11::gil_scoped_release gil(true);
-      // Invoke the observers (presumably this lambda is called from Python's event-loop thread).
-      int status = -1;
-      try {
-        status = operationManager->observers().callObserversDirectly(*op, event, result);
-      } catch (std::exception& e)
+  opModule
+    .def("invokeObservers",
+      [](const smtk::operation::Operation::Ptr& op,
+        smtk::operation::EventType event,
+        const smtk::operation::Operation::Result& result,
+        const smtk::operation::Manager::Ptr& operationManager,
+        std::shared_ptr<std::promise<int>>& observersCalled)
       {
-        op->log().setFlushToStderr(true);
-        smtkErrorMacro(
-          op->log(),
-          "An unhandled exception (" << e.what() << ") occurred in " << op->typeName() <<
-          "processing observations via python asyncio.");
-      }
-      // For debugging:
-      // std::cerr << "  observer status " << status << "\n";
+        // Release the GIL as any python observers will re-acquire it:
+        pybind11::gil_scoped_release gil(true);
+        // Invoke the observers (presumably this lambda is called from Python's event-loop thread).
+        int status = -1;
+        try {
+          status = operationManager->observers().callObserversDirectly(*op, event, result);
+        } catch (std::exception& e)
+        {
+          op->log().setFlushToStderr(true);
+          smtkErrorMacro(
+            op->log(),
+            "An unhandled exception (" << e.what() << ") occurred in " << op->typeName() <<
+            "processing observations via python asyncio.");
+        }
+        // For debugging:
+        // std::cerr << "  observer status " << status << "\n";
 
-      // Resolve the C++ promise which in turn resolves the Python future which then allows
-      // any python coroutines/tasks which were awaiting the operation to run.
-      observersCalled->set_value(status);
-      return status;
-    }
-  );
+        // Resolve the C++ promise which in turn resolves the Python future which then allows
+        // any python coroutines/tasks which were awaiting the operation to run.
+        observersCalled->set_value(status);
+        return status;
+      }
+    )
+    .def("promiseToRun",
+      [](
+        std::function<void(void)> fn,
+        std::shared_ptr<std::promise<int>>& functionHasRun)
+      {
+        int status = -1;;
+        {
+          // Release the GIL; if \a fn is a python callable, it will re-acquire it:
+          pybind11::gil_scoped_release gil(true);
+          try {
+            fn();
+            status = 1;
+          }
+          catch (std::exception& e)
+          {
+            auto log = smtk::io::Logger::instance();
+            log.setFlushToStderr(true);
+            smtkErrorMacro(
+              log, "An unhandled exception (" << e.what() << ") occurred running "
+              "a user function on the main thread.");
+            status = 0;
+          }
+        }
+        functionHasRun->set_value(status);
+      }, py::arg("callable"), py::arg("promise"), R"(
+      Run the passed callable object. Once it completes, set the promise's
+      value to 1 on success and 0 on failure. This method is for internal use
+      only by smtk::operation::PyOperation::runOnMainThread() which may be
+      called from C++ code run on any thread.)"
+    )
+  ;
 
   return instance;
 }

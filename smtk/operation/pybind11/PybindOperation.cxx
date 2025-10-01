@@ -12,6 +12,7 @@
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <utility>
 SMTK_THIRDPARTY_POST_INCLUDE
 
