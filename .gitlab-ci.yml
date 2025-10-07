@@ -159,7 +159,7 @@ fedora41-coverage:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_dependent
+        - .run_automatically
 
 fedora41-coverage:test:
     extends:
