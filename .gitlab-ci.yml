@@ -39,7 +39,9 @@ fedora41:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41:test:
     extends:
@@ -57,7 +59,9 @@ fedora41-vtk-python3:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-vtk-python3:test:
     extends:
@@ -75,7 +79,9 @@ fedora41-paraview:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-paraview:test:
     extends:
@@ -93,7 +99,9 @@ fedora41-nodata:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-nodata:test:
     extends:
@@ -113,7 +121,9 @@ fedora41-asan:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-asan:test:
     extends:
@@ -131,7 +141,9 @@ fedora41-ubsan:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-ubsan:test:
     extends:
@@ -149,7 +161,9 @@ fedora41-tidy:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
     # Give more time until we can implement clang-tidy-cache:
     timeout: 1h 30m
 
@@ -159,7 +173,9 @@ fedora41-coverage:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-coverage:test:
     extends:
@@ -191,7 +207,9 @@ macos-arm64:build:
         - .cmake_build_macos
         - .cmake_build_artifacts
         - .macos_arm64_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 macos-arm64:test:
     extends:
@@ -213,7 +231,9 @@ windows-vs2022-ninja:build:
         - .cmake_build_windows
         - .cmake_build_artifacts
         - .windows_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 windows-vs2022-ninja:test:
     extends:

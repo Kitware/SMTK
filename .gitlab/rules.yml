@@ -1,5 +1,11 @@
 # Rules for where jobs can run
 
+###
+## Job variables:
+##   SMTK_CI_RUN_DELAYED
+##     Set to "true" if the job should run delayed for merged pipelines.
+####
+
 # When to even consider running a pipeline
 workflow:
     rules:
@@ -42,14 +48,9 @@ workflow:
         # Jobs on a schedule run right away.
         - if: '$CI_PIPELINE_SOURCE == "schedule"'
           when: on_success
+        # Initial jobs run delayed (e.g., merges to branches)
+        - if: '$SMTK_CI_RUN_DELAYED == "true"'
+          when: delayed
+          start_in: 30 minutes
         # Normal jobs on the project run automatically.
         - when: on_success
-
-.run_automatically:
-    rules:
-        - if: '$CI_MERGE_REQUEST_ID'
-          when: on_success
-        - if: '$CI_PIPELINE_SOURCE == "schedule"'
-          when: on_success
-        - when: delayed
-          start_in: 30 minutes
