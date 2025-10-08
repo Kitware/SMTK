@@ -21,7 +21,9 @@ stages:
 #   - a "base image"
 #   - a build script
 #   - tags for the jobs
-#   - rules for when to run the job
+#   - the `.rules` block
+#     - see `.gitlab/rules.yml` for variables jobs may set to control when the
+#       job is executed
 #
 # Additionally, jobs may also contain:
 #
@@ -39,7 +41,9 @@ fedora41:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41:test:
     extends:
@@ -47,7 +51,7 @@ fedora41:test:
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41:build
 
@@ -57,7 +61,9 @@ fedora41-vtk-python3:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-vtk-python3:test:
     extends:
@@ -65,7 +71,7 @@ fedora41-vtk-python3:test:
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-vtk-python3:build
 
@@ -75,7 +81,9 @@ fedora41-paraview:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-paraview:test:
     extends:
@@ -83,7 +91,7 @@ fedora41-paraview:test:
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-paraview:build
 
@@ -93,7 +101,9 @@ fedora41-nodata:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-nodata:test:
     extends:
@@ -101,7 +111,7 @@ fedora41-nodata:test:
         - .cmake_test_linux
         - .cmake_test_artifacts
         - .linux_test_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-nodata:build
 
@@ -113,7 +123,9 @@ fedora41-asan:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-asan:test:
     extends:
@@ -121,7 +133,7 @@ fedora41-asan:test:
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
         - .linux_test_priv_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-asan:build
 
@@ -131,7 +143,9 @@ fedora41-ubsan:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-ubsan:test:
     extends:
@@ -139,7 +153,7 @@ fedora41-ubsan:test:
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
         - .linux_test_priv_tags
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-ubsan:build
 
@@ -149,7 +163,9 @@ fedora41-tidy:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
     # Give more time until we can implement clang-tidy-cache:
     timeout: 1h 30m
 
@@ -159,7 +175,9 @@ fedora41-coverage:build:
         - .cmake_build_linux
         - .cmake_build_artifacts
         - .linux_builder_tags
-        - .run_dependent
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 fedora41-coverage:test:
     extends:
@@ -167,7 +185,7 @@ fedora41-coverage:test:
         - .cmake_test_linux
         - .linux_test_tags
         - .cmake_coverage_artifacts
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-coverage:build
 
@@ -177,7 +195,7 @@ fedora41-coverage:analyze:
         - .cmake_coverage_linux
         - .linux_builder_tags
         - .cmake_annotations_artifacts
-        - .run_dependent
+        - .rules
     needs:
         - fedora41-coverage:test
 
@@ -191,7 +209,9 @@ macos-arm64:build:
         - .cmake_build_macos
         - .cmake_build_artifacts
         - .macos_arm64_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 macos-arm64:test:
     extends:
@@ -199,7 +219,7 @@ macos-arm64:test:
         - .cmake_test_macos
         - .cmake_test_artifacts
         - .macos_arm64_builder_tags
-        - .run_dependent
+        - .rules
     needs:
         - macos-arm64:build
 
@@ -213,7 +233,9 @@ windows-vs2022-ninja:build:
         - .cmake_build_windows
         - .cmake_build_artifacts
         - .windows_builder_tags
-        - .run_automatically
+        - .rules
+    variables:
+        SMTK_CI_RUN_DELAYED: "true"
 
 windows-vs2022-ninja:test:
     extends:
@@ -221,6 +243,6 @@ windows-vs2022-ninja:test:
         - .cmake_test_windows
         - .cmake_test_artifacts
         - .windows_builder_tags
-        - .run_dependent
+        - .rules
     needs:
         - windows-vs2022-ninja:build
