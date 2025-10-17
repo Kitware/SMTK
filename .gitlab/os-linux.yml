@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora41:
-    # Update to MOAB with C++17 compat
-    image: "kitware/cmb:ci-smtk-fedora41-20250305"
+    # Update to use Xcode 16.4
+    image: "kitware/cmb:ci-smtk-fedora41-20251016"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
