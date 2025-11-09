@@ -9,6 +9,7 @@ readonly ownership="GitSetup Upstream <kwrobot@kitware.com>"
 readonly subtree="utilities/gitsetup"
 readonly repo="https://gitlab.kitware.com/utils/gitsetup.git"
 readonly tag="setup"
+readonly exact_tree_match=false
 readonly paths="
 .gitattributes
 
