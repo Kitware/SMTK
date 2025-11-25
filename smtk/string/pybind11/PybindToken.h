@@ -50,6 +50,11 @@ inline py::class_<smtk::string::Token> pybind11_init_smtk_string_Token(py::modul
       {
         return self == other;
       })
+    .def("__eq__", [](const smtk::string::Token& self, const std::string& other)
+      {
+        auto otherToken = smtk::string::Token(other);
+        return self == otherToken;
+      })
     .def("__lt__", [](const smtk::string::Token& self, const smtk::string::Token& other)
       {
         return self < other;
