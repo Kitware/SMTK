@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <utility>
 
 #include "nlohmann/json.hpp"
@@ -36,6 +37,7 @@ using namespace nlohmann;
 #include "PybindSubmitOperationAgent.h"
 #include "PybindTask.h"
 #include "PybindTrivialProducerAgent.h"
+#include "PybindPortForwardingAgent.h"
 #include "PybindWorklet.h"
 #include "PybindInstances.h"
 
@@ -60,6 +62,7 @@ PYBIND11_MODULE(_smtkPybindTask, m)
   auto smtk_task_SubmitOperationAgent = pybind11_init_smtk_task_SubmitOperationAgent(m);
   auto smtk_task_GatherObjectsAgent = pybind11_init_smtk_task_GatherObjectsAgent(m);
   auto smtk_task_TrivialProducerAgent = pybind11_init_smtk_task_TrivialProducerAgent(m);
+  auto smtk_task_PortForwardingAgent = pybind11_init_smtk_task_PortForwardingAgent(m);
   auto smtk_task_Task = pybind11_init_smtk_task_Task(m);
   pybind11_init_smtk_task_State(m);
   pybind11_init_smtk_task_stateEnum(m);
