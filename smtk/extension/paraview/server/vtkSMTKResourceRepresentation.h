@@ -290,6 +290,7 @@ public:
 
   void GetEntityVisibilities(std::map<smtk::common::UUID, int>& visdata);
   bool SetEntityVisibility(smtk::resource::PersistentObjectPtr ent, bool visible);
+  bool SetEntityOpacity(const smtk::resource::PersistentObject* ent, double opacity);
 
   /**\brief Look for generator functions that alters a representation's appearance based on a selection.
     *
