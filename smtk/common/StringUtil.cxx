@@ -225,5 +225,33 @@ bool StringUtil::mixedAlphanumericComparator(const std::string& aa, const std::s
   double nb = atof(bb.substr(i).c_str());
   return na < nb;
 }
+
+bool StringUtil::endsWithUnderscoreNumber(std::string& key, int& ii)
+{
+  std::size_t pos = key.find_last_of('_');
+  if (pos == std::string::npos)
+  {
+    return false;
+  }
+  std::string num = key.substr(pos + 1);
+  std::size_t ep;
+  try
+  {
+    ii = std::stoi(num, &ep, 10);
+    if (ep != num.size())
+    {
+      ii = 0;
+      return false;
+    }
+    key = key.substr(0, pos);
+  }
+  catch (std::exception& ee)
+  {
+    ii = 0;
+    return false;
+  }
+  return true;
+}
+
 } // namespace common
 } // namespace smtk

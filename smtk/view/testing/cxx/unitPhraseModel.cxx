@@ -306,7 +306,7 @@ int unitPhraseModel(int argc, char* argv[])
                                     "z" };
   loadPhrases(phraseModel.get(), titles1);
   print(phraseModel.get());
-  checkCounts({ 0, 1, 33 }, "uniqification+reorder");
+  checkCounts({ 0, 1, 33 }, "uniquification+reorder");
 
   // Test updateChildren deletion and moves to beginning and end of list.
   std::vector<std::string> titles2{ "z", "b", "c", "a" };

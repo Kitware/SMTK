@@ -12,6 +12,7 @@
 
 #include "smtk/CoreExports.h"
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -81,6 +82,47 @@ public:
     * \sa DescriptivePhrase::compareByTitle
     */
   static bool mixedAlphanumericComparator(const std::string& aa, const std::string& bb);
+
+  /**\brief Identify the portion of \a key preceding an underscore followed by an integer number.
+    *
+    * If the \a key ends with an underscore followed by a (base 10) integer, this method
+    * returns true with \a key reduced to the prefix (i.e., the input text
+    * up to but not including the underscore) and \a ii set to the numeric value following
+    * the underscore. If not, this method returns false and \a ii will be set to 0 while \a key
+    * will be unchanged.
+    *
+    * See UnitTestUniquify for examples.
+    */
+  static bool endsWithUnderscoreNumber(std::string& key, int& ii);
+
+  /**\brief Return a value of \a src that is unique within the context of \a preExisting
+    *       container entries.
+    *
+    * The returned value will not be any key of the \a preExisting dictionary (whether
+    * \a Dict is a set or map). No value is inserted into \a preExisting; if you choose
+    * to use the returned value, you are responsible for updating the dictionary.
+    */
+  template<typename Dict>
+  static std::string uniquify(const std::string& src, Dict& preExisting)
+  {
+    std::string key = src;
+    {
+      int ii;
+      std::string prefix = key;
+      StringUtil::endsWithUnderscoreNumber(prefix, ii);
+      for (++ii; true; ++ii)
+      {
+        std::ostringstream ks;
+        ks << prefix << "_" << ii;
+        key = ks.str();
+        if (preExisting.find(key) == preExisting.end())
+        {
+          break;
+        }
+      }
+    }
+    return key;
+  }
 };
 
 } // namespace common
