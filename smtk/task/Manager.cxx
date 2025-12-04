@@ -21,6 +21,8 @@
 
 #include "smtk/resource/Resource.h"
 
+#include "smtk/common/StringUtil.h"
+
 #include "smtk/io/Logger.h"
 
 using namespace smtk::string::literals;
@@ -267,6 +269,29 @@ nlohmann::json Manager::getStyle(const smtk::string::Token& styleClass) const
     return this->m_styles.at(styleClass.data());
   }
   return nlohmann::json();
+}
+
+void Manager::addStyles(
+  const nlohmann::json& styles,
+  std::unordered_map<smtk::string::Token, smtk::string::Token>& styleMap)
+{
+  for (const auto& entry : styles.items())
+  {
+    std::string key = entry.key();
+    auto it = m_styles.find(key);
+    if (it != m_styles.end())
+    {
+      if (*it != entry.value())
+      {
+        key = smtk::common::StringUtil::uniquify(key, m_styles);
+        styleMap[entry.key()] = key;
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "  Style \"" << entry.key() << "\" mapped to \"" << key << "\".");
+      }
+    }
+    m_styles[key] = entry.value();
+  }
 }
 
 smtk::resource::Resource* Manager::resource() const

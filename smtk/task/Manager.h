@@ -136,7 +136,18 @@ public:
   /// Given a style key, return a style config.
   nlohmann::json getStyle(const smtk::string::Token& styleClass) const;
   nlohmann::json getStyles() const { return m_styles; };
+
+  /// Overwrite this task-manager's styles with the provided \a styles.
   void setStyles(const nlohmann::json& styles) { m_styles = styles; }
+
+  /// Append \a styles into this task manager.
+  ///
+  /// In the event of a name collision (where the content for styles of the same
+  /// name is different), the name is made unique and an entry is added to the
+  /// \a styleMap from the original name to the uniquified name.
+  void addStyles(
+    const nlohmann::json& styles,
+    std::unordered_map<smtk::string::Token, smtk::string::Token>& styleMap);
 
   /// If this manager is owned by a resource (typically a project), return it.
   smtk::resource::Resource* resource() const;
