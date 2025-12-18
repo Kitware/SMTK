@@ -95,14 +95,6 @@
         - linux-x86_64
         - x11
 
-.linux_test_priv_tags:
-    tags:
-        - cmb
-        - docker
-        - linux-x86_64
-        - privileged
-        - x11
-
 ## Linux-specific scripts
 
 .before_script_linux: &before_script_linux
