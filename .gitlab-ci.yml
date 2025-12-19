@@ -132,7 +132,7 @@ fedora41-asan:test:
         - .fedora41_asan
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
-        - .linux_test_priv_tags
+        - .linux_test_tags
         - .rules
     needs:
         - fedora41-asan:build
@@ -152,7 +152,7 @@ fedora41-ubsan:test:
         - .fedora41_ubsan
         - .cmake_memcheck_linux
         - .cmake_test_artifacts
-        - .linux_test_priv_tags
+        - .linux_test_tags
         - .rules
     needs:
         - fedora41-ubsan:build
