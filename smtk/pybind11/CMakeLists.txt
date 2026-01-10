@@ -30,6 +30,7 @@ configure_file(
 install(
   FILES "${build_path}/__init__.py"
   DESTINATION "${install_path}"
+  COMPONENT Runtime
   )
 
 if (smtk_dll_paths AND
@@ -40,5 +41,6 @@ if (smtk_dll_paths AND
   install(
     FILES "${build_path}/_build_paths.py"
     DESTINATION "${install_path}"
+    COMPONENT Runtime
     )
 endif ()

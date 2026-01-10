@@ -9,4 +9,5 @@ configure_file(
 install(
   FILES "${build_path}/__init__.py"
   DESTINATION "${install_path}"
+  COMPONENT Runtime
   )

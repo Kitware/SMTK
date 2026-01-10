@@ -70,9 +70,9 @@ function(smtk_install_library target)
   endif ()
   install(TARGETS ${target}
     EXPORT ${SMTK_EXPORT_SET}
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development
   )
 endfunction()
 
@@ -87,7 +87,10 @@ endfunction()
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
   generate_export_header(${target} EXPORT_FILE_NAME ${file})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}  DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file}
+    DESTINATION include/${PROJECT_NAME}/${SMTK_VERSION}/${dir_prefix}
+    COMPONENT Development
+  )
 endfunction()
 
 # Builds a source file and an executable that does nothing other than

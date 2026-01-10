@@ -21,8 +21,10 @@ target_link_libraries(unitPaths ${Boost_LIBRARIES})
 if (SMTK_ENABLE_PYTHON_WRAPPING)
   add_executable(QuerySMTKPythonForModule QuerySMTKPythonForModule.cxx)
   target_link_libraries(QuerySMTKPythonForModule smtkCore)
-  install(TARGETS QuerySMTKPythonForModule
-          DESTINATION bin)
+  install(
+    TARGETS QuerySMTKPythonForModule
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    )
   add_test(
     NAME QuerySMTKPython
     COMMAND $<TARGET_FILE:QuerySMTKPythonForModule>)
