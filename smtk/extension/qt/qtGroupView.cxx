@@ -66,7 +66,7 @@ public:
 void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mfunc)
 {
   // In the case of tiling we don't want to show the
-  // label for empty views
+  // label for empty views, nor empty labels.
   if (m_style == qtGroupViewInternals::TILED)
   {
     int i, size = m_ChildViews.size();
@@ -82,7 +82,14 @@ void qtGroupViewInternals::updateChildren(qtGroupView* gview, qtBaseViewMemFn mf
       else
       {
         child->widget()->show();
-        m_Labels.at(i)->show();
+        if (m_Labels.at(i)->text().isEmpty())
+        {
+          m_Labels.at(i)->hide();
+        }
+        else
+        {
+          m_Labels.at(i)->show();
+        }
       }
     }
   }
@@ -626,6 +633,10 @@ void qtGroupView::addTileEntry(qtBaseView* child)
   QObject::connect(child, &qtBaseView::modified, this, &qtGroupView::childModified);
   QLabel* label = new QLabel(child->configuration()->label().c_str(), this->Widget);
   m_internals->m_Labels.append(label);
+  if (label->text().isEmpty())
+  {
+    label->hide();
+  }
   QFont titleFont;
   titleFont.setBold(true);
   titleFont.setItalic(true);

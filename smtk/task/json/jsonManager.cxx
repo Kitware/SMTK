@@ -174,7 +174,30 @@ void from_json(const nlohmann::json& jj, Manager& taskManager)
     // Copy style specifications into the task manager.
     if (jj.contains("styles"))
     {
-      taskManager.setStyles(jj.at("styles"));
+      std::unordered_map<smtk::string::Token, smtk::string::Token> styleMap;
+      taskManager.addStyles(jj.at("styles"), styleMap);
+      if (!styleMap.empty())
+      {
+        // Update all the tasks we are deserializing with new style tags as needed.
+        if (jj.contains("tasks"))
+        {
+          for (const auto& jsonTask : jj.at("tasks"))
+          {
+            auto* task = helper.tasks().get(jsonTask);
+            if (!task)
+            {
+              continue;
+            }
+            for (const auto& mapEntry : styleMap)
+            {
+              if (task->removeStyle(mapEntry.first))
+              {
+                task->addStyle(mapEntry.second);
+              }
+            }
+          }
+        }
+      }
     }
 
     // Read in the worklet gallery if one exists.

@@ -50,6 +50,7 @@ set(unit_tests
   UnitTestTypeHierarchy.cxx
   UnitTestTypeMap.cxx
   UnitTestTypeName.cxx
+  UnitTestUniquify.cxx
   UnitTestUpdateFactory.cxx
   UnitTestVersionNumber.cxx
   UnitTestVisit.cxx

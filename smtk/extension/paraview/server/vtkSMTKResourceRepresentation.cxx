@@ -624,6 +624,33 @@ bool vtkSMTKResourceRepresentation::SetEntityVisibility(
   return didChange;
 }
 
+bool vtkSMTKResourceRepresentation::SetEntityOpacity(
+  const smtk::resource::PersistentObject* ent,
+  double opacity)
+{
+  if (!ent || !ent->id())
+  {
+    return false;
+  }
+
+  auto rdit = this->RenderableData.find(ent->id());
+  if (rdit == this->RenderableData.end())
+  { // No change because the object is not renderable.
+    return false;
+  }
+  auto currentOpacity =
+    this->EntityMapper->GetCompositeDataDisplayAttributes()->GetBlockOpacity(rdit->second);
+  if (currentOpacity == opacity)
+  {
+    return false;
+  }
+  this->EntityMapper->GetCompositeDataDisplayAttributes()->SetBlockOpacity(rdit->second, opacity);
+  this->GlyphMapper->GetBlockAttributes()->SetBlockOpacity(rdit->second, opacity);
+  this->EntityMapper->Modified();
+  this->GlyphMapper->Modified();
+  return true;
+}
+
 bool vtkSMTKResourceRepresentation::ApplyStyle(
   smtk::view::SelectionPtr seln,
   RenderableDataMap& renderables,

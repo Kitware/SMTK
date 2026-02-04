@@ -114,6 +114,32 @@ bool pqSMTKResourceRepresentation::setVisibility(smtk::resource::ComponentPtr co
   return false;
 }
 
+bool pqSMTKResourceRepresentation::setOpacity(smtk::resource::ComponentPtr comp, double opacity)
+{
+  return this->setOpacity(comp.get(), opacity);
+}
+
+bool pqSMTKResourceRepresentation::setOpacity(
+  const smtk::resource::PersistentObject* obj,
+  double opacity)
+{
+  auto* pxy = this->getProxy();
+  auto* mpr = pxy->GetClientSideObject(); // TODO: Remove the need for me.
+  auto* cmp = vtkCompositeRepresentation::SafeDownCast(mpr);
+  auto* spx =
+    cmp ? vtkSMTKResourceRepresentation::SafeDownCast(cmp->GetActiveRepresentation()) : nullptr;
+  if (spx)
+  {
+    if (spx->SetEntityOpacity(obj, opacity))
+    {
+      // TODO: Emit a signal when opacity changes?
+      // Q_EMIT componentVisibilityChanged(obj, visible);
+      return true;
+    }
+  }
+  return false;
+}
+
 void pqSMTKResourceRepresentation::allVisibilities(
   std::map<smtk::common::UUID, int>& visibilities) const
 {

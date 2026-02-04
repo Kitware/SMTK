@@ -78,6 +78,23 @@ bool representationObjectMapContainsResource(const RepresentationObjectMap::valu
   return (it != entry.second.end() || entry.second.find(nullptr) != entry.second.end());
 }
 
+bool representationUpdateBlockOpacities(
+  const RepresentationObjectMap::value_type& entry,
+  double opacity)
+{
+  bool didChange = false;
+  auto pvDRep = dynamic_cast<pqSMTKResourceRepresentation*>(entry.first);
+  if (!pvDRep)
+  {
+    return didChange;
+  }
+  for (const auto& ptr : entry.second)
+  {
+    didChange |= pvDRep->setOpacity(ptr, opacity);
+  }
+  return didChange;
+}
+
 } // anonymous namespace
 
 /// Private storage for a task-control views.
@@ -600,6 +617,7 @@ void pqTaskControlView::updateOpacity(const std::string& name, double opacity)
         entry.first->getProxy()->UpdateVTKObjects();
         needRender = true;
       }
+      needRender |= representationUpdateBlockOpacities(entry, opacity);
       // TODO: Handle per-block opacity settings for components.
       //       Iterate over entry.second, find component inside the
       //       pqSMTKRepresentation and set per-block opacity.
