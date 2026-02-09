@@ -13,6 +13,8 @@
 
 #include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/TypeAndColorBadge.h"
+#include "smtk/extension/qt/agents/JobRunnerAgent.h"
+// #include "smtk/extension/qt/job/Runner.h"
 #include "smtk/extension/qt/diagram/qtComponentNode.h"
 #include "smtk/extension/qt/diagram/qtConnectMode.h"
 #include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
@@ -25,6 +27,7 @@
 #include "smtk/extension/qt/diagram/qtSelectMode.h"
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/diagram/qtTaskNode.h"
+#include "smtk/extension/qt/job/ShellQueue.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -87,6 +90,11 @@ using DiagramViewModeList = std::tuple<qtConnectMode, qtDisconnectMode, qtPanMod
 using TaskNodeList = std::tuple<qtTaskNode, qtDefaultTaskNode, qtDefaultTaskNode1>;
 using ObjectNodeList = std::tuple<qtResourceNode, qtComponentNode>;
 
+using AgentList = std::tuple<smtk::task::JobRunnerAgent>;
+
+/// A list of queues registered by this registrar (which should be removed when unregistering).
+std::set<std::shared_ptr<smtk::job::Queue>> g_queuesToRemove;
+
 } // namespace
 
 void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
@@ -107,6 +115,14 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       QMetaObject::invokeMethod(qApp, fn, Qt::BlockingQueuedConnection);
     };
 #endif
+
+#if 0
+  if (!g_haveRunner)
+  {
+    g_runner = new smtk::qt::job::Runner(managers);
+  }
+  ++g_haveRunner;
+#endif
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
@@ -117,6 +133,26 @@ void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers
   smtk::operation::PyOperation::runOnMainThread =
     [](smtk::operation::PyOperation::SimpleFunction fn) { fn(); };
 #endif
+
+#if 0
+  if (--g_haveRunner <= 0)
+  {
+    delete g_runner;
+    g_runner = nullptr;
+  }
+#endif
+}
+
+void qtViewRegistrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.registerTypes<AgentList>();
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.unregisterTypes<AgentList>();
 }
 
 void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
@@ -179,5 +215,31 @@ void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)
 
   manager->badgeFactory().unregisterTypes<BadgeList>();
 }
+
+void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr& jobManager)
+{
+  auto shellQueue = smtk::qt::job::ShellQueue::create();
+  shellQueue->setName("shell_queue");
+  shellQueue->setDescription(R"(A queue that runs each of its jobs on the local machine.)");
+  std::unordered_set<smtk::string::Token> tags{ "shell", "bash", "local" };
+  for (const auto& tag : tags)
+  {
+    shellQueue->addTag(tag);
+  }
+  if (jobManager->queues().manage(shellQueue))
+  {
+    g_queuesToRemove.insert(shellQueue);
+    jobManager->activeQueue().switchTo(shellQueue.get());
+  }
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager)
+{
+  for (const auto& queue : g_queuesToRemove)
+  {
+    jobManager->queues().unmanage(queue);
+  }
+}
+
 } // namespace extension
 } // namespace smtk

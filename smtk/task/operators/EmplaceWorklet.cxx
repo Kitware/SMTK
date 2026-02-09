@@ -185,6 +185,12 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
     {
       auto sharedTask = task->shared_from_this();
       sharedTasks.push_back(sharedTask);
+      // In addition to fetching the shared pointer, set the originating
+      // worklet UUID for all top-level tasks (but not others).
+      if (!task->parent() || task->parent() == parentTask.get())
+      {
+        task->setOriginatingWorkletId(worklet->id());
+      }
     }
     if (parentTask)
     {

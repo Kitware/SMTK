@@ -1,0 +1,107 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#ifndef smtk_qt_job_ContainerQueue_h
+#define smtk_qt_job_ContainerQueue_h
+
+#include "smtk/common/Managers.h"
+#include "smtk/extension/qt/Exports.h" // For export macro.
+#include "smtk/job/Queue.h"
+
+#include <QObject>
+
+#include <memory>
+
+namespace smtk
+{
+namespace qt
+{
+namespace job
+{
+
+///\brief ContainerQueue schedules jobs locally by immediately running them.
+///
+/// This class depends on Qt for process and filesystem monitoring.
+class SMTKQTEXT_EXPORT ContainerQueue : public smtk::job::Queue
+{
+public:
+  smtkTypeMacro(smtk::qt::job::ContainerQueue);
+  smtkSuperclassMacro(smtk::job::Queue);
+  smtkCreateMacro(smtk::job::Queue);
+  smtkSharedFromThisMacro(smtk::job::Queue);
+
+  ~ContainerQueue() override;
+
+  std::string location() const override { return "localhost"; }
+
+  /// Run the given job as a separate process.
+  bool schedule(const std::shared_ptr<smtk::job::Job>& job) override;
+  /// Cancel a scheduled job (whether it is running or not).
+  bool cancel(const std::shared_ptr<smtk::job::Job>& job) override;
+  /// Return the state of a job.
+  smtk::job::State jobState(const std::shared_ptr<smtk::job::Job>& job) override;
+  /// Return the completion-status of a job.
+  smtk::job::Status jobStatus(const std::shared_ptr<smtk::job::Job>& job) override;
+
+  /// Return the set of all jobs in this queue.
+  std::set<std::shared_ptr<smtk::job::Job>> allJobs() const override;
+
+  ///@{
+  /// Get the container engine to use.
+  ///
+  /// Valid values include: "podman" and "docker".
+  /// All path information to the executable is stripped from the returned value.
+  /// In the future, singularity/apptainer may also be supported.
+  smtk::string::Token engine() const;
+  ///@}
+
+  ///@{
+  /// Set/get the path to the container engine executable.
+  ///
+  /// The default is "podman" (assumed to be in your path).
+  /// The supported engines include podman and docker.
+  /// In the future, singularity/apptainer may also be supported.
+  std::filesystem::path engineExecutable() const;
+  bool setEngineExecutable(std::filesystem::path engineExecutable);
+  ///@}
+
+  ///@{
+  /// Set/get the user or grooup ID to use when running via docker.
+  ///
+  /// Note that podman ignores these settings in favor of "--userns=keep-id".
+  int dockerUID() const;
+  bool setDockerUID(int uid) const;
+  int dockerGID() const;
+  bool setDockerGID(int gid) const;
+  ///@}
+
+  ///@{
+  /// Set/get the directory *inside the container* where the case directory
+  /// should be mounted.
+  ///
+  /// This is used to compute the full path to the job script when running the container.
+  ///
+  /// This must be non-empty (and valid) before jobs are run.
+  std::filesystem::path caseDirectoryMountPoint() const;
+  bool setCaseDirectoryMountPoint(const std::filesystem::path& mountPoint);
+  ///@}
+
+protected:
+  ContainerQueue();
+
+private:
+  class Internal;
+  std::unique_ptr<Internal> m_p;
+};
+
+} // namespace job
+} // namespace qt
+} // namespace smtk
+
+#endif // smtk_qt_job_ContainerQueue_h

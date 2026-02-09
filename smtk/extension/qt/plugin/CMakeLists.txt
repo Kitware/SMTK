@@ -4,6 +4,7 @@ smtk_add_plugin(smtkQtPlugin
   MANAGERS
     smtk::common::Managers
     smtk::extension::qtManager
+    smtk::job::Manager
     smtk::view::Manager
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0)

@@ -31,6 +31,21 @@
                   { "Name": "Filter", "Contents": "smtk::task::Adaptor" }
                 ]
               },
+              { "Name": "Rejects",
+                "Attributes": { "Resource": "smtk::session::opencascade::Resource", "ComponentsOnly": false},
+                "Children": [
+                  { "Name": "Filter", "Contents": "Edge" },
+                  { "Name": "Filter", "Contents": "Face" },
+                  { "Name": "Filter", "Contents": "Shell" },
+                  { "Name": "Filter", "Contents": "Vertex" },
+                  { "Name": "Filter", "Contents": "Wire" },
+                  { "Name": "Filter", "Contents": "smtk::session::opencascade::Edge" },
+                  { "Name": "Filter", "Contents": "smtk::session::opencascade::Face" },
+                  { "Name": "Filter", "Contents": "smtk::session::opencascade::Shell" },
+                  { "Name": "Filter", "Contents": "smtk::session::opencascade::Vertex" },
+                  { "Name": "Filter", "Contents": "smtk::session::opencascade::Wire" }
+                ]
+              },
               { "Name": "Accepts", "Attributes": { "Resource": "*", "Filter": "*" } }
             ]},
 

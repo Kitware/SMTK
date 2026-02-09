@@ -320,6 +320,8 @@ endif()
 
 find_package(Eigen3 REQUIRED)
 
+find_package(SQLite3 REQUIRED)
+
 # Setting this ensures that "make install" will leave rpaths to external
 # libraries (not part of the build-tree e.g. Qt, ffmpeg, etc.) intact on
 # "make install". This ensures that one can install a version of ParaView on the

@@ -121,8 +121,8 @@ public:
   using Component = smtk::resource::Component;
   using Object = smtk::resource::PersistentObject;
 
-  smtkTypeMacroBase(Selection);
-  smtkCreateMacro(Selection);
+  smtkTypeMacroBase(smtk::view::Selection);
+  smtkCreateMacro(smtk::view::Selection);
 
   Selection(const Selection&) = delete;
   Selection& operator=(const Selection&) = delete;

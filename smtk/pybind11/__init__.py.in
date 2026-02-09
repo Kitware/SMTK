@@ -21,8 +21,12 @@ import smtk.string
 import smtk.common
 import smtk.io
 import smtk.resource
+import smtk.project
+import smtk.job
+import smtk.task
+import smtk.view
 
-__all__ = ('common', 'attribute', 'extension', 'model', 'io', 'operation', 'project',
+__all__ = ('common', 'attribute', 'extension', 'model', 'io', 'job', 'operation', 'project',
            'resource', 'session', 'simulation', 'string', 'task', 'view')
 
 _appContext = None
@@ -225,6 +229,14 @@ def applicationContext():
             # Create a managers instance, then initialize and return it.
             _appContext = smtk.common.Managers.create()
             smtk.plugin.registerPluginsTo(_appContext)
+            for key in _appContext.keys():
+                try:
+                    mgr = _appContext.get(key)
+                    if mgr is not None:
+                        smtk.plugin.registerPluginsTo(mgr)
+                except TypeError:
+                    # Ignore keys to object types smtk.common.Managers doesn't know about:
+                    pass
     return _appContext
 
 def read(filenames, context=None):

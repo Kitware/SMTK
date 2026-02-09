@@ -77,6 +77,12 @@ set(QAttrLibSrcs
   TypeAndColorBadge.cxx
   VisibilityBadge.cxx
 
+  agents/JobRunnerAgent.cxx
+
+  # job/Runner.cxx
+  job/ShellQueue.cxx
+  job/ContainerQueue.cxx
+
   diagram/qtBaseArc.cxx
   diagram/qtBaseNode.cxx
   diagram/qtBaseObjectNode.cxx
@@ -194,6 +200,12 @@ set(QAttrLibMocHeaders
   MembershipBadge.h
   SVGIconEngine.h
   VisibilityBadge.h
+
+  agents/JobRunnerAgent.h
+
+  # job/Runner.h
+  job/ShellQueue.h
+  job/ContainerQueue.h
 
   diagram/qtBaseArc.h
   diagram/qtBaseNode.h

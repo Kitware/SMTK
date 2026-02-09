@@ -5,6 +5,7 @@ set(module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/appcomponents/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/model/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/project/vtk.module"
+  "${CMAKE_CURRENT_SOURCE_DIR}/job/vtk.module"
   "${CMAKE_CURRENT_SOURCE_DIR}/server/vtk.module"
 )
 
@@ -43,6 +44,7 @@ if (TARGET ParaView::pqApplicationComponents)
     appcomponents/plugin-readers/paraview.plugin
     model/plugin/paraview.plugin
     project/plugin-core/paraview.plugin
+    job/plugin/paraview.plugin
   )
   list(APPEND gui_plugin_files
     appcomponents/plugin-panel-defaults/paraview.plugin
