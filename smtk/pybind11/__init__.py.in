@@ -17,10 +17,15 @@
 import site
 import sys
 
-__all__ = ('common', 'attribute', 'extension', 'model',
-           'io', 'project', 'session', 'simulation', 'task')
+import smtk.string
+import smtk.common
+import smtk.io
+import smtk.resource
 
-appContext = None
+__all__ = ('common', 'attribute', 'extension', 'model', 'io', 'operation', 'project',
+           'resource', 'session', 'simulation', 'string', 'task', 'view')
+
+_appContext = None
 
 def _windows_dll_path():
     import os
@@ -181,6 +186,12 @@ def loadPlugins(pluginList = None):
         print('Unable to load %d / %d plugins.' % (len(skipped), len(pluginList)))
     return (loaded, skipped)
 
+def applicationContextOrNone():
+    """Returns the application context if one has been created and None otherwise.
+
+    Compare this to applicationContext() which will create a context if none exists."""
+    return _appContext
+
 def applicationContext():
     """Return an instance of smtk.common.Managers.
 
@@ -190,10 +201,10 @@ def applicationContext():
     fetched by this method. For scripts run outside the ParaView, this will create an instance
     for you.
     """
-    global appContext
+    global _appContext
     import smtk.common
     import smtk.plugin
-    if appContext == None:
+    if _appContext == None:
         # If no SMTK plugins are loaded, load all the available plugins
         # If any SMTK plugins are loaded, then load no more (assume the
         # script author knows what he's doing).
@@ -207,14 +218,14 @@ def applicationContext():
             if bb:
                 bb.updateWrapperMap()
                 if bb.haveActiveWrapper():
-                    appContext = bb.activeWrapperCommonManagers()
+                    _appContext = bb.activeWrapperCommonManagers()
         except:
             pass
-        if appContext == None:
+        if _appContext == None:
             # Create a managers instance, then initialize and return it.
-            appContext = smtk.common.Managers.create()
-            smtk.plugin.registerPluginsTo(appContext)
-    return appContext
+            _appContext = smtk.common.Managers.create()
+            smtk.plugin.registerPluginsTo(_appContext)
+    return _appContext
 
 def read(filenames, context=None):
     """Read in SMTK-formatted files and manage the resulting resources.

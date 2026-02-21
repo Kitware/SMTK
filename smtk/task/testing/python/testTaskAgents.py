@@ -25,8 +25,8 @@ class TestTaskAgents(smtk.testing.TestCase):
         """Load plugins"""
         # Reset the smtk.common.Managers object used by smtk.read() to eliminate
         # previously-read resources from memory:
-        if smtk.appContext:
-            rsrcMgr = smtk.appContext.get('smtk.resource.Manager')
+        if smtk.applicationContextOrNone():
+            rsrcMgr = smtk.applicationContext().get('smtk.resource.Manager')
             for rsrc in rsrcMgr.resources():
                 rsrcMgr.remove(rsrc)
 
