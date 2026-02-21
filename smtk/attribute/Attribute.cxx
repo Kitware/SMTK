@@ -137,6 +137,12 @@ bool Attribute::isA(const smtk::attribute::DefinitionPtr& def) const
   return m_definition->isA(def);
 }
 
+bool Attribute::isA(const std::string& defName) const
+{
+  auto def = this->attributeResource()->findDefinition(defName);
+  return this->isA(def);
+}
+
 void Attribute::setLocalAdvanceLevel(int mode, unsigned int level)
 {
   if ((mode < 0) || (mode > 1))

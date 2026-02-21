@@ -110,6 +110,7 @@ public:
   const std::string& type() const;
   std::vector<std::string> types() const;
   bool isA(const smtk::attribute::DefinitionPtr& def) const;
+  bool isA(const std::string& defName) const;
   const smtk::attribute::DefinitionPtr& definition() const { return m_definition; }
 
   const double* color() const;
