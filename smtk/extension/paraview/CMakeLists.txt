@@ -82,7 +82,7 @@ paraview_plugin_build(
   ADD_INSTALL_RPATHS ON
   INSTALL_EXPORT SMTKParaViewExtensionCorePlugins)
 
-  paraview_plugin_scan(
+paraview_plugin_scan(
   PLUGIN_FILES ${gui_plugin_files}
   PROVIDES_PLUGINS gui_paraview_plugins
   ENABLE_BY_DEFAULT ON
