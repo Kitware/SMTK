@@ -20,6 +20,7 @@
 
 #include "smtk/operation/Operation.h"
 
+#include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
 namespace smtk
@@ -144,6 +145,17 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
       }
     )
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))
+    .def("xmlSpecification", [](smtk::operation::Operation& op, const std::string& xmlFile)
+      {
+        smtk::io::AttributeReader reader;
+        auto spec = op.createBaseSpecification();
+        if (reader.read(spec, xmlFile, /*includePath*/true, op.log()))
+        {
+          smtkErrorMacro(op.log(), "Error loading specification file \"" << xmlFile << "\".");
+        }
+        return spec;
+      }, py::arg("xml_file")
+    )
     .def("_parameters", (smtk::operation::Operation::Parameters (smtk::operation::Operation::*)()) &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)
