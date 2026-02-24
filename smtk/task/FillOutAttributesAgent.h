@@ -134,6 +134,15 @@ public:
   /// The port (if any) that the agent pushes its configured attribute resources.
   Port* outputPort() const { return m_outputPort; }
 
+  using ResourceToAttributeMap = std::map<smtk::common::UUID, std::vector<smtk::common::UUID>>;
+
+  /// Return a map from resource UUID to currently-valid attribute UUIDs.
+  std::vector<std::shared_ptr<smtk::attribute::Attribute>> validatedAttributes(
+    const std::shared_ptr<smtk::attribute::Resource>& resource) const;
+  /// Return a map from resource UUID to not-yet-valid attribute UUIDs.
+  std::vector<std::shared_ptr<smtk::attribute::Attribute>> unvalidatedAttributes(
+    const std::shared_ptr<smtk::attribute::Resource>& resource) const;
+
 protected:
   /// Receive notification the parent Task's state has changed.
   void taskStateChanged(State prev, State& next) override;
