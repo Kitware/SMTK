@@ -413,7 +413,10 @@ void SubmitOperationAgent::configure(const Configuration& config)
       m_outputRole = result->get<smtk::string::Token>();
     }
   }
-  m_parent->updateAgentState(this, prev, this->computeInternalState());
+  if (!config.contains("skip-update"))
+  {
+    m_parent->updateAgentState(this, prev, this->computeInternalState());
+  }
 }
 
 Agent::Configuration SubmitOperationAgent::configuration() const
@@ -462,6 +465,8 @@ Agent::Configuration SubmitOperationAgent::configuration() const
       config["output-resources"] = portRsrcs;
     }
   }
+  // When saving state, avoid re-computation of it upon restoration:
+  config["skip-update"] = true;
   return config;
 }
 
