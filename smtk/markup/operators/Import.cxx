@@ -409,11 +409,12 @@ Import::Result Import::operateInternal()
       case ".vti"_hash:
         ok &= this->importVTKImage(resource, filename);
         break;
-      case ".ply"_hash: // fall through
-      case ".obj"_hash: // fall through
-      case ".stl"_hash: // fall through
-      case ".vtp"_hash: // fall through
-      case ".vtu"_hash: // fall through
+      case ".vtkhdf"_hash: // fall through
+      case ".ply"_hash:    // fall through
+      case ".obj"_hash:    // fall through
+      case ".stl"_hash:    // fall through
+      case ".vtp"_hash:    // fall through
+      case ".vtu"_hash:    // fall through
       case ".vtk"_hash:
         ok &= this->importVTKMesh(resource, filename, consistency);
         break;

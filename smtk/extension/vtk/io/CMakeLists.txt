@@ -35,6 +35,7 @@ target_link_libraries(smtkIOVTK
     VTK::FiltersGeneral
     VTK::IOExodus
     VTK::IOGeometry
+    VTK::IOHDF
     VTK::IOImage
     VTK::IOLegacy
     VTK::IONetCDF
