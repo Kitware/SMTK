@@ -75,6 +75,18 @@ public:
     m_isSet[element] = false;
   }
 
+  template<typename ValueType>
+  std::vector<ValueType> valuesAs() const
+  {
+    std::vector<ValueType> result;
+    result.reserve(m_values.size());
+    for (const auto& value : m_values)
+    {
+      result.emplace_back(value);
+    }
+    return result;
+  }
+
   // Iterator-style access to values:
   const_iterator begin() const;
   const_iterator end() const;
