@@ -43,6 +43,8 @@ template<typename BaseType, typename... InputTypes>
 class SMTK_ALWAYS_EXPORT Instances : public Factory<BaseType, InputTypes...>
 {
 public:
+  /// An alias for the type of object being managed.
+  using ObjectType = BaseType;
   /// An alias for the inherited parent class.
   using Superclass = smtk::common::Factory<BaseType, InputTypes...>;
   /// The signature of observers watching managed instance lifecycle events.
