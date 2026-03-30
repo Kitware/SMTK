@@ -15,6 +15,7 @@
 #include "smtk/common/PathsHelperUnix.h"
 #include "smtk/common/Version.h"
 
+#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 
 namespace smtk
@@ -28,6 +29,7 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   Paths::s_toplevelDir.clear();
   Paths::s_executableDir.clear();
   Paths::s_workerSearchPaths.clear();
+  Paths::s_userConfigurationDirectory.clear();
 
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
@@ -62,6 +64,16 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   PathsHelperUnix::AddSplitPaths(workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
   Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
+
+  {
+    // On macos, configuration files belong in ~/Library/ApplicationSupport/
+    FSRef ref;
+    OSType folderType = kApplicationSupportFolderType;
+    char path[PATH_MAX];
+    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
+    FSRefMakePath(&ref, (UInt8*)&path, PATH_MAX);
+    Paths::s_userConfigurationDirectory = path;
+  }
 }
 
 } // namespace common

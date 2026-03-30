@@ -14,6 +14,7 @@
 #include "smtk/common/Paths.h"
 #include "smtk/common/Version.h"
 
+#include <cstdlib>
 #include <sstream>
 
 namespace smtk
@@ -27,6 +28,7 @@ PathsHelperUnix::PathsHelperUnix()
   Paths::s_toplevelDir.clear();
   Paths::s_executableDir.clear();
   Paths::s_workerSearchPaths.clear();
+  Paths::s_userConfigurationDirectory.clear();
 
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
@@ -47,6 +49,30 @@ PathsHelperUnix::PathsHelperUnix()
   PathsHelperUnix::AddSplitPaths(workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
   Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
+
+  {
+    std::filesystem::path cfgDir;
+    // On Linux, we put configuration files in ~/.config
+    const char* baseDir = getenv("XDG_CONFIG_HOME");
+    if (!baseDir)
+    {
+      const char* homePath = getenv("HOME");
+      if (!homePath)
+      {
+        cfgDir = "/tmp";
+      }
+      else
+      {
+        cfgDir = std::string(homePath);
+        cfgDir = cfgDir / ".config";
+      }
+    }
+    else
+    {
+      cfgDir = baseDir;
+    }
+    Paths::s_userConfigurationDirectory = cfgDir;
+  }
 }
 
 void PathsHelperUnix::AddSplitPaths(std::set<std::string>& split, const std::string& src)

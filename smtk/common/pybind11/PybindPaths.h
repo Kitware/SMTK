@@ -37,6 +37,8 @@ inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::mod
     .def("findAvailablePlugins", &smtk::common::Paths::findAvailablePlugins, py::arg("pluginNames") = std::set<std::string>())
     .def("toplevelDirectoryConfigured", &smtk::common::Paths::toplevelDirectoryConfigured)
     .def("forceUpdate", &smtk::common::Paths::forceUpdate)
+    .def("userConfigurationDirectory", &smtk::common::Paths::userConfigurationDirectory,
+      py::arg("application_name") = "smtk", py::arg("create_if_missing") = true)
     ;
   return instance;
 }

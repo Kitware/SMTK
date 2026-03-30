@@ -14,6 +14,7 @@
 #include "smtk/common/Paths.h"
 #include "smtk/common/Version.h"
 
+#include <cstdlib>
 #include <sstream>
 
 #include <windows.h>
@@ -29,6 +30,7 @@ PathsHelperWindows::PathsHelperWindows()
   Paths::s_toplevelDir.clear();
   Paths::s_executableDir.clear();
   Paths::s_workerSearchPaths.clear();
+  Paths::s_userConfigurationDirectory.clear();
 
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
@@ -63,6 +65,30 @@ PathsHelperWindows::PathsHelperWindows()
     workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
   Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
+
+  {
+    std::filesystem::path homeDir;
+    // On Windows, we put configuration files in ~/.config
+    char* baseDir = getenv("USERPROFILE");
+    if (!baseDir)
+    {
+      char* homeDrive = getenv("HOMEDRIVE");
+      char* homePath = getenv("HOMEPATH");
+      if (!homeDrive || !homePath)
+      {
+        homeDir = "C:\\";
+      }
+      else
+      {
+        homeDir = std::string(homeDrive) + std::string(homePath);
+      }
+    }
+    else
+    {
+      homeDir = baseDir;
+    }
+    Paths::s_userConfigurationDirectory = homeDir / ".config";
+  }
 }
 
 void PathsHelperWindows::AddSplitPaths(std::set<std::string>& split, const std::string& src)

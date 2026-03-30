@@ -20,6 +20,7 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <filesystem>
 #include <set>
 #include <string>
 #include <vector>
@@ -75,6 +76,11 @@ public:
 
   std::string toplevelDirectoryConfigured();
 
+  /// Return a per-user configuration directory to hold settings and user preferences.
+  std::filesystem::path userConfigurationDirectory(
+    const std::string& applicationName = std::string("smtk"),
+    bool createIfMissing = true);
+
   void forceUpdate();
 
 protected:
@@ -96,6 +102,7 @@ protected:
   static std::string s_toplevelDir;
   static std::string s_bundleDir;
   static std::vector<std::string> s_workerSearchPaths;
+  static std::filesystem::path s_userConfigurationDirectory;
 };
 
 } // namespace common
