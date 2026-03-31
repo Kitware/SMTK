@@ -26,12 +26,17 @@ vtkSMTKSettings::vtkSMTKSettings()
   , SelectionRenderStyle(SolidSelectionStyle)
   , ResourceTreeStyle(HierarchicalStyle)
 {
+  if (!this->ContainerEnginePath)
+  {
+    this->SetContainerEnginePath("podman");
+  }
 }
 
 vtkSMTKSettings::~vtkSMTKSettings()
 {
   this->SetWorkflowsFolder(nullptr);
   this->SetProjectsRootFolder(nullptr);
+  this->SetContainerEnginePath(nullptr);
 }
 
 void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
@@ -43,6 +48,7 @@ void vtkSMTKSettings::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ResourceTreeStyle: " << this->ResourceTreeStyle << "\n";
   os << indent << "WorkflowsFolder: \"" << this->WorkflowsFolder << "\"\n";
   os << indent << "ProjectsRootFolder: \"" << this->ProjectsRootFolder << "\"\n";
+  os << indent << "ContainerEnginePath: \"" << this->ContainerEnginePath << "\"\n";
 }
 
 vtkSMTKSettings* vtkSMTKSettings::GetInstance()

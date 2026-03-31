@@ -84,6 +84,17 @@ public:
   vtkGetStringMacro(ProjectsRootFolder);
   vtkSetStringMacro(ProjectsRootFolder);
 
+  /**\brief Set the container engine to use when running jobs in containers.
+    *
+    * This specifies the name of the executable used to fetch and run containers.
+    *
+    * This defaults to "podman", but if you wish to user "docker" instead or
+    * wish to specify a full path to a binary rather than use the first executable
+    * present in your path, set this property.
+    */
+  vtkGetStringMacro(ContainerEnginePath);
+  vtkSetStringMacro(ContainerEnginePath);
+
 protected:
   vtkSMTKSettings();
 
@@ -93,6 +104,7 @@ protected:
   int ResourceTreeStyle;
   char* WorkflowsFolder{ nullptr };
   char* ProjectsRootFolder{ nullptr };
+  char* ContainerEnginePath{ nullptr };
 
 private:
   static vtkSmartPointer<vtkSMTKSettings> Instance;

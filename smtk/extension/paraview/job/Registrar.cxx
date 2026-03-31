@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/paraview/job/Registrar.h"
 
+#include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/job/ContainerQueue.h"
 
 #include "smtk/job/Manager.h"
@@ -36,8 +37,20 @@ std::set<std::shared_ptr<smtk::job::Queue>> g_queuesToRemove;
 
 void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager)
 {
+  auto* smtkSettings = vtkSMTKSettings::GetInstance();
+  const char* cep = smtkSettings->GetContainerEnginePath();
+  std::string containerEnginePath = cep && cep[0] ? cep : "podman";
+
   auto containerQueue = smtk::qt::job::ContainerQueue::create();
-  if (containerQueue->setEngineExecutable("podman") && jobManager->queues().manage(containerQueue))
+  containerQueue->setName("container_queue");
+  containerQueue->setDescription(R"(A queue that runs each of its jobs inside a container.)");
+  containerQueue->setEngineExecutable(containerEnginePath);
+  std::unordered_set<smtk::string::Token> tags{ "container", "docker", "shell", "bash", "local" };
+  for (const auto& tag : tags)
+  {
+    containerQueue->addTag(tag);
+  }
+  if (jobManager->queues().manage(containerQueue))
   {
     g_queuesToRemove.insert(containerQueue);
     jobManager->activeQueue().switchTo(containerQueue.get());
