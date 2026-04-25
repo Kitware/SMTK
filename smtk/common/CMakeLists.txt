@@ -1,6 +1,5 @@
 # set up sources to build
 set(commonClasses
-  Archive
   Categories
   Color
   CompilerInformation

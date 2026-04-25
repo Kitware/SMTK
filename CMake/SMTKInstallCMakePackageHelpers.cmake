@@ -31,7 +31,6 @@ set(_smtk_packages
   Boost
   nlohmann_json
   pegtl
-  LibArchive
   Qt5
   ParaView
   Python3
@@ -47,9 +46,6 @@ set(_smtk_packages
 set(Boost_find_package_vars
   Boost_INCLUDE_DIR
   Boost_USE_STATIC_LIBS)
-set(LibArchive_find_package_vars
-  LibArchive_INCLUDE_DIR
-  LibArchive_LIBRARY)
 set(Python3_find_package_vars
   Python3_EXECUTABLE
   Python3_INCLUDE_DIR

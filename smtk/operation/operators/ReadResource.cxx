@@ -15,8 +15,6 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ResourceItem.h"
 
-#include "smtk/common/Archive.h"
-
 #include "smtk/io/Logger.h"
 
 #include "smtk/resource/Manager.h"
@@ -78,21 +76,10 @@ ReadResource::Result ReadResource::operateInternal()
   {
     std::string filename = *fileIt;
 
-    smtk::common::Archive archive(filename);
-
     // Scope so file is only open for a short time:
     {
       std::ifstream file;
-      if (!archive.contents().empty())
-      {
-        std::string smtkFilename = "index.json";
-        archive.get(smtkFilename, file);
-      }
-      else
-      {
-        file.open(filename, std::ios::in);
-      }
-
+      file.open(filename, std::ios::in);
       {
         if (!file.good())
         {

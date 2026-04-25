@@ -35,7 +35,6 @@ endif()
 ################################################################################
 
 set(unit_tests
-  TestArchive.cxx
   UnitTestDerivedThreadPool.cxx
   UnitTestDateTime.cxx
   UnitTestDateTimeZonePair.cxx

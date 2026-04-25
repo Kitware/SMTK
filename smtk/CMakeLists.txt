@@ -106,7 +106,6 @@ set(smtkCore_private_link_libraries
   Boost::date_time
   Boost::filesystem
   Boost::system
-  LibArchive::LibArchive
   Eigen3::Eigen
   fmt::fmt
   SQLite::SQLite3
