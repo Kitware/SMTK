@@ -52,7 +52,13 @@ class TestQueueJob(smtk.testing.TestCase):
 
     def test_shell_queue_job(self):
         import tempfile
-        temp_dir = tempfile.TemporaryDirectory(delete=False)
+        try:
+            temp_dir = tempfile.TemporaryDirectory(delete=False)
+            delete_dir = True
+        except TypeError:
+            # Older pythons (3.12) do not accept delete=False
+            temp_dir = tempfile.TemporaryDirectory()
+            delete_dir = False
         job = smtk.job.Job.create()
         os.makedirs(os.path.join(temp_dir.name, 'logs'))
         job.setAutoSchedule(True)
@@ -76,11 +82,18 @@ class TestQueueJob(smtk.testing.TestCase):
         queue.schedule(job)
         print('job queue id', job.queueId())
         # TODO: Wait for job to complete
-        temp_dir.cleanup()
+        if delete_dir:
+            temp_dir.cleanup()
 
     def test_container_queue_job(self):
         import tempfile
-        temp_dir = tempfile.TemporaryDirectory(delete=False)
+        try:
+            temp_dir = tempfile.TemporaryDirectory(delete=False)
+            delete_dir = True
+        except TypeError:
+            # Older pythons (3.12) do not accept delete=False
+            temp_dir = tempfile.TemporaryDirectory()
+            delete_dir = False
         job = smtk.job.Job.create()
         os.makedirs(os.path.join(temp_dir.name, 'logs'))
         queue = self.job_mgr.findQueueByName('container_queue')
@@ -106,7 +119,8 @@ class TestQueueJob(smtk.testing.TestCase):
         queue.schedule(job)
         print('job queue id', job.queueId())
         # TODO: Wait for job to complete
-        temp_dir.cleanup()
+        if delete_dir:
+            temp_dir.cleanup()
 
 
 if __name__ == '__main__':
