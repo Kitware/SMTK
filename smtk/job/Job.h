@@ -87,7 +87,7 @@ public:
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
   /// The type of map used to store parsers for the various log files.
-  using LogParserMap = std::unordered_map<smtk::string::Token, LogParser>;
+  using LogParserMap = std::unordered_map<smtk::string::Token, std::shared_ptr<LogParser>>;
 
   /// Use a mutex to guard access to links on jobs.
   using GuardedLinks = smtk::resource::GuardedComponentLinks;
