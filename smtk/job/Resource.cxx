@@ -90,31 +90,40 @@ void updateSchema(sqlite3* db, int fromVersion)
   throw std::logic_error("No upgrades available yet.");
 }
 
-void installOrUpdateSchema(sqlite3* db)
+bool installOrUpdateSchema(sqlite3* db)
 {
   const char* tail;
   sqlite3_stmt* qq;
   std::string check("select version from schema order by version desc limit 1;");
-  if (sqlite3_prepare(db, check.c_str(), check.size(), &qq, &tail) != SQLITE_OK)
+  try
   {
-    // Schema table does not exist; install it.
-    installSchema(db);
-  }
-  // Schema table exists, find out which version it is.
-  if (sqlite3_step(qq) != SQLITE_ROW)
-  {
-    smtkErrorMacro(smtk::io::Logger::instance(), "No job-table schema version!");
-    // No entry in schema table. reset the database.
-    installSchema(db);
-  }
-  else
-  {
-    int version = sqlite3_column_int(qq, 0);
-    if (version < 1)
+    if (sqlite3_prepare(db, check.c_str(), check.size(), &qq, &tail) != SQLITE_OK)
     {
-      updateSchema(db, version);
+      // Schema table does not exist; install it.
+      installSchema(db);
     }
+    // Schema table exists, find out which version it is.
+    if (sqlite3_step(qq) != SQLITE_ROW)
+    {
+      smtkErrorMacro(smtk::io::Logger::instance(), "No job-table schema version!");
+      // No entry in schema table. reset the database.
+      installSchema(db);
+    }
+    else
+    {
+      int version = sqlite3_column_int(qq, 0);
+      if (version < 1)
+      {
+        updateSchema(db, version);
+      }
+    }
+    return true;
   }
+  catch (std::logic_error& e)
+  {
+    std::cerr << "Could not prepare job database: " << e.what() << "\n";
+  }
+  return false;
 }
 
 bool findOrAddContainerImageId(
@@ -236,11 +245,9 @@ Resource::Resource()
   this->setId(Resource::singletonId());
   this->setName("jobs");
   // This only gets called once: the first time smtk::job::Resource::instance() is called.
-  // smtk::common::Paths pp;
+  smtk::common::Paths pp;
   std::filesystem::path job_db_location;
-  // job_db_location = pp.userConfigurationDirectory() / "smtk" / "job_database.sqlite3";
-  job_db_location = "/home/dcthomp/.config"
-                    "/smtk/job_database.sqlite3";
+  job_db_location = pp.userConfigurationDirectory() / "smtk" / "job_database.sqlite3";
   std::filesystem::create_directories("/home/dcthomp/.config/smtk");
   if (sqlite3_open(job_db_location.c_str(), &g_db))
   {
