@@ -66,12 +66,13 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
 
   {
-    // On macos, configuration files belong in ~/Library/ApplicationSupport/
-    FSRef ref;
-    OSType folderType = kApplicationSupportFolderType;
-    char path[PATH_MAX];
-    FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
-    FSRefMakePath(&ref, (UInt8*)&path, PATH_MAX);
+    // On macos, configuration files belong in ~/Library/Application Support/ which
+    // we fetch programmatically like so:
+    NSArray* paths =
+      NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString* applicationSupportDirectory = [paths firstObject];
+    std::string path([applicationSupportDirectory UTF8String]);
+
     Paths::s_userConfigurationDirectory = path;
   }
 }
