@@ -246,10 +246,13 @@ Resource::Resource()
   this->setName("jobs");
   // This only gets called once: the first time smtk::job::Resource::instance() is called.
   smtk::common::Paths pp;
+  std::filesystem::path job_db_directory;
   std::filesystem::path job_db_location;
-  job_db_location = pp.userConfigurationDirectory() / "smtk" / "job_database.sqlite3";
-  std::filesystem::create_directories("/home/dcthomp/.config/smtk");
-  if (sqlite3_open(job_db_location.c_str(), &g_db))
+  job_db_directory = pp.userConfigurationDirectory() / "smtk";
+  job_db_location = job_db_directory / "job_database.sqlite3";
+  std::filesystem::create_directories(job_db_directory);
+  std::string dbp = job_db_location.string();
+  if (sqlite3_open(dbp.c_str(), &g_db))
   {
     smtkErrorMacro(smtk::io::Logger::instance(), "Could not open database.");
     return;
