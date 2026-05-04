@@ -23,6 +23,8 @@
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
+
 #include <chrono>
 #include <condition_variable>
 #include <filesystem>
@@ -79,7 +81,8 @@ public:
     }
     catch (std::exception& e)
     {
-      std::cerr << "ERROR: Could not create file \"" << filePath.c_str() << "\".\n";
+      std::cerr << "ERROR: Could not create file \"" << filePath.c_str() << "\" (" << e.what()
+                << ").\n";
       return false;
     }
     return true;
@@ -92,10 +95,8 @@ public:
 
     auto job = smtk::job::Job::create();
     auto tempDir = std::filesystem::temp_directory_path();
-    std::string pattern = (tempDir / "smtkXXXXXX").c_str();
-    const char* dtmp = mkdtemp(pattern.data());
-    auto caseDir = std::filesystem::path(dtmp);
-    // std::filesystem::create_directory(caseDir);
+    std::string pattern = (tempDir / "smtkXXXXXX").string();
+    auto caseDir = generateDirectory(pattern);
     std::filesystem::create_directories(caseDir / "logs");
     std::filesystem::path scriptPath = "run_job.sh";
     std::filesystem::path logPath = "logs/job.log";
