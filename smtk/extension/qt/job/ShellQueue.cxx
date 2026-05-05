@@ -60,7 +60,7 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
   // If the job is not parented by the queue, do so.
   QProcess proc;
-  proc.setProgram((job->caseDirectory() / job->script()).c_str());
+  proc.setProgram(QString::fromStdString((job->caseDirectory() / job->script()).string()));
   qint64 pp;
   proc.startDetached(&pp);
   proc.waitForFinished(-1);

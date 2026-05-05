@@ -70,7 +70,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
   // If the job is not parented by the queue, do so.
   QProcess proc;
-  proc.setProgram(m_p->m_engineExecutable.c_str());
+  proc.setProgram(QString::fromStdString(m_p->m_engineExecutable.string()));
   QStringList processArguments;
   processArguments << "run"
                    << "-d";
@@ -92,7 +92,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     QString("--volume=%1:%2:z").arg(job->caseDirectory().c_str()).arg(mountPoint.c_str());
   processArguments << volumeArg;
 
-  QString executable = (mountPoint / job->script()).c_str();
+  QString executable = QString::fromStdString((mountPoint / job->script()).string());
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
@@ -121,7 +121,7 @@ bool ContainerQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
     return false;
   }
   QProcess proc;
-  proc.setProgram(m_p->m_engineExecutable.c_str());
+  proc.setProgram(QString::fromStdString(m_p->m_engineExecutable.string()));
   QStringList processArguments;
   processArguments << "kill" << QString::fromStdString(job->queueId());
 
