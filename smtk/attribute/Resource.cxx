@@ -351,6 +351,12 @@ void Resource::attributes(std::vector<smtk::attribute::AttributePtr>& result) co
   }
 }
 
+bool Resource::allAttributesValid() const
+{
+  return std::all_of(m_attributes.begin(), m_attributes.end(), [](const auto& pair) {
+    return pair.second->isValid();
+  });
+}
 /**\brief Find the attribute definitions that can be associated with \a mask.
   *
   */
