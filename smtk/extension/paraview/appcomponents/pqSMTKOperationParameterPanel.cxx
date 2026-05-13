@@ -387,19 +387,22 @@ void pqSMTKOperationParameterPanel::editOperationParameters(
 
     // Update associations with selection.
     auto associations = opTab->m_operation->parameters()->associations();
-    if (associations->isOptional())
+    if (associations)
     {
-      associations->setIsEnabled(!selected.empty());
-    }
-    if (!selected.empty())
-    {
-      associations->reset();
-      associations->setNumberOfValues(selected.size());
-      associations->setValues(selected.begin(), selected.end());
-    }
-    else if (!associations->isOptional())
-    {
-      associations->reset();
+      if (associations->isOptional())
+      {
+        associations->setIsEnabled(!selected.empty());
+      }
+      if (!selected.empty())
+      {
+        associations->reset();
+        associations->setNumberOfValues(selected.size());
+        associations->setValues(selected.begin(), selected.end());
+      }
+      else if (!associations->isOptional())
+      {
+        associations->reset();
+      }
     }
 
     auto signalOp = m_wrapper->smtkOperationManager()->create<smtk::attribute::Signal>();

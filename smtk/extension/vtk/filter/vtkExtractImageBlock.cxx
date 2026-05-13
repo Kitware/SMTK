@@ -18,6 +18,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
 #include "vtkStructuredData.h"
+#include "vtkVersion.h"
 
 vtkStandardNewMacro(vtkExtractImageBlock);
 
@@ -42,8 +43,12 @@ void vtkExtractImageBlock::SetExtent(int* extent)
     vtkErrorMacro(<< "Bad Extent, retaining previous values");
     return;
   }
-
+  // Change needed for VTK 9.1 or greater
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+  if (description == vtkStructuredData::VTK_STRUCTURED_UNCHANGED)
+#else
   if (description == VTK_UNCHANGED)
+#endif
   {
     return;
   }

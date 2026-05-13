@@ -300,6 +300,9 @@ public:
   }
   ///@}
 
+  /// \brief Return true if all attributes in the resource are valid.
+  bool allAttributesValid() const;
+
   /// \brief Return a set of resources associated to this attribute resource.
   smtk::resource::ResourceSet associations() const;
 

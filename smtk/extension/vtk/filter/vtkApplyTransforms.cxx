@@ -24,6 +24,7 @@
 #include "vtkUnstructuredGrid.h"
 
 #include <array>
+#include <iostream>
 
 vtkStandardNewMacro(vtkApplyTransforms);
 
