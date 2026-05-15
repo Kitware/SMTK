@@ -12,7 +12,7 @@
 
 #include "smtk/common/Managers.h"
 #include "smtk/extension/qt/Exports.h" // For export macro.
-#include "smtk/job/Queue.h"
+#include "smtk/job/DatabaseQueue.h"
 
 #include <QObject>
 
@@ -28,17 +28,27 @@ namespace job
 ///\brief ShellQueue schedules jobs locally by immediately running them.
 ///
 /// This class depends on Qt for process and filesystem monitoring.
-class SMTKQTEXT_EXPORT ShellQueue : public smtk::job::Queue
+class SMTKQTEXT_EXPORT ShellQueue
+  : public QObject
+  , public smtk::job::DatabaseQueue
 {
+  Q_OBJECT
 public:
   smtkTypeMacro(smtk::qt::job::ShellQueue);
-  smtkSuperclassMacro(smtk::job::Queue);
+  smtkSuperclassMacro(smtk::job::DatabaseQueue);
   smtkCreateMacro(smtk::job::Queue);
   smtkSharedFromThisMacro(smtk::job::Queue);
 
+  ShellQueue();
+  ShellQueue(
+    const smtk::common::UUID& uid,
+    const std::shared_ptr<smtk::resource::Manager>& resourceManager);
   ~ShellQueue() override;
 
   std::string location() const override { return "localhost"; }
+
+  /// This type of queue **may** allow some jobs to be canceled.
+  bool allowsCancellation() const override { return true; }
 
   /// Run the given job as a separate process.
   bool schedule(const std::shared_ptr<smtk::job::Job>& job) override;
@@ -52,8 +62,9 @@ public:
   /// Return the set of all jobs in this queue.
   std::set<std::shared_ptr<smtk::job::Job>> allJobs() const override;
 
-protected:
-  ShellQueue();
+protected Q_SLOTS:
+  virtual void fileUpdated(const QString& path);
+  virtual void directoryUpdated(const QString& path);
 
 private:
   class Internal;

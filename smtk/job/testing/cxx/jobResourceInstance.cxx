@@ -14,6 +14,8 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/common/Managers.h"
 #include "smtk/io/Logger.h"
+#include "smtk/job/Definition.h"
+#include "smtk/job/Job.h"
 #include "smtk/job/Manager.h"
 #include "smtk/job/Registrar.h"
 #include "smtk/operation/Manager.h"
@@ -58,7 +60,7 @@ echo "wait for it" >> logs/job.log
 echo "1" > logs/progress
 echo "done" >> logs/job.log
 sleep 1
-echo "-1" > logs/progress
+echo "-2" > logs/progress
 )";
 
 class JobCreatorOp : public smtk::operation::Operation
@@ -94,20 +96,27 @@ public:
     std::this_thread::sleep_for(1500ms);
 
     auto job = smtk::job::Job::create();
+    auto jobManager = this->managers()->get<smtk::job::Manager::Ptr>();
+    if (!jobManager)
+    {
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+    auto jobDef = jobManager->jobTypes().findByName("Test");
+    if (!jobDef)
+    {
+      return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+    }
+    job->setJobType(jobDef);
     auto tempDir = std::filesystem::temp_directory_path();
     std::string pattern = (tempDir / "smtkXXXXXX").string();
     auto caseDir = generateDirectory(pattern);
     std::filesystem::create_directories(caseDir / "logs");
-    std::filesystem::path scriptPath = "run_job.sh";
-    std::filesystem::path logPath = "logs/job.log";
-    this->writeFile(caseDir, scriptPath, job_script_text);
+    this->writeFile(caseDir, jobDef->script(), job_script_text);
 
     job->setId(smtk::common::UUID::random());
     job->setSize(1); // Don't run in parallel
     job->setQueue(defaultQueue);
-    job->setScript(scriptPath);
     job->setCaseDirectory(caseDir);
-    job->setLogs({ logPath });
 
     // Set a global variable with the created job ID so the test can find it.
     jobId = job->id();
@@ -145,6 +154,16 @@ int jobResourceInstance(int /*unused*/, char* /*unused*/[])
   auto jobManager = appContext->get<smtk::job::Manager::Ptr>();
   auto viewRegistry = smtk::plugin::addToManagers<smtk::extension::qtViewRegistrar>(
     appContext, operationManager, resourceManager, jobManager);
+
+  // Create a new type of job and register it.
+  auto jobType = smtk::job::Definition::create();
+  std::filesystem::path scriptPath = "run_job.sh";
+  std::filesystem::path logPath = "logs/job.log";
+  jobType->setName("Test");
+  // We have two stages:
+  int stageIdx = jobType->appendStage("Pretending", "Pretend to do work", logPath);
+  stageIdx = jobType->appendStage("Hallucinating", "Hallucinate results", logPath);
+  jobManager->jobTypes().manage(jobType);
 
   // Create our test operation whose result includes a job to queue:
   operationManager->registerOperation<JobCreatorOp>();

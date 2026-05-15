@@ -26,6 +26,8 @@ namespace smtk
 namespace job
 {
 
+class Definition;
+class DatabaseQueue;
 class Queue;
 
 /// A job is a component used to track the progress of computational work (as opposed
@@ -86,15 +88,20 @@ public:
   smtkSuperclassMacro(smtk::resource::Component);
   smtkSharedFromThisMacro(smtk::resource::PersistentObject);
 
-  /// The type of map used to store parsers for the various log files.
-  using LogParserMap = std::unordered_map<smtk::string::Token, std::shared_ptr<LogParser>>;
-
   /// Use a mutex to guard access to links on jobs.
   using GuardedLinks = smtk::resource::GuardedComponentLinks;
+  /// The type of map used to store parser instances for the various log files.
+  using LogParserMap = std::unordered_map<smtk::string::Token, std::shared_ptr<LogParser>>;
 
   /// Destroy a job (from memory, but not from persistent storage if the job
   /// is owned by the job::Resource).
   ~Job() override;
+
+  /// Return the job type (i.e., its Definition).
+  Definition* jobType() const { return m_jobType; }
+  /// Set the job's definition. This is only allowed if the job type has not yet been set.
+  bool setJobType(const std::shared_ptr<Definition>& jobType);
+  bool setJobType(Definition* jobType);
 
   /// Either null (during the operation which created the job) or a reference
   /// to smtk::job::Resource::instance() (after the operation's observers are
@@ -108,7 +115,29 @@ public:
   ///@}
 
   ///@{
+  /// Get the name of this job.
+  /// If unscheduled, the job name is its UUID.
+  /// Once scheduled, the job name is its ID in the queue.
+  std::string name() const override;
+  ///@}
+
+  ///@{
   /// Set/get the queue on which to schedule this job (or on which it is scheduled).
+  ///
+  /// Once set, a job may not be moved to a different queue.
+  /// Until set, a job may not be scheduled and is not persistent.
+  /// This is because each queue owns its jobs.
+  ///
+  /// Jobs that run in parallel often require that a queue be set
+  /// at the time of its creation (i.e., by the operation which creates it)
+  /// as the queue and launcher often require the job script to be customized
+  /// to the facilities they make available (i.e., queue-scheduling keywords
+  /// in the comments at the top of the script; whether mpiexec, srun, or
+  /// aprun is used to launch executables; etc.).
+  ///
+  /// In the future, it may be possible for smtk to provide utilities to help
+  /// generalize some of this information out of scripts (particularly the
+  /// launcher).
   Queue* queue() const;
   bool setQueue(Queue*);
   ///@}
@@ -138,19 +167,10 @@ public:
   ///@}
 
   ///@{
-  /// Set/get the path to the job's run script. This path must be relative to the case directory.
-  std::filesystem::path script() const;
-  bool setScript(std::filesystem::path dir);
-  ///@}
-
-  ///@{
-  /// Set/get a set of log files output during the course of running the job.
+  /// Get the path to the job's run script. This path must be relative to the case directory.
   ///
-  /// This set need not include the special "logs/progress" file (relative to the case directory)
-  /// which is always monitored if it exists. The logs listed here are assumed to contain
-  /// human-readable data that user interfaces may wish to present.
-  const std::vector<std::filesystem::path>& logs() const;
-  bool setLogs(const std::vector<std::filesystem::path>& logFiles);
+  /// The script path is stored as part of the job's definition and fetched from it.
+  std::filesystem::path script() const;
   ///@}
 
   ///@{
@@ -170,10 +190,16 @@ public:
   bool schedule(Queue* queue = nullptr);
 
   /// Return the state of the job relative to the queue.
-  State state() const;
+  State state() const { return m_state; }
+  bool setState(State s);
 
   /// Return the completion status of the job.
-  Status status() const;
+  Status status() const { return m_status; }
+  bool setStatus(Status s);
+
+  /// Return the stage of processing.
+  int stage() const { return m_stage; }
+  bool setStage(int s);
 
   ///@{
   /// Set/get whether the job should be automatically scheduled when added
@@ -187,17 +213,6 @@ public:
   /// scheduled on its queue.
   bool autoSchedule() const { return m_autoSchedule; }
   bool setAutoSchedule(bool shouldSchedule);
-  ///@}
-
-  ///@{
-  /// Manage log-file parsers.
-  ///
-  /// The \a logPath parameter is relative path from the case directory to the log file.
-  /// Log files must live inside their case directories.
-  const LogParserMap& logParsers() const;
-  bool setLogParser(smtk::string::Token logPath, const LogParser& parser);
-  bool clearLogParser(smtk::string::Token logPath);
-  bool resetLogParsers();
   ///@}
 
   using LinkKey = std::pair<smtk::common::UUID, smtk::common::UUID>;
@@ -230,30 +245,57 @@ public:
   /// that uses containers; however, you can submit a job with a
   /// container image URL to a queue that does not use containers – this
   /// setting will just be ignored.
-  std::string containerImage() const { return m_containerImage; }
+  std::string containerImage() const;
   bool setContainerImage(const std::string& imageURL);
   ///@}
 
   ///@{
   /// Set/get the location within the image of where to mount the case directory.
-  std::string caseDirectoryMountPoint() const { return m_caseDirectoryMountPoint; }
+  std::string caseDirectoryMountPoint() const;
   bool setCaseDirectoryMountPoint(const std::string& mountPoint);
   ///@}
 
+  ///@{
+  /// Get the log parsers (created as specified by the job Definition).
+  LogParser* logParser(smtk::string::Token logPath) const;
+  ///@}
+
 protected:
+  friend class Queue;
+  friend class DatabaseQueue;
+
   Job();
 
+  /// Restore a job from offline storage.
+  ///
+  /// This method should only be called by smtk::job::Queue()
+  bool restore(
+    smtk::job::Queue* queue,
+    const smtk::common::UUID& uid,
+    Definition* jobType,
+    std::uint64_t size,
+    smtk::job::State state,
+    smtk::job::Status status,
+    int stage,
+    const std::string& queueId,
+    const std::string& caseDirectory,
+    const std::string& containerImageUrl,
+    const std::string& mountPoint,
+    bool autoSchedule);
+
+  Definition* m_jobType{ nullptr };
   smtk::common::UUID m_id;
   Queue* m_queue{ nullptr };
   std::uint64_t m_size{ 1 };
   std::string m_queueId;
   std::filesystem::path m_caseDirectory;
-  std::filesystem::path m_script;
-  std::vector<std::filesystem::path> m_logs;
   bool m_autoSchedule{ true };
-  LogParserMap m_logParsers;
   std::string m_containerImage;
   std::string m_caseDirectoryMountPoint;
+  LogParserMap m_logParsers;
+  State m_state{ State::Unscheduled };
+  Status m_status{ Status::Pending };
+  int m_stage{ -1 };
 };
 
 } // namespace job

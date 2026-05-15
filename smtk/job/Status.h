@@ -11,6 +11,10 @@
 #ifndef smtk_job_Status_h
 #define smtk_job_Status_h
 
+#include "smtk/CoreExports.h"
+
+#include <string>
+
 namespace smtk
 {
 namespace job
@@ -24,6 +28,8 @@ enum Status
   Failed,    //!< The job script was run but produced an error.
   Terminated, //!< The job was run but terminated before completion. Not all queueing systems provide this.
 };
+
+SMTKCORE_EXPORT std::string statusAsString(Status status);
 
 } // namespace job
 } // namespace smtk

@@ -45,6 +45,7 @@
 #include "smtk/plugin/Manager.h"
 
 #include "smtk/Options.h"
+#include "smtk/SystemConfig.h"
 
 #include <tuple>
 
@@ -59,6 +60,8 @@
 #include <QFontDatabase>
 #include <QTimer>
 #include <QtDebug>
+
+using namespace smtk::string::literals;
 
 namespace smtk
 {
@@ -116,12 +119,32 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
     };
 #endif
 
-#if 0
-  if (!g_haveRunner)
+#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
+  // Do not support local runs on Windows.
+  (void)jobManager;
+  smtkInfoMacro(smtk::io::Logger::instance(), "No support for shell_queue on Windows.");
+#else
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  auto jobManager = managers->get<smtk::job::Manager::Ptr>();
+  if (!resourceManager || !operationManager || !jobManager)
   {
-    g_runner = new smtk::qt::job::Runner(managers);
+    smtkErrorMacro(smtk::io::Logger::instance(), "Missing managers. Cannot restore shell_queue.");
   }
-  ++g_haveRunner;
+  else
+  {
+    auto shellQueue = smtk::qt::job::ShellQueue::createOrRestore<smtk::qt::job::ShellQueue>(
+      /* name */ "shell_queue",
+      /* description */ R"(A queue that runs each of its jobs on the local machine.)",
+      /* location */ "localhost",
+      /* maximum job size */ 0,
+      /* capability tags */ { "shell"_token, "bash"_token, "local"_token },
+      /* remove queue on destruction */ false,
+      smtk::common::UUID("e1b560df-f238-4191-80b8-40de9b63f071"),
+      resourceManager,
+      operationManager,
+      jobManager);
+  }
 #endif
 }
 
@@ -216,22 +239,7 @@ void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)
   manager->badgeFactory().unregisterTypes<BadgeList>();
 }
 
-void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr& jobManager)
-{
-  auto shellQueue = smtk::qt::job::ShellQueue::create();
-  shellQueue->setName("shell_queue");
-  shellQueue->setDescription(R"(A queue that runs each of its jobs on the local machine.)");
-  std::unordered_set<smtk::string::Token> tags{ "shell", "bash", "local" };
-  for (const auto& tag : tags)
-  {
-    shellQueue->addTag(tag);
-  }
-  if (jobManager->queues().manage(shellQueue))
-  {
-    g_queuesToRemove.insert(shellQueue);
-    jobManager->activeQueue().switchTo(shellQueue.get());
-  }
-}
+void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr& jobManager) {}
 
 void qtViewRegistrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager)
 {

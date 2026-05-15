@@ -13,15 +13,16 @@
 
 #include "smtk/common/Active.h"
 #include "smtk/common/Instances.h"
+#include "smtk/job/DefinitionInstances.h"
 #include "smtk/job/Job.h"
 #include "smtk/job/Queue.h"
+#include "smtk/job/QueueInstances.h"
 
 namespace smtk
 {
 namespace job
 {
 
-using QueueInstances = smtk::common::Instances<smtk::job::Queue>;
 using ActiveQueue = smtk::common::Active<QueueInstances>;
 
 /// A job manager that tracks available queues for scheduling jobs.
@@ -43,6 +44,10 @@ public:
   const QueueInstances& queues() const;
   QueueInstances& queues();
 
+  /// Return the set of managed job definitions.
+  const DefinitionInstances& jobTypes() const;
+  DefinitionInstances& jobTypes();
+
   /// Return the object which tracks the active queue (from queues()).
   ///
   /// Only one queue may be active at a time (making it the default
@@ -55,6 +60,7 @@ public:
 
 private:
   QueueInstances m_queues;
+  DefinitionInstances m_definitions;
   ActiveQueue m_activeQueue;
 };
 

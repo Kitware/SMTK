@@ -11,6 +11,7 @@
 #ifndef pybind_smtk_job_Manager_h
 #define pybind_smtk_job_Manager_h
 
+#include "smtk/job/DefinitionInstances.h"
 #include "smtk/job/Manager.h"
 #include "smtk/job/Queue.h"
 #include "smtk/common/pybind11/PybindInstances.h"
@@ -21,7 +22,6 @@ namespace py = pybind11;
 inline PySharedPtrClass<smtk::job::Manager> pybind11_init_smtk_job_Manager(py::module &m)
 {
   // First, bind Instances and Active templates (specialized to the job manager).
-  auto queueInstances = pybind11_init_smtk_common_Instances<smtk::job::Queue>(m, "QueueInstances");
   auto activeQueue = pybind11_init_smtk_common_Active<smtk::job::QueueInstances>(m, "ActiveQueue");
   // using QueueInstances = smtk::common::Instances<smtk::job::Queue>;
   // using ActiveQueue = smtk::common::Active<QueueInstances>;
@@ -31,6 +31,7 @@ inline PySharedPtrClass<smtk::job::Manager> pybind11_init_smtk_job_Manager(py::m
   instance
     .def_static("create", (std::shared_ptr<smtk::job::Manager> (*)()) &smtk::job::Manager::create)
     .def_static("create", (std::shared_ptr<smtk::job::Manager> (*)(::std::shared_ptr<smtk::job::Manager> &)) &smtk::job::Manager::create, py::arg("ref"))
+    .def("jobTypes", [](smtk::job::Manager& jobManager) -> smtk::job::DefinitionInstances* { return &(jobManager.jobTypes()); }, py::return_value_policy::reference)
     .def("queues", [](smtk::job::Manager& jobManager) { return &(jobManager.queues()); }, py::return_value_policy::reference)
     .def("activeQueue", &smtk::job::Manager::activeQueue, py::return_value_policy::reference)
     .def("defaultQueue", &smtk::job::Manager::defaultQueue)

@@ -22,12 +22,15 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindDefinition.h"
+#include "PybindDefinitionInstances.h"
+#include "PybindQueueInstances.h"
 #include "PybindJob.h"
 #include "PybindState.h"
 #include "PybindStatus.h"
+#include "PybindStage.h"
 #include "PybindQueue.h"
 #include "PybindManager.h"
-#include "PybindResource.h"
 #include "PybindRegistrar.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
@@ -44,10 +47,13 @@ PYBIND11_MODULE(_smtkPybindJob, job_module)
 
   pybind11_init_smtk_job_State(job_module);
   pybind11_init_smtk_job_Status(job_module);
+  auto smtk_job_Definition = pybind11_init_smtk_job_Definition(job_module);
+  auto smtk_job_Stage = pybind11_init_smtk_job_Stage(job_module);
   auto smtk_job_Job = pybind11_init_smtk_job_Job(job_module);
   auto smtk_job_Queue = pybind11_init_smtk_job_Queue(job_module);
+  auto smtk_job_QueueInstances = pybind11_init_smtk_job_QueueInstances(job_module);
+  auto smtk_job_DefinitionInstances = pybind11_init_smtk_job_DefinitionInstances(job_module);
   auto smtk_job_Manager = pybind11_init_smtk_job_Manager(job_module);
-  auto smtk_job_Resource = pybind11_init_smtk_job_Resource(job_module);
   auto smtk_job_Registrar = pybind11_init_smtk_job_Registrar(job_module);
 
   // job_module

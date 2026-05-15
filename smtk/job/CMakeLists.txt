@@ -1,9 +1,15 @@
 set(jobClasses
+  DatabaseQueue
+  DefinitionInstances
+  Definition
   Job
   Queue
+  QueueInstances
   Manager
-  Resource
   Registrar
+  Stage
+  State
+  Status
 )
 
 set(jobSrcs)
@@ -18,7 +24,12 @@ foreach(class ${jobClasses})
   endif()
 endforeach()
 
-set(jobOperators)
+set(jobOperators
+  AddJobToQueue
+  CancelJob
+  JobUpdated
+  ScheduleJob
+)
 
 foreach (operator ${jobOperators})
   list(APPEND jobHeaders operators/${operator}.h)

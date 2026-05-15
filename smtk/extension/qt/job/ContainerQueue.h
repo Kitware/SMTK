@@ -12,7 +12,7 @@
 
 #include "smtk/common/Managers.h"
 #include "smtk/extension/qt/Exports.h" // For export macro.
-#include "smtk/job/Queue.h"
+#include "smtk/job/DatabaseQueue.h"
 
 #include <QObject>
 
@@ -28,17 +28,60 @@ namespace job
 ///\brief ContainerQueue schedules jobs locally by immediately running them.
 ///
 /// This class depends on Qt for process and filesystem monitoring.
-class SMTKQTEXT_EXPORT ContainerQueue : public smtk::job::Queue
+class SMTKQTEXT_EXPORT ContainerQueue
+  : public QObject
+  , public smtk::job::DatabaseQueue
 {
 public:
   smtkTypeMacro(smtk::qt::job::ContainerQueue);
-  smtkSuperclassMacro(smtk::job::Queue);
+  smtkSuperclassMacro(smtk::job::DatabaseQueue);
   smtkCreateMacro(smtk::job::Queue);
   smtkSharedFromThisMacro(smtk::job::Queue);
 
+  template<typename QueueType>
+  static std::shared_ptr<QueueType> createOrRestore(
+    const std::string& name,
+    const std::string& description,
+    const std::string& location,
+    int maxJobSize = 0,
+    const std::unordered_set<smtk::string::Token>& tags = {},
+    const std::filesystem::path& containerEngineExecutable = "podman",
+    bool removeQueueOnDestruction = false,
+    const smtk::common::UUID& uid = smtk::common::UUID::null(),
+    const std::shared_ptr<smtk::resource::Manager>& resourceManager =
+      std::shared_ptr<smtk::resource::Manager>(),
+    const std::shared_ptr<smtk::operation::Manager>& operationManager =
+      std::shared_ptr<smtk::operation::Manager>(),
+    const std::shared_ptr<smtk::job::Manager>& jobManager = std::shared_ptr<smtk::job::Manager>())
+  {
+    std::shared_ptr<QueueType> queue = Superclass::createOrRestore<QueueType>(
+      name,
+      description,
+      location,
+      maxJobSize,
+      tags,
+      removeQueueOnDestruction,
+      uid,
+      resourceManager,
+      operationManager,
+      jobManager);
+    if (queue)
+    {
+      queue->setEngineExecutable(containerEngineExecutable);
+    }
+    return queue;
+  }
+
+  ContainerQueue();
+  ContainerQueue(
+    const smtk::common::UUID& uid,
+    const std::shared_ptr<smtk::resource::Manager>& resourceManager);
   ~ContainerQueue() override;
 
   std::string location() const override { return "localhost"; }
+
+  /// This type of queue **may** allow some jobs to be canceled.
+  bool allowsCancellation() const override { return true; }
 
   /// Run the given job as a separate process.
   bool schedule(const std::shared_ptr<smtk::job::Job>& job) override;
@@ -51,6 +94,11 @@ public:
 
   /// Return the set of all jobs in this queue.
   std::set<std::shared_ptr<smtk::job::Job>> allJobs() const override;
+
+  /// Pull the named container image.
+  bool pullContainerImage(const std::string& imageUrl);
+
+protected Q_SLOTS:
 
   ///@{
   /// Get the container engine to use.
@@ -92,8 +140,12 @@ public:
   bool setCaseDirectoryMountPoint(const std::filesystem::path& mountPoint);
   ///@}
 
-protected:
-  ContainerQueue();
+  ///@{
+  /// Called when the internal filesystem-watcher notices a watched log
+  /// directory or progress file has been modified.
+  void fileUpdated(const QString& path);
+  void directoryUpdated(const QString& path);
+  ///@}
 
 private:
   class Internal;

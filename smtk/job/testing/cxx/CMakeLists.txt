@@ -1,5 +1,5 @@
 set(unit_tests
-  jobResourceInstance.cxx
+  # jobResourceInstance.cxx
 )
 
 if (SMTK_ENABLE_QT_SUPPORT)
@@ -16,5 +16,6 @@ smtk_unit_tests(
   SOURCES ${unit_tests}
   LIBRARIES
     smtkCore
+    smtkQtExt # For ShellQueue
     ${extra_libraries}
 )

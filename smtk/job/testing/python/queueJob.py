@@ -49,6 +49,12 @@ class TestQueueJob(smtk.testing.TestCase):
         smtk.job.Registrar.registerTo(self.app)
         self.job_mgr = self.app.get('smtk.job.Manager')
         self.job_registry = smtk.plugin.registerPluginsTo(self.job_mgr)
+        self.job_def = smtk.job.Definition.create()
+        self.job_def.setName('JobQueueTest')
+        self.job_def.setDescription('Test queueing jobs from python.')
+        self.job_def.setScript('run.sh')
+        self.job_def.appendStage('echo', 'Echo hello world', 'logs/echo.log')
+        self.job_mgr.jobTypes().manage(self.job_def)
 
     def test_shell_queue_job(self):
         import tempfile
@@ -60,15 +66,15 @@ class TestQueueJob(smtk.testing.TestCase):
             temp_dir = tempfile.TemporaryDirectory()
             delete_dir = False
         job = smtk.job.Job.create()
+        job.setJobType(self.job_def)
         os.makedirs(os.path.join(temp_dir.name, 'logs'))
         job.setAutoSchedule(True)
         job.setCaseDirectory(temp_dir.name)
         # job.setLogParser(log, parser)
-        job.setLogs(['logs/echo.log'])
+        # job.setLogs(['logs/echo.log'])
         queue = self.job_mgr.findQueueByName('shell_queue')
         job.setQueue(queue)
-        job.setScript('run.sh')
-        scriptPath = os.path.join(job.caseDirectory(), job.script())
+        scriptPath = os.path.join(job.caseDirectory(), job.jobType().script())
         with open(scriptPath, 'w') as script:
             print(f'#!/bin/bash', file=script)
             print(
@@ -95,6 +101,7 @@ class TestQueueJob(smtk.testing.TestCase):
             temp_dir = tempfile.TemporaryDirectory()
             delete_dir = False
         job = smtk.job.Job.create()
+        job.setJobType(self.job_def)
         os.makedirs(os.path.join(temp_dir.name, 'logs'))
         queue = self.job_mgr.findQueueByName('container_queue')
         job.setAutoSchedule(True)
@@ -102,10 +109,9 @@ class TestQueueJob(smtk.testing.TestCase):
         job.setCaseDirectoryMountPoint('/home/openfoam')
         job.setContainerImage('docker.io/opencfd/openfoam-run:2112')
         # job.setLogParser(log, parser)
-        job.setLogs(['logs/echo.log'])
+        # job.setLogs(['logs/echo.log'])
         job.setQueue(queue)
-        job.setScript('run.sh')
-        scriptPath = os.path.join(job.caseDirectory(), job.script())
+        scriptPath = os.path.join(job.caseDirectory(), job.jobType().script())
         with open(scriptPath, 'w') as script:
             print(f'#!/bin/bash', file=script)
             print(

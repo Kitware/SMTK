@@ -34,7 +34,7 @@
       <Accepts>
         <!-- Any attribute with "JobSpec" as its base type can be added. -->
         <!-- Resource Name="smtk::attribute::Resource" Filter="attribute[type='JobSpec']"/ -->
-        <Resource Name="smtk::job::Resource" Filter="smtk::job::Job"/>
+        <Resource Name="smtk::job::Queue" Filter="smtk::job::Job"/>
       </Accepts>
     </Component>
   </ItemDefinitions>

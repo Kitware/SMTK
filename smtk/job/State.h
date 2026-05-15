@@ -11,6 +11,10 @@
 #ifndef smtk_job_State_h
 #define smtk_job_State_h
 
+#include "smtk/CoreExports.h"
+
+#include <string>
+
 namespace smtk
 {
 namespace job
@@ -32,6 +36,8 @@ enum State
   Canceled,    //!< The job was removed from the queue (possibly while running).
   Completed,   //!< The job exited the queue after completion (with a status of success or failure).
 };
+
+SMTKCORE_EXPORT std::string stateAsString(State state);
 
 } // namespace job
 } // namespace smtk

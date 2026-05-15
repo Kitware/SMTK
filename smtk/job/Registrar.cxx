@@ -11,10 +11,17 @@
 //=============================================================================
 #include "smtk/job/Registrar.h"
 
+#include "smtk/job/operators/AddJobToQueue.h"
+#include "smtk/job/operators/CancelJob.h"
+#include "smtk/job/operators/JobUpdated.h"
+#include "smtk/job/operators/ScheduleJob.h"
+
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/job/Job.h"
-#include "smtk/job/Resource.h"
+#include "smtk/job/Queue.h"
 #include "smtk/plugin/Manager.h"
+
+#include <tuple>
 
 namespace smtk
 {
@@ -23,34 +30,57 @@ namespace job
 namespace
 {
 
+bool createdJobManager = false;
+
 // An observer attached to the operation manager:
 smtk::operation::Observers::Key g_operationObserver;
 
-void possiblyLaunchJob(
+void attachJobToQueue(
   const smtk::operation::Operation& op,
-  smtk::operation::Operation::Result result)
+  smtk::operation::Operation::Result result,
+  const smtk::operation::Manager::Ptr& operationManager)
 {
   // Ignore jobs attached to failed operations.
   if (smtk::operation::outcome(result) != smtk::operation::Operation::Outcome::SUCCEEDED)
   {
     return;
   }
-  auto jobResource = smtk::job::Resource::instance();
   auto jobsItem = result->findComponent("jobsToSubmit");
   if (jobsItem && jobsItem->numberOfValues() > 0)
   {
+    if (!operationManager)
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "No operation manager. Cannot queue job(s).");
+      return;
+    }
     for (const auto& value : *jobsItem)
     {
       if (auto job = std::dynamic_pointer_cast<smtk::job::Job>(value))
       {
-        jobResource->addJob(job);
-        std::cerr << "Launch job " << job << "\n";
+        // If a job was created but the queue does not know of it, then
+        // launch an operation that will lock the queue in order to add
+        // the job to the queue and potentially schedule it.
+        //
+        // This is done so that operations which create jobs need not
+        // lock any queue which they plan to submit jobs to.
+        if (auto queue = job->queue())
+        {
+          auto adder = operationManager->create<smtk::job::AddJobToQueue>();
+          adder->parameters()->associate(job);
+          operationManager->launchers()(adder);
+        }
       }
     }
   }
 }
 
 } // anonymous namespace
+
+using OperationList = std::tuple<
+  smtk::job::AddJobToQueue,
+  smtk::job::CancelJob,
+  smtk::job::JobUpdated,
+  smtk::job::ScheduleJob>;
 
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
@@ -59,6 +89,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   {
     if (managers->insert(smtk::job::Manager::create()))
     {
+      createdJobManager = true;
       // if (managers->contains<smtk::resource::Manager::Ptr>())
       // {
       //   managers->get<smtk::job::Manager::Ptr>()->registerResourceManager(
@@ -73,7 +104,10 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
   (void)managers;
-  managers->erase<smtk::job::Manager::Ptr>();
+  if (createdJobManager)
+  {
+    managers->erase<smtk::job::Manager::Ptr>();
+  }
 }
 
 void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager) {}
@@ -88,6 +122,8 @@ void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManag
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
+  operationManager->registerOperations<OperationList>();
+
   g_operationObserver = operationManager->observers().insert(
     [&](
       const smtk::operation::Operation& op,
@@ -95,7 +131,7 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
       smtk::operation::Operation::Result result) -> int {
       if (event == smtk::operation::EventType::DID_OPERATE)
       {
-        possiblyLaunchJob(op, result);
+        attachJobToQueue(op, result, operationManager);
       }
       return 0; // Never cancel an operation.
     },

@@ -33,6 +33,9 @@ class SMTKPVJOBEXT_EXPORT Registrar
 public:
   using Dependencies = std::tuple<operation::Registrar, job::Registrar>;
 
+  static void registerTo(const smtk::common::Managers::Ptr&);
+  static void unregisterFrom(const smtk::common::Managers::Ptr&);
+
   static void registerTo(const smtk::job::Manager::Ptr&);
   static void unregisterFrom(const smtk::job::Manager::Ptr&);
 };
