@@ -11,6 +11,7 @@
 #define smtk_common_Factory_h
 
 #include "smtk/CoreExports.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/TupleTraits.h"
 
 #include "smtk/common/TypeName.h"
@@ -288,6 +289,14 @@ class SMTK_ALWAYS_EXPORT Factory
   class Interface;
 
 public:
+  smtkTypedefs(smtk::common::Factory<BaseType, InputTypes...>);
+  virtual std::string typeName() const
+  {
+    return "smtk::common::Factory<" + smtk::common::typeName<BaseType>() + ">";
+  }
+  virtual smtk::string::Token typeToken() const { return smtk::string::Token(this->typeName()); }
+  smtkInheritanceHierarchyBase(smtk::common::Factory<BaseType, InputTypes...>);
+
   /// Register a Type to the factory.
   template<typename Type>
   bool registerType()

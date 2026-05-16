@@ -43,10 +43,15 @@ template<typename BaseType, typename... InputTypes>
 class SMTK_ALWAYS_EXPORT Instances : public Factory<BaseType, InputTypes...>
 {
 public:
+  smtkTypedefs(smtk::common::Instances<BaseType, InputTypes...>);
+  std::string typeName() const override
+  {
+    return "smtk::common::Instances<" + smtk::common::typeName<BaseType>() + ">";
+  }
+  smtkSuperclassMacro(smtk::common::Factory<BaseType, InputTypes...>);
+
   /// An alias for the type of object being managed.
   using ObjectType = BaseType;
-  /// An alias for the inherited parent class.
-  using Superclass = smtk::common::Factory<BaseType, InputTypes...>;
   /// The signature of observers watching managed instance lifecycle events.
   using Observer = std::function<void(InstanceEvent, const std::shared_ptr<BaseType>&)>;
   /// Access to the set of observers of instances.
