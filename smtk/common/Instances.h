@@ -127,7 +127,7 @@ public:
   /// This returns true if the instance was added and
   /// false otherwise (which can occur if passed a null
   /// pointer or an already-managed instance).
-  bool manage(const std::shared_ptr<BaseType>& instance)
+  virtual bool manage(const std::shared_ptr<BaseType>& instance)
   {
     if (!instance)
     {
@@ -146,7 +146,7 @@ public:
   /// This may result in the destruction of \a instance
   /// but is not guaranteed to do so (i.e., when other
   /// shared-pointers to \a instance exist).
-  bool unmanage(const std::shared_ptr<BaseType>& instance)
+  virtual bool unmanage(const std::shared_ptr<BaseType>& instance)
   {
     if (!instance)
     {
