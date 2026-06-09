@@ -86,7 +86,6 @@ public:
   DatabaseQueue(const smtk::common::UUID& uid);
   DatabaseQueue(const smtk::common::UUID& uid, resource::ManagerPtr manager);
   DatabaseQueue(resource::ManagerPtr manager);
-  DatabaseQueue(DatabaseQueue&&) = default;
   ~DatabaseQueue() override;
 
   /// Mark the queue to be destroyed when this instance of DatabaseQueue is destroyed.

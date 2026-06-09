@@ -121,7 +121,7 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
   // Do not support local runs on Windows.
-  (void)jobManager;
+  (void)managers;
   smtkInfoMacro(smtk::io::Logger::instance(), "No support for shell_queue on Windows.");
 #else
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
