@@ -148,7 +148,8 @@ public:
       m_query << statement << '\0';
       const char* tail;
       if (
-        sqlite3_prepare(m_db, m_query.str().c_str(), m_query.str().size(), &m_cursor, &tail) !=
+        sqlite3_prepare(
+          m_db, m_query.str().c_str(), static_cast<int>(m_query.str().size()), &m_cursor, &tail) !=
         SQLITE_OK)
       {
         throw std::logic_error("Could not prepare statement.");
@@ -182,7 +183,8 @@ public:
       }
       const char* tail;
       if (
-        sqlite3_prepare(m_db, m_query.str().c_str(), m_query.str().size(), &m_cursor, &tail) !=
+        sqlite3_prepare(
+          m_db, m_query.str().c_str(), static_cast<int>(m_query.str().size()), &m_cursor, &tail) !=
         SQLITE_OK)
       {
         return false;
@@ -411,7 +413,7 @@ bool installOrUpdateSchema(sqlite3* db)
   std::string check("select version from schema order by version desc limit 1;");
   try
   {
-    if (sqlite3_prepare(db, check.c_str(), check.size(), &qq, &tail) != SQLITE_OK)
+    if (sqlite3_prepare(db, check.c_str(), static_cast<int>(check.size()), &qq, &tail) != SQLITE_OK)
     {
       // Schema table does not exist; install it.
       installSchema(db);
@@ -1045,7 +1047,9 @@ bool DatabaseQueue::hasQueueData(const smtk::common::UUID& uid) const
   sqlite3_stmt* qq;
   const char* tail;
   if (
-    sqlite3_prepare(m_db, statement.str().c_str(), statement.str().size(), &qq, &tail) != SQLITE_OK)
+    sqlite3_prepare(
+      m_db, statement.str().c_str(), static_cast<int>(statement.str().size()), &qq, &tail) !=
+    SQLITE_OK)
   {
     throw std::logic_error("Could not prepare " + statement.str());
   }

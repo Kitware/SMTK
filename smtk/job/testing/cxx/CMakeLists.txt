@@ -3,9 +3,14 @@ set(unit_tests
 )
 
 if (SMTK_ENABLE_QT_SUPPORT)
-  list(APPEND unit_tests
-    jobQueue.cxx
-  )
+  if (UNIX)
+    # Do not run on Windows for now.
+    # The problem is that we don't have CI set up with podman+wsl2
+    # and we don't support ShellQueue on Windows at all.
+    list(APPEND unit_tests
+      jobQueue.cxx
+    )
+  endif()
   list(APPEND extra_libraries
     smtkQtExt
   )
@@ -16,6 +21,5 @@ smtk_unit_tests(
   SOURCES ${unit_tests}
   LIBRARIES
     smtkCore
-    smtkQtExt # For ShellQueue
     ${extra_libraries}
 )

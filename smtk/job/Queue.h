@@ -63,7 +63,7 @@ public:
   Queue(const smtk::common::UUID& uid);
   Queue(const smtk::common::UUID& uid, resource::ManagerPtr manager);
   Queue(resource::ManagerPtr manager);
-  Queue(Queue&&) = default;
+  Queue(const Queue&) = delete;
   ~Queue() override = default;
 
   /// Provide a method to change the UUID of a queue (used for serialization/deserialization)
