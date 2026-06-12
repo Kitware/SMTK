@@ -122,31 +122,33 @@ int Definition::appendStage(const std::shared_ptr<smtk::job::Stage>& stage)
   return true;
 }
 
-int Definition::appendStage(const std::string& name, const std::string& description)
+std::shared_ptr<Stage> Definition::appendStage(
+  const std::string& name,
+  const std::string& description)
 {
   if (name.empty())
   {
-    return -1;
+    return std::shared_ptr<Stage>();
   }
 
   auto idx = static_cast<int>(m_stages.size());
   m_stages.push_back(Stage::create(this, idx, name, description));
-  return idx;
+  return m_stages[idx];
 }
 
-int Definition::appendStage(
+std::shared_ptr<Stage> Definition::appendStage(
   const std::string& name,
   const std::string& description,
   const std::filesystem::path& log)
 {
   if (name.empty())
   {
-    return -1;
+    return std::shared_ptr<Stage>();
   }
 
   auto idx = static_cast<int>(m_stages.size());
   m_stages.push_back(Stage::create(this, idx, name, description, log));
-  return idx;
+  return m_stages[idx];
 }
 
 const std::vector<std::shared_ptr<smtk::job::Stage>>& Definition::stages() const

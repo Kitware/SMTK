@@ -91,8 +91,8 @@ public:
   /// The variant which accepts a \a description and \a log path creates a
   /// new stage and appends that instance using the first variant.
   int appendStage(const std::shared_ptr<smtk::job::Stage>& stage);
-  int appendStage(const std::string& name, const std::string& description);
-  int appendStage(
+  std::shared_ptr<Stage> appendStage(const std::string& name, const std::string& description);
+  std::shared_ptr<Stage> appendStage(
     const std::string& name,
     const std::string& description,
     const std::filesystem::path& log);

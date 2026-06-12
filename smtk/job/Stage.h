@@ -15,6 +15,9 @@
 
 #include "smtk/SharedFromThis.h"
 
+#include <filesystem>
+#include <unordered_set>
+
 namespace smtk
 {
 namespace job
@@ -36,6 +39,10 @@ class Queue;
 /// all jobs of the same type.
 ///
 /// A stage has a (user-presentable) description.
+///
+/// A stage may produce "artifacts," which are files in some external (non-SMTK)
+/// format. Examples include simulation results, geometric models, and summary
+/// information like feature statistics. A log file is handled separately (see below).
 ///
 /// A stage may have its own log path (relative to the case directory).
 /// A queue (not the stage itself) may report the progress of a stage (in [0,1]
@@ -90,6 +97,20 @@ public:
   const std::filesystem::path& log() const;
   ///@}
 
+  ///@{
+  /// Set/get/add/remove/clear a list of artifact paths (relative to the case directory
+  /// and common to every job).
+  ///
+  /// These paths are not monitored by the job's queue but once the stage is
+  /// complete, they should exist and not have their contents changed for the
+  /// remainder of the job.
+  const std::unordered_set<std::filesystem::path>& artifacts() const { return m_artifacts; }
+  bool addArtifact(const std::filesystem::path& path);
+  bool removeArtifact(const std::filesystem::path& path);
+  bool hasArtifact(const std::filesystem::path& path) const;
+  bool clearArtifacts();
+  ///@}
+
 protected:
   friend class Definition;
   Stage();
@@ -112,6 +133,7 @@ protected:
   std::string m_name;
   std::string m_description;
   std::filesystem::path m_log;
+  std::unordered_set<std::filesystem::path> m_artifacts;
 };
 
 } // namespace job

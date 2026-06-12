@@ -43,7 +43,7 @@ inline PySharedPtrClass<smtk::job::Definition> pybind11_init_smtk_job_Definition
         smtk::job::Definition& definition,
         const std::string& name,
         const std::string& description,
-        const std::filesystem::path& log) -> int
+        const std::filesystem::path& log) -> std::shared_ptr<smtk::job::Stage>
       {
         return definition.appendStage(name, description, log);
       }, py::arg("name"), py::arg("description"), py::arg("log_path")
@@ -51,7 +51,7 @@ inline PySharedPtrClass<smtk::job::Definition> pybind11_init_smtk_job_Definition
     .def("appendStage", [](
         smtk::job::Definition& definition,
         const std::string& name,
-        const std::string& description) -> int
+        const std::string& description) -> std::shared_ptr<smtk::job::Stage>
       {
         return definition.appendStage(name, description);
       }, py::arg("name"), py::arg("description")

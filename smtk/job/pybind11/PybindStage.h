@@ -30,6 +30,11 @@ inline PySharedPtrClass<smtk::job::Stage> pybind11_init_smtk_job_Stage(py::modul
 
     .def("log", &smtk::job::Stage::log)
     .def("setLog", &smtk::job::Stage::setLog, py::arg("log_file"))
+
+    .def("artifacts", &smtk::job::Stage::artifacts)
+    .def("addArtifact", &smtk::job::Stage::addArtifact, py::arg("path"))
+    .def("removeArtifact", &smtk::job::Stage::removeArtifact, py::arg("path"))
+    .def("clearArtifacts", &smtk::job::Stage::clearArtifacts)
     ;
   return instance;
 }

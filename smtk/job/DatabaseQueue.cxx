@@ -38,6 +38,7 @@ std::vector<std::string> sqlInstallSchema{
   R"(drop table if exists tags;)",
   R"(drop table if exists job_types;)",
   R"(drop table if exists job_stages;)",
+  R"(drop table if exists job_artifacts;)",
   R"(drop table if exists jobs;)",
   R"(drop table if exists job_links;)",
 
@@ -81,6 +82,13 @@ std::vector<std::string> sqlInstallSchema{
       description text,
       log text,
       FOREIGN KEY(job_type) REFERENCES job_types(id) ON DELETE CASCADE
+    );)",
+  // Add a table holding the list of artifacts for each job_stages table entry.
+  R"(create table job_artifacts (
+      id integer primary key,
+      job_stage integer key,
+      path text key,
+      FOREIGN KEY(job_stage) REFERENCES job_stages(id) ON DELETE CASCADE
     );)",
   // Add a table to hold jobs (components of a queue) in a queue.
   R"(create table jobs (
@@ -713,16 +721,18 @@ std::shared_ptr<smtk::job::Definition> DatabaseQueue::fetchJobTypeDataSql(
     return jobType;
   }
 
+  std::vector<std::uint64_t> stageIds;
   std::vector<int> stageIndices;
   std::vector<std::string> stageNames;
   std::vector<std::string> stageDescriptions;
   std::vector<std::string> stageLogPaths;
-  query << "select stage, name, description, log from job_stages where id=" << definitionId
+  query << "select id, stage, name, description, log from job_stages where id=" << definitionId
         << " order by stage ascending;";
-  query.bindInt(0, stageIndices)
-    .bindText(1, stageNames)
-    .bindText(2, stageDescriptions)
-    .bindText(3, stageLogPaths);
+  query.bindInt(0, stageIds)
+    .bindInt(1, stageIndices)
+    .bindText(2, stageNames)
+    .bindText(3, stageDescriptions)
+    .bindText(4, stageLogPaths);
   if (!query.execute())
   {
     // Job definitions must have at least one stage.
@@ -739,8 +749,19 @@ std::shared_ptr<smtk::job::Definition> DatabaseQueue::fetchJobTypeDataSql(
   for (std::size_t ii = 0; ii < stageIndices.size(); ++ii)
   {
     // TODO: We could check that the returned index matches stageIndices[ii].
-    jobType->appendStage(stageNames[ii], stageDescriptions[ii], stageLogPaths[ii]);
+    auto stage = jobType->appendStage(stageNames[ii], stageDescriptions[ii], stageLogPaths[ii]);
+    query << "select path from job_artifacts where job_stage=" << stageIds[ii] << ";";
+    std::unordered_set<std::filesystem::path> artifacts;
+    query.bindText(0, artifacts);
+    if (query.execute())
+    {
+      for (const auto& artifact : artifacts)
+      {
+        stage->addArtifact(artifact);
+      }
+    }
   }
+
   m_jobManager->jobTypes().manage(jobType);
   return jobType;
 }
@@ -1539,8 +1560,27 @@ std::int64_t DatabaseQueue::fetchOrAssignJobTypeId(smtk::job::Definition* jobTyp
             << "(" << jobTypeId << "," << stage->index() << ",'" << stage->name() << "'"
             << ",'" << stage->description() << "'"
             << ",'" << stage->log().string() << "'"
-            << ";";
-      query.execute();
+            << ");";
+      if (query.execute())
+      {
+        auto stageRow = static_cast<std::int64_t>(sqlite3_last_insert_rowid(m_db));
+        for (const auto& artifact : stage->artifacts())
+        {
+          query << "insert into job_artifacts"
+                << "(job_stage,path)"
+                << " values "
+                << "(" << stageRow << ",'" << artifact.string() << "'"
+                << ");";
+          query.execute();
+        }
+      }
+      else
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Could not add job stage " << stage->index() << " for job type " << jobType->name()
+                                     << " (" << jobTypeId << ").");
+      }
     }
   }
   return jobTypeId;

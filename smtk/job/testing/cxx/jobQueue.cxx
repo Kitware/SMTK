@@ -248,8 +248,9 @@ public:
     jobType->setName("Test");
     jobType->setScript(scriptPath);
     // We have two stages:
-    int stageIdx = jobType->appendStage("Pretending", "Pretend to do work", logPath);
-    stageIdx = jobType->appendStage("Hallucinating", "Hallucinate results", logPath);
+    auto stage = jobType->appendStage("Pretending", "Pretend to do work", logPath);
+    stage = jobType->appendStage("Hallucinating", "Hallucinate results", logPath);
+    stage->addArtifact("result.data");
     m_jobManager->jobTypes().manage(jobType);
 
     // Register our test operation whose result includes a job to queue:

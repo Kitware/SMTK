@@ -69,5 +69,29 @@ const std::filesystem::path& Stage::log() const
   return m_log;
 }
 
+bool Stage::addArtifact(const std::filesystem::path& path)
+{
+  auto result = m_artifacts.insert(path);
+  return result.second;
+}
+
+bool Stage::removeArtifact(const std::filesystem::path& path)
+{
+  auto result = m_artifacts.erase(path);
+  return result > 0;
+}
+
+bool Stage::hasArtifact(const std::filesystem::path& path) const
+{
+  return m_artifacts.find(path) != m_artifacts.end();
+}
+
+bool Stage::clearArtifacts()
+{
+  bool empty = m_artifacts.empty();
+  m_artifacts.clear();
+  return !empty;
+}
+
 } // namespace job
 } // namespace smtk
