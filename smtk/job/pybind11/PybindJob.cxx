@@ -14,6 +14,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
+#include <pybind11/functional.h>
 #include <utility>
 SMTK_THIRDPARTY_POST_INCLUDE
 
@@ -22,6 +23,7 @@ namespace py = pybind11;
 template <typename T, typename... Args>
 using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
+#include "PybindDatabaseQueue.h"
 #include "PybindDefinition.h"
 #include "PybindDefinitionInstances.h"
 #include "PybindQueueInstances.h"
@@ -32,6 +34,8 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindQueue.h"
 #include "PybindManager.h"
 #include "PybindRegistrar.h"
+
+#include "smtk/common/UUID.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -54,6 +58,7 @@ PYBIND11_MODULE(_smtkPybindJob, job_module)
   auto smtk_job_QueueInstances = pybind11_init_smtk_job_QueueInstances(job_module);
   auto smtk_job_DefinitionInstances = pybind11_init_smtk_job_DefinitionInstances(job_module);
   auto smtk_job_Manager = pybind11_init_smtk_job_Manager(job_module);
+  auto smtk_job_DatabaseQueue = pybind11_init_smtk_job_DatabaseQueue(job_module);
   auto smtk_job_Registrar = pybind11_init_smtk_job_Registrar(job_module);
 
   // job_module
