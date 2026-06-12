@@ -24,6 +24,7 @@ pybind11_init_smtk_job_DefinitionInstances(py::module &m)
   py::class_<smtk::job::DefinitionInstances, smtk::common::Instances<smtk::job::Definition>> instance(m, "DefinitionInstances");
   instance
     .def("findByName", &smtk::job::DefinitionInstances::findByName, py::arg("name"))
+    .def("visit", &smtk::job::DefinitionInstances::visit, py::arg("visitor"))
     ;
   return instance;
 }
