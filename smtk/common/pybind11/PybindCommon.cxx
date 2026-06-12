@@ -47,6 +47,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindUUIDGenerator.h"
 #include "PybindUnionFind.h"
 #include "PybindVersion.h"
+#include "PybindVisit.h"
 
 #include "smtk/common/Instances.h"
 
@@ -70,6 +71,8 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
     .value("Unmanaged", smtk::common::InstanceEvent::Unmanaged)
     .value("Modified", smtk::common::InstanceEvent::Modified)
     ;
+
+  auto visit = pybind11_init_smtk_common_Visit(common);
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
