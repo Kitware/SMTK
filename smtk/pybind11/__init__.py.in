@@ -76,6 +76,7 @@ def shufflePlugins(pluginList):
         'smtkGeometryPlugin': 2,
         'smtkAttributePlugin': 3,
         'smtkOperationPlugin': 4,
+        'smtkJobPlugin': 5,
 
         'smtkModelPlugin': 6,
         'smtkTaskPlugin': 7,

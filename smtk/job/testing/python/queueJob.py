@@ -22,8 +22,8 @@ relevantPlugins = set([
     'smtkResourcePlugin',
     'smtkAttributePlugin',
     'smtkOperationPlugin',
-    'smtkQtPlugin',
     'smtkJobPlugin',
+    'smtkQtPlugin',
     'smtkPVJobExtPlugin'
 ])
 
