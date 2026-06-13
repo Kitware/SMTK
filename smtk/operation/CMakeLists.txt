@@ -6,7 +6,6 @@ set(operationClasses
   Hints
   Launcher
   MarkGeometry
-  JobSpecs
   Manager
   Metadata
   MetadataContainer
@@ -51,7 +50,6 @@ set(operationXML
   Hints.xml
   Operation.xml
   Result.xml
-  JobSpecs.xml
 )
 
 set(operationOperators

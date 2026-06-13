@@ -37,8 +37,6 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindRegistrar.h"
 
-#include "PybindJobSpecs.h"
-
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
 PYBIND11_MODULE(_smtkPybindOperation, operation)
@@ -86,9 +84,6 @@ PYBIND11_MODULE(_smtkPybindOperation, operation)
       }
     )
     ;
-
-  // Add functions for job specifications to the module.
-  pybind11_init_smtk_operation_JobSpecs(operation);
 
   py::class_< smtk::operation::Registrar > smtk_operation_Registrar = pybind11_init_smtk_operation_Registrar(operation);
 }

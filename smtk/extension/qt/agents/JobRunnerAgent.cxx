@@ -17,7 +17,6 @@
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/StringItem.h"
-#include "smtk/operation/JobSpecs.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Observer.h"
 #include "smtk/operation/Operation.h"
@@ -90,29 +89,21 @@ public:
     if (scripts) { return; }
 #endif
 
+#if 0
     auto& scriptConfig = m_configuration["scripts"];
     scriptConfig = nlohmann::json::array();
-    smtk::operation::visitJobSpecs(
-      result,
-      "JobSpec",
-      [&](
-        const smtk::attribute::ReferenceItem::Ptr& tasks,
-        const std::filesystem::path& caseDirectory,
-        smtk::string::Token jobLocation,
-        smtk::string::Token jobQueueing,
-        smtk::string::Token jobLauncher,
-        const std::vector<std::pair<std::filesystem::path, std::vector<std::filesystem::path>>>&
-          scriptLogs) {
+    smtk::operation::visitJobSpecs(result, "JobSpec", [&](
+      const smtk::attribute::ReferenceItem::Ptr& tasks,
+      const std::filesystem::path& caseDirectory,
+      smtk::string::Token jobLocation,
+      smtk::string::Token jobQueueing,
+      smtk::string::Token jobLauncher,
+      const std::vector<std::pair<std::filesystem::path, std::vector<std::filesystem::path>>>& scriptLogs)
+      {
         // No task:
-        if (!tasks || !tasks->isSet())
-        {
-          return;
-        }
+        if (!tasks || !tasks->isSet()) { return; }
         // Task doesn't match parent task:
-        if (tasks->value().get() != m_self->parent())
-        {
-          return;
-        }
+        if (tasks->value().get() != m_self->parent()) { return; }
 
         m_configuration["case-directory"] = caseDirectory;
         m_configuration["job-location"] = jobLocation.data();
@@ -120,15 +111,18 @@ public:
         m_configuration["job-launcher"] = jobLauncher.data();
         for (auto [scriptPath, logPaths] : scriptLogs)
         {
-          scriptConfig.emplace_back<nlohmann::json>(
-            { { "script", scriptPath }, { "logs", logPaths } });
+          scriptConfig.emplace_back<nlohmann::json>({
+            { "script", scriptPath },
+            { "logs", logPaths }});
         }
-        std::cout << "Case " << caseDirectory << " scripts (" << jobLocation.data() << ", "
-                  << jobQueueing.data() << ", " << jobLauncher.data() << " (" << scriptLogs.size()
-                  << "))"
-                  << "start job"
-                  << "\n";
-      });
+        std::cout
+          << "Case " << caseDirectory << " scripts (" << jobLocation.data() << ", "
+          << jobQueueing.data() << ", " << jobLauncher.data() << " (" << scriptLogs.size() << "))"
+          << "start job"
+          << "\n";
+      }
+    );
+#endif
   }
 
   void updateConfiguration(const nlohmann::json& config)

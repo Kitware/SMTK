@@ -4,6 +4,5 @@
     <include href="smtk/operation/Operation.xml"/>
     <include href="smtk/operation/Result.xml"/>
     <include href="smtk/operation/Hints.xml"/>
-    <include href="smtk/operation/JobSpecs.xml"/>
   </Definitions>
 </SMTK_AttributeResource>

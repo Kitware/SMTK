@@ -79,7 +79,6 @@ set(QAttrLibSrcs
 
   agents/JobRunnerAgent.cxx
 
-  # job/Runner.cxx
   job/ShellQueue.cxx
   job/ContainerQueue.cxx
 
@@ -203,7 +202,6 @@ set(QAttrLibMocHeaders
 
   agents/JobRunnerAgent.h
 
-  # job/Runner.h
   job/ShellQueue.h
   job/ContainerQueue.h
 

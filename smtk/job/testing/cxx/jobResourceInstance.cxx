@@ -122,7 +122,7 @@ public:
     jobId = job->id();
 
     auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-    auto jobsItem = result->findComponent("jobsToSubmit");
+    auto jobsItem = result->findComponent("created");
     jobsItem->appendValue(job);
     return result;
   }

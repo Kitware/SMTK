@@ -192,7 +192,7 @@ public:
     std::cout << "Created job " << job->id() << "\n";
 
     auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
-    auto jobsItem = result->findComponent("jobsToSubmit");
+    auto jobsItem = result->findComponent("created");
     jobsItem->appendValue(job);
     return result;
   }

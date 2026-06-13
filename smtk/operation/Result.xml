@@ -24,18 +24,5 @@
         <Resource Name="smtk::attribute::Resource" Filter="attribute[type='hint']"/>
       </Accepts>
     </Component>
-    <Component Name="jobsToSubmit" NumberOfRequiredValues="0" Extensible="1" HoldReference="1">
-      <!--
-        This is an ordered list of jobs to start. Tasks with a JobRunnnerAgent may
-        provide information on long-running offline processes to start when an operation
-        completes by adding an attribute here. The agent will then launch the job and block
-        the task from completion until the job succeeds.
-      -->
-      <Accepts>
-        <!-- Any attribute with "JobSpec" as its base type can be added. -->
-        <!-- Resource Name="smtk::attribute::Resource" Filter="attribute[type='JobSpec']"/ -->
-        <Resource Name="smtk::job::Queue" Filter="smtk::job::Job"/>
-      </Accepts>
-    </Component>
   </ItemDefinitions>
 </AttDef>

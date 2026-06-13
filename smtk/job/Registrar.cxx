@@ -45,7 +45,7 @@ void attachJobToQueue(
   {
     return;
   }
-  auto jobsItem = result->findComponent("jobsToSubmit");
+  auto jobsItem = result->findComponent("created");
   if (jobsItem && jobsItem->numberOfValues() > 0)
   {
     if (!operationManager)

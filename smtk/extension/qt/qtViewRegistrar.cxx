@@ -14,7 +14,6 @@
 #include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/TypeAndColorBadge.h"
 #include "smtk/extension/qt/agents/JobRunnerAgent.h"
-// #include "smtk/extension/qt/job/Runner.h"
 #include "smtk/extension/qt/diagram/qtComponentNode.h"
 #include "smtk/extension/qt/diagram/qtConnectMode.h"
 #include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
@@ -155,14 +154,6 @@ void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers
 #if SMTK_ENABLE_PYTHON_WRAPPING
   smtk::operation::PyOperation::runOnMainThread =
     [](smtk::operation::PyOperation::SimpleFunction fn) { fn(); };
-#endif
-
-#if 0
-  if (--g_haveRunner <= 0)
-  {
-    delete g_runner;
-    g_runner = nullptr;
-  }
 #endif
 }
 
