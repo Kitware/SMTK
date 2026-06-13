@@ -143,6 +143,11 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       resourceManager,
       operationManager,
       jobManager);
+    g_queuesToRemove.insert(shellQueue);
+    if (jobManager->queues().manage(shellQueue))
+    {
+      jobManager->activeQueue().switchTo(shellQueue.get());
+    }
   }
 #endif
 }
