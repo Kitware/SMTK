@@ -20,7 +20,10 @@ namespace smtk
 namespace job
 {
 
-Job::Job() {}
+Job::Job()
+  : m_id(smtk::common::UUID::random())
+{
+}
 
 Job::~Job() = default;
 

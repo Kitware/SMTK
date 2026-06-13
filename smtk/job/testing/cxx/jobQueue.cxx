@@ -171,7 +171,6 @@ public:
     this->writeFile(caseDir, "logs/progress", "-1");
     std::cerr << "Case \"" << caseDir.string() << "\"\n";
 
-    job->setId(smtk::common::UUID::random());
     g_jobId = job->id();
     job->setSize(1);            // Don't run in parallel
     job->setAutoSchedule(true); // Schedule job as soon as added to the queue.
