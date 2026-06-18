@@ -2410,6 +2410,7 @@
         <FileListDomain name="folder"/>
         <Hints>
           <UseDirectoryName />
+          <SaveInQSettings both="1"/>
         </Hints>
       </StringVectorProperty>
       <StringVectorProperty

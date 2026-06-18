@@ -87,7 +87,9 @@ PathsHelperWindows::PathsHelperWindows()
     {
       homeDir = baseDir;
     }
+    Paths::s_userHomeDirectory = homeDir;
     Paths::s_userConfigurationDirectory = homeDir / ".config";
+    Paths::s_userDocumentDirectory = homeDir / "Documents";
   }
 }
 

@@ -17,6 +17,10 @@
 #include <cstdlib>
 #include <sstream>
 
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 namespace smtk
 {
 namespace common
@@ -73,6 +77,23 @@ PathsHelperUnix::PathsHelperUnix()
     }
     Paths::s_userConfigurationDirectory = cfgDir;
   }
+  {
+    auto* pw = getpwuid(getuid());
+    const char* homePath = pw->pw_dir;
+    if (homePath)
+    {
+      Paths::s_userHomeDirectory = std::string(homePath);
+    }
+    else
+    {
+      homePath = getenv("HOME");
+      if (homePath)
+      {
+        Paths::s_userHomeDirectory = std::string(homePath);
+      }
+    }
+  }
+  Paths::s_userDocumentDirectory = Paths::s_userHomeDirectory / "Documents";
 }
 
 void PathsHelperUnix::AddSplitPaths(std::set<std::string>& split, const std::string& src)

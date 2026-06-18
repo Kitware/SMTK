@@ -18,6 +18,10 @@
 #import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 namespace smtk
 {
 namespace common
@@ -75,6 +79,23 @@ PathsHelperMacOSX::PathsHelperMacOSX()
 
     Paths::s_userConfigurationDirectory = path;
   }
+  {
+    auto* pw = getpwuid(getuid());
+    const char* homePath = pw->pw_dir;
+    if (homePath)
+    {
+      Paths::s_userHomeDirectory = std::string(homePath);
+    }
+    else
+    {
+      homePath = getenv("HOME");
+      if (homePath)
+      {
+        Paths::s_userHomeDirectory = std::string(homePath);
+      }
+    }
+  }
+  Paths::s_userDocumentDirectory = Paths::s_userHomeDirectory / "Documents";
 }
 
 } // namespace common

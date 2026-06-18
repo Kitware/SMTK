@@ -76,9 +76,24 @@ public:
 
   std::string toplevelDirectoryConfigured();
 
+  std::filesystem::path userHomeDirectory();
+
   /// Return a per-user configuration directory to hold settings and user preferences.
   std::filesystem::path userConfigurationDirectory(
     const std::string& applicationName = std::string("smtk"),
+    bool createIfMissing = true);
+
+  /// Return a per-user "document" directory path.
+  ///
+  /// Most operating systems place a folder named "Documents" in
+  /// the user's home directory. This method will return that by
+  /// default or create a subdirectory inside it if \a applicationName
+  /// is non-empty.
+  ///
+  /// Applications can use this as a default directory for SMTK
+  /// resources (especially projects).
+  std::filesystem::path userDocumentDirectory(
+    const std::string& applicationName = std::string(""),
     bool createIfMissing = true);
 
   void forceUpdate();
@@ -102,7 +117,9 @@ protected:
   static std::string s_toplevelDir;
   static std::string s_bundleDir;
   static std::vector<std::string> s_workerSearchPaths;
+  static std::filesystem::path s_userHomeDirectory;
   static std::filesystem::path s_userConfigurationDirectory;
+  static std::filesystem::path s_userDocumentDirectory;
 };
 
 } // namespace common
