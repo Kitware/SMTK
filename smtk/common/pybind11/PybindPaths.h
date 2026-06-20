@@ -42,7 +42,7 @@ inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::mod
     .def("userConfigurationDirectory", &smtk::common::Paths::userConfigurationDirectory,
       py::arg("application_name") = "smtk", py::arg("create_if_missing") = true)
     .def("userDocumentDirectory", &smtk::common::Paths::userDocumentDirectory,
-      py::arg("application_name") = "smtk", py::arg("create_if_missing") = true)
+      py::arg("application_name") = "", py::arg("create_if_missing") = true)
     ;
   return instance;
 }
