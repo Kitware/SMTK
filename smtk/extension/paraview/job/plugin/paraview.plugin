@@ -5,3 +5,6 @@ DESCRIPTION
 REQUIRES_MODULES
   smtkPVJobExt
   smtkPVServerExt
+  ParaView::pqApplicationComponents
+  ParaView::pqComponents
+  ParaView::qttesting

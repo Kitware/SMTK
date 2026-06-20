@@ -13,9 +13,19 @@
 
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/job/ContainerQueue.h"
+#include "smtk/extension/qt/qtTypeDeclarations.h"
 
 #include "smtk/job/Manager.h"
 #include "smtk/job/Queue.h"
+
+#include "pqApplicationCore.h"
+#include "pqPropertyLinks.h"
+#include "pqServer.h"
+#include "pqServerManagerModel.h"
+#include "vtkSMProxy.h"
+#include "vtkSMSessionProxyManager.h"
+
+#include <QTimer>
 
 #include <set>
 
@@ -33,7 +43,60 @@ namespace
 {
 
 // Queues this registrar has added to the job manager (for removal upon unregistration).
-std::set<std::shared_ptr<smtk::job::Queue>> g_queuesToRemove;
+std::set<std::shared_ptr<smtk::qt::job::ContainerQueue>> g_queuesToRemove;
+
+pqPropertyLinks g_projectRootLink;
+
+// This is called whenever a new pqServer attaches and monitors the SMTK settings for
+// changes. If the "ProjectsRootFolder" property is modified, any queues created by
+// this registrar have their "caseDirectoryMountPoint" updated to match so that the
+// host OS maps the "ProjectsRootFolder" to its VM (allowing individual containers to
+// access each job's case directory).
+void serverConnect(pqServer* server)
+{
+  vtkSMProxy* smtkProxy = server->proxyManager()->GetProxy("settings", "SMTKSettings");
+  if (!smtkProxy)
+  {
+    return;
+  }
+  g_projectRootLink.removeAllPropertyLinks();
+  for (const auto& queue : g_queuesToRemove)
+  {
+    g_projectRootLink.addPropertyLink(
+      queue.get(),
+      "caseDirectoryMountPoint",
+      SIGNAL(caseDirectoryMountPointChanging(
+        const std::filesystem::path&, const std::filesystem::path&)),
+      smtkProxy,
+      smtkProxy->GetProperty("ProjectsRootFolder"));
+  }
+}
+
+// When a server disconnects, disconnect any property links.
+void serverDisconnect(pqServer* server)
+{
+  g_projectRootLink.removeAllPropertyLinks();
+}
+
+// This is called to reset the container queue's virtual machine
+// (WSL2/HyperV on Windows, ??? on MacOS) as the "ProjectsRootFolder"
+// is modified by users in the settings dialog.
+void syncSettingsProjectsRootFolder()
+{
+  auto* core = pqApplicationCore::instance();
+  if (!core)
+  {
+    QTimer::singleShot(50 /*ms*/, &syncSettingsProjectsRootFolder);
+  }
+  QObject::connect(
+    core->getServerManagerModel(), &pqServerManagerModel::serverReady, &serverConnect);
+  QObject::connect(
+    core->getServerManagerModel(), &pqServerManagerModel::aboutToRemoveServer, &serverDisconnect);
+  if (auto* server = core->getActiveServer())
+  {
+    serverConnect(server);
+  }
+}
 
 } // anonymous namespace
 
@@ -68,10 +131,12 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
         operationManager,
         jobManager);
     g_queuesToRemove.insert(containerQueue);
+    g_projectRootLink.setAutoUpdateVTKObjects(true);
     if (jobManager->queues().manage(containerQueue))
     {
       jobManager->activeQueue().switchTo(containerQueue.get());
     }
+    syncSettingsProjectsRootFolder();
   }
 }
 
@@ -92,7 +157,10 @@ void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager)
   (void)jobManager;
 }
 
-void Registrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager) {}
+void Registrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager)
+{
+  (void)jobManager;
+}
 
 } // namespace job
 } // namespace paraview

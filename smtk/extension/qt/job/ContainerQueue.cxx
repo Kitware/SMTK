@@ -205,8 +205,12 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
       break;
     case "docker"_hash:
     {
-      QString userArg = QString("--user=%1:%2").arg(m_p->m_dockerUserId).arg(m_p->m_dockerGroupId);
-      processArguments << userArg;
+      if (m_p->m_dockerUserId >= 0 && m_p->m_dockerGroupId >= 0)
+      {
+        QString userArg =
+          QString("--user=%1:%2").arg(m_p->m_dockerUserId).arg(m_p->m_dockerGroupId);
+        processArguments << userArg;
+      }
     }
     break;
   }
@@ -336,6 +340,38 @@ bool ContainerQueue::pullContainerImage(const std::string& imageUrl)
   return (proc.exitStatus() == QProcess::ExitStatus::NormalExit && proc.exitCode() == 0);
 }
 
+bool ContainerQueue::setCaseDirectoryMountPoint(const std::filesystem::path& mountPoint)
+{
+  auto prev = m_caseDirectoryMountPoint;
+  if (prev == mountPoint)
+  {
+    return false;
+  }
+  m_caseDirectoryMountPoint = mountPoint;
+  this->projectRootChanged(mountPoint);
+  Q_EMIT caseDirectoryMountPointChanging(prev, m_caseDirectoryMountPoint);
+  return true;
+}
+
+QString ContainerQueue::caseDirectoryMountPointAsString()
+{
+  return QString::fromStdString(m_caseDirectoryMountPoint.string());
+}
+
+bool ContainerQueue::setCaseDirectoryMountPointAsString(const QString& mountPoint)
+{
+  std::filesystem::path path = mountPoint.toStdString();
+  return this->setCaseDirectoryMountPoint(path);
+}
+
+void ContainerQueue::projectRootChanged(const std::filesystem::path& nextProjectRoot)
+{
+  // TODO: Restart podman machine (on Windows and MacOS only) with a new "-v" option
+  //       mapping ProjectsRootFolder into the machine.
+  //       This allows containers running on the machine to mount case directories.
+  std::cerr << "TODO: Update podman machine\n";
+}
+
 smtk::string::Token ContainerQueue::engine() const
 {
   return m_p->m_engine;
@@ -366,6 +402,36 @@ bool ContainerQueue::setEngineExecutable(std::filesystem::path engineExecutable)
     return true;
   }
   return false;
+}
+
+int ContainerQueue::dockerUID() const
+{
+  return m_p->m_dockerUserId;
+}
+
+bool ContainerQueue::setDockerUID(int uid)
+{
+  if (uid == m_p->m_dockerUserId || uid < 0)
+  {
+    return false;
+  }
+  m_p->m_dockerUserId = uid;
+  return true;
+}
+
+int ContainerQueue::dockerGID() const
+{
+  return m_p->m_dockerGroupId;
+}
+
+bool ContainerQueue::setDockerGID(int gid)
+{
+  if (gid == m_p->m_dockerGroupId || gid < 0)
+  {
+    return false;
+  }
+  m_p->m_dockerGroupId = gid;
+  return true;
 }
 
 void ContainerQueue::fileUpdated(const QString& path)

@@ -12,4 +12,6 @@ vtk_module_link(smtkPVJobExt
     VTK::CommonDataModel
     smtkCore
     smtkQtExt
+    ParaView::qttesting
+    ParaView::pqComponents
 )

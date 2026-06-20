@@ -5,6 +5,7 @@ smtk_add_plugin(smtkPVJobExtPlugin
   REGISTRAR
     smtk::extension::paraview::job::Registrar
   MANAGERS
+    # Order is significant. DO NOT REORDER!
     smtk::resource::Manager
     smtk::operation::Manager
     smtk::job::Manager
@@ -13,5 +14,9 @@ smtk_add_plugin(smtkPVJobExtPlugin
     VERSION 1.0
     REQUIRED_ON_SERVER
     REQUIRED_ON_CLIENT
-    MODULES smtkPVJobExt
+    MODULES
+      smtkPVJobExt
+      ParaView::pqApplicationComponents
+      ParaView::pqComponents
+      ParaView::qttesting
 )

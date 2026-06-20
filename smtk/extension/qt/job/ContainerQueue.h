@@ -11,7 +11,8 @@
 #define smtk_qt_job_ContainerQueue_h
 
 #include "smtk/common/Managers.h"
-#include "smtk/extension/qt/Exports.h" // For export macro.
+#include "smtk/extension/qt/Exports.h"            // For export macro.
+#include "smtk/extension/qt/qtTypeDeclarations.h" // So property links work.
 #include "smtk/job/DatabaseQueue.h"
 
 #include <QObject>
@@ -32,6 +33,10 @@ class SMTKQTEXT_EXPORT ContainerQueue
   : public QObject
   , public smtk::job::DatabaseQueue
 {
+  Q_OBJECT
+  Q_PROPERTY(QString caseDirectoryMountPoint READ caseDirectoryMountPointAsString WRITE
+               setCaseDirectoryMountPointAsString);
+
 public:
   smtkTypeMacro(smtk::qt::job::ContainerQueue);
   smtkSuperclassMacro(smtk::job::DatabaseQueue);
@@ -98,7 +103,12 @@ public:
   /// Pull the named container image.
   bool pullContainerImage(const std::string& imageUrl);
 
-protected Q_SLOTS:
+public Q_SLOTS:
+  /// When users change the ProjectsRootFolder setting (in the Edit→Settings dialog),
+  /// this slot is called to cycle the virtual machine so that containers can mount
+  /// case files in new projects. Note this will halt existing jobs and (if they are
+  /// not in a subdirectory of the new ProjectsRootFolder) make those jobs inaccessible.
+  void projectRootChanged(const std::filesystem::path& nextProjectRoot);
 
   ///@{
   /// Get the container engine to use.
@@ -108,6 +118,14 @@ protected Q_SLOTS:
   /// In the future, singularity/apptainer may also be supported.
   smtk::string::Token engine() const;
   ///@}
+
+Q_SIGNALS:
+  /// This signal is emitted when the case directory mount point is being changed.
+  void caseDirectoryMountPointChanging(
+    const std::filesystem::path& prev,
+    const std::filesystem::path& next);
+
+protected Q_SLOTS:
 
   ///@{
   /// Set/get the path to the container engine executable.
@@ -124,9 +142,9 @@ protected Q_SLOTS:
   ///
   /// Note that podman ignores these settings in favor of "--userns=keep-id".
   int dockerUID() const;
-  bool setDockerUID(int uid) const;
+  bool setDockerUID(int uid);
   int dockerGID() const;
-  bool setDockerGID(int gid) const;
+  bool setDockerGID(int gid);
   ///@}
 
   ///@{
@@ -136,8 +154,10 @@ protected Q_SLOTS:
   /// This is used to compute the full path to the job script when running the container.
   ///
   /// This must be non-empty (and valid) before jobs are run.
-  std::filesystem::path caseDirectoryMountPoint() const;
+  std::filesystem::path caseDirectoryMountPoint() const { return m_caseDirectoryMountPoint; }
   bool setCaseDirectoryMountPoint(const std::filesystem::path& mountPoint);
+  QString caseDirectoryMountPointAsString();
+  bool setCaseDirectoryMountPointAsString(const QString& mountPoint);
   ///@}
 
   ///@{
@@ -150,6 +170,7 @@ protected Q_SLOTS:
 private:
   class Internal;
   std::unique_ptr<Internal> m_p;
+  std::filesystem::path m_caseDirectoryMountPoint;
 };
 
 } // namespace job
