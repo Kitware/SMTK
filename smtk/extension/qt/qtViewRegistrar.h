@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtManager.h"
 #include "smtk/job/Manager.h"
 #include "smtk/job/Registrar.h"
+#include "smtk/operation/Manager.h"
 #include "smtk/operation/Registrar.h"
 #include "smtk/task/Manager.h"
 #include "smtk/view/Manager.h"
@@ -30,6 +31,9 @@ public:
 
   static void registerTo(const smtk::common::Managers::Ptr&);
   static void unregisterFrom(const smtk::common::Managers::Ptr&);
+
+  static void registerTo(const smtk::operation::Manager::Ptr&);
+  static void unregisterFrom(const smtk::operation::Manager::Ptr&);
 
   static void registerTo(const smtk::task::Manager::Ptr&);
   static void unregisterFrom(const smtk::task::Manager::Ptr&);

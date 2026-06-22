@@ -10,10 +10,17 @@
 
 #include "smtk/extension/qt/job/ContainerQueue.h"
 
+#include "smtk/extension/qt/job/UpdateContainerQueueMachine.h"
+
 #include "smtk/job/Definition.h"
 #include "smtk/job/Job.h"
 #include "smtk/job/Queue.h"
+#include "smtk/job/db/BindingText.h"
+#include "smtk/job/db/Query.h"
 #include "smtk/job/operators/JobUpdated.h"
+
+#include "smtk/operation/Manager.h"
+#include "smtk/operation/Operation.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -24,6 +31,8 @@
 
 #include <cstdlib> // For std::system
 #include <fstream>
+
+using namespace smtk::job::db;
 
 namespace smtk
 {
@@ -107,7 +116,38 @@ ContainerQueue::ContainerQueue(
 {
 }
 
-ContainerQueue::~ContainerQueue() {}
+ContainerQueue::~ContainerQueue()
+{
+  if (m_removeQueueOnDestruction)
+  {
+    // std::cerr << "Destroying virtual machine for " << this->name() << "\n";
+    {
+      QProcess proc;
+      QStringList processArguments;
+      proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
+      processArguments << "machine"
+                       << "stop" << QString::fromStdString(this->name());
+      proc.setArguments(processArguments);
+      proc.start();
+      proc.waitForFinished(-1);
+      // std::cerr << proc.readAllStandardOutput().toStdString() << "\n";
+      // std::cerr << proc.readAllStandardError().toStdString() << "\n";
+    }
+    {
+      QProcess proc;
+      QStringList processArguments;
+      proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
+      processArguments << "machine"
+                       << "rm"
+                       << "-f" << QString::fromStdString(this->name());
+      proc.setArguments(processArguments);
+      proc.start();
+      proc.waitForFinished(-1);
+      // std::cerr << proc.readAllStandardOutput().toStdString() << "\n";
+      // std::cerr << proc.readAllStandardError().toStdString() << "\n";
+    }
+  }
+}
 
 bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
 {
@@ -340,36 +380,52 @@ bool ContainerQueue::pullContainerImage(const std::string& imageUrl)
   return (proc.exitStatus() == QProcess::ExitStatus::NormalExit && proc.exitCode() == 0);
 }
 
-bool ContainerQueue::setCaseDirectoryMountPoint(const std::filesystem::path& mountPoint)
+bool ContainerQueue::setRootJobDirectory(const std::filesystem::path& mountPoint)
 {
-  auto prev = m_caseDirectoryMountPoint;
+  auto prev = m_rootJobDirectory;
   if (prev == mountPoint)
   {
     return false;
   }
-  m_caseDirectoryMountPoint = mountPoint;
+  m_rootJobDirectory = mountPoint;
   this->projectRootChanged(mountPoint);
-  Q_EMIT caseDirectoryMountPointChanging(prev, m_caseDirectoryMountPoint);
+  Q_EMIT rootJobDirectoryChanging(prev, m_rootJobDirectory);
   return true;
 }
 
-QString ContainerQueue::caseDirectoryMountPointAsString()
+QString ContainerQueue::rootJobDirectoryAsString()
 {
-  return QString::fromStdString(m_caseDirectoryMountPoint.string());
+  return QString::fromStdString(m_rootJobDirectory.string());
 }
 
-bool ContainerQueue::setCaseDirectoryMountPointAsString(const QString& mountPoint)
+bool ContainerQueue::setRootJobDirectoryAsString(const QString& mountPoint)
 {
   std::filesystem::path path = mountPoint.toStdString();
-  return this->setCaseDirectoryMountPoint(path);
+  return this->setRootJobDirectory(path);
 }
 
 void ContainerQueue::projectRootChanged(const std::filesystem::path& nextProjectRoot)
 {
-  // TODO: Restart podman machine (on Windows and MacOS only) with a new "-v" option
-  //       mapping ProjectsRootFolder into the machine.
-  //       This allows containers running on the machine to mount case directories.
-  std::cerr << "TODO: Update podman machine\n";
+  // Restart podman machine (on Windows and MacOS only) with a new "-v" option
+  // mapping ProjectsRootFolder into the machine.
+  // This allows containers running on the machine to mount case directories.
+  std::cerr << "Updating podman machine\n";
+  bool didLaunch = false;
+  if (auto operationManager = this->operationManager())
+  {
+    auto op = operationManager->create<UpdateContainerQueueMachine>();
+    if (op->parameters()->associate(shared_from_this()))
+    {
+      operationManager->launchers()(op);
+      didLaunch = true;
+    }
+  }
+  if (!didLaunch)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not launch a job to reset " << this->name() << "'s machine.");
+  }
 }
 
 smtk::string::Token ContainerQueue::engine() const
@@ -444,6 +500,40 @@ void ContainerQueue::directoryUpdated(const QString& path)
 {
   // std::cerr << "Directory Path \"" << path.toStdString() << "\" updated.\n";
   m_p->dispatchUpdate(path);
+}
+
+bool ContainerQueue::setQueueOnline(bool online)
+{
+  if (m_queueOnline == online)
+  {
+    return false;
+  }
+  m_queueOnline = online;
+  return true;
+}
+
+bool ContainerQueue::checkQueueRoot(const std::filesystem::path& root)
+{
+  std::string directory;
+  sqlQuery query(m_db);
+  query << "select value from queue_metadata where queue=" << m_queueId
+        << " and key='root_job_directory';";
+  query.bind<sqlBindingText<std::string>>(0, directory);
+  if (!query.execute() || directory.empty())
+  {
+    std::cerr << "checkQueueRoot indicates update required.\n";
+    return false;
+  }
+  std::cerr << "checkQueueRoot indicates update required? " << (directory == root.string()) << "\n";
+  return (directory == root.string());
+}
+
+bool ContainerQueue::setMetadata(const std::string& key, const std::string& value)
+{
+  sqlQuery query(m_db);
+  query << "insert into queue_metadata (queue, key, value) values (" << m_queueId << ",'" << key
+        << "','" << value << "');";
+  return query.execute();
 }
 
 } // namespace job

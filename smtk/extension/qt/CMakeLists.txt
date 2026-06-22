@@ -264,6 +264,26 @@ set(QAttrLibHeaders
   qtWorkletPalette.h
 )
 
+set(qtOperators
+  job/UpdateContainerQueueMachine
+)
+
+foreach (operator ${qtOperators})
+  list(APPEND QAttrLibHeaders ${operator}.h)
+  list(APPEND QAttrLibSrcs ${operator}.cxx)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt")
+    smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
+      HEADER_OUTPUT headerName)
+    list(APPEND _qtDependencies ${headerName})
+    message("Qt operator ${operator} generates ${headerName}")
+  endif()
+endforeach()
+add_custom_target(qtGenHeaders
+  DEPENDS
+    ${_qtDependencies}
+)
+# set(qtDependencies ${_qtDependencies} PARENT_SCOPE)
+
 # Put the contents of this file in a string in a header, ending in `_json.h`.
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
   TYPE "_json"
@@ -294,6 +314,10 @@ add_library(smtkQtExt
   qtFonts.qrc
   ${rpJsonHeader}
   ${tpXmlHeader}
+)
+# Ensure operator XML files are created before compiling operations:
+add_dependencies(smtkQtExt
+  qtGenHeaders
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)

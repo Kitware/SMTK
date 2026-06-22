@@ -49,7 +49,7 @@ pqPropertyLinks g_projectRootLink;
 
 // This is called whenever a new pqServer attaches and monitors the SMTK settings for
 // changes. If the "ProjectsRootFolder" property is modified, any queues created by
-// this registrar have their "caseDirectoryMountPoint" updated to match so that the
+// this registrar have their "rootJobDirectory" updated to match so that the
 // host OS maps the "ProjectsRootFolder" to its VM (allowing individual containers to
 // access each job's case directory).
 void serverConnect(pqServer* server)
@@ -64,9 +64,8 @@ void serverConnect(pqServer* server)
   {
     g_projectRootLink.addPropertyLink(
       queue.get(),
-      "caseDirectoryMountPoint",
-      SIGNAL(caseDirectoryMountPointChanging(
-        const std::filesystem::path&, const std::filesystem::path&)),
+      "rootJobDirectory",
+      SIGNAL(rootJobDirectoryChanging(const std::filesystem::path&, const std::filesystem::path&)),
       smtkProxy,
       smtkProxy->GetProperty("ProjectsRootFolder"));
   }
@@ -105,6 +104,8 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   auto* smtkSettings = vtkSMTKSettings::GetInstance();
   const char* cep = smtkSettings->GetContainerEnginePath();
   std::string containerEnginePath = cep && cep[0] ? cep : "podman";
+  const char* prf = smtkSettings->GetProjectsRootFolder();
+  std::string projectsRootFolder = (prf && prf[0] ? prf : "");
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
@@ -127,6 +128,9 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
         containerEnginePath,
         /* remove queue on destruction */ false,
         smtk::common::UUID("d865c244-55c1-4b37-8d91-e179196db51a"),
+        projectsRootFolder,
+        /* docker UID */ -1,
+        /* docker GID */ -1,
         resourceManager,
         operationManager,
         jobManager);

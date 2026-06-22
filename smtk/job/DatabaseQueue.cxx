@@ -40,6 +40,7 @@ std::vector<std::string> sqlInstallSchema{
   // --- Drop existing tables ---
   R"(drop table if exists schema;)",
   R"(drop table if exists queues;)",
+  R"(drop table if exists queue_metadata;)",
   R"(drop table if exists tags;)",
   R"(drop table if exists job_types;)",
   R"(drop table if exists job_stages;)",
@@ -66,6 +67,15 @@ std::vector<std::string> sqlInstallSchema{
   R"(create table tags (
       queue integer key,
       tag text key,
+      FOREIGN KEY(queue) REFERENCES queues(id) ON DELETE CASCADE
+    );)",
+  // Add a table to hold metadata (key-value pairs) on queues.
+  // ContainerQueue uses this to record the rootJobDirectory value
+  // that the most recent machine was started with.
+  R"(create table queue_metadata (
+      queue integer key,
+      key text key,
+      value text,
       FOREIGN KEY(queue) REFERENCES queues(id) ON DELETE CASCADE
     );)",
   // Add a table of job-type information. As each job is added, this

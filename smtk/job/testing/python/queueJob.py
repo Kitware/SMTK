@@ -13,6 +13,8 @@
 import os
 import sys
 import unittest
+import shutil
+import tempfile
 
 import smtk
 import smtk.plugin
@@ -92,14 +94,9 @@ class TestQueueJob(smtk.testing.TestCase):
             temp_dir.cleanup()
 
     def test_container_queue_job(self):
-        import tempfile
-        try:
-            temp_dir = tempfile.TemporaryDirectory(delete=False)
-            delete_dir = True
-        except TypeError:
-            # Older pythons (3.12) do not accept delete=False
-            temp_dir = tempfile.TemporaryDirectory()
-            delete_dir = False
+        docPath = str(smtk.common.Paths().userDocumentDirectory(
+            'SMTK/Testing/testQueueJob_'))
+        temp_dir = tempfile.mkdtemp('_case', docPath)
         job = smtk.job.Job.create()
         job.setJobType(self.job_def)
         os.makedirs(os.path.join(temp_dir.name, 'logs'))
@@ -125,8 +122,7 @@ class TestQueueJob(smtk.testing.TestCase):
         queue.schedule(job)
         print('job queue id', job.queueId())
         # TODO: Wait for job to complete
-        if delete_dir:
-            temp_dir.cleanup()
+        shutil.rmtree(temp_dir)
 
 
 if __name__ == '__main__':

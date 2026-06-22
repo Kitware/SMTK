@@ -35,6 +35,9 @@ pybind11_init_smtk_qt_job_ContainerQueue(py::module &m)
         const std::filesystem::path& containerEngineExecutable,
         bool removeQueueOnDestruction,
         const std::string& uid,
+        const std::string& rootJobDir,
+        int dockerUID,
+        int dockerGID,
         const std::shared_ptr<smtk::resource::Manager>& resourceManager,
         const std::shared_ptr<smtk::operation::Manager>& operationManager,
         const std::shared_ptr<smtk::job::Manager>& jobManager
@@ -44,7 +47,8 @@ pybind11_init_smtk_qt_job_ContainerQueue(py::module &m)
         for (const auto& tag : tags) { tokenTags.insert(tag); }
         return smtk::qt::job::ContainerQueue::createOrRestore<smtk::qt::job::ContainerQueue>(
           name, description, location, maxJobSize, tokenTags, containerEngineExecutable,
-          removeQueueOnDestruction, smtk::common::UUID(uid), resourceManager, operationManager, jobManager);
+          removeQueueOnDestruction, smtk::common::UUID(uid), rootJobDir, dockerUID, dockerGID,
+          resourceManager, operationManager, jobManager);
       },
       py::arg("name"), py::arg("description"), py::arg("location"),
       py::arg("max_job_size") = 0,
@@ -52,6 +56,9 @@ pybind11_init_smtk_qt_job_ContainerQueue(py::module &m)
       py::arg("container_engine_executable") = std::filesystem::path(),
       py::arg("remove_queue_on_destruction") = false,
       py::arg("uid") = std::string(),
+      py::arg("root_job_directory") = std::string(),
+      py::arg("docker_uid") = -1,
+      py::arg("docker_gid") = -1,
       py::arg("resource_manager") = std::shared_ptr<smtk::resource::Manager>(),
       py::arg("operation_manager") = std::shared_ptr<smtk::operation::Manager>(),
       py::arg("job_manager") = std::shared_ptr<smtk::job::Manager>()

@@ -27,6 +27,7 @@
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/diagram/qtTaskNode.h"
 #include "smtk/extension/qt/job/ShellQueue.h"
+#include "smtk/extension/qt/job/UpdateContainerQueueMachine.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
@@ -68,6 +69,8 @@ namespace extension
 {
 namespace
 {
+using OperationList = std::tuple<smtk::qt::job::UpdateContainerQueueMachine>;
+
 using ViewWidgetList = std::tuple<
   qtAnalysisView,
   qtAssociationView,
@@ -160,6 +163,16 @@ void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers
   smtk::operation::PyOperation::runOnMainThread =
     [](smtk::operation::PyOperation::SimpleFunction fn) { fn(); };
 #endif
+}
+
+void qtViewRegistrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->registerOperations<OperationList>();
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
 }
 
 void qtViewRegistrar::registerTo(const smtk::task::Manager::Ptr& taskManager)

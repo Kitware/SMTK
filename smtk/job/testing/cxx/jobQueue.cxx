@@ -280,11 +280,20 @@ public:
         /* container engine executable */ "podman",
         /* remove queue on destruction */ true,
         smtk::common::UUID("9a63e63d-5eeb-4230-8404-c1d32deb6ce8"),
+        /* root job directory */ SMTK_SCRATCH_DIR,
+        /* docker UID */ -1,
+        /* docker GID */ -1,
         m_resourceManager,
         m_operationManager,
         m_jobManager);
     queue = m_containerQueue;
     std::cout << "Queue " << queue->name() << " is a " << queue->typeName() << "\n";
+    // Update the VM manually (unlike the paraview::job::Registrar, which monitors changes
+    // to the root_job_directory and recreates the VM as needed).
+    auto op = m_operationManager->create("smtk::qt::job::UpdateContainerQueueMachine");
+    op->parameters()->associate(m_containerQueue);
+    op->operate();
+    // Pull an image to run.
     std::cout << "  Pulling image ubuntu:26.04\n";
     m_containerQueue->pullContainerImage("ubuntu:26.04");
     std::cout << "    done\n";
@@ -509,7 +518,7 @@ int jobQueue(int argc, char* argv[])
   QCoreApplication app(argc, argv);
   // Schedule a timeout to cancel the event loop if the test fails.
   // Comment this out when debugging.
-  QTimer::singleShot(7500, &app, &QCoreApplication::quit);
+  QTimer::singleShot(15500, &app, &QCoreApplication::quit);
 
   // Create a QObject we can "run" on the main thread:
   auto* jqt = new JobQueueTest(&app);
