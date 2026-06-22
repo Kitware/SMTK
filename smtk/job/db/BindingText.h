@@ -40,7 +40,8 @@ public:
     }
     m_values->insert(
       m_values->end(),
-      TextType(reinterpret_cast<const char*>(sqlite3_column_text(query.cursor(), m_index))));
+      TextType(reinterpret_cast<const char*>(
+        sqlite3_column_text(query.cursor(), static_cast<int>(m_index)))));
     return true;
   }
 

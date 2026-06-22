@@ -39,7 +39,8 @@ public:
       return false;
     }
     m_values->insert(
-      m_values->end(), static_cast<IntegerType>(sqlite3_column_int(query.cursor(), m_index)));
+      m_values->end(),
+      static_cast<IntegerType>(sqlite3_column_int(query.cursor(), static_cast<int>(m_index))));
     return true;
   }
 

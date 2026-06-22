@@ -10,6 +10,7 @@
 #ifndef smtk_qt_job_operators_UpdateContainerQueueMachine_h
 #define smtk_qt_job_operators_UpdateContainerQueueMachine_h
 
+#include "smtk/extension/qt/Exports.h"
 #include "smtk/operation/XMLOperation.h"
 
 namespace smtk
@@ -25,7 +26,7 @@ namespace job
   * so that the queue's VM can properly map host OS case directories into containers
   * run in the VM.
   */
-class SMTKCORE_EXPORT UpdateContainerQueueMachine : public smtk::operation::XMLOperation
+class SMTKQTEXT_EXPORT UpdateContainerQueueMachine : public smtk::operation::XMLOperation
 {
 public:
   smtkTypeMacro(smtk::qt::job::UpdateContainerQueueMachine);

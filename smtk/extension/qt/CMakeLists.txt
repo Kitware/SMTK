@@ -348,13 +348,14 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt
   LINK_PUBLIC
-  smtkCore
-  Qt5::Core
-  Qt5::Svg
-  Qt5::Widgets
+    smtkCore
+    Qt5::Core
+    Qt5::Svg
+    Qt5::Widgets
   LINK_PRIVATE
-  Threads::Threads
-  ${_extra_private_libraries}
+    Threads::Threads
+    SQLite::SQLite3
+    ${_extra_private_libraries}
   )
 # add_dependencies(smtkQtExt ${rpJsonTarget})
 
