@@ -65,6 +65,7 @@ void attachJobToQueue(
         // lock any queue which they plan to submit jobs to.
         if (auto queue = job->queue())
         {
+          std::cerr << "*** ADDING JOB TO QUEUE *** " << job->id() << "\n";
           auto adder = operationManager->create<smtk::job::AddJobToQueue>();
           adder->parameters()->associate(job);
           operationManager->launchers()(adder);

@@ -264,7 +264,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
-#if 0
+#if 1
   std::cerr << "running \"" << proc.program().toStdString();
   for (const auto& arg : proc.arguments())
   {

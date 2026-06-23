@@ -48,7 +48,9 @@ ScheduleJob::Result ScheduleJob::operateInternal()
     modified |= job->setStatus(smtk::job::Pending);
     std::filesystem::remove(job->caseDirectory() / "logs" / "progress");
   }
+  std::cerr << "*** SCHEDULING\n";
   bool scheduled = job->queue()->schedule(job);
+  std::cerr << "*** SCHEDULED? " << (scheduled ? "Y" : "N") << "\n";
 
   auto result = this->createResult(
     scheduled ? smtk::operation::Operation::Outcome::SUCCEEDED

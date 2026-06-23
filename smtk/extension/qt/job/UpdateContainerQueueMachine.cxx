@@ -146,6 +146,7 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
     proc.setProgram(QString::fromStdString(queue->engineExecutable().string()));
     QString mp = queue->rootJobDirectoryAsString();
     QString mountSpec = mp + ":" + mp;
+    std::cerr << "Creating maching with mount -v " << mountSpec.toStdString() << "\n";
     processArguments << "machine"
                      << "init"
                      << "-v" << mountSpec << QString::fromStdString(queue->name());

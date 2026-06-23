@@ -37,16 +37,19 @@ AddJobToQueue::Result AddJobToQueue::operateInternal()
   auto job = params->associations()->valueAs<smtk::job::Job>();
   if (!job || !job->queue())
   {
+    std::cerr << "ERROR: FAILED TO ADD JOB\n";
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   // Add the job to the queue. This does not schedule it.
   bool modified = job->queue()->add(job);
   modified |= job->setState(smtk::job::State::Unscheduled);
+  std::cerr << "ADDED JOB\n";
   if (job->autoSchedule())
   {
     auto operationManager = this->managers()->get<smtk::operation::Manager::Ptr>();
     if (operationManager)
     {
+      std::cerr << "SCHEDULING JOB\n";
       if (auto op = operationManager->create<smtk::job::ScheduleJob>())
       {
         op->parameters()->associate(job);
@@ -55,6 +58,7 @@ AddJobToQueue::Result AddJobToQueue::operateInternal()
     }
     else
     {
+      std::cerr << "SCHEDULING JOB xxxx\n";
       modified |= job->queue()->schedule(job);
     }
   }
