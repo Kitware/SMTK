@@ -236,8 +236,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
 #endif
   QStringList processArguments;
-  processArguments << "run"
-                   << "-d";
+  processArguments << "run"; // << "-d";
   switch (m_p->m_engine.id())
   {
     case "podman"_hash:
@@ -260,7 +259,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     QString("--volume=%1:%2:z").arg(job->caseDirectory().c_str()).arg(mountPoint.c_str());
   processArguments << volumeArg;
 
-  QString executable = QString::fromStdString((mountPoint / job->script()).string());
+  QString executable = "./" + QString::fromStdString(job->script().string());
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
