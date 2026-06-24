@@ -531,7 +531,7 @@ std::shared_ptr<smtk::job::Definition> DatabaseQueue::fetchJobTypeDataSql(
     // TODO: We could check that the returned index matches stageIndices[ii].
     auto stage = jobType->appendStage(stageNames[ii], stageDescriptions[ii], stageLogPaths[ii]);
     query << "select path from job_artifacts where job_stage=" << stageIds[ii] << ";";
-    std::unordered_set<std::filesystem::path> artifacts;
+    std::set<std::filesystem::path> artifacts;
     query.bindText(0, artifacts);
     if (query.execute())
     {

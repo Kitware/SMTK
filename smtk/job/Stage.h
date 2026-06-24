@@ -104,7 +104,7 @@ public:
   /// These paths are not monitored by the job's queue but once the stage is
   /// complete, they should exist and not have their contents changed for the
   /// remainder of the job.
-  const std::unordered_set<std::filesystem::path>& artifacts() const { return m_artifacts; }
+  const std::set<std::filesystem::path>& artifacts() const { return m_artifacts; }
   bool addArtifact(const std::filesystem::path& path);
   bool removeArtifact(const std::filesystem::path& path);
   bool hasArtifact(const std::filesystem::path& path) const;
@@ -133,7 +133,7 @@ protected:
   std::string m_name;
   std::string m_description;
   std::filesystem::path m_log;
-  std::unordered_set<std::filesystem::path> m_artifacts;
+  std::set<std::filesystem::path> m_artifacts;
 };
 
 } // namespace job

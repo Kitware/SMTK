@@ -102,7 +102,7 @@ echo "2" > logs/progress
 
 smtk::common::UUID g_jobId;
 bool g_expectToCancel{ false };
-std::unordered_set<std::filesystem::path> g_caseDirectories;
+std::set<std::filesystem::path> g_caseDirectories;
 
 class JobCreatorOp : public smtk::operation::Operation
 {
