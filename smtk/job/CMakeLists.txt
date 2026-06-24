@@ -5,6 +5,7 @@ set(jobClasses
   Job
   Queue
   QueueInstances
+  LogParser
   Manager
   Registrar
   Stage
