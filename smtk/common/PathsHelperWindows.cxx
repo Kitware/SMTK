@@ -54,10 +54,18 @@ PathsHelperWindows::PathsHelperWindows()
     if (pos != std::string::npos)
       Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
   }
+  // If we have a valid directory locating the executable, look to see if it
+  // can be used as a "top-level" directory (i.e., does it contain other
+  // subdirectories that will hold workflow data?).
   if (!Paths::s_executableDir.empty())
   {
     std::filesystem::path ed = Paths::s_executableDir;
-    Paths::s_toplevelDir = ed.parent_path().string();
+    // Only accept the directory containing the "bin" directory
+    // if its parent also has "share":
+    if (std::filesystem::exists(ed.parent_path() / "share"))
+    {
+      Paths::s_toplevelDir = ed.parent_path().string();
+    }
   }
 
   if (Paths::s_toplevelDir.empty())

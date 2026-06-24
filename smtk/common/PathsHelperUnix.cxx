@@ -40,11 +40,45 @@ PathsHelperUnix::PathsHelperUnix()
   workerSearch.insert(
     Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
 
+  // Detect the path to the current executable.
+  if (Paths::s_executable.empty())
+  {
+    std::vector<char> buf;
+    buf.resize(512);
+    ssize_t result = 0;
+    for (; result >= 0 && result < static_cast<ssize_t>(buf.size()); buf.resize(buf.size() * 2))
+    {
+      result = readlink("/proc/self/exe", buf.data(), buf.size());
+      if (result > 0 && result < buf.size())
+      {
+        buf[result] = '\0';
+        Paths::s_executable = buf.data();
+        break;
+      }
+    }
+  }
+  // Use the current executable path to determine the directory containing it.
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
   if (pos != std::string::npos)
+  {
     Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
+  }
+  // If we have a valid directory locating the executable, look to see if it
+  // can be used as a "top-level" directory (i.e., does it contain other
+  // subdirectories that will hold workflow data?).
+  if (!Paths::s_executableDir.empty())
+  {
+    std::filesystem::path ed = Paths::s_executableDir;
+    // Only accept the directory containing the "bin" directory
+    // if its parent also has "share":
+    if (std::filesystem::exists(ed.parent_path() / "share"))
+    {
+      Paths::s_toplevelDir = ed.parent_path().string();
+    }
+  }
 
+  // If we failed to obtain directories, fall back to the project's install prefix.
   if (Paths::s_toplevelDir.empty())
     Paths::s_toplevelDir = Paths::s_toplevelDirCfg;
   if (Paths::s_executableDir.empty())

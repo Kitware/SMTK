@@ -18,6 +18,8 @@
 #import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 
+#include <mach-o/dyld.h>
+
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -41,6 +43,16 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   workerSearch.insert(
     Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
 
+  if (Paths::s_executable.empty())
+  {
+    std::vector<char> buf;
+    buf.resize(PATH_MAX + 1);
+    auto size = static_cast<uint32_t>(buf.size());
+    if (_NSGetExecutablePath(buf.data(), &size) == 0)
+    {
+      Paths::s_executable = buf.data();
+    }
+  }
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
   if (pos != std::string::npos && pos != 0)
