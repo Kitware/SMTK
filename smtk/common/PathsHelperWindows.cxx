@@ -32,6 +32,11 @@ PathsHelperWindows::PathsHelperWindows()
   Paths::s_workerSearchPaths.clear();
   Paths::s_userConfigurationDirectory.clear();
 
+  char exeLocation[1024];
+  GetModuleFileNameA(NULL, exeLocation, 1023);
+  exeLocation[1023] = '\0';
+  Paths::s_executable = exeLocation;
+
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
   workerSearch.insert(Paths::s_toplevelDirCfg + "/workers");
@@ -48,6 +53,11 @@ PathsHelperWindows::PathsHelperWindows()
     pos = Paths::s_executableDir.rfind('\\');
     if (pos != std::string::npos)
       Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
+  }
+  if (!Paths::s_executableDir.empty())
+  {
+    std::filesystem::path ed = Paths::s_executableDir;
+    Paths::s_toplevelDir = ed.parent_path().string();
   }
 
   if (Paths::s_toplevelDir.empty())
