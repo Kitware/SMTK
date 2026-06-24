@@ -220,6 +220,33 @@ bool Job::setStage(int s)
   return true;
 }
 
+std::shared_ptr<smtk::job::Stage> Job::stageInformation() const
+{
+  std::shared_ptr<smtk::job::Stage> result;
+  if (auto* def = this->jobType())
+  {
+    const auto& stages = def->stages();
+    if (m_stage < 0 || m_stage >= static_cast<int>(stages.size()))
+    {
+      return result;
+    }
+    result = stages[m_stage];
+  }
+  return result;
+}
+
+std::filesystem::path Job::stageLog() const
+{
+  std::filesystem::path result;
+  auto info = this->stageInformation();
+  if (!info || info->log().empty())
+  {
+    return result;
+  }
+  result = this->caseDirectory() / info->log();
+  return result;
+}
+
 bool Job::setAutoSchedule(bool shouldSchedule)
 {
   if (m_autoSchedule == shouldSchedule)

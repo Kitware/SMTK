@@ -29,6 +29,7 @@ namespace job
 class Definition;
 class DatabaseQueue;
 class Queue;
+class Stage;
 
 /// A job is a component used to track the progress of computational work (as opposed
 /// to interactive tasks handled by the smtk::task subsystem).
@@ -200,6 +201,15 @@ public:
   /// Return the stage of processing.
   int stage() const { return m_stage; }
   bool setStage(int s);
+
+  /// Return the Stage object for the job's current stage (if any).
+  std::shared_ptr<smtk::job::Stage> stageInformation() const;
+
+  /// Return the log path for the job's current stage (or empty if none).
+  ///
+  /// The returned value, if not empty, will include the case directory
+  /// appended with the log path from stageInformation().
+  std::filesystem::path stageLog() const;
 
   ///@{
   /// Set/get whether the job should be automatically scheduled when added
