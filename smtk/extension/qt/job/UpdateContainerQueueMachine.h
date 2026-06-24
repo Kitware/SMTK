@@ -36,7 +36,6 @@ public:
 
 protected:
   Result operateInternal() override;
-  // void generateSummary(Operation::Result&) override;
   const char* xmlDescription() const override;
 };
 } // namespace job

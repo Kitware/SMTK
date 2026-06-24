@@ -182,6 +182,10 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
     ok = (proc.exitStatus() == QProcess::ExitStatus::NormalExit && proc.exitCode() == 0);
     auto startLog = proc.readAllStandardOutput().toStdString();
     auto startErr = proc.readAllStandardError().toStdString();
+    if (!ok && startErr.find("already running") != std::string::npos)
+    {
+      ok = true;
+    }
     smtkWarningMacro(
       this->log(),
       "Machine start\n"
@@ -208,8 +212,6 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
        : smtk::operation::Operation::Outcome::FAILED);
   return result;
 }
-
-// void UpdateContainerQueueMachine::generateSummary(Operation::Result& /*unused*/) {}
 
 const char* UpdateContainerQueueMachine::xmlDescription() const
 {
