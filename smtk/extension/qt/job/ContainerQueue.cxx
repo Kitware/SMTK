@@ -31,8 +31,11 @@
 #include <QPointer>
 #include <QProcess>
 
+#include <algorithm>
+#include <cctype>
 #include <cstdlib> // For std::system
 #include <fstream>
+#include <string>
 
 // Note that SMTK_PLATFORM_UNIX should only be set on non-macos
 // unix platforms as podman on macos requires a virtual machine.
@@ -54,6 +57,36 @@ namespace qt
 {
 namespace job
 {
+namespace
+{
+
+// Trim from the start (in place)
+inline std::string& ltrim(std::string& s)
+{
+  s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+            return !std::isspace(ch);
+          }));
+  return s;
+}
+
+// Trim from the end (in place)
+inline std::string& rtrim(std::string& s)
+{
+  s.erase(
+    std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(),
+    s.end());
+  return s;
+}
+
+// Trim both ends (in place)
+inline std::string& trim(std::string& s)
+{
+  ltrim(s);
+  rtrim(s);
+  return s;
+}
+
+} // anonymous namespace
 
 using namespace smtk::job;
 using namespace smtk::string::literals;
@@ -288,7 +321,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
-#if 1
+#if 0
   std::cerr << "running \"" << proc.program().toStdString();
   for (const auto& arg : proc.arguments())
   {
@@ -303,7 +336,9 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   proc.start();
   proc.waitForFinished(-1);
   auto queueId = proc.readAllStandardOutput().toStdString();
-  job->setQueueId(queueId);
+  // Trim the queue ID to eliminate newlines from stdout.
+  // When podman/docker are run with "-d", they print the container's UUID to stdout.
+  job->setQueueId(trim(queueId));
   // Serialize to the database.
   this->updateJobDatabaseInfo(job);
   return true;
