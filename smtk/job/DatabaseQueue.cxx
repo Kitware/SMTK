@@ -1186,7 +1186,8 @@ bool DatabaseQueue::storeJob(const std::shared_ptr<smtk::job::Job>& job)
       smtk::io::Logger::instance(), "Could not insert job " << job->id() << " into table.");
     return false;
   }
-  return this->updateJobDatabaseLinks(job);
+  this->updateJobDatabaseLinks(job);
+  return true;
 }
 
 bool DatabaseQueue::updateJobDatabaseInfo(const std::shared_ptr<smtk::job::Job>& job)
