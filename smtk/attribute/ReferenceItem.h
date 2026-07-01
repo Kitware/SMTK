@@ -133,6 +133,8 @@ public:
 
   /// Return the size of the item (number of entities associated with the item).
   std::size_t numberOfValues() const;
+  /// Return whether the item is empty (i.e., has 0 values).
+  bool empty() const { return this->numberOfValues() == 0; }
   /// Set the number of entities to be associated with this item (returns true if permitted).
   bool setNumberOfValues(std::size_t newSize);
   ///\brief Remove all invalid references.

@@ -45,6 +45,7 @@ inline PySharedPtrClass< smtk::attribute::ReferenceItem, smtk::attribute::Item >
     .def("numberOfActiveChildrenItems", &smtk::attribute::ReferenceItem::numberOfActiveChildrenItems)
     .def("numberOfChildrenItems", &smtk::attribute::ReferenceItem::numberOfChildrenItems)
     .def("numberOfRequiredValues", &smtk::attribute::ReferenceItem::numberOfRequiredValues)
+    .def("empty", &smtk::attribute::ReferenceItem::empty)
     .def("numberOfValues", &smtk::attribute::ReferenceItem::numberOfValues)
     .def("value", (smtk::resource::PersistentObjectPtr (smtk::attribute::ReferenceItem::*)(std::size_t) const) &smtk::attribute::ReferenceItem::value, py::arg("i") = 0)
     .def("removeValue", &smtk::attribute::ReferenceItem::removeValue, py::arg("i"))
