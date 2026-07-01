@@ -12,6 +12,7 @@
 
 #include "smtk/job/operators/AddJobToQueue_xml.h"
 
+#include "smtk/job/Definition.h"
 #include "smtk/job/Job.h"
 #include "smtk/job/Queue.h"
 #include "smtk/job/operators/ScheduleJob.h"
@@ -37,19 +38,17 @@ AddJobToQueue::Result AddJobToQueue::operateInternal()
   auto job = params->associations()->valueAs<smtk::job::Job>();
   if (!job || !job->queue())
   {
-    std::cerr << "ERROR: FAILED TO ADD JOB\n";
+    smtkErrorMacro(this->log(), "Job was null or had no queue.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   // Add the job to the queue. This does not schedule it.
   bool modified = job->queue()->add(job);
   modified |= job->setState(smtk::job::State::Unscheduled);
-  std::cerr << "ADDED JOB\n";
   if (job->autoSchedule())
   {
     auto operationManager = this->managers()->get<smtk::operation::Manager::Ptr>();
     if (operationManager)
     {
-      std::cerr << "SCHEDULING JOB\n";
       if (auto op = operationManager->create<smtk::job::ScheduleJob>())
       {
         op->parameters()->associate(job);
@@ -58,7 +57,6 @@ AddJobToQueue::Result AddJobToQueue::operateInternal()
     }
     else
     {
-      std::cerr << "SCHEDULING JOB xxxx\n";
       modified |= job->queue()->schedule(job);
     }
   }
@@ -71,7 +69,26 @@ AddJobToQueue::Result AddJobToQueue::operateInternal()
   return result;
 }
 
-void AddJobToQueue::generateSummary(Operation::Result& /*unused*/) {}
+void AddJobToQueue::generateSummary(Operation::Result& result)
+{
+  auto status = smtk::operation::outcome(result);
+  if (status != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(result);
+  }
+
+  auto modItem = result->findComponent("modified");
+  if (modItem && !modItem->empty())
+  {
+    if (auto job = modItem->valueAs<smtk::job::Job>())
+    {
+      smtkInfoMacro(
+        this->log(), "Job (" + job->jobType()->name() + ") added to " + job->queue()->name() + ".");
+      return;
+    }
+  }
+  smtkWarningMacro(this->log(), "No job processed.");
+}
 
 const char* AddJobToQueue::xmlDescription() const
 {

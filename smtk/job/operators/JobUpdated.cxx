@@ -91,7 +91,29 @@ JobUpdated::Result JobUpdated::operateInternal()
   return result;
 }
 
-void JobUpdated::generateSummary(Operation::Result& /*unused*/) {}
+void JobUpdated::generateSummary(Operation::Result& result)
+{
+  auto status = smtk::operation::outcome(result);
+  if (status != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(result);
+  }
+
+  auto modItem = result->findComponent("modified");
+  if (modItem && !modItem->empty())
+  {
+    if (auto job = modItem->valueAs<smtk::job::Job>())
+    {
+      smtkInfoMacro(
+        this->log(),
+        "Job " + job->name() + " updated: " + smtk::job::stateAsString(job->state()) + " " +
+          smtk::job::statusAsString(job->status()) + " stage " + std::to_string(job->stage()) +
+          ".");
+      return;
+    }
+  }
+  smtkWarningMacro(this->log(), "No job scheduled.");
+}
 
 const char* JobUpdated::xmlDescription() const
 {

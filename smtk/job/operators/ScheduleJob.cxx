@@ -48,9 +48,7 @@ ScheduleJob::Result ScheduleJob::operateInternal()
     modified |= job->setStatus(smtk::job::Pending);
     std::filesystem::remove(job->caseDirectory() / "logs" / "progress");
   }
-  std::cerr << "*** SCHEDULING\n";
   bool scheduled = job->queue()->schedule(job);
-  std::cerr << "*** SCHEDULED? " << (scheduled ? "Y" : "N") << "\n";
 
   auto result = this->createResult(
     scheduled ? smtk::operation::Operation::Outcome::SUCCEEDED
@@ -62,7 +60,26 @@ ScheduleJob::Result ScheduleJob::operateInternal()
   return result;
 }
 
-void ScheduleJob::generateSummary(Operation::Result& /*unused*/) {}
+void ScheduleJob::generateSummary(Operation::Result& result)
+{
+  auto status = smtk::operation::outcome(result);
+  if (status != Outcome::SUCCEEDED)
+  {
+    this->Superclass::generateSummary(result);
+  }
+
+  auto modItem = result->findComponent("modified");
+  if (modItem && !modItem->empty())
+  {
+    if (auto job = modItem->valueAs<smtk::job::Job>())
+    {
+      smtkInfoMacro(
+        this->log(), "Job " + job->name() + " scheduled on " + job->queue()->name() + ".");
+      return;
+    }
+  }
+  smtkWarningMacro(this->log(), "No job scheduled.");
+}
 
 const char* ScheduleJob::xmlDescription() const
 {
