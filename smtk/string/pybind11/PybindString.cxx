@@ -28,8 +28,6 @@ PYBIND11_MODULE(_smtkPybindString, string)
 {
   string.doc() = "<description>";
 
-  py::module::import("smtk.common");
-
   auto smtk_string_Token = pybind11_init_smtk_string_Token(string);
   auto smtk_string_Manager = pybind11_init_smtk_string_Manager(string);
 }
