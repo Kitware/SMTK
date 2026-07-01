@@ -28,6 +28,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindDefinitionInstances.h"
 #include "PybindQueueInstances.h"
 #include "PybindJob.h"
+#include "PybindJobAgent.h"
 #include "PybindState.h"
 #include "PybindStatus.h"
 #include "PybindStage.h"
@@ -46,6 +47,7 @@ PYBIND11_MODULE(_smtkPybindJob, job_module)
   py::module::import("smtk.string");
   py::module::import("smtk.common");
   py::module::import("smtk.resource");
+  py::module::import("smtk.task");
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.
 
@@ -60,6 +62,7 @@ PYBIND11_MODULE(_smtkPybindJob, job_module)
   auto smtk_job_Manager = pybind11_init_smtk_job_Manager(job_module);
   auto smtk_job_DatabaseQueue = pybind11_init_smtk_job_DatabaseQueue(job_module);
   auto smtk_job_Registrar = pybind11_init_smtk_job_Registrar(job_module);
+  auto smtk_job_JobAgent = pybind11_init_smtk_job_JobAgent(job_module);
 
   // job_module
   //   .def("foo", &smtk::job::foo);

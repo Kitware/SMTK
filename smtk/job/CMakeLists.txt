@@ -1,4 +1,6 @@
 set(jobClasses
+  agents/JobAgent
+
   DatabaseQueue
   DefinitionInstances
   Definition
