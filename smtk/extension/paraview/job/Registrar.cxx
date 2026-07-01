@@ -86,6 +86,7 @@ void syncSettingsProjectsRootFolder()
   if (!core)
   {
     QTimer::singleShot(50 /*ms*/, &syncSettingsProjectsRootFolder);
+    return;
   }
   QObject::connect(
     core->getServerManagerModel(), &pqServerManagerModel::serverReady, &serverConnect);
