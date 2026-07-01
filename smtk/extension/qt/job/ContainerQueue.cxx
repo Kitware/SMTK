@@ -25,12 +25,26 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include <QFileSystemWatcher>
 #include <QPointer>
 #include <QProcess>
 
 #include <cstdlib> // For std::system
 #include <fstream>
+
+// Note that SMTK_PLATFORM_UNIX should only be set on non-macos
+// unix platforms as podman on macos requires a virtual machine.
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#ifdef __APPLE__
+#define SMTK_PLATFORM_UNIX 0
+#else
+#define SMTK_PLATFORM_UNIX 1
+#endif
+#else
+#define SMTK_PLATFORM_UNIX 0
+#endif
 
 using namespace smtk::job::db;
 
@@ -118,7 +132,16 @@ ContainerQueue::ContainerQueue(
 
 ContainerQueue::~ContainerQueue()
 {
-  if (m_removeQueueOnDestruction)
+  bool containersInVM = true;
+#if SMTK_PLATFORM_UNIX
+  // On linux, only use a virtual machine if forced to by an environment variable.
+  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
+  if (!forceVM || !forceVM[0])
+  {
+    containersInVM = false;
+  }
+#endif
+  if (m_removeQueueOnDestruction && containersInVM)
   {
     // std::cerr << "Destroying virtual machine for " << this->name() << "\n";
     {
@@ -236,7 +259,8 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
 #endif
   QStringList processArguments;
-  processArguments << "run"; // << "-d";
+  processArguments << "run"
+                   << "-d";
   switch (m_p->m_engine.id())
   {
     case "podman"_hash:
@@ -259,7 +283,8 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     QString("--volume=%1:%2:z").arg(job->caseDirectory().c_str()).arg(mountPoint.c_str());
   processArguments << volumeArg;
 
-  QString executable = "./" + QString::fromStdString(job->script().string());
+  // QString executable = "./" + QString::fromStdString(job->script().string());
+  QString executable = QString::fromStdString((mountPoint / job->script()).string());
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
@@ -405,10 +430,17 @@ bool ContainerQueue::setRootJobDirectoryAsString(const QString& mountPoint)
 
 void ContainerQueue::projectRootChanged(const std::filesystem::path& nextProjectRoot)
 {
+#if SMTK_PLATFORM_UNIX
+  // On linux, only use a virtual machine if forced to by an environment variable.
+  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
+  if (!forceVM || !forceVM[0])
+  {
+    return;
+  }
+#endif
   // Restart podman machine (on Windows and MacOS only) with a new "-v" option
   // mapping ProjectsRootFolder into the machine.
   // This allows containers running on the machine to mount case directories.
-  std::cerr << "Updating podman machine\n";
   bool didLaunch = false;
   if (auto operationManager = this->operationManager())
   {
@@ -513,6 +545,14 @@ bool ContainerQueue::setQueueOnline(bool online)
 
 bool ContainerQueue::checkQueueRoot(const std::filesystem::path& root)
 {
+#if SMTK_PLATFORM_UNIX
+  // On linux, only use a virtual machine if forced to by an environment variable.
+  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
+  if (!forceVM || !forceVM[0])
+  {
+    return false;
+  }
+#endif
   std::string directory;
   sqlQuery query(m_db);
   query << "select value from queue_metadata where queue=" << m_queueId

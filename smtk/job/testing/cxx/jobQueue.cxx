@@ -28,7 +28,6 @@
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
-#include "smtk/attribute/ComponentItem.h"
 #include "smtk/io/Logger.h"
 
 #include "smtk/plugin/Registry.h"
@@ -37,6 +36,7 @@
 #include "smtk/resource/Registrar.h"
 
 #include "smtk/common/Managers.h"
+#include "smtk/common/Paths.h"
 #include "smtk/common/UUID.h"
 
 #include "smtk/string/Token.h"
@@ -150,8 +150,8 @@ public:
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
     job->setJobType(jobDef);
-    auto tempDir = std::filesystem::temp_directory_path();
-    std::string pattern = (tempDir / "smtkXXXXXX").string();
+    auto tempDir = smtk::common::Paths().userDocumentDirectory("SMTK/Testing");
+    std::string pattern = (tempDir / "testQueueJob_XXXXXX").string();
     auto caseDir = generateDirectory(pattern);
     std::filesystem::create_directories(caseDir / "logs");
     std::string testType = this->parameters()->findString("test type")->value();
@@ -524,8 +524,10 @@ int jobQueue(int argc, char* argv[])
   auto* jqt = new JobQueueTest(&app);
 
   // -------------- ShellQueue tests
+  std::cerr << "\n# ShellQueue tests\n\n";
   // I. Test that an operation creating a job causes the (auto-scheduled) job to run.
   // Schedule the test to run as soon as the event loop starts:
+  std::cerr << "I. Auto-scheduled jobs are scheduled.\n\n";
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
@@ -533,6 +535,7 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // II. Test that a job may be cancelled successfully.
+  std::cerr << "\nII. Test canceling a running job succeeds.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
   QTimer::singleShot(200, jqt, &JobQueueTest::cancel_job);
@@ -542,6 +545,7 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // III. Test that a job may that has been completed cannot be cancelled.
+  std::cerr << "\nIII. Test canceling a completed job fails.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
   QTimer::singleShot(500, jqt, &JobQueueTest::cancel_job);
@@ -551,11 +555,13 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // -------------- ContainerQueue tests
+  std::cerr << "\n# ContainerQueue tests\n\n";
   jqt->changeActiveQueue("smtk::qt::job::ContainerQueue"_token);
 
   // IV. Test that a basic job runs
   // I. Test that an operation creating a job causes the (auto-scheduled) job to run.
   // Schedule the test to run as soon as the event loop starts:
+  std::cerr << "\nIV. Auto-scheduled jobs are scheduled.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
   // Run until the application's quit() slot is invoked, then
@@ -564,6 +570,7 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // V. Test that a job may be cancelled successfully.
+  std::cerr << "\nV. Test canceling a running job succeeds.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
   QTimer::singleShot(1000, jqt, &JobQueueTest::cancel_job);

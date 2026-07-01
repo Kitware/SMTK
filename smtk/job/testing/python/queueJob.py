@@ -59,19 +59,14 @@ class TestQueueJob(smtk.testing.TestCase):
         self.job_mgr.jobTypes().manage(self.job_def)
 
     def test_shell_queue_job(self):
-        import tempfile
-        try:
-            temp_dir = tempfile.TemporaryDirectory(delete=False)
-            delete_dir = True
-        except TypeError:
-            # Older pythons (3.12) do not accept delete=False
-            temp_dir = tempfile.TemporaryDirectory()
-            delete_dir = False
+        docPath = str(smtk.common.Paths().userDocumentDirectory(
+            'SMTK/Testing/testQueueJob_'))
+        temp_dir = tempfile.mkdtemp('_case', docPath)
         job = smtk.job.Job.create()
         job.setJobType(self.job_def)
-        os.makedirs(os.path.join(temp_dir.name, 'logs'))
+        os.makedirs(os.path.join(temp_dir, 'logs'))
         job.setAutoSchedule(True)
-        job.setCaseDirectory(temp_dir.name)
+        job.setCaseDirectory(temp_dir)
         # job.setLogParser(log, parser)
         # job.setLogs(['logs/echo.log'])
         queue = self.job_mgr.findQueueByName('shell_queue')
@@ -89,9 +84,7 @@ class TestQueueJob(smtk.testing.TestCase):
         print(f'job in {scriptPath}')
         queue.schedule(job)
         print('job queue id', job.queueId())
-        # TODO: Wait for job to complete
-        if delete_dir:
-            temp_dir.cleanup()
+        shutil.rmtree(temp_dir)
 
     def test_container_queue_job(self):
         docPath = str(smtk.common.Paths().userDocumentDirectory(
@@ -99,12 +92,12 @@ class TestQueueJob(smtk.testing.TestCase):
         temp_dir = tempfile.mkdtemp('_case', docPath)
         job = smtk.job.Job.create()
         job.setJobType(self.job_def)
-        os.makedirs(os.path.join(temp_dir.name, 'logs'))
+        os.makedirs(os.path.join(temp_dir, 'logs'))
         queue = self.job_mgr.findQueueByName('container_queue')
         job.setAutoSchedule(True)
-        job.setCaseDirectory(temp_dir.name)
+        job.setCaseDirectory(temp_dir)
         job.setCaseDirectoryMountPoint('/home/openfoam')
-        job.setContainerImage('docker.io/opencfd/openfoam-run:2112')
+        job.setContainerImage('docker.io/opencfd/openfoam-run:2412')
         # job.setLogParser(log, parser)
         # job.setLogs(['logs/echo.log'])
         job.setQueue(queue)

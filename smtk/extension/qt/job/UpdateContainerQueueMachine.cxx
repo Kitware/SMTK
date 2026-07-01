@@ -26,8 +26,22 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/common/CompilerInformation.h"
+
 #include <QProcess>
 #include <QString>
+
+// Note that SMTK_PLATFORM_UNIX should only be set on non-macos platforms
+// as podman on macos requires a virtual machine.
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#ifdef __APPLE__
+#define SMTK_PLATFORM_APPLE 1
+#else
+#define SMTK_PLATFORM_UNIX 1
+#endif
+#else
+#define SMTK_PLATFORM_WINDOWS 1
+#endif
 
 namespace smtk
 {
@@ -44,6 +58,23 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
   {
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
+
+#if SMTK_PLATFORM_UNIX
+  // On linux, only use a virtual machine if forced to by an environment variable.
+  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
+  if (!forceVM || !forceVM[0])
+  {
+    // By default (no environment variable set or it is empty),
+    // we do not need (or want) to create a podman machine.
+    auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+
+    // Just mark the queue as online.
+    // TODO: If the queue was offline, should we add it to the result?
+    queue->setQueueOnline(true);
+
+    return result;
+  }
+#endif
 
   bool ok = true;
   bool machineExists = false;
@@ -205,6 +236,7 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
   }
 
   // Set the queue as online (true) or offline (false):
+  // TODO: If the queue was modified, should we add it to the result?
   queue->setQueueOnline(ok);
 
   auto result = this->createResult(
