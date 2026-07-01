@@ -42,6 +42,7 @@ public:
   bool manage(const std::shared_ptr<Queue>& instance) override;
 
   Queue* findByName(const std::string& name);
+  Queue* findById(const smtk::common::UUID& uid);
 
 protected:
   smtk::job::Manager* m_manager{ nullptr };

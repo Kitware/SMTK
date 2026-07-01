@@ -24,6 +24,7 @@ pybind11_init_smtk_job_QueueInstances(py::module &m)
   py::class_<smtk::job::QueueInstances, smtk::common::Instances<smtk::job::Queue>> instance(m, "QueueInstances");
   instance
     .def("findByName", &smtk::job::QueueInstances::findByName, py::arg("name"))
+    .def("findById", &smtk::job::QueueInstances::findById, py::arg("id"))
     ;
   return instance;
 }
