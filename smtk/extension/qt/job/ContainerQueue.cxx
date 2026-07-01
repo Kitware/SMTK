@@ -39,7 +39,7 @@
 
 // Note that SMTK_PLATFORM_UNIX should only be set on non-macos
 // unix platforms as podman on macos requires a virtual machine.
-#if !defined(_WIN32) || defined(__CYGWIN__)
+#if !defined(_WIN32) && !defined(__CYGWIN__)
 #ifdef __APPLE__
 #define SMTK_PLATFORM_UNIX 0
 #else
