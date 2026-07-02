@@ -9,6 +9,7 @@ smtk_add_plugin(smtkPVJobExtPlugin
     smtk::resource::Manager
     smtk::operation::Manager
     smtk::job::Manager
+    smtk::view::Manager
     smtk::common::Managers
   PARAVIEW_PLUGIN_ARGS
     VERSION 1.0

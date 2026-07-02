@@ -11,17 +11,27 @@
 //=============================================================================
 #include "smtk/job/Registrar.h"
 
+#include "smtk/job/Job.h"
+#include "smtk/job/Queue.h"
+#include "smtk/job/agents/JobAgent.h"
 #include "smtk/job/operators/AddJobToQueue.h"
 #include "smtk/job/operators/CancelJob.h"
 #include "smtk/job/operators/JobUpdated.h"
 #include "smtk/job/operators/ScheduleJob.h"
 
 #include "smtk/attribute/ComponentItem.h"
-#include "smtk/job/Job.h"
-#include "smtk/job/Queue.h"
+
 #include "smtk/plugin/Manager.h"
 
 #include <tuple>
+
+using OperationList = std::tuple<
+  smtk::job::AddJobToQueue,
+  smtk::job::CancelJob,
+  smtk::job::JobUpdated,
+  smtk::job::ScheduleJob>;
+
+using AgentList = std::tuple<smtk::job::agents::JobAgent>;
 
 namespace smtk
 {
@@ -76,12 +86,6 @@ void attachJobToQueue(
 
 } // anonymous namespace
 
-using OperationList = std::tuple<
-  smtk::job::AddJobToQueue,
-  smtk::job::CancelJob,
-  smtk::job::JobUpdated,
-  smtk::job::ScheduleJob>;
-
 void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 {
   // Add a job::Manager if none is present:
@@ -108,6 +112,18 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
   {
     managers->erase<smtk::job::Manager::Ptr>();
   }
+}
+
+void Registrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.registerTypes<AgentList>();
+}
+
+void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.unregisterTypes<AgentList>();
 }
 
 void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager) {}

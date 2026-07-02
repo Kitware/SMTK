@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/extension/paraview/job/Registrar.h"
 
+#include "smtk/extension/paraview/job/pqJobRunnerView.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/job/ContainerQueue.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
@@ -155,6 +156,18 @@ void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
       jobManager->queues().unmanage(queue);
     }
   }
+}
+
+void Registrar::registerTo(const smtk::view::Manager::Ptr& viewManager)
+{
+  viewManager->viewWidgetFactory().registerType<pqJobRunnerView>();
+  viewManager->viewWidgetFactory().addAlias<pqJobRunnerView>("JobRunner");
+}
+
+void Registrar::unregisterFrom(const smtk::view::Manager::Ptr& viewManager)
+{
+  viewManager->viewWidgetFactory().unregisterType<pqJobRunnerView>();
+  viewManager->viewWidgetFactory().unregisterType("JobRunner");
 }
 
 void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager)

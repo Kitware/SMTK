@@ -56,6 +56,20 @@ void JobAgent::configure(const Configuration& config)
     m_inputPort = (ppi != m_parent->ports().end()) ? ppi->second : nullptr;
   }
 
+  m_case.clear();
+  it = config.find("case");
+  if (it != config.end())
+  {
+    m_case = it->get<std::filesystem::path>();
+  }
+
+  m_jobTypeName.clear();
+  it = config.find("job-type");
+  if (it != config.end())
+  {
+    m_jobTypeName = it->get<std::string>();
+  }
+
   auto baseDir = this->caseDirectoryBase();
   it = config.find("job");
   if (it != config.end())
@@ -109,6 +123,14 @@ JobAgent::Configuration JobAgent::configuration() const
   if (m_inputPort)
   {
     config["input-port"] = m_inputPort->name();
+  }
+  if (!m_case.empty())
+  {
+    config["case"] = m_case;
+  }
+  if (!m_jobTypeName.empty())
+  {
+    config["job-type"] = m_jobTypeName;
   }
   if (m_job && m_job->queue())
   {
@@ -212,6 +234,28 @@ std::filesystem::path JobAgent::caseDirectoryBase() const
     }
   }
   return dir;
+}
+
+std::filesystem::path JobAgent::caseDirectory() const
+{
+  return this->caseDirectoryBase() / m_case;
+}
+
+smtk::job::Definition* JobAgent::jobType() const
+{
+  if (m_job)
+  {
+    return m_job->jobType();
+  }
+
+  if (!m_jobTypeName.empty())
+  {
+    if (auto jobManager = this->parent()->managers()->get<smtk::job::Manager::Ptr>())
+    {
+      return jobManager->jobTypes().findByName(m_jobTypeName).get();
+    }
+  }
+  return nullptr;
 }
 
 JobAgent* JobAgent::jobAgent(const smtk::task::Task* task, smtk::string::Token agentName)

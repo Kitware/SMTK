@@ -21,6 +21,7 @@ namespace smtk
 namespace job
 {
 
+class Definition;
 class Job;
 class Queue;
 
@@ -92,9 +93,35 @@ public:
   /// have subdirectories if so.
   std::filesystem::path caseDirectoryBase() const;
 
+  /// Report the case directory that jobs created by this agent will use.
+  ///
+  /// By default, this returns caseDirectoryBase(), but if the configuration
+  /// JSON provides "case" as a relative path, that will be appended to
+  /// the caseDirectoryBase().
+  std::filesystem::path caseDirectory() const;
+
   /// Return the job from the most recent run of this agent's operation
   /// (or null if none has been run).
   smtk::job::Job* job() const { return m_job; }
+
+  /// Return the name of the job definition that jobs for this agent will use.
+  ///
+  /// This is not used by the agent but may be used by user interfaces
+  /// to prepare for jobs even before a job has been created.
+  ///
+  /// If the agent may return jobs of different types, the returned value will
+  /// be empty.
+  ///
+  /// The default is an empty job type name but if the configuration JSON
+  /// contains a "job-type" value, it will be returned.
+  std::string jobTypeName() const { return m_jobTypeName; }
+
+  /// Return the job definition (type) that jobs for this agent will use.
+  ///
+  /// This may be null if the agent may create jobs of different types and
+  /// no job has been created. Once a job has been created, this method will
+  /// return this->job()->jobType().
+  smtk::job::Definition* jobType() const;
 
   /// Return the first job agent of \a task with the given \a agentName
   /// (or the first agent of this type if \a agentName is invalid).
@@ -157,6 +184,16 @@ protected:
 
   /// The key of our "job observer" watching m_job (or 0).
   int m_jobObserver{ 0 };
+
+  /// The relative path from the caseDirectoryBase() to the
+  /// case directory for this agent's jobs.
+  std::filesystem::path m_case;
+
+  /// The job type for jobs this agent produces.
+  ///
+  /// This is not used by the agent but made available to user interface
+  /// elements that may need to pre-populate with information about jobs.
+  std::string m_jobTypeName;
 };
 
 } // namespace agents

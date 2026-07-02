@@ -19,6 +19,7 @@
 #include "smtk/operation/Registrar.h"
 #include "smtk/resource/Manager.h"
 #include "smtk/resource/Registrar.h"
+#include "smtk/task/Manager.h"
 
 namespace smtk
 {
@@ -37,6 +38,9 @@ public:
 
   static void registerTo(const smtk::operation::Manager::Ptr&);
   static void unregisterFrom(const smtk::operation::Manager::Ptr&);
+
+  static void registerTo(const smtk::task::Manager::Ptr&);
+  static void unregisterFrom(const smtk::task::Manager::Ptr&);
 
   static void registerTo(const smtk::job::Manager::Ptr&);
   static void unregisterFrom(const smtk::job::Manager::Ptr&);
