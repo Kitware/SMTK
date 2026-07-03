@@ -1,5 +1,6 @@
 # set up sources to build
 set(commonClasses
+  Active
   Categories
   Color
   CompilerInformation
