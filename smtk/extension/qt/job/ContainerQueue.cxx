@@ -207,8 +207,14 @@ ContainerQueue::~ContainerQueue()
 
 bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
 {
-  if (!job || !job->queueId().empty() || job->containerImage().empty())
+  if (!job || !job->queueId().empty())
   {
+    return false;
+  }
+  if (job->containerImage().empty())
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(), "Cannot schedule job; no container image provided.");
     return false;
   }
   if (job->queue() && job->queue() != this)
