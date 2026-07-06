@@ -31,7 +31,7 @@ public:
 
   QueueInstances() = default;
   QueueInstances(smtk::job::Manager* jobManager);
-  QueueInstances(QueueInstances&&) = default;
+  QueueInstances(QueueInstances&&) = delete;
   virtual ~QueueInstances() = default;
 
   /// Manage a job queue.

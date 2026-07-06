@@ -37,7 +37,7 @@ public:
   smtkCreateMacro(smtk::job::Manager);
 
   Manager();
-  Manager(Manager&&) = default;
+  Manager(Manager&&) = delete;
   virtual ~Manager() = default;
 
   /// Return the set of managed queue objects.
