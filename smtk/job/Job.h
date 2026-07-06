@@ -225,6 +225,21 @@ public:
   bool setAutoSchedule(bool shouldSchedule);
   ///@}
 
+  /// Return the time the job was added to the queue as the job's creation time.
+  std::time_t creationTime() const { return m_creationTime; }
+
+  /// Return the time the job was last active.
+  ///
+  /// The returned time is an estimate as some queueing systems may not
+  /// provide precise information; many use timestamps on the "logs/progress"
+  /// file to determine this time.
+  ///
+  /// If the job is currently running, this returns the current time.
+  /// If the job has completed or been canceled, the time at which the monitoring
+  /// system observed the job's completion is reported.
+  /// If the job has not ever run, the creation time is returned.
+  std::time_t modificationTime() const;
+
   using LinkKey = std::pair<smtk::common::UUID, smtk::common::UUID>;
 
   /// Link this job to the given \a object.
@@ -306,6 +321,8 @@ protected:
   State m_state{ State::Unscheduled };
   Status m_status{ Status::Pending };
   int m_stage{ -1 };
+  std::time_t m_creationTime{ -1 };
+  mutable std::time_t m_modificationTime{ -1 };
 };
 
 } // namespace job

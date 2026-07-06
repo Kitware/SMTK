@@ -24,6 +24,8 @@
 
 #include "sqlite3.h"
 
+#include <chrono>
+#include <ctime>
 #include <fstream>
 
 using namespace smtk::string::literals;
@@ -35,6 +37,20 @@ namespace job
 {
 namespace // anonymous
 {
+
+/// Convert a std::time_t value into a std::uint64_t holding
+/// the number of seconds since 1970-01-01 00:00:00 UTC.
+///
+/// Since std::time_t may be any arithmetic type (including floating-point
+/// types), we cannot simply cast it. Instead, use std::chrono::system_clock
+/// to convert it at whatever resolution the system clock provides.
+std::uint64_t int_epoch_time(const std::time_t& timestamp)
+{
+  std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(timestamp);
+  auto result = static_cast<std::uint64_t>(
+    std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count());
+  return result;
+}
 
 std::vector<std::string> sqlInstallSchema{
   // --- Drop existing tables ---
@@ -117,6 +133,8 @@ std::vector<std::string> sqlInstallSchema{
       state integer key,
       stage integer key,
       auto_schedule integer,
+      creation_time integer key,
+      modification_time integer key,
       case_directory text key,
       container_image text key,
       case_directory_mount_point text,
@@ -552,7 +570,7 @@ std::shared_ptr<smtk::job::Job> DatabaseQueue::fetchJobData(const smtk::common::
   sqlQuery query(m_db);
   query << "select "
         << "id, job_type, size, job_id, status, state, stage, case_directory, auto_schedule, "
-           "container_image, case_directory_mount_point "
+           "creation_time, modification_time, container_image, case_directory_mount_point "
         << "from jobs where uid='" << uid.toString() << "' and queue=" << m_queueId << ";";
   std::int64_t jobRowId = -1;
   std::int64_t jobTypeRow = -1;
@@ -565,6 +583,8 @@ std::shared_ptr<smtk::job::Job> DatabaseQueue::fetchJobData(const smtk::common::
   std::string jobCaseDir;
   std::string jobImageUrl;
   std::string jobMountPoint;
+  std::uint64_t jobCreationTime;
+  std::uint64_t jobRecentTime;
   query.bind<sqlBindingInt<std::int64_t>>(0, jobRowId)
     .bind<sqlBindingInt<std::int64_t>>(1, jobTypeRow)
     .bind<sqlBindingInt<std::uint64_t>>(2, jobSize)
@@ -574,8 +594,10 @@ std::shared_ptr<smtk::job::Job> DatabaseQueue::fetchJobData(const smtk::common::
     .bind<sqlBindingInt<int>>(6, jobStage)
     .bind<sqlBindingText<std::string>>(7, jobCaseDir)
     .bind<sqlBindingInt<int>>(8, jobAutoSchedule)
-    .bind<sqlBindingText<std::string>>(9, jobImageUrl)
-    .bind<sqlBindingText<std::string>>(10, jobMountPoint);
+    .bind<sqlBindingInt<std::uint64_t>>(9, jobCreationTime)
+    .bind<sqlBindingInt<std::uint64_t>>(10, jobRecentTime)
+    .bind<sqlBindingText<std::string>>(11, jobImageUrl)
+    .bind<sqlBindingText<std::string>>(12, jobMountPoint);
   if (!query.execute() || jobRowId == -1 || jobTypeRow == -1)
   {
     return job;
@@ -623,6 +645,7 @@ bool DatabaseQueue::add(const std::shared_ptr<Job>& job)
   }
   // Now we know the job is not already owned by this queue but reports this queue
   // as its parent. Add it.
+  std::time(&job->m_creationTime);
   m_liveJobs[job->id()] = job;
   return this->storeJob(job);
 }
@@ -1170,13 +1193,14 @@ bool DatabaseQueue::storeJob(const std::shared_ptr<smtk::job::Job>& job)
   query << "insert into jobs("
         << "uid,queue,job_type,job_id,size,"
         << "status,state,stage,"
-        << "auto_schedule,case_directory,"
+        << "auto_schedule,creation_time,modification_time,case_directory,"
         << "container_image,case_directory_mount_point) values ("
         << "'" << job->id().toString() << "'"
         << "," << m_queueId << "," << jobTypeId << ",'" << job->queueId() << "'"
         << "," << job->size() << "," << static_cast<int>(job->status()) << ","
         << static_cast<int>(job->state()) << "," << job->stage() << ","
-        << (job->autoSchedule() ? 1 : 0) << ",'" << job->caseDirectory().string() << "'"
+        << (job->autoSchedule() ? 1 : 0) << "," << int_epoch_time(job->creationTime()) << ","
+        << int_epoch_time(job->modificationTime()) << ",'" << job->caseDirectory().string() << "'"
         << ",'" << job->containerImage() << "'"
         << ",'" << job->caseDirectoryMountPoint() << "'"
         << ");";
@@ -1192,12 +1216,16 @@ bool DatabaseQueue::storeJob(const std::shared_ptr<smtk::job::Job>& job)
 
 bool DatabaseQueue::updateJobDatabaseInfo(const std::shared_ptr<smtk::job::Job>& job)
 {
+  // Update "modification" time of job to now.
+  std::time(&job->m_modificationTime);
+
   sqlQuery query(m_db);
   query << "update jobs set "
         << "job_id='" << job->queueId() << "', size=" << job->size() << ", "
         << "status=" << static_cast<int>(job->status()) << ","
         << "state=" << static_cast<int>(job->state()) << ", "
-        << "stage=" << job->stage() << " "
+        << "stage=" << job->stage() << ", "
+        << "modification_time=" << int_epoch_time(job->modificationTime()) << " "
         << "where uid='" << job->id().toString() << "';";
   bool ok = query.execute();
   return ok;

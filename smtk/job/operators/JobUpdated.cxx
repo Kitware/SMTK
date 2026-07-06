@@ -81,9 +81,12 @@ JobUpdated::Result JobUpdated::operateInternal()
   }
   if (didModify)
   {
+    // Report the job as modified
     result->findComponent("modified")->appendValue(job);
     if (auto queue = dynamic_cast<DatabaseQueue*>(job->queue()))
     {
+      // Record modifications to the database
+      // This also updates job->modificationTime() in memory and storage.
       queue->updateJobDatabaseInfo(job);
     }
   }

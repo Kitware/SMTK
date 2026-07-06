@@ -15,6 +15,8 @@
 // #include "smtk/job/Resource.h"
 #include "smtk/job/Stage.h"
 
+#include <ctime>
+
 namespace smtk
 {
 namespace job
@@ -255,6 +257,25 @@ bool Job::setAutoSchedule(bool shouldSchedule)
   }
   m_autoSchedule = shouldSchedule;
   return true;
+}
+
+std::time_t Job::modificationTime() const
+{
+  switch (m_state)
+  {
+    case State::Unscheduled:
+    case State::Scheduled:
+      return m_creationTime;
+      break;
+    case State::Running:
+      return std::time(&m_modificationTime);
+      break;
+    default:
+    case State::Canceled:
+    case State::Completed:
+      return m_modificationTime;
+      break;
+  }
 }
 
 Job::LinkKey Job::linkTo(const std::shared_ptr<PersistentObject>& object)
