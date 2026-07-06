@@ -25,7 +25,7 @@ namespace job
 /// The set of transitions that are possible include:
 /// + Unscheduled→Scheduled
 /// + Scheduled→{Running, Canceled}
-/// + Running→{Canceled,Completed}
+/// + Running→{Canceled, Completed}
 /// + Canceled→{Unscheduled, Scheduled}
 /// + Completed→{Unscheduled, Scheduled}
 enum State
