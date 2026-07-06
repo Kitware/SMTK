@@ -26,6 +26,7 @@ set(QAttrLibSrcs
   qtAttributeView.cxx
   qtInstancedView.cxx
   qtComponentAttributeView.cxx
+  qtLogView.cxx
   qtOperationAction.cxx
   qtOperationDialog.cxx
   qtOperationLauncher.cxx
@@ -154,6 +155,7 @@ set(QAttrLibMocHeaders
   qtAttributeView.h
   qtInstancedView.h
   qtComponentAttributeView.h
+  qtLogView.h
   qtNotEditableDelegate.h
   qtOperationAction.h
   qtOperationDialog.h
