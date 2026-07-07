@@ -13,6 +13,9 @@
 #include <QFont>
 #include <QLayout>
 #include <QPlainTextEdit>
+#include <QTextBlock>
+#include <QTextCursor>
+#include <QTextDocument>
 #include <QTimer>
 
 namespace smtk
@@ -29,7 +32,7 @@ qtLogView::qtLogView(const std::filesystem::path& logPath, QWidget* parent)
   const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
   QFontMetricsF fontMetrics(fixedFont);
   m_contents->document()->setDefaultFont(fixedFont);
-  // m_contents->setCenterOnScroll(true);
+  m_contents->setCenterOnScroll(false);
   m_contents->setLineWrapMode(QPlainTextEdit::NoWrap);
   m_contents->setReadOnly(true);
   // m_contents->setSizeHint(80 * fontMetrics.averageCharWidth(), 20 * fontMetrics.height());
@@ -87,6 +90,8 @@ void qtLogView::readMore()
   m_file.read(buf.data(), size - m_lastRead);
   m_contents->appendPlainText(QString::fromStdString(buf));
   m_lastRead = size;
+  QTextCursor cursor(m_contents->document()->lastBlock());
+  m_contents->setTextCursor(cursor);
 }
 
 void qtLogView::done()
