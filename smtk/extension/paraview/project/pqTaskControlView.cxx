@@ -20,6 +20,7 @@
 #include "smtk/view/Configuration.h"
 #include "smtk/view/Manager.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/task/Active.h"
@@ -279,6 +280,10 @@ public:
     opButton->setText(QString::fromStdString(opLabel));
     QObject::connect(opButton, &QAbstractButton::clicked, [task, opMgr, op, spec](bool clicked) {
       (void)clicked;
+      if (auto taskItem = op->parameters()->findComponent("task"))
+      {
+        taskItem->setValue(task->shared_from_this());
+      }
       for (const auto& paramSpec : spec.children())
       {
         if (paramSpec.name() == "Association")
