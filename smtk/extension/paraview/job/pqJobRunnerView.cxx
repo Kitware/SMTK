@@ -63,6 +63,7 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QSlider>
 
 #include <chrono>
 #include <ctime>
@@ -100,7 +101,8 @@ public:
     // Configure the widget.
     auto* topLevelLayout = new QVBoxLayout;
     auto* upperLayout = new QHBoxLayout;
-    QFont fontAwesome("Font Awesome 7 Free");
+    QFont fontAwesome("Font Awesome 7 Free Solid");
+    fontAwesome.setStyleHint(QFont::AnyStyle, QFont::PreferOutline);
     m_lastRun = new QLabel("Last update: —");
     m_lastRun->setObjectName("LastRunLabel");
     m_lastRunStatus = new QLabel;
@@ -165,8 +167,8 @@ public:
         break;
       case smtk::job::Status::Terminated:
         // Circle x-mark: f057
-        text << "<b><span style=\"color: black; font-family:Font Awesome 7 "
-                "Free\"></span></b>&nbsp;";
+        text << "<b><span style=\"color: black; font-family:Font Awesome 7 Free "
+                "Solid\"></span></b>&nbsp;";
         break;
     }
     m_lastRunStatus->setPalette(palette);
@@ -179,7 +181,7 @@ public:
       return;
     }
     int ii = 0;
-    QFont fontAwesome("Font Awesome 7 Free");
+    QFont fontAwesome("Font Awesome 7 Free Solid");
     for (const auto& stage : jobType->stages())
     {
       auto* stageLabel = new QLabel(QString::fromStdString(stage->name()));
@@ -208,6 +210,45 @@ public:
             delete dialog;
           }
         });
+      }
+      for (const auto& artifact : stage->artifacts())
+      {
+        if (artifact.empty())
+        {
+          continue;
+        }
+        auto* artifactButton = new QPushButton;
+        auto* artifactControl = new QWidget;
+        artifactButton->setFont(fontAwesome);
+        artifactButton->setText("");
+        artifactButton->setToolTip(QString::fromStdString(artifact.string()));
+        auto* acLayout = new QHBoxLayout;
+        artifactControl->setLayout(acLayout);
+        artifactControl->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+        auto* visibilityButton = new QPushButton;
+        visibilityButton->setObjectName("visibility");
+        visibilityButton->setText(""); // Or 
+        auto* opacitySlider = new QSlider;
+        opacitySlider->setObjectName("opacity");
+        opacitySlider->setOrientation(Qt::Horizontal);
+        acLayout->addWidget(visibilityButton);
+        acLayout->addWidget(opacitySlider);
+        QObject::connect(
+          artifactButton,
+          &QPushButton::clicked,
+          [artifactButton, artifactControl, stage, jobType]() {
+            artifactControl->setVisible(!artifactControl->isVisible());
+            if (artifactControl->isVisible())
+            {
+              // auto rect = artifactButton->geometry();
+              auto bottomLeft = artifactButton->mapToGlobal(QPoint(10, 10));
+              // auto r2 = artifactControl->geometry();
+              // r2.setBottomLeft(bottomLeft);
+              artifactControl->setGeometry(
+                QRect(bottomLeft, QSize(250, artifactButton->geometry().height())));
+            }
+          });
+        m_stageGrid->addWidget(artifactButton, ii, 4);
       }
       ++ii;
     }
