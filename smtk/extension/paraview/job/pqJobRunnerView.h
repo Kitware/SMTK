@@ -21,6 +21,14 @@
 class pqPipelineSource;
 class pqDataRepresentation;
 
+namespace smtk
+{
+namespace job
+{
+class Job;
+}
+} // namespace smtk
+
 /** \brief A custom smtk view allowing users to create, schedule, and monitor a job.
   *
   * Users are provided with a button to run an operation, inspect the log file(s)
@@ -44,6 +52,9 @@ public:
   ~pqJobRunnerView() override = default;
 
   bool isEmpty() const override { return false; }
+
+  /// Return a pointer to the most recently-run job.
+  smtk::job::Job* currentJob() const;
 
 public Q_SLOTS:
   /** \brief Update controls based on current project state.

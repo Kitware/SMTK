@@ -9,6 +9,8 @@
 //=========================================================================
 #include "pqJobRunnerView.h"
 
+#include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtLogView.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -49,13 +51,20 @@
 #include "pqView.h"
 
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
+#include "vtkSMPropertyHelper.h"
 #include "vtkSMProxy.h"
+#include "vtkSMProxyManager.h"
+#include "vtkSMReaderFactory.h"
+#include "vtkSMRepresentationProxy.h"
+#include "vtkSMSession.h"
+#include "vtkSMSessionProxyManager.h"
 #include "vtkSMSourceProxy.h"
 
 // VTK includes
 #include "vtkNew.h"
 
 // Qt includes
+#include <QApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFont>
@@ -63,6 +72,7 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QScreen>
 #include <QSlider>
 
 #include <chrono>
@@ -80,6 +90,102 @@ namespace // anonmyous
 
 std::map<std::filesystem::path, QPointer<pqPipelineSource>> s_artifacts;
 
+pqPipelineSource* getPipelineSource(const std::filesystem::path& fullArtifactPath, bool& didCreate)
+{
+  auto it = s_artifacts.find(fullArtifactPath);
+  if (it != s_artifacts.end())
+  {
+    didCreate = false;
+    return it->second;
+  }
+
+  // Force the reader factory to allow ParaView (not just SMTK) readers:
+  bool ppm = pqSMTKBehavior::instance()->postProcessingMode();
+  pqSMTKBehavior::instance()->setPostProcessingMode(true);
+
+  auto* core = pqApplicationCore::instance();
+  auto* server = core ? core->getActiveServer() : nullptr;
+  auto* session = server ? server->session() : nullptr;
+  auto* proxyManager = vtkSMProxyManager::GetProxyManager();
+  auto* readerFactory = proxyManager ? proxyManager->GetReaderFactory() : nullptr;
+  if (!readerFactory)
+  {
+    return nullptr;
+  }
+
+  if (readerFactory->GetNumberOfRegisteredPrototypes() == 0)
+  {
+    readerFactory->UpdateAvailableReaders();
+  }
+  auto* builder = core->getObjectBuilder();
+  if (!readerFactory->TestFileReadability(fullArtifactPath.string().c_str(), session))
+  {
+    // Can't read because the file doesn't exist.
+    return nullptr;
+  }
+  if (!readerFactory->CanReadFile(fullArtifactPath.string().c_str(), session))
+  {
+    return nullptr;
+  }
+
+  auto* xmlGroup = readerFactory->GetReaderGroup();
+  auto* xmlName = readerFactory->GetReaderName();
+  // Re-disable post-processing mode if needed.
+  pqSMTKBehavior::instance()->setPostProcessingMode(ppm);
+
+  QStringList files;
+  files << QString::fromStdString(fullArtifactPath.string());
+  pqPipelineSource* source = builder->createReader(xmlGroup, xmlName, files, server);
+  auto* readerProxy = source->getSourceProxy();
+  didCreate = true;
+  s_artifacts[fullArtifactPath] = source;
+
+  // Push changes to server so that when the representation gets updated,
+  // it uses the property values we set.
+  readerProxy->UpdateVTKObjects();
+
+  // ensures that new timestep range, if any gets fetched from the server.
+  readerProxy->UpdatePipelineInformation();
+
+  // We have already pushed everything to the server manager.
+  // Thus, there is no state left to be modified.
+  source->setModifiedState(pqProxy::UNMODIFIED);
+
+  return source;
+}
+
+vtkSMRepresentationProxy* activeViewRepresentation(pqPipelineSource* source, bool visibility)
+{
+  if (!source)
+  {
+    return nullptr;
+  }
+  // Create representation for the active view if it's a render view
+  pqView* view = pqActiveObjects::instance().activeView();
+  vtkSMRepresentationProxy* proxy = nullptr;
+  if (pqRenderView* renderView = dynamic_cast<pqRenderView*>(view))
+  {
+    vtkNew<vtkSMParaViewPipelineControllerWithRendering> controller;
+    if (visibility)
+    {
+      proxy = dynamic_cast<vtkSMRepresentationProxy*>(
+        controller->Show(source->getSourceProxy(), 0, renderView->getViewProxy()));
+      // renderView->resetCamera();
+      proxy->SetRepresentationType("Surface With Edges");
+    }
+    else
+    {
+      proxy = dynamic_cast<vtkSMRepresentationProxy*>(
+        controller->Hide(source->getSourceProxy(), 0, renderView->getViewProxy()));
+    }
+  }
+  if (!proxy)
+  {
+    qCritical() << "No active view or data cannot be displayed in it.";
+  }
+  return proxy;
+}
+
 template<typename TP>
 std::time_t to_time_t(TP tp)
 {
@@ -89,6 +195,218 @@ std::time_t to_time_t(TP tp)
 }
 
 } // anonymous namespace
+
+class qtArtifactControlWidget : public QWidget
+{
+public:
+  qtArtifactControlWidget(
+    int stage,
+    const std::set<std::filesystem::path>& artifacts,
+    pqJobRunnerView* view)
+    : m_view(view)
+    , m_stage(stage)
+  {
+    QFont fontAwesome("Font Awesome 7 Free Solid");
+    auto* layout = new QHBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
+    this->setLayout(layout);
+    m_artifactButton = new QPushButton;
+    m_artifactButton->setFont(fontAwesome);
+    m_artifactButton->setText("");
+    layout->addWidget(m_artifactButton);
+    m_artifactControls = new QWidget;
+    auto* acLayout = new QVBoxLayout;
+    m_artifactControls->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::Popup);
+    m_artifactControls->setLayout(acLayout);
+    m_maximumLabelWidth = 0;
+    for (const auto& artifact : artifacts)
+    {
+      if (artifact.empty())
+      {
+        continue;
+      }
+
+      bool isReadable = true;
+      std::filesystem::path fullArtifactPath;
+      pqPipelineSource* source;
+      vtkSMProxy* repProxy = nullptr;
+      bool didCreate;
+      {
+        isReadable = false;
+        source = nullptr;
+        didCreate = false;
+      }
+      auto* nameLabel = new QLabel(QString::fromStdString(artifact.string()));
+      int labelWidth = nameLabel->fontMetrics().boundingRect(nameLabel->text()).width();
+      m_maximumLabelWidth = std::max(m_maximumLabelWidth, labelWidth);
+      auto* aLayout = new QHBoxLayout;
+      // Use the path hash as the layout name so we can find widgets without lots of maps.
+      aLayout->setObjectName(QString::number(std::filesystem::hash_value(artifact), 16));
+      auto* visibilityButton = new QPushButton;
+      visibilityButton->setObjectName("visibility");
+      visibilityButton->setCheckable(true);
+      visibilityButton->setChecked(true);
+      QObject::connect(
+        visibilityButton,
+        &QPushButton::toggled,
+        [this, visibilityButton, &artifact](bool makeVisible) {
+          if (this->toggleArtifactVisibility(artifact, makeVisible))
+          {
+            visibilityButton->setText(makeVisible ? "" : "");
+          }
+        });
+      auto* opacitySlider = new QSlider;
+      opacitySlider->setObjectName("opacity");
+      opacitySlider->setOrientation(Qt::Horizontal);
+      opacitySlider->setRange(0, 255);
+      if (repProxy)
+      {
+        vtkSMPropertyHelper vis(repProxy, "Visibility");
+        visibilityButton->setText(vis.GetAsInt() ? "" : ""); // Or 
+        vtkSMPropertyHelper alpha(repProxy, "Opacity");
+        opacitySlider->setValue(static_cast<int>(alpha.GetAsDouble() * 255.0));
+      }
+      else
+      {
+        visibilityButton->setText("");
+        opacitySlider->setValue(255);
+      }
+      // Keep these *after* the slider is initialized above.
+      QObject::connect(opacitySlider, &QSlider::sliderMoved, [&](int value) {
+        this->setArtifactOpacity(artifact, value);
+      });
+      QObject::connect(opacitySlider, &QSlider::valueChanged, [&](int value) {
+        this->setArtifactOpacity(artifact, value);
+      });
+      aLayout->addWidget(nameLabel);
+      aLayout->addWidget(visibilityButton);
+      aLayout->addWidget(opacitySlider);
+      acLayout->addLayout(aLayout);
+    }
+
+    // When the m_artifactButton is clicked, pop up m_artifactControls.
+    QObject::connect(
+      m_artifactButton, &QPushButton::clicked, this, &qtArtifactControlWidget::toggleControls);
+  }
+
+  QLayout* findLayout(const QString& layoutName)
+  {
+    if (!m_artifactControls || !m_artifactControls->layout() || layoutName.isEmpty())
+    {
+      return nullptr;
+    }
+    auto* parentLayout = m_artifactControls->layout();
+    for (int ii = 0; ii < parentLayout->count(); ++ii)
+    {
+      auto* item = parentLayout->itemAt(ii);
+      if (item && item->layout() && item->layout()->objectName() == layoutName)
+      {
+        return item->layout();
+      }
+    }
+    return nullptr;
+  }
+
+  void toggleControls()
+  {
+    m_artifactControls->setVisible(!m_artifactControls->isVisible());
+    if (m_artifactControls->isVisible())
+    {
+      // auto rect = m_artifactButton->geometry();
+      auto topLeft = m_artifactButton->mapToGlobal(QPoint(0, 0));
+      auto* screen = qApp->screenAt(topLeft);
+      if (!screen)
+      {
+        screen = qApp->primaryScreen();
+      }
+      auto sr = screen->geometry();
+      std::cout << "Screen " << screen << " (" << sr.x() << "," << sr.y() << " " << sr.width()
+                << "×" << sr.height() << ") "
+                << "at " << topLeft.x() << ", " << topLeft.y() << "\n";
+      // TODO: Choose placement of m_artifactControls so it is completely on-screen to one side of m_artifactButton.
+      auto bottomLeft = m_artifactButton->mapToGlobal(QPoint(10, 10));
+      // auto r2 = m_artifactControls->geometry();
+      // r2.setBottomLeft(bottomLeft);
+      m_artifactControls->setGeometry(
+        QRect(bottomLeft, QSize(m_maximumLabelWidth + 250, m_artifactButton->geometry().height())));
+
+      if (auto* job = m_view->currentJob())
+      {
+        // Now we need to update the controls for each artifact
+        // to reflect the current views/settings.
+        for (const auto& artifact : job->jobType()->stages()[m_stage]->artifacts())
+        {
+          std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
+          auto layoutName = QString::number(std::filesystem::hash_value(artifact), 16);
+          auto* layout = this->findLayout(layoutName);
+          if (layout)
+          {
+            bool didCreate = false;
+            auto* visibilityButton = qobject_cast<QPushButton*>(layout->itemAt(1)->widget());
+            auto* opacitySlider = qobject_cast<QSlider*>(layout->itemAt(2)->widget());
+            auto* source = getPipelineSource(fullArtifactPath, didCreate);
+            auto* repProxy = activeViewRepresentation(source, visibilityButton->isChecked());
+          }
+        }
+      }
+    }
+  }
+
+  bool toggleArtifactVisibility(const std::filesystem::path& artifact, bool makeVisible)
+  {
+    // Do not attempt to set visibility if there is no job (and thus no case directory)
+    if (auto* job = m_view->currentJob())
+    {
+      bool didCreate;
+      std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
+      auto* source = getPipelineSource(fullArtifactPath, didCreate);
+      auto* repProxy = activeViewRepresentation(source, true);
+      vtkSMPropertyHelper(repProxy, "Visibility").Set(makeVisible);
+      repProxy->UpdateVTKObjects();
+      if (auto view = pqActiveObjects::instance().activeView())
+      {
+        view->render();
+      }
+      return true;
+    }
+    return false;
+  }
+
+  void setArtifactOpacity(const std::filesystem::path& artifact, int value)
+  {
+    // Do not attempt to set opacity if there is no job (and thus no case directory)
+    if (auto* job = m_view->currentJob())
+    {
+      bool didCreate;
+      std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
+      auto* source = getPipelineSource(fullArtifactPath, didCreate);
+      auto* repProxy = activeViewRepresentation(source, true);
+      vtkSMPropertyHelper(repProxy, "Opacity").Set(value / 255.);
+      if (auto view = pqActiveObjects::instance().activeView())
+      {
+        view->render();
+      }
+    }
+  }
+
+protected:
+  void mousePressEvent(QMouseEvent* event) override
+  {
+    if (!m_artifactControls->underMouse())
+    {
+      // The click is not on the widget; hide the widget.
+      m_artifactControls->setVisible(false);
+      return;
+    }
+    QWidget::mousePressEvent(event);
+  }
+
+  QPushButton* m_artifactButton{ nullptr };
+  QWidget* m_artifactControls{ nullptr };
+  QPointer<pqJobRunnerView> m_view;
+  int m_maximumLabelWidth{ 0 };
+  int m_stage{ -1 };
+};
 
 class pqJobRunnerView::Internal
 {
@@ -102,7 +420,6 @@ public:
     auto* topLevelLayout = new QVBoxLayout;
     auto* upperLayout = new QHBoxLayout;
     QFont fontAwesome("Font Awesome 7 Free Solid");
-    fontAwesome.setStyleHint(QFont::AnyStyle, QFont::PreferOutline);
     m_lastRun = new QLabel("Last update: —");
     m_lastRun->setObjectName("LastRunLabel");
     m_lastRunStatus = new QLabel;
@@ -151,7 +468,7 @@ public:
     {
       default:
       case smtk::job::Status::Pending:
-        // Spinner: f2f1 
+        // Spinner: f2f1  or f110  or f1ce 
         m_lastRunStatus->setText("");
         palette.setColor(QPalette::WindowText, QColor(100, 100, 100)); // medium grey
         break;
@@ -211,44 +528,10 @@ public:
           }
         });
       }
-      for (const auto& artifact : stage->artifacts())
+      if (!stage->artifacts().empty())
       {
-        if (artifact.empty())
-        {
-          continue;
-        }
-        auto* artifactButton = new QPushButton;
-        auto* artifactControl = new QWidget;
-        artifactButton->setFont(fontAwesome);
-        artifactButton->setText("");
-        artifactButton->setToolTip(QString::fromStdString(artifact.string()));
-        auto* acLayout = new QHBoxLayout;
-        artifactControl->setLayout(acLayout);
-        artifactControl->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-        auto* visibilityButton = new QPushButton;
-        visibilityButton->setObjectName("visibility");
-        visibilityButton->setText(""); // Or 
-        auto* opacitySlider = new QSlider;
-        opacitySlider->setObjectName("opacity");
-        opacitySlider->setOrientation(Qt::Horizontal);
-        acLayout->addWidget(visibilityButton);
-        acLayout->addWidget(opacitySlider);
-        QObject::connect(
-          artifactButton,
-          &QPushButton::clicked,
-          [artifactButton, artifactControl, stage, jobType]() {
-            artifactControl->setVisible(!artifactControl->isVisible());
-            if (artifactControl->isVisible())
-            {
-              // auto rect = artifactButton->geometry();
-              auto bottomLeft = artifactButton->mapToGlobal(QPoint(10, 10));
-              // auto r2 = artifactControl->geometry();
-              // r2.setBottomLeft(bottomLeft);
-              artifactControl->setGeometry(
-                QRect(bottomLeft, QSize(250, artifactButton->geometry().height())));
-            }
-          });
-        m_stageGrid->addWidget(artifactButton, ii, 4);
+        auto* artifactControlWidget = new qtArtifactControlWidget(ii, stage->artifacts(), m_view);
+        m_stageGrid->addWidget(artifactControlWidget, ii, 4);
       }
       ++ii;
     }
@@ -335,6 +618,11 @@ pqJobRunnerView::pqJobRunnerView(const smtk::view::Information& info)
   this->createWidget();
   m_p =
     std::make_unique<Internal>(this, this->configuration()); // NB: Must come after createWidget().
+}
+
+smtk::job::Job* pqJobRunnerView::currentJob() const
+{
+  return m_p->m_lastJob.lock().get();
 }
 
 void pqJobRunnerView::updateUI()
