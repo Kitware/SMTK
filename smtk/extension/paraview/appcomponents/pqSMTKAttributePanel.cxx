@@ -600,6 +600,10 @@ bool pqSMTKAttributePanel::displayTaskAttribute(smtk::task::Task* task)
   smtk::common::TypeContainer taskConfigData;
   if (!task->getViewData(taskConfigData) || !taskConfigData.contains<ResourceSet>())
   {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Could not fetch view configuration data from any agent of the \"" << task->name()
+                                                                         << "\" task.");
     return didDisplay;
   }
   auto managers = task->manager()->managers();
