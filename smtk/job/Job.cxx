@@ -396,10 +396,10 @@ bool Job::restore(
   const std::string& mountPoint,
   bool autoSchedule)
 {
-  // Do not allow a job to be restored from a mismatched ID or different queue.
-  if (
-    !queue || (m_queue && m_queue != queue) || uid.isNull() ||
-    (!this->id().isNull() && this->id() != uid))
+  // Do not allow a job to be restored from a different queue.
+  // Because jobs are created with a random UUID, we cannot force
+  // uid to match the previous value of m_id.
+  if (!queue || (m_queue && m_queue != queue))
   {
     return false;
   }
