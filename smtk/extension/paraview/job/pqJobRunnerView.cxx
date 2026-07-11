@@ -515,6 +515,7 @@ public:
         auto* stageLog = new QPushButton;
         stageLog->setFont(fontAwesome);
         stageLog->setText("");
+        stageLog->setObjectName("log stage " + QString::number(ii));
         m_stageGrid->addWidget(stageLog, ii, 3);
         QObject::connect(stageLog, &QPushButton::clicked, [&]() {
           auto* job = m_agent->job();
@@ -565,10 +566,12 @@ public:
       QLayoutItem* child;
       while ((child = m_stageGrid->takeAt(0)) != 0)
       {
+        delete child->widget();
         delete child;
       }
       while ((child = m_artifactGrid->takeAt(0)) != 0)
       {
+        delete child->widget();
         delete child;
       }
       // Populate grids.
@@ -622,7 +625,17 @@ pqJobRunnerView::pqJobRunnerView(const smtk::view::Information& info)
 
 smtk::job::Job* pqJobRunnerView::currentJob() const
 {
-  return m_p->m_lastJob.lock().get();
+  auto lastJob = m_p->m_lastJob.lock();
+  if (!lastJob)
+  {
+    auto* agentJob = m_p->m_agent->job();
+    if (agentJob)
+    {
+      lastJob = agentJob->shared_from_this();
+      m_p->m_lastJob = lastJob;
+    }
+  }
+  return lastJob.get();
 }
 
 void pqJobRunnerView::updateUI()
