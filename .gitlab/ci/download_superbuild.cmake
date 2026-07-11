@@ -8,13 +8,13 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}-{platform}.tar.gz
-# 20251016 - Update to use Xcode 16.4
+# 20260710 - Update for macOS migration to tart
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_id "1Lgvxxinbfn9MzaTdHO5jGOJLuqJb5Ieh")
-  set(file_hash "abaea637dd10a2c8caccc50b4f8523073336ff316da00b1a3ca348681fd07148e8045571412b14447c790dde814b8e7f9051fedf25e1e533324841ab9c7256a8")
+  set(file_id "19DJ7JszK1dlF3iN8qpW_eWkCKHHfSv5Q")
+  set(file_hash "dee0953ec57cdda479f9388114ae14a4a4e83c0b5fe69fd46ed4cae7b3768f4a70a122d37efbcdbc6cdc20dac53a1347fc04f11cac9b4f64e393ac3f7c072d0a")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_id "14r4MIcZJbupOs9aLnM_PPnxaIuwsQvlt")
-  set(file_hash "1d8d2f83df43d4b3ea2cbd9934c2c451daa19a6546d3e535ce0ab783ac5f9bf40d60790e883edba1da9abb03af37b2bb623770c84178fd076a78da53b35d51eb")
+  set(file_id "17cxTIRb20ZcIRZPK9CyK5erExU2YMzom")
+  set(file_hash "421199e7baecb99ffc149e6f0188b662f81995e8fa3870bcdad54d23a9dca9451388da6147369ee2d47a50e4213bc89f632c11e6ac99b2cda4d9784410c93bd2")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")
