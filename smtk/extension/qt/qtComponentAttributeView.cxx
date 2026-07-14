@@ -428,24 +428,34 @@ void qtComponentAttributeView::updateModelEntities()
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(this->attributeResource());
 
+  // If there are more than one possible definition then construct
+  // a combobox so the user can select the appropriate one.  Else
+  // just insert the definition's displayed type name
   // Create an initial string list for the combo boxes
   QStringList slist;
-  for (int i = 0; i < currentDefs.size(); ++i)
+  if (currentDefs.size() != 1)
   {
-    slist.append(currentDefs.at(i)->displayedTypeName().c_str());
+    for (int i = 0; i < currentDefs.size(); ++i)
+    {
+      slist.append(currentDefs.at(i)->displayedTypeName().c_str());
+    }
+
+    // Turn off sorting:
+    this->Internals->ListTable->setSortingEnabled(false);
+
+    // Add Special entry for the case of no attribute assigned
+    slist.append(this->Internals->m_unSetVal.c_str());
+
+    auto* col2Delegate =
+      new qComponentAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
+    this->Internals->ListTable->blockSignals(true);
+    this->Internals->ListTable->setRowCount(0);
+    this->Internals->ListTable->setItemDelegateForColumn(1, col2Delegate);
   }
-
-  // Turn off sorting:
-  this->Internals->ListTable->setSortingEnabled(false);
-
-  // Add Special entry for the case of no attribite assigned
-  slist.append(this->Internals->m_unSetVal.c_str());
-
-  auto* col2Delegate =
-    new qComponentAttributeViewComboBoxItemDelegate(slist, this->Internals->ListTable);
-  this->Internals->ListTable->blockSignals(true);
-  this->Internals->ListTable->setRowCount(0);
-  this->Internals->ListTable->setItemDelegateForColumn(1, col2Delegate);
+  else
+  {
+    slist.append(currentDefs.at(0)->displayedTypeName().c_str());
+  }
 
   std::set<smtk::resource::PersistentObjectPtr> entities;
   if (!this->Internals->m_attDefinitions.empty())
@@ -474,7 +484,18 @@ void qtComponentAttributeView::updateModelEntities()
     auto att = this->Internals->getAttribute(entity);
     if (att == nullptr)
     {
-      item = new QTableWidgetItem(slist.at(slist.size() - 1));
+      // If there is only one definition available then create an attribute
+      // for this entity, else set the column value to please select
+      if (currentDefs.size() == 1)
+      {
+        auto newAtt = this->attributeResource()->createAttribute(currentDefs.at(0));
+        newAtt->associate(entity);
+        item = new QTableWidgetItem(slist.at(slist.size() - 1));
+      }
+      else
+      {
+        item = new QTableWidgetItem(currentDefs.at(0)->displayedTypeName().c_str());
+      }
     }
     else
     {
