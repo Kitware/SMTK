@@ -196,6 +196,14 @@ protected:
   /// Remove all database entries (ivars, jobs, logs, etc.) for this queue.
   bool destroyQueueData();
 
+  /// Set the maximum job size.
+  ///
+  /// This is protected and should only be called by subclasses that can introspect
+  /// the maximum size for the queue. This will only return true if the size was
+  /// updated. The size will only be modified if the previous value of m_maximumJobSize
+  /// was -1.
+  bool setMaximumJobSize(int maximumJobSize);
+
   /// Load 1 job from the database (adding it to m_liveJobs and returning the shared job pointer).
   std::shared_ptr<Job> loadJob(const smtk::common::UUID& jobId) const;
 

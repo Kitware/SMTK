@@ -141,6 +141,7 @@ public:
 
 protected:
   friend class UpdateContainerQueueMachine;
+  using DatabaseQueue::setMaximumJobSize;
 
 public Q_SLOTS:
   /// When users change the ProjectsRootFolder setting (in the Edit→Settings dialog),

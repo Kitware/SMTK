@@ -457,14 +457,12 @@ bool DatabaseQueue::removeTag(smtk::string::Token tag)
 
 std::string DatabaseQueue::location() const
 {
-  // TODO: Fetch location from database.
-  return std::string();
+  return m_location;
 }
 
 std::uint64_t DatabaseQueue::maximumJobSize() const
 {
-  // TODO: Fetch maximum size from database.
-  return 0;
+  return static_cast<std::uint64_t>(m_maximumSize);
 }
 
 std::shared_ptr<smtk::job::Job> DatabaseQueue::findJob(const smtk::common::UUID& uid) const
@@ -1148,6 +1146,22 @@ bool DatabaseQueue::destroyQueueData()
   query << "delete from queues where id=" << m_queueId << ";";
   bool ok = query.execute();
   return ok;
+}
+
+bool DatabaseQueue::setMaximumJobSize(int maximumJobSize)
+{
+  if (m_maximumSize < 0 && maximumJobSize > 0)
+  {
+    sqlQuery query(m_db);
+    query << "update queues set max_size=" << maximumJobSize << " where id=" << m_queueId << ";";
+    bool didUpdate = query.execute();
+    if (didUpdate)
+    {
+      m_maximumSize = maximumJobSize;
+    }
+    return didUpdate;
+  }
+  return false;
 }
 
 std::shared_ptr<Job> DatabaseQueue::loadJob(const smtk::common::UUID& jobId) const

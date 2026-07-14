@@ -125,7 +125,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
         /* description */
         R"(A queue that runs each of its jobs in a container hosted by the local machine.)",
         /* location */ "localhost",
-        /* maximum job size */ 0,
+        /* maximum job size */ -1,
         /* capability tags */ { "container"_token, "bash"_token, "local"_token },
         containerEnginePath,
         /* remove queue on destruction */ false,

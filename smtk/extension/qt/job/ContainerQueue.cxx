@@ -49,6 +49,10 @@
 #define SMTK_PLATFORM_UNIX 0
 #endif
 
+#if SMTK_PLATFORM_UNIX
+#include <unistd.h> // For sysconf()
+#endif
+
 using namespace smtk::job::db;
 
 namespace smtk
@@ -591,6 +595,23 @@ bool ContainerQueue::checkQueueRoot(const std::filesystem::path& root)
   auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
   if (!forceVM || !forceVM[0])
   {
+    // If we don't need to start (or stop, delete, init, and start) the machine,
+    // we do want to limit the maximum queue size if the registrar set it to a
+    // negative number.
+    int maxJobSize = 0;
+#ifdef _SC_NPROCESSORS_ONLN
+    maxJobSize = static_cast<int>(sysconf(_SC_NPROCESSORS_ONLN));
+#endif
+    if (maxJobSize > 0)
+    {
+      // Containers should use at most half the processors
+      maxJobSize = (maxJobSize > 1 ? maxJobSize / 2 : 1);
+      // This call will only update the maximum size if
+      // the registrar initialized the m_maximumSize ivar to -1.
+      // This allows queues to have limits unrelated to the actual
+      // core count of a machine.
+      this->setMaximumJobSize(maxJobSize);
+    }
     return false;
   }
 #endif

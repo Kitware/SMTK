@@ -43,6 +43,10 @@
 #define SMTK_PLATFORM_UNIX 0
 #endif
 
+#if SMTK_PLATFORM_UNIX
+#include <unistd.h> // For sysconf()
+#endif
+
 namespace smtk
 {
 namespace qt
@@ -68,7 +72,24 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
     // we do not need (or want) to create a podman machine.
     auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
 
-    // Just mark the queue as online.
+    // Set the maximum job size (if the queue was initialized by its Registrar
+    // with -1 as the maximum job size) based on the number of available CPUs.
+    int maxJobSize = 0;
+#ifdef _SC_NPROCESSORS_ONLN
+    maxJobSize = static_cast<int>(sysconf(_SC_NPROCESSORS_ONLN));
+#endif
+    if (maxJobSize > 0)
+    {
+      // Containers should use at most half the processors
+      maxJobSize = (maxJobSize > 1 ? maxJobSize / 2 : 1);
+      // This call will only update the maximum size if
+      // the registrar initialized the m_maximumSize ivar to -1.
+      // This allows queues to have limits unrelated to the actual
+      // core count of a machine.
+      queue->setMaximumJobSize(maxJobSize);
+    }
+
+    // Mark the queue as online.
     // TODO: If the queue was offline, should we add it to the result?
     queue->setQueueOnline(true);
 
@@ -105,6 +126,7 @@ UpdateContainerQueueMachine::Result UpdateContainerQueueMachine::operateInternal
       {
         machineExists = true;
         isRunning = (machineInfo[0]["State"] == "Running");
+        queue->setMaximumJobSize(machineInfo[0]["Resources"]["CPUs"].get<int>());
       }
     }
     else
