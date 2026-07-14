@@ -198,13 +198,35 @@ void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
   // fonts that are used by classes such as qtTaskNode
   if (QCoreApplication::instance())
   {
-    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeRegular.otf") < 0)
+    int id = QFontDatabase::addApplicationFont(":/fonts/fontAwesomeRegular.otf");
+    if (id < 0)
     {
       qWarning() << "FontAwesomeRegular cannot be loaded !";
     }
-    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeSolid.otf") < 0)
+#if 0
+    else
+    {
+      QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+      qInfo() << "Loaded \"" << family << "\".";
+    }
+#endif
+    id = QFontDatabase::addApplicationFont(":/fonts/fontAwesomeSolid.otf");
+    if (id < 0)
     {
       qWarning() << "FontAwesomeSolid cannot be loaded !";
+    }
+#if 1
+    else
+    {
+      QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+      qInfo() << "Loaded \"" << family << "\".";
+    }
+#endif
+    QFontDatabase db;
+    qInfo() << "List fonts:\n";
+    for (int ii = 0; ii < db.families().size(); ++ii)
+    {
+      qInfo() << db.families().at(ii);
     }
   }
 }
