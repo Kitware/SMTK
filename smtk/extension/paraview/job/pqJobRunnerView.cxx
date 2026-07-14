@@ -291,6 +291,11 @@ public:
 
   ~qtArtifactControlWidget() { this->hideArtifacts(); }
 
+  void updateJobStage(int currentJobStage)
+  {
+    m_artifactButton->setEnabled(currentJobStage > m_stage);
+  }
+
   void hideArtifacts()
   {
     bool didHide = false;
@@ -582,9 +587,19 @@ public:
     int ii = 0;
     for (const auto& stage : job->jobType()->stages())
     {
-      if (auto* label = dynamic_cast<QLabel*>(m_stageGrid->itemAtPosition(ii, 2)->widget()))
+      if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 2))
       {
-        label->setText(ii <= stageIndex ? "" : "");
+        if (auto* label = dynamic_cast<QLabel*>(layoutItem->widget()))
+        {
+          label->setText(ii < stageIndex ? "" : (ii == stageIndex ? "" : ""));
+        }
+      }
+      if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 4))
+      {
+        if (auto* control = dynamic_cast<qtArtifactControlWidget*>(layoutItem->widget()))
+        {
+          control->updateJobStage(stageIndex);
+        }
       }
       ++ii;
     }
