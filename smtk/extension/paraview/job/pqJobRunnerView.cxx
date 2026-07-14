@@ -289,6 +289,33 @@ public:
       m_artifactButton, &QPushButton::clicked, this, &qtArtifactControlWidget::toggleControls);
   }
 
+  ~qtArtifactControlWidget() { this->hideArtifacts(); }
+
+  void hideArtifacts()
+  {
+    bool didHide = false;
+    if (m_view && m_stage >= 0)
+    {
+      if (auto* job = m_view->currentJob())
+      {
+        const auto& stages = job->jobType()->stages();
+        if (m_stage < stages.size())
+        {
+          const auto& stage = stages[m_stage];
+          for (const auto& artifact : stage->artifacts())
+          {
+            auto fullArtifactPath = job->caseDirectory() / artifact;
+            auto it = s_artifacts.find(fullArtifactPath);
+            if (it != s_artifacts.end())
+            {
+              activeViewRepresentation(it->second, /*show*/ false);
+            }
+          }
+        }
+      }
+    }
+  }
+
   QLayout* findLayout(const QString& layoutName)
   {
     if (!m_artifactControls || !m_artifactControls->layout() || layoutName.isEmpty())
@@ -452,6 +479,12 @@ public:
       ->updateJobControls(); // Add per-stage status and log button. Add artifact vis controls. Update label of m_jobControl button.
   }
 
+  ~Internal()
+  {
+    // Destroy widgets in layouts in order to hide artifacts
+    this->emptyGrids();
+  }
+
   void updateLastRunTime(smtk::job::Job* job)
   {
     if (!job)
@@ -557,23 +590,28 @@ public:
     }
   }
 
+  void emptyGrids()
+  {
+    // Reset grids.
+    QLayoutItem* child;
+    while ((child = m_stageGrid->takeAt(0)) != 0)
+    {
+      delete child->widget();
+      delete child;
+    }
+    while ((child = m_artifactGrid->takeAt(0)) != 0)
+    {
+      delete child->widget();
+      delete child;
+    }
+  }
+
   void updateJobControls()
   {
     auto job = m_agent->job();
     if (m_lastJob.lock().get() != job || !job)
     {
-      // Reset grids.
-      QLayoutItem* child;
-      while ((child = m_stageGrid->takeAt(0)) != 0)
-      {
-        delete child->widget();
-        delete child;
-      }
-      while ((child = m_artifactGrid->takeAt(0)) != 0)
-      {
-        delete child->widget();
-        delete child;
-      }
+      this->emptyGrids();
       // Populate grids.
       this->addStages(job ? job->jobType() : m_agent->jobType());
       // this->addArtifacts(job);
