@@ -499,7 +499,14 @@ public:
     }
     auto modificationTime = job->modificationTime();
     std::ostringstream text;
-    text << "Last update: " << std::asctime(std::localtime(&modificationTime));
+    if (modificationTime < 0)
+    {
+      text << "Last update: —";
+    }
+    else
+    {
+      text << "Last update: " << std::asctime(std::localtime(&modificationTime));
+    }
     m_lastRun->setText(QString::fromStdString(text.str()));
     QPalette palette = m_lastRunStatus->palette();
     switch (job->status())
