@@ -13,6 +13,8 @@
 
 #include "smtk/job/Queue.h"
 
+#include <thread>
+
 struct sqlite3;
 
 namespace smtk
@@ -233,6 +235,11 @@ protected:
   /// Remove a queue tag from the database tag table.
   bool removeTagFromDatabase(smtk::string::Token tag);
 
+  /// A mutex used to control access to m_liveJobs
+  ///
+  /// This allows operations to run in background threads while a
+  /// GUI queries job state (but does not modify jobs).
+  mutable std::mutex m_jobMutex;
   /// Jobs from the database which also reside in memory.
   mutable std::unordered_map<smtk::common::UUID, std::shared_ptr<Job>> m_liveJobs;
   /// True when the class destructor should call destroyQueueData().

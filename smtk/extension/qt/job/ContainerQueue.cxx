@@ -30,6 +30,7 @@
 #include <QFileSystemWatcher>
 #include <QPointer>
 #include <QProcess>
+#include <QTimer>
 
 #include <algorithm>
 #include <cctype>
@@ -100,20 +101,113 @@ class ContainerQueue::Internal
 public:
   Internal(ContainerQueue* self)
     : m_self(self)
-    , m_watcher(new QFileSystemWatcher)
     , m_engine("podman")
   {
-    QObject::connect(
-      m_watcher.data(), &QFileSystemWatcher::fileChanged, self, &ContainerQueue::fileUpdated);
-    QObject::connect(
-      m_watcher.data(),
-      &QFileSystemWatcher::directoryChanged,
-      self,
-      &ContainerQueue::directoryUpdated);
+    // Every 100ms, poll any case-directory progress files that may have changed.
+    m_timer.setInterval(100 /*ms*/);
+    m_timer.setSingleShot(false);
+    QObject::connect(&m_timer, &QTimer::timeout, self, &ContainerQueue::updateJobStates);
+    m_timer.start();
+    // QObject::connect(m_watcher.data(), &QFileSystemWatcher::fileChanged,
+    //   self, &ContainerQueue::fileUpdated);
+    // QObject::connect(m_watcher.data(), &QFileSystemWatcher::directoryChanged,
+    //   self, &ContainerQueue::directoryUpdated);
   }
 
   using PathUpdateResponder = std::function<void(const QString&)>;
 
+  void startPollingJobProgress(Job* job)
+  {
+    if (!job)
+    {
+      return;
+    }
+    std::lock_guard<std::mutex> lock(m_pollLock);
+    m_pathsToPoll[job->caseDirectory() / "logs" / "progress"] = job->id();
+  }
+
+  void stopPollingJobProgress(Job* job)
+  {
+    if (!job)
+    {
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(m_pollLock);
+    m_pathsToPoll.erase(job->caseDirectory() / "logs" / "progress");
+  }
+
+  void updateJobStates()
+  {
+    auto operationManager = m_self->operationManager();
+    if (!operationManager)
+    {
+      return;
+    }
+
+    std::unordered_map<std::filesystem::path, smtk::common::UUID> pathMap;
+    {
+      std::lock_guard<std::mutex> lock(m_pollLock);
+      pathMap = m_pathsToPoll;
+    }
+    for (auto [path, jobId] : pathMap)
+    {
+      std::ifstream pp(path);
+      int stage = -3;
+      pp >> stage;
+      if (pp.good() && stage > -3)
+      {
+        // std::cerr << "  Stage " << stage << "\n";
+        if (auto job = m_self->findJob(jobId))
+        {
+          if (
+            job->stage() == stage || job->state() < smtk::job::Scheduled ||
+            job->state() > smtk::job::Running)
+          {
+            // Do not fire an update when not needed.
+            continue;
+          }
+          auto updater = operationManager->create<smtk::job::JobUpdated>();
+          updater->parameters()->associate(job);
+          updater->parameters()->findInt("stage")->setIsEnabled(true);
+          updater->parameters()->findInt("stage")->setValue(stage);
+          updater->parameters()->findInt("state")->setIsEnabled(true);
+          updater->parameters()->findInt("state")->setValue(
+            stage < 0 ? static_cast<int>(smtk::job::State::Scheduled)
+              : stage < job->jobType()->stages().size()
+              ? static_cast<int>(smtk::job::State::Running)
+              : static_cast<int>(smtk::job::State::Completed));
+          if (stage < 0)
+          {
+            updater->parameters()->findInt("status")->setIsEnabled(true);
+            updater->parameters()->findInt("status")->setValue(
+              static_cast<int>(smtk::job::Status::Pending));
+          }
+          else if (stage == job->jobType()->stages().size())
+          {
+            updater->parameters()->findInt("status")->setIsEnabled(true);
+            updater->parameters()->findInt("status")->setValue(
+              static_cast<int>(smtk::job::Status::Succeeded));
+            // No need to watch this job any longer.
+            {
+              std::lock_guard<std::mutex> lock(m_pollLock);
+              m_pathsToPoll.erase(path);
+            }
+          }
+          operationManager->launchers()(updater);
+        }
+        else
+        {
+          // Job was removed from Queue?
+          smtkErrorMacro(
+            smtk::io::Logger::instance(),
+            "Job " << jobId << " has been updated but is not present in queue.");
+        }
+      }
+    }
+  }
+
+#if 0
   bool addPathDispatch(const QString& path, PathUpdateResponder function)
   {
     auto it = m_dispatch.find(path);
@@ -138,11 +232,24 @@ public:
       it->second(path);
     }
   }
+#endif
 
+  // QScopedPointer<QFileSystemWatcher> m_watcher;
+  // std::unordered_map<QString, std::function<void(const QString&)>> m_dispatch;
+
+  /// The parent queue which owns this Internal object.
   ContainerQueue* m_self{ nullptr };
-  QScopedPointer<QFileSystemWatcher> m_watcher;
-  std::unordered_map<QString, std::function<void(const QString&)>> m_dispatch;
+  /// The container engine (podman or docker) used to run jobs.
   smtk::string::Token m_engine;
+  /// A timer for polling "active" jobs for updates.
+  QTimer m_timer;
+  /// A mutex used to lock access to m_pathsToPoll. This is needed since the GUI
+  /// thread will be polling jobs while operations will be adding/removing/updating them.
+  std::mutex m_pollLock;
+  /// The active job set. A map from absolute paths to "logs/progress" files to job UUID.
+  /// Each time m_timer fires, all of these paths are polled to see if the job's stage
+  /// can be updated.
+  std::unordered_map<std::filesystem::path, smtk::common::UUID> m_pathsToPoll;
 
   /// The user ID to use when running processes in a docker container.
   int m_dockerUserId{ -1 };
@@ -237,19 +344,23 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   QProcess proc;
   proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
   proc.setWorkingDirectory(QString::fromStdString(job->caseDirectory().string()));
+#if 0
   // We watch files for updates on the host OS, not the container OS.
   m_p->addPathDispatch(
     QString::fromStdString((job->caseDirectory() / "logs").string()),
-    [job, this](const QString& path) {
+    [job, this](const QString& path)
+    {
       if (path.endsWith("logs"))
       {
         // Watch "progress" inside this dir.
         m_p->m_watcher->addPath(path + "/progress");
       }
-    });
+    }
+  );
   m_p->addPathDispatch(
     QString::fromStdString((job->caseDirectory() / "logs" / "progress").string()),
-    [job, this](const QString& path) {
+    [job, this](const QString& path)
+    {
       if (path.endsWith("progress"))
       {
         std::ifstream pp(path.toStdString().c_str());
@@ -266,27 +377,29 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
             updater->parameters()->findInt("stage")->setValue(stage);
             updater->parameters()->findInt("state")->setIsEnabled(true);
             updater->parameters()->findInt("state")->setValue(
-              stage < 0 ? static_cast<int>(smtk::job::State::Scheduled)
-                : stage < job->jobType()->stages().size()
-                ? static_cast<int>(smtk::job::State::Running)
-                : static_cast<int>(smtk::job::State::Completed));
+              stage < 0 ?
+                static_cast<int>(smtk::job::State::Scheduled) :
+                  stage < job->jobType()->stages().size() ?
+                    static_cast<int>(smtk::job::State::Running) :
+                      static_cast<int>(smtk::job::State::Completed)
+            );
             if (stage < 0)
             {
               updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(
-                static_cast<int>(smtk::job::Status::Pending));
+              updater->parameters()->findInt("status")->setValue(static_cast<int>(smtk::job::Status::Pending));
             }
             else if (stage == job->jobType()->stages().size())
             {
               updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(
-                static_cast<int>(smtk::job::Status::Succeeded));
+              updater->parameters()->findInt("status")->setValue(static_cast<int>(smtk::job::Status::Succeeded));
             }
             operationManager->launchers()(updater);
           }
         }
       }
-    });
+    }
+  );
+#endif
 #if 0
   {
     // For debugging:
@@ -340,10 +453,13 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
   std::cerr << "\"\n";
 #endif
+  // Set the job stage and status:
+  job->setStage(-1);
+  job->setState(smtk::job::State::Scheduled);
+  job->setStatus(smtk::job::Status::Pending);
+  m_p->startPollingJobProgress(job.get());
   // Because launching a container with "-d" (--detach) returns immediately, wait
   // until we get the container ID as output; it will serve as the job's queue ID.
-  job->setStage(-1);
-  job->setStatus(smtk::job::Status::Pending);
   proc.start();
   proc.waitForFinished(-1);
   auto queueId = proc.readAllStandardOutput().toStdString();
@@ -396,6 +512,12 @@ bool ContainerQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
     //   "Kill command failed (status " << proc.exitStatus() << " code " << proc.exitCode() << ").");
     return false;
   }
+  // Lock the map of paths to poll and remove this job's progress path.
+  // After this, we can guarantee no more operations will be queued from
+  // updateJobStates(), though some jobs updating the job may already
+  // have been submitted. They should not update the job state, though,
+  // once it is set to canceled/terminated.
+  m_p->stopPollingJobProgress(job.get());
   job->setState(State::Canceled);
   job->setStatus(Status::Terminated);
   this->updateJobDatabaseInfo(job);
@@ -567,17 +689,17 @@ bool ContainerQueue::setDockerGID(int gid)
   return true;
 }
 
-void ContainerQueue::fileUpdated(const QString& path)
-{
-  // std::cerr << "File Path \"" << path.toStdString() << "\" updated.\n";
-  m_p->dispatchUpdate(path);
-}
-
-void ContainerQueue::directoryUpdated(const QString& path)
-{
-  // std::cerr << "Directory Path \"" << path.toStdString() << "\" updated.\n";
-  m_p->dispatchUpdate(path);
-}
+// void ContainerQueue::fileUpdated(const QString& path)
+// {
+//   // std::cerr << "File Path \"" << path.toStdString() << "\" updated.\n";
+//   m_p->dispatchUpdate(path);
+// }
+//
+// void ContainerQueue::directoryUpdated(const QString& path)
+// {
+//   // std::cerr << "Directory Path \"" << path.toStdString() << "\" updated.\n";
+//   m_p->dispatchUpdate(path);
+// }
 
 bool ContainerQueue::setQueueOnline(bool online)
 {
@@ -587,6 +709,11 @@ bool ContainerQueue::setQueueOnline(bool online)
   }
   m_queueOnline = online;
   return true;
+}
+
+void ContainerQueue::updateJobStates()
+{
+  m_p->updateJobStates();
 }
 
 bool ContainerQueue::checkQueueRoot(const std::filesystem::path& root)

@@ -125,9 +125,13 @@ public:
   bool allowsCancellation() const override { return true; }
 
   /// Run the given job as a separate process.
+  /// This should only be called from within the smtk::job::ScheduleJob operation.
   bool schedule(const std::shared_ptr<smtk::job::Job>& job) override;
+
   /// Cancel a scheduled job (whether it is running or not).
+  /// This should only be called from within the smtk::job::CancelJob operation.
   bool cancel(const std::shared_ptr<smtk::job::Job>& job) override;
+
   /// Return the state of a job.
   smtk::job::State jobState(const std::shared_ptr<smtk::job::Job>& job) override;
   /// Return the completion-status of a job.
@@ -202,8 +206,8 @@ protected Q_SLOTS:
   ///@{
   /// Called when the internal filesystem-watcher notices a watched log
   /// directory or progress file has been modified.
-  void fileUpdated(const QString& path);
-  void directoryUpdated(const QString& path);
+  // void fileUpdated(const QString& path);
+  // void directoryUpdated(const QString& path);
   ///@}
 
   ///@{
@@ -214,6 +218,9 @@ protected Q_SLOTS:
   /// exist or has been stopped.
   bool setQueueOnline(bool online);
   ///@}
+
+  /// Iterate m_p->m_pathsToPoll to see if any job states have changed.
+  void updateJobStates();
 
 protected:
   /// Returns true if the queue's (podman) machine has the given \a root.

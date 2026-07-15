@@ -415,7 +415,16 @@ void DatabaseQueue::visit(std::function<void(const smtk::resource::ComponentPtr&
   // First, ensure all jobs are live jobs.
   this->loadAllJobs();
   // Then, iterate live jobs.
-  for (auto [uid, job] : m_liveJobs)
+  // We "freeze" the job map and iterate the copy to avoid
+  // holding a lock for the entire iteration. This means that
+  // if the visitor removes jobs other than the one it is passed,
+  // it will still be invoked on the removed job.
+  std::unordered_map<smtk::common::UUID, std::shared_ptr<Job>> freeze;
+  {
+    std::lock_guard<std::mutex> lock(m_jobMutex);
+    freeze = m_liveJobs;
+  }
+  for (auto [uid, job] : freeze)
   {
     v(job);
   }
@@ -467,10 +476,13 @@ std::uint64_t DatabaseQueue::maximumJobSize() const
 
 std::shared_ptr<smtk::job::Job> DatabaseQueue::findJob(const smtk::common::UUID& uid) const
 {
-  auto it = m_liveJobs.find(uid);
-  if (it != m_liveJobs.end())
   {
-    return it->second;
+    std::lock_guard<std::mutex> lock(m_jobMutex);
+    auto it = m_liveJobs.find(uid);
+    if (it != m_liveJobs.end())
+    {
+      return it->second;
+    }
   }
 
   return this->fetchJobData(uid);
@@ -623,12 +635,16 @@ std::shared_ptr<smtk::job::Job> DatabaseQueue::fetchJobData(const smtk::common::
     jobMountPoint,
     jobAutoSchedule != 0);
   // TODO: Restore job links
-  m_liveJobs[uid] = job;
+  {
+    std::lock_guard<std::mutex> lock(m_jobMutex);
+    m_liveJobs[uid] = job;
+  }
   return job;
 }
 
 bool DatabaseQueue::add(const std::shared_ptr<Job>& job)
 {
+  std::lock_guard<std::mutex> lock(m_jobMutex);
   if (!job || job->queue() != this || m_liveJobs.find(job->id()) != m_liveJobs.end())
   {
     return false;
@@ -717,9 +733,12 @@ std::set<std::shared_ptr<Job>> DatabaseQueue::allJobs() const
 {
   this->loadAllJobs();
   std::set<std::shared_ptr<Job>> result;
-  for (auto [uid, job] : m_liveJobs)
   {
-    result.insert(job);
+    std::lock_guard<std::mutex> lock(m_jobMutex);
+    for (auto [uid, job] : m_liveJobs)
+    {
+      result.insert(job);
+    }
   }
   return result;
 }
@@ -1166,10 +1185,13 @@ bool DatabaseQueue::setMaximumJobSize(int maximumJobSize)
 
 std::shared_ptr<Job> DatabaseQueue::loadJob(const smtk::common::UUID& jobId) const
 {
-  auto it = m_liveJobs.find(jobId);
-  if (it != m_liveJobs.end())
   {
-    return it->second;
+    std::lock_guard<std::mutex> lock(m_jobMutex);
+    auto it = m_liveJobs.find(jobId);
+    if (it != m_liveJobs.end())
+    {
+      return it->second;
+    }
   }
   /// TODO: Search for job in database and add to m_liveJobs.
 
