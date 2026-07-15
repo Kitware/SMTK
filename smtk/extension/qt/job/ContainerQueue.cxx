@@ -327,7 +327,8 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   processArguments << volumeArg;
 
   // QString executable = "./" + QString::fromStdString(job->script().string());
-  QString executable = QString::fromStdString((mountPoint / job->script()).string());
+  // Containers are Linux and do not like windows path separators; so use generic_string():
+  QString executable = QString::fromStdString((mountPoint / job->script()).generic_string());
   processArguments << job->containerImage().c_str() << executable;
 
   proc.setArguments(processArguments);
