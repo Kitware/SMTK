@@ -24,6 +24,9 @@ set(QAttrLibSrcs
   qtAssociationView.cxx
   qtAssociation2ColumnWidget.cxx
   qtAttributeView.cxx
+  qtAttributeTableDelegate.cxx
+  qtAttributeTableModel.cxx
+  qtAttributeTableView.cxx
   qtInstancedView.cxx
   qtComponentAttributeView.cxx
   qtLogView.cxx
@@ -152,6 +155,9 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAnalysisView.h
   qtAssociationView.h
+  qtAttributeTableDelegate.h
+  qtAttributeTableModel.h
+  qtAttributeTableView.h
   qtAttributeView.h
   qtInstancedView.h
   qtComponentAttributeView.h

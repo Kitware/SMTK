@@ -30,6 +30,7 @@
 #include "smtk/extension/qt/job/UpdateContainerQueueMachine.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
+#include "smtk/extension/qt/qtAttributeTableView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtComponentAttributeView.h"
@@ -76,6 +77,7 @@ using OperationList = std::tuple<smtk::qt::job::UpdateContainerQueueMachine>;
 using ViewWidgetList = std::tuple<
   qtAnalysisView,
   qtAssociationView,
+  qtAttributeTableView,
   qtAttributeView,
   qtCategorySelectorView,
   qtGroupView,
@@ -250,6 +252,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtAnalysisView>("Analysis");
   manager->viewWidgetFactory().addAlias<qtAssociationView>("Associations");
   manager->viewWidgetFactory().addAlias<qtAttributeView>("Attribute");
+  manager->viewWidgetFactory().addAlias<qtAttributeTableView>("AttributeTable");
   manager->viewWidgetFactory().addAlias<qtGroupView>("Group");
   manager->viewWidgetFactory().addAlias<qtInstancedView>("Instanced");
   manager->viewWidgetFactory().addAlias<qtOperationPalette>("OperationPalette");

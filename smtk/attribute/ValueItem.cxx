@@ -966,6 +966,18 @@ std::vector<std::string> ValueItem::relevantEnums(
   return result;
 }
 
+bool ValueItem::isChildActive(const smtk::attribute::ItemPtr& item) const
+{
+  for (const auto& child : m_activeChildrenItems)
+  {
+    if (child == item)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 const std::string& ValueItem::units() const
 {
   const ValueItemDefinition* def = static_cast<const ValueItemDefinition*>(m_definition.get());

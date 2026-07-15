@@ -226,6 +226,7 @@ public:
   smtk::attribute::ConstDefinitionPtr findIsUniqueBaseClass(
     smtk::attribute::ConstDefinitionPtr attDef) const;
 
+  /// Renames an attribute and returns true if the renaming was successful.
   bool rename(AttributePtr att, const std::string& newName);
 
   /// Changes the ID of an Attribute.
