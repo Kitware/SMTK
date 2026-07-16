@@ -6,8 +6,8 @@
 ### Fedora
 
 .fedora41:
-    # Update to use Xcode 16.4
-    image: "kitware/cmb:ci-smtk-fedora41-20260207"
+    # Update for macOS migration to tart
+    image: "kitware/cmb:ci-smtk-fedora41-20260710"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -67,14 +67,14 @@
 
 .fedora41_vtk_python3:
     extends: .fedora41
-    image: "kitware/cmb:ci-smtk-fedora41-vtk-20260207"
+    image: "kitware/cmb:ci-smtk-fedora41-vtk-20260710"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_vtk_python3
 
 .fedora41_paraview:
     extends: .fedora41
-    image: "kitware/cmb:ci-smtk-fedora41-paraview-20260207"
+    image: "kitware/cmb:ci-smtk-fedora41-paraview-20260710"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_paraview

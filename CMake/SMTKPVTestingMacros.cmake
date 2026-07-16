@@ -38,11 +38,17 @@ endfunction ()
 
 function (smtk_add_client_tests)
   _smtk_sanitizer_env(sanitizer_env)
+  set(_smtk_python_env)
+  if (SMTK_ENABLE_PYTHON_WRAPPING)
+    list(APPEND _smtk_python_env
+      "PYTHONPATH=${smtk_pythonpath_env}")
+  endif ()
 
   _paraview_add_tests("smtk_add_client_tests"
     PREFIX "pv"
     ENVIRONMENT
       ${sanitizer_env}
+      ${_smtk_python_env}
     _DISABLE_SUFFIX "_DISABLE_C"
     _COMMAND_PATTERN
       --client __paraview_client__
