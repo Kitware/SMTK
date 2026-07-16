@@ -204,13 +204,6 @@ protected Q_SLOTS:
   ///@}
 
   ///@{
-  /// Called when the internal filesystem-watcher notices a watched log
-  /// directory or progress file has been modified.
-  // void fileUpdated(const QString& path);
-  // void directoryUpdated(const QString& path);
-  ///@}
-
-  ///@{
   /// Set whether the queue is online or not.
   ///
   /// The queue is online when the virtual machine used to run containers
@@ -220,6 +213,7 @@ protected Q_SLOTS:
   ///@}
 
   /// Iterate m_p->m_pathsToPoll to see if any job states have changed.
+  /// This is triggered by an internal timer.
   void updateJobStates();
 
 protected:

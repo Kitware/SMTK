@@ -27,7 +27,6 @@
 
 #include "smtk/common/CompilerInformation.h"
 
-#include <QFileSystemWatcher>
 #include <QPointer>
 #include <QProcess>
 #include <QTimer>
@@ -207,36 +206,6 @@ public:
     }
   }
 
-#if 0
-  bool addPathDispatch(const QString& path, PathUpdateResponder function)
-  {
-    auto it = m_dispatch.find(path);
-    if (it != m_dispatch.end())
-    {
-      std::cerr << "WARNING: Replacing a dispatch for path (" << path.toStdString() << ").\n";
-      it->second = function;
-    }
-    else
-    {
-      m_dispatch[path] = function;
-    }
-    bool didAdd = m_watcher->addPath(path);
-    return didAdd;
-  }
-
-  void dispatchUpdate(const QString& path)
-  {
-    auto it = m_dispatch.find(path);
-    if (it != m_dispatch.end())
-    {
-      it->second(path);
-    }
-  }
-#endif
-
-  // QScopedPointer<QFileSystemWatcher> m_watcher;
-  // std::unordered_map<QString, std::function<void(const QString&)>> m_dispatch;
-
   /// The parent queue which owns this Internal object.
   ContainerQueue* m_self{ nullptr };
   /// The container engine (podman or docker) used to run jobs.
@@ -344,62 +313,6 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   QProcess proc;
   proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
   proc.setWorkingDirectory(QString::fromStdString(job->caseDirectory().string()));
-#if 0
-  // We watch files for updates on the host OS, not the container OS.
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs").string()),
-    [job, this](const QString& path)
-    {
-      if (path.endsWith("logs"))
-      {
-        // Watch "progress" inside this dir.
-        m_p->m_watcher->addPath(path + "/progress");
-      }
-    }
-  );
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs" / "progress").string()),
-    [job, this](const QString& path)
-    {
-      if (path.endsWith("progress"))
-      {
-        std::ifstream pp(path.toStdString().c_str());
-        int stage = -3;
-        pp >> stage;
-        if (pp.good() && stage > -3)
-        {
-          // std::cerr << "  Stage " << stage << "\n";
-          if (auto operationManager = this->operationManager())
-          {
-            auto updater = operationManager->create<smtk::job::JobUpdated>();
-            updater->parameters()->associate(job);
-            updater->parameters()->findInt("stage")->setIsEnabled(true);
-            updater->parameters()->findInt("stage")->setValue(stage);
-            updater->parameters()->findInt("state")->setIsEnabled(true);
-            updater->parameters()->findInt("state")->setValue(
-              stage < 0 ?
-                static_cast<int>(smtk::job::State::Scheduled) :
-                  stage < job->jobType()->stages().size() ?
-                    static_cast<int>(smtk::job::State::Running) :
-                      static_cast<int>(smtk::job::State::Completed)
-            );
-            if (stage < 0)
-            {
-              updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(static_cast<int>(smtk::job::Status::Pending));
-            }
-            else if (stage == job->jobType()->stages().size())
-            {
-              updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(static_cast<int>(smtk::job::Status::Succeeded));
-            }
-            operationManager->launchers()(updater);
-          }
-        }
-      }
-    }
-  );
-#endif
 #if 0
   {
     // For debugging:
@@ -688,18 +601,6 @@ bool ContainerQueue::setDockerGID(int gid)
   m_p->m_dockerGroupId = gid;
   return true;
 }
-
-// void ContainerQueue::fileUpdated(const QString& path)
-// {
-//   // std::cerr << "File Path \"" << path.toStdString() << "\" updated.\n";
-//   m_p->dispatchUpdate(path);
-// }
-//
-// void ContainerQueue::directoryUpdated(const QString& path)
-// {
-//   // std::cerr << "Directory Path \"" << path.toStdString() << "\" updated.\n";
-//   m_p->dispatchUpdate(path);
-// }
 
 bool ContainerQueue::setQueueOnline(bool online)
 {
