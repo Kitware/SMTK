@@ -356,7 +356,7 @@ target_link_libraries(smtkQtExt
     Qt5::Widgets
   LINK_PRIVATE
     Threads::Threads
-    SQLite::SQLite3
+    SQLite3::SQLite3
     ${_extra_private_libraries}
   )
 # add_dependencies(smtkQtExt ${rpJsonTarget})

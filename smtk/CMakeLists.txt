@@ -108,7 +108,7 @@ set(smtkCore_private_link_libraries
   Boost::system
   Eigen3::Eigen
   fmt::fmt
-  SQLite::SQLite3
+  SQLite3::SQLite3
 )
 
 if (TARGET Boost::dll)
