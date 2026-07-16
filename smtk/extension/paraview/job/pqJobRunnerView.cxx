@@ -81,6 +81,9 @@
 
 #include "moc_pqJobRunnerView.cpp"
 
+// Set this to a non-zero value to print debug information.
+#define SMTK_DEBUG 0
+
 Q_DECLARE_METATYPE(smtk::attribute::Attribute::Ptr);
 
 using namespace smtk::string::literals;
@@ -352,10 +355,12 @@ public:
         screen = qApp->primaryScreen();
       }
       auto sr = screen->geometry();
+#if SMTK_DEBUG
       std::cout << "Screen " << screen << " (" << sr.x() << "," << sr.y() << " " << sr.width()
                 << "×" << sr.height() << ") "
                 << "at " << topLeft.x() << ", " << topLeft.y() << "\n";
       // TODO: Choose placement of m_artifactControls so it is completely on-screen to one side of m_artifactButton.
+#endif
       auto bottomLeft = m_artifactButton->mapToGlobal(QPoint(10, 10));
       // auto r2 = m_artifactControls->geometry();
       // r2.setBottomLeft(bottomLeft);
@@ -700,7 +705,6 @@ smtk::job::Job* pqJobRunnerView::currentJob() const
 
 void pqJobRunnerView::updateUI()
 {
-  std::cerr << "TODO: Update UI\n";
   this->updateJobControls();
 }
 

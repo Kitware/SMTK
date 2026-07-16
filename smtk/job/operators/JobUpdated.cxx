@@ -25,6 +25,9 @@
 
 #include "smtk/io/Logger.h"
 
+// Set to non-zero to print debug information
+#define SMTK_DEBUG 0
+
 namespace smtk
 {
 namespace job
@@ -107,11 +110,13 @@ void JobUpdated::generateSummary(Operation::Result& result)
   {
     if (auto job = modItem->valueAs<smtk::job::Job>())
     {
+#if SMTK_DEBUG
       smtkInfoMacro(
         this->log(),
         "Job " + job->name() + " updated: " + smtk::job::stateAsString(job->state()) + " " +
           smtk::job::statusAsString(job->status()) + " stage " + std::to_string(job->stage()) +
           ".");
+#endif
       return;
     }
   }
