@@ -61,6 +61,8 @@
 #include <QTimer>
 #include <QtDebug>
 
+#define SMTK_DEBUG 0
+
 using namespace smtk::string::literals;
 
 namespace smtk
@@ -203,7 +205,7 @@ void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
     {
       qWarning() << "FontAwesomeRegular cannot be loaded !";
     }
-#if 0
+#if SMTK_DEBUG
     else
     {
       QString family = QFontDatabase::applicationFontFamilies(id).at(0);
@@ -215,19 +217,21 @@ void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
     {
       qWarning() << "FontAwesomeSolid cannot be loaded !";
     }
-#if 1
+#if SMTK_DEBUG
     else
     {
       QString family = QFontDatabase::applicationFontFamilies(id).at(0);
       qInfo() << "Loaded \"" << family << "\".";
     }
 #endif
+#if SMTK_DEBUG
     QFontDatabase db;
     qInfo() << "List fonts:\n";
     for (int ii = 0; ii < db.families().size(); ++ii)
     {
       qInfo() << db.families().at(ii);
     }
+#endif
   }
 }
 
