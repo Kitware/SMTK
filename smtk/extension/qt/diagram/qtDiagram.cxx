@@ -180,6 +180,10 @@ public:
     m_sidebarOuter->setAutoFillBackground(true);
     m_sidebarOuter->setLayout(m_sidebarMiddleLayout);
     m_view->setObjectName("DiagramView");
+    // QGraphicsView does a `setViewport(nullptr)` in its constructor. This causes a new `QWidget`
+    // to be created in the QAbstractScrollArea's implementation of the method where the name is not
+    // set to something meaningful. Force it here.
+    m_view->viewport()->setObjectName("qt_scrollarea_viewport");
 
     auto* sizerLayout = new QHBoxLayout;
     m_sidebarMiddleLayout->setObjectName("SidebarMiddleLayout");
