@@ -104,6 +104,54 @@ void pqSMTKCallObserversOnMainThreadBehavior::forceObserversToBeCalledOnMainThre
       m_activeResources.erase(id);
     });
 
+  // Override the operation Handler call method to emit a private signal
+  // instead of calling its Handler functors directly.
+  smtk::operation::Operation::overrideHandlerInvocation(
+    [this, wrapper](
+      const smtk::operation::Operation& oper, smtk::operation::Operation::Result result) -> void {
+      if (QThread::currentThread() != qApp->thread())
+      {
+        auto id = smtk::common::UUID::random();
+        m_activeOperationMutex.lock();
+        m_activeOperations[id] = const_cast<smtk::operation::Operation&>(oper).shared_from_this();
+        m_activeOperationMutex.unlock();
+        Q_EMIT operationHandlerEvent(
+          QString::fromStdString(id.toString()),
+          result ? QString::fromStdString(result->name()) : QString(),
+          QPrivateSignal());
+      }
+      else
+      {
+        // Directly invoke the observers.
+        oper.callHandlersDirectly(result);
+      }
+    });
+
+  // Connect to the above signal on the main thread and call the Observer
+  // functors.
+  QObject::connect(
+    this,
+    (void(pqSMTKCallObserversOnMainThreadBehavior::*)(QString, QString, QPrivateSignal)) &
+      pqSMTKCallObserversOnMainThreadBehavior::operationHandlerEvent,
+    this,
+    [this](QString operationId, QString resultName) {
+      auto id = smtk::common::UUID(operationId.toStdString());
+      m_activeOperationMutex.lock();
+      auto op = m_activeOperations[id];
+      if (const auto& operation = op)
+      {
+        smtk::attribute::AttributePtr att;
+        if (!resultName.isNull())
+        {
+          att = operation->specification()->findAttribute(resultName.toStdString());
+        }
+        operation->callHandlersDirectly(att);
+      }
+      m_activeOperations.erase(id);
+      m_activeOperationMutex.unlock();
+    },
+    Qt::BlockingQueuedConnection);
+
   // Override the operation Observers' call method to emit a private signal
   // instead of calling its Observer functors directly.
   wrapper->smtkOperationManager()->observers().overrideWith(

@@ -58,6 +58,11 @@ Q_SIGNALS:
    */
   void resourceEvent(QString resourceId, int event, QPrivateSignal);
 
+  /**\brief Signal that an operator \a op handler should be invoked with the given
+    *       \a op and the included \a result.
+    */
+  void operationHandlerEvent(QString opId, QString resultName, QPrivateSignal);
+
   /**\brief Signal that an operator \a op has been created, is about to run,
     *       or has run with the included \a result.
     */

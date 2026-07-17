@@ -44,6 +44,16 @@ namespace
 // used to create that name. Its value is irrelevant so we don't need to reset
 // it; its uniqueness is what we are after.
 std::atomic<std::size_t> g_uniqueCounter{ 0 };
+
+// To support overriding handlers (so that they may be invoked on a separate thread
+// from the operation's thread, especially the GUI thread), we keep a map from
+// operation UUIDs to HandlerMap pointers. Pointers are used because Python wrapping
+// prevents moves/copies of handler functions. Also, pointers are safe, since the
+// operation blocks until the handlers have been invoked on the other thread.
+using HandlerMap = std::multimap<smtk::operation::Operation::Priority, smtk::operation::Handler>;
+std::mutex g_handlerMapLock;
+smtk::operation::Handler g_handlerOverride;
+std::unordered_map<const smtk::operation::Operation*, HandlerMap*> g_handlerMapLookup;
 } // namespace
 
 namespace smtk
@@ -392,9 +402,31 @@ Operation::Result Operation::operate(const BaseKey& key)
     // Always call handlers, but based on the \a key, observers may be skipped.
     // Handlers will always be invoked before other observers, but in priority order.
     // In the future, we may attempt to interleave the handler and observer calls.
-    for (const auto& entry : instanceHandlers)
+
+    // If a handler override has been provided, invoke handlers indirectly.
+    // Otherwise, call the handlers directly.
+    Handler handlerOverride;
     {
-      entry.second(*this, result);
+      std::lock_guard<std::mutex> lock(g_handlerMapLock);
+      if (g_handlerOverride)
+      {
+        // Memo-ize a reference to instanceHandlers that can be looked up by this->id()
+        // so that we don't have to pass instanceHandlers through a Qt signal+slot pair.
+        g_handlerMapLookup.insert(std::make_pair(this, &instanceHandlers));
+        handlerOverride = g_handlerOverride;
+      }
+    }
+    if (handlerOverride)
+    {
+      // This must block until callHandlersDirectly is invoked.
+      // The callHandlersDirectly variant that does not include instanceHandlers
+      // in its signature is responsible for erasing the reference to instanceHandlers
+      // from g_handlerMapLookup.
+      handlerOverride(*this, result);
+    }
+    else
+    {
+      this->callHandlersDirectly(instanceHandlers, result);
     }
     instanceHandlers.clear();
     if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
@@ -822,6 +854,41 @@ bool setOutcome(const Operation::Result& result, Operation::Outcome outcome)
     return false;
   }
   return item->setValue(value);
+}
+
+void Operation::overrideHandlerInvocation(Handler handlerOverride)
+{
+  std::lock_guard<std::mutex> lock(g_handlerMapLock);
+  g_handlerOverride = handlerOverride;
+}
+
+bool Operation::callHandlersDirectly(const Result& result) const
+{
+  HandlerMap* hmap = nullptr;
+  {
+    std::lock_guard<std::mutex> lock(g_handlerMapLock);
+    auto it = g_handlerMapLookup.find(this);
+    if (it == g_handlerMapLookup.end())
+    {
+      return false;
+    }
+    hmap = it->second;
+    g_handlerMapLookup.erase(this);
+  }
+  if (!hmap)
+  {
+    return false;
+  }
+  this->callHandlersDirectly(*hmap, result);
+  return true;
+}
+
+void Operation::callHandlersDirectly(const HandlerMap& handlers, const Result& result) const
+{
+  for (const auto& [priority, handler] : handlers)
+  {
+    handler(*const_cast<Operation*>(this), result);
+  }
 }
 
 } // namespace operation
