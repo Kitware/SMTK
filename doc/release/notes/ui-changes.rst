@@ -21,3 +21,11 @@ Attribute-table views accept an optional ``HideInactiveChildren`` boolean
 configuration attribute. When enabled, selecting a row hides columns for
 conditional children that are inactive for that row. The columns are updated
 when a discrete value is edited and are restored when no row is selected.
+
+When an attribute definition contains group items, either at the top level or
+beneath a discrete item, selecting its table row displays a standard attribute
+editor below the table. This makes group contents, including extensible groups,
+editable while keeping the table and conditional-child columns synchronized.
+The editor honors definition-specific inline ``ItemViews`` and named ``Style``
+configuration on each ``AttributeTypes/Att`` entry, including configuration
+inherited from base definitions.

@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtAttributeTableView.h"
 
+#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeTableDelegate.h"
 #include "smtk/extension/qt/qtAttributeTableModel.h"
 #include "smtk/extension/qt/qtUIManager.h"
@@ -17,7 +18,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/Resource.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/operation/Manager.h"
 #include "smtk/operation/Operation.h"
@@ -26,6 +29,7 @@
 #include "smtk/view/Information.h"
 
 #include <QAbstractItemView>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QItemSelectionModel>
@@ -38,6 +42,7 @@
 #include <QWidget>
 
 #include <algorithm>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -46,6 +51,57 @@ namespace smtk
 {
 namespace extension
 {
+
+namespace
+{
+
+bool containsGroupItem(const smtk::attribute::ItemDefinitionPtr& definition)
+{
+  if (!definition)
+  {
+    return false;
+  }
+
+  if (std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(definition))
+  {
+    return true;
+  }
+
+  const auto valueDefinition =
+    std::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(definition);
+  if (!valueDefinition)
+  {
+    return false;
+  }
+
+  for (const auto& child : valueDefinition->childrenItemDefinitions())
+  {
+    if (containsGroupItem(child.second))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool containsGroupItem(const smtk::attribute::DefinitionPtr& definition)
+{
+  if (!definition)
+  {
+    return false;
+  }
+
+  for (std::size_t i = 0; i < definition->numberOfItemDefinitions(); ++i)
+  {
+    if (containsGroupItem(definition->itemDefinition(static_cast<int>(i))))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+} // anonymous namespace
 
 /**
  * Private Qt implementation owned by qtAttributeTableView.
@@ -134,6 +190,8 @@ protected:
 class qtAttributeTableView::Internal
 {
 public:
+  ~Internal() { delete AttributeEditor; }
+
   /// Top-level widget inserted into the SMTK view hierarchy.
   QPointer<QWidget> Widget;
 
@@ -157,6 +215,21 @@ public:
 
   /// Hide conditional-child columns that are inactive for the current row.
   bool HideInactiveChildren{ false };
+
+  /// Container for editing group-bearing attributes below the table.
+  QPointer<QGroupBox> AttributeEditorFrame;
+
+  /// Standard SMTK editor for the current group-bearing attribute.
+  qtAttribute* AttributeEditor{ nullptr };
+
+  /// Prevent a detail edit's model refresh from rebuilding its signal sender.
+  bool UpdatingFromAttributeEditor{ false };
+
+  /// Per-definition inline attribute-editor configuration from AttributeTypes.
+  std::map<std::string, smtk::view::Configuration::Component> AttributeComponents;
+
+  /// Per-definition named styles from AttributeTypes.
+  std::map<std::string, std::string> AttributeStyles;
 };
 
 qtBaseView* qtAttributeTableView::createViewWidget(const smtk::view::Information& info)
@@ -231,6 +304,39 @@ void qtAttributeTableView::createWidget()
   details.attributeAsBool("DisableDeleteAttribute", disableDelete);
   details.attributeAsBool("HideInactiveChildren", m_internals->HideInactiveChildren);
 
+  /*
+   * Preserve each Att component, rather than only its Type, so the selected
+   * attribute editor can honor ItemViews and named styles just as
+   * qtAttributeView does.
+   */
+  const int attributeTypesIndex = details.findChild("AttributeTypes");
+  if (attributeTypesIndex != -1)
+  {
+    const auto& attributeTypes = details.child(attributeTypesIndex);
+    for (std::size_t i = 0; i < attributeTypes.numberOfChildren(); ++i)
+    {
+      const auto& attributeComponent = attributeTypes.child(i);
+      if (attributeComponent.name() != "Att")
+      {
+        continue;
+      }
+
+      std::string definitionName;
+      if (!attributeComponent.attribute("Type", definitionName))
+      {
+        continue;
+      }
+
+      m_internals->AttributeComponents[definitionName] = attributeComponent;
+
+      std::string styleName;
+      if (attributeComponent.attribute("Style", styleName))
+      {
+        m_internals->AttributeStyles[definitionName] = styleName;
+      }
+    }
+  }
+
   m_internals->AddButton->setVisible(!disableAdd);
   m_internals->DeleteButton->setVisible(!disableDelete);
 
@@ -292,6 +398,17 @@ void qtAttributeTableView::createWidget()
   mainLayout->addWidget(m_internals->Table);
 
   /*
+   * Group items cannot be represented faithfully in a single table cell.
+   * Provide the standard SMTK attribute editor below the table when the
+   * current attribute contains a top-level or conditional group item.
+   */
+  m_internals->AttributeEditorFrame = new QGroupBox(tr("Selected Attribute"), m_internals->Widget);
+  auto* attributeEditorLayout = new QVBoxLayout(m_internals->AttributeEditorFrame);
+  attributeEditorLayout->setContentsMargins(0, 0, 0, 0);
+  m_internals->AttributeEditorFrame->setVisible(false);
+  mainLayout->addWidget(m_internals->AttributeEditorFrame);
+
+  /*
    * Register the top-level widget with qtBaseView.
    *
    * Some SMTK versions expose Widget directly, while others provide a
@@ -324,13 +441,17 @@ void qtAttributeTableView::createWidget()
     m_internals->Table->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this]() {
       this->updateButtonState();
       this->updateColumnVisibility();
+      this->updateAttributeEditor();
     });
 
   QObject::connect(
     m_internals->Table->selectionModel(),
     &QItemSelectionModel::currentChanged,
     this,
-    [this](const QModelIndex&, const QModelIndex&) { this->updateColumnVisibility(); });
+    [this](const QModelIndex&, const QModelIndex&) {
+      this->updateColumnVisibility();
+      this->updateAttributeEditor();
+    });
 
   /*
    * Editing a discrete item can activate a different set of child items.
@@ -340,11 +461,18 @@ void qtAttributeTableView::createWidget()
     m_internals->Model,
     &QAbstractItemModel::dataChanged,
     this,
-    [this](const QModelIndex&, const QModelIndex&) { this->updateColumnVisibility(); });
+    [this](const QModelIndex&, const QModelIndex&) {
+      this->updateColumnVisibility();
+      if (!m_internals->UpdatingFromAttributeEditor)
+      {
+        this->updateAttributeEditor(true);
+      }
+    });
 
   this->updateUI();
   this->updateButtonState();
   this->updateColumnVisibility();
+  this->updateAttributeEditor();
 }
 
 void qtAttributeTableView::updateUI()
@@ -372,6 +500,7 @@ void qtAttributeTableView::updateUI()
     m_internals->Model->setDefinition(nullptr);
     m_internals->Model->setAttributes({});
     this->updateButtonState();
+    this->updateAttributeEditor(true);
     return;
   }
 
@@ -382,6 +511,7 @@ void qtAttributeTableView::updateUI()
     m_internals->Model->setDefinition(nullptr);
     m_internals->Model->setAttributes({});
     this->updateButtonState();
+    this->updateAttributeEditor(true);
     return;
   }
 
@@ -392,6 +522,7 @@ void qtAttributeTableView::updateUI()
     m_internals->Model->setDefinition(nullptr);
     m_internals->Model->setAttributes({});
     this->updateButtonState();
+    this->updateAttributeEditor(true);
     return;
   }
 
@@ -416,6 +547,7 @@ void qtAttributeTableView::updateUI()
   m_internals->Table->resizeColumnsToContents();
   this->updateButtonState();
   this->updateColumnVisibility();
+  this->updateAttributeEditor(true);
 }
 
 void qtAttributeTableView::createAttribute()
@@ -642,6 +774,76 @@ void qtAttributeTableView::updateColumnVisibility()
   }
 }
 
+void qtAttributeTableView::updateAttributeEditor(bool rebuild)
+{
+  if (
+    !m_internals->AttributeEditorFrame || !m_internals->Table || !m_internals->Proxy ||
+    !m_internals->Model)
+  {
+    return;
+  }
+
+  smtk::attribute::AttributePtr attribute;
+  if (m_internals->Table->selectionModel() && m_internals->Table->selectionModel()->hasSelection())
+  {
+    const QModelIndex sourceCurrent =
+      m_internals->Proxy->mapToSource(m_internals->Table->selectionModel()->currentIndex());
+    if (sourceCurrent.isValid())
+    {
+      attribute = m_internals->Model->attributeForRow(sourceCurrent.row());
+    }
+  }
+
+  if (!attribute || !containsGroupItem(attribute->definition()))
+  {
+    delete m_internals->AttributeEditor;
+    m_internals->AttributeEditor = nullptr;
+    m_internals->AttributeEditorFrame->setVisible(false);
+    return;
+  }
+
+  if (
+    !rebuild && m_internals->AttributeEditor &&
+    m_internals->AttributeEditor->attribute() == attribute)
+  {
+    return;
+  }
+
+  m_internals->AttributeEditorFrame->setTitle(
+    tr("Selected Attribute: %1").arg(QString::fromStdString(attribute->name())));
+
+  delete m_internals->AttributeEditor;
+  m_internals->AttributeEditor = nullptr;
+
+  m_internals->AttributeEditor = new qtAttribute(
+    attribute, this->findStyle(attribute->definition()), m_internals->AttributeEditorFrame, this);
+  m_internals->AttributeEditor->createBasicLayout(false);
+
+  if (QWidget* editorWidget = m_internals->AttributeEditor->widget())
+  {
+    m_internals->AttributeEditorFrame->layout()->addWidget(editorWidget);
+    m_internals->AttributeEditorFrame->setVisible(true);
+
+    QObject::connect(
+      m_internals->AttributeEditor, &qtAttribute::modified, this, [this, attribute]() {
+        m_internals->UpdatingFromAttributeEditor = true;
+        m_internals->Model->refreshAttribute(attribute);
+        m_internals->UpdatingFromAttributeEditor = false;
+        this->updateColumnVisibility();
+        this->attributeModified(attribute);
+      });
+
+    if (this->advanceLevelVisible())
+    {
+      m_internals->AttributeEditor->showAdvanceLevelOverlay(true);
+    }
+  }
+  else
+  {
+    m_internals->AttributeEditorFrame->setVisible(false);
+  }
+}
+
 void qtAttributeTableView::selectAttribute(const smtk::attribute::AttributePtr& attribute)
 {
   if (!attribute || !m_internals->Model || !m_internals->Proxy || !m_internals->Table)
@@ -725,6 +927,42 @@ std::string qtAttributeTableView::definitionType() const
   attributeEntry.attribute("Type", typeName);
 
   return typeName;
+}
+
+const smtk::view::Configuration::Component& qtAttributeTableView::findStyle(
+  const smtk::attribute::DefinitionPtr& definition,
+  bool isOriginalDefinition) const
+{
+  static smtk::view::Configuration::Component emptyStyle;
+
+  if (!definition)
+  {
+    return emptyStyle;
+  }
+
+  const auto componentIt = m_internals->AttributeComponents.find(definition->type());
+  if (
+    componentIt != m_internals->AttributeComponents.end() && componentIt->second.numberOfChildren())
+  {
+    return componentIt->second;
+  }
+
+  const auto styleIt = m_internals->AttributeStyles.find(definition->type());
+  if (styleIt != m_internals->AttributeStyles.end())
+  {
+    return this->uiManager()->findStyle(definition, styleIt->second);
+  }
+
+  if (definition->baseDefinition())
+  {
+    const auto& inheritedStyle = this->findStyle(definition->baseDefinition(), false);
+    if (inheritedStyle.numberOfChildren())
+    {
+      return inheritedStyle;
+    }
+  }
+
+  return isOriginalDefinition ? this->uiManager()->findStyle(definition) : emptyStyle;
 }
 
 void qtAttributeTableView::rebuildAttributeList()

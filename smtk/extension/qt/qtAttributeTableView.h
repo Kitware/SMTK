@@ -113,6 +113,16 @@ protected:
   std::string definitionType() const;
 
   /**
+   * @brief Return the item-view style configured for an attribute definition.
+   *
+   * Resolution follows qtAttributeView: inline configuration, a named style,
+   * inherited definition configuration, and finally the resource default.
+   */
+  const smtk::view::Configuration::Component& findStyle(
+    const smtk::attribute::DefinitionPtr& definition,
+    bool isOriginalDefinition = true) const;
+
+  /**
    * @brief Rebuild the list of attributes displayed by the model.
    */
   void rebuildAttributeList();
@@ -130,6 +140,16 @@ protected:
    * All columns are shown when there is no current row.
    */
   void updateColumnVisibility();
+
+  /**
+   * @brief Display an editor for the current attribute when it contains groups.
+   *
+   * The editor uses the standard qtAttribute item widgets so top-level group
+   * items and groups activated by discrete items can be edited below the
+   * table. Set rebuild to true when the selected attribute's item structure
+   * may have changed.
+   */
+  void updateAttributeEditor(bool rebuild = false);
 
   /**
    * @brief Select an attribute in the table.
