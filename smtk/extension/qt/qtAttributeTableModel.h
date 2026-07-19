@@ -25,6 +25,7 @@
 
 #include <cstddef>
 #include <functional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -49,6 +50,14 @@ class qtAttributeTableModel : public QAbstractTableModel
   Q_OBJECT
 
 public:
+  enum class ColumnDisplay
+  {
+    All,
+    TopLevelNonGroup,
+    TopLevelDiscrete,
+    UserSpecified
+  };
+
   enum class ColumnKind
   {
     AttributeName,
@@ -103,6 +112,14 @@ public:
   const std::vector<smtk::attribute::AttributePtr>& attributes() const;
 
   void setAttributeModifiedCallback(AttributeModifiedCallback callback);
+
+  /**
+   * @brief Set which item definitions should be represented by table columns.
+   *
+   * User-specified paths use the same slash-separated syntax as ItemPath.
+   * The attribute-name column is always present.
+   */
+  void setColumnDisplay(ColumnDisplay display, const std::set<std::string>& itemPaths = {});
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
@@ -208,6 +225,8 @@ private:
 
   std::vector<smtk::attribute::AttributePtr> m_attributes;
   std::vector<ColumnDescriptor> m_columns;
+  ColumnDisplay m_columnDisplay{ ColumnDisplay::All };
+  std::set<std::string> m_columnItemPaths;
 
   AttributeModifiedCallback m_attributeModified;
   smtk::extension::qtUIManager* m_uiManager;

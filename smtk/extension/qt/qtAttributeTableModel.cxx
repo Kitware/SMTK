@@ -28,6 +28,7 @@
 #include <QFont>
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <utility>
 
@@ -119,6 +120,25 @@ const std::vector<smtk::attribute::AttributePtr>& qtAttributeTableModel::attribu
 void qtAttributeTableModel::setAttributeModifiedCallback(AttributeModifiedCallback callback)
 {
   m_attributeModified = std::move(callback);
+}
+
+void qtAttributeTableModel::setColumnDisplay(
+  ColumnDisplay display,
+  const std::set<std::string>& itemPaths)
+{
+  if (m_columnDisplay == display && m_columnItemPaths == itemPaths)
+  {
+    return;
+  }
+
+  beginResetModel();
+  m_columnDisplay = display;
+  m_columnItemPaths = itemPaths;
+  if (m_definition)
+  {
+    rebuildColumns();
+  }
+  endResetModel();
 }
 
 int qtAttributeTableModel::rowCount(const QModelIndex& parent) const
@@ -769,6 +789,42 @@ void qtAttributeTableModel::rebuildColumns()
     }
     appendItemDefinitionColumns(itemDefinition, itemDefinition->name(), {});
   }
+
+  if (m_columnDisplay == ColumnDisplay::All)
+  {
+    return;
+  }
+
+  m_columns.erase(
+    std::remove_if(
+      std::next(m_columns.begin()),
+      m_columns.end(),
+      [this](const ColumnDescriptor& column) {
+        const bool isTopLevel = column.ItemPath.find('/') == std::string::npos;
+
+        switch (m_columnDisplay)
+        {
+          case ColumnDisplay::TopLevelNonGroup:
+            return !isTopLevel ||
+              std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(column.Definition) !=
+              nullptr;
+
+          case ColumnDisplay::TopLevelDiscrete:
+          {
+            const auto valueDefinition =
+              std::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(column.Definition);
+            return !isTopLevel || !valueDefinition || !valueDefinition->isDiscrete();
+          }
+
+          case ColumnDisplay::UserSpecified:
+            return m_columnItemPaths.find(column.ItemPath) == m_columnItemPaths.end();
+
+          case ColumnDisplay::All:
+            return false;
+        }
+        return false;
+      }),
+    m_columns.end());
 }
 
 void qtAttributeTableModel::appendItemDefinitionColumns(

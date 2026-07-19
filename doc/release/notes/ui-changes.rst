@@ -26,6 +26,36 @@ When an attribute definition contains group items, either at the top level or
 beneath a discrete item, selecting its table row displays a standard attribute
 editor below the table. This makes group contents, including extensible groups,
 editable while keeping the table and conditional-child columns synchronized.
+The table and attribute editor are separated by a vertical splitter so users
+can adjust how much space is allocated to each. The attribute-editor pane is
+scrollable, allowing group contents to remain accessible at any splitter size.
 The editor honors definition-specific inline ``ItemViews`` and named ``Style``
 configuration on each ``AttributeTypes/Att`` entry, including configuration
 inherited from base definitions.
+
+The ``ColumnDisplay`` attribute controls which item columns are included:
+
+* ``All`` (the default) includes every item supported by the table model.
+* ``TopLevelNonGroup`` includes top-level items except group items.
+* ``TopLevelDiscrete`` includes only top-level discrete items.
+* ``UserSpecified`` includes the exact item paths listed under
+  ``TableItems``.
+
+For example:
+
+.. code-block:: xml
+
+   <View Type="AttributeTable" ColumnDisplay="UserSpecified">
+     <AttributeTypes>
+       <Att Type="BoundaryCondition"/>
+     </AttributeTypes>
+     <TableItems>
+       <Item Path="name"/>
+       <Item Path="boundaryType"/>
+       <Item Path="boundaryType/temperature"/>
+     </TableItems>
+   </View>
+
+``Path`` uses SMTK's slash-separated item-path syntax. ``Name`` is also
+accepted as a convenience for top-level items. The attribute-name column is
+always displayed.

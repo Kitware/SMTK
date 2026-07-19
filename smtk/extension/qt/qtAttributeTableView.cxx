@@ -36,12 +36,15 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QSortFilterProxyModel>
+#include <QSplitter>
 #include <QTableView>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include <algorithm>
+#include <cctype>
 #include <map>
 #include <set>
 #include <string>
@@ -198,6 +201,9 @@ public:
   /// Table that displays the attributes.
   QPointer<QTableView> Table;
 
+  /// Vertically divides the table and selected-attribute editor.
+  QPointer<QSplitter> TableEditorSplitter;
+
   /// Source model that maps SMTK attributes to table rows.
   QPointer<qtAttributeTableModel> Model;
 
@@ -219,6 +225,9 @@ public:
   /// Container for editing group-bearing attributes below the table.
   QPointer<QGroupBox> AttributeEditorFrame;
 
+  /// Scrollable viewport for the selected-attribute editor.
+  QPointer<QScrollArea> AttributeEditorScrollArea;
+
   /// Standard SMTK editor for the current group-bearing attribute.
   qtAttribute* AttributeEditor{ nullptr };
 
@@ -230,6 +239,12 @@ public:
 
   /// Per-definition named styles from AttributeTypes.
   std::map<std::string, std::string> AttributeStyles;
+
+  /// Policy controlling which item columns are included in the model.
+  qtAttributeTableModel::ColumnDisplay ColumnDisplay{ qtAttributeTableModel::ColumnDisplay::All };
+
+  /// Exact item paths included by the UserSpecified column-display policy.
+  std::set<std::string> ColumnItemPaths;
 };
 
 qtBaseView* qtAttributeTableView::createViewWidget(const smtk::view::Information& info)
@@ -304,6 +319,51 @@ void qtAttributeTableView::createWidget()
   details.attributeAsBool("DisableDeleteAttribute", disableDelete);
   details.attributeAsBool("HideInactiveChildren", m_internals->HideInactiveChildren);
 
+  std::string columnDisplay;
+  if (details.attribute("ColumnDisplay", columnDisplay))
+  {
+    std::transform(
+      columnDisplay.begin(),
+      columnDisplay.end(),
+      columnDisplay.begin(),
+      [](unsigned char character) { return static_cast<char>(std::tolower(character)); });
+
+    if (columnDisplay == "toplevelnongroup" || columnDisplay == "toplevelnongroupitems")
+    {
+      m_internals->ColumnDisplay = qtAttributeTableModel::ColumnDisplay::TopLevelNonGroup;
+    }
+    else if (columnDisplay == "topleveldiscrete" || columnDisplay == "topleveldiscreteitems")
+    {
+      m_internals->ColumnDisplay = qtAttributeTableModel::ColumnDisplay::TopLevelDiscrete;
+    }
+    else if (columnDisplay == "userspecified")
+    {
+      m_internals->ColumnDisplay = qtAttributeTableModel::ColumnDisplay::UserSpecified;
+    }
+  }
+
+  const int tableItemsIndex = details.findChild("TableItems");
+  if (tableItemsIndex != -1)
+  {
+    const auto& tableItems = details.child(tableItemsIndex);
+    for (std::size_t i = 0; i < tableItems.numberOfChildren(); ++i)
+    {
+      const auto& itemComponent = tableItems.child(i);
+      if (itemComponent.name() != "Item")
+      {
+        continue;
+      }
+
+      std::string itemPath;
+      if (
+        (itemComponent.attribute("Path", itemPath) || itemComponent.attribute("Name", itemPath)) &&
+        !itemPath.empty())
+      {
+        m_internals->ColumnItemPaths.insert(itemPath);
+      }
+    }
+  }
+
   /*
    * Preserve each Att component, rather than only its Type, so the selected
    * attribute editor can honor ItemViews and named styles just as
@@ -350,6 +410,7 @@ void qtAttributeTableView::createWidget()
   m_internals->Table->setTabKeyNavigation(true);
   m_internals->Model = new qtAttributeTableModel(m_internals->Table);
   m_internals->Model->setUIManager(this->uiManager());
+  m_internals->Model->setColumnDisplay(m_internals->ColumnDisplay, m_internals->ColumnItemPaths);
 
   /*
    * Insert a proxy model between the table and source model so sorting and
@@ -395,18 +456,39 @@ void qtAttributeTableView::createWidget()
 
   m_internals->Table->verticalHeader()->setVisible(false);
 
-  mainLayout->addWidget(m_internals->Table);
+  m_internals->TableEditorSplitter = new QSplitter(Qt::Vertical, m_internals->Widget);
+  m_internals->TableEditorSplitter->setObjectName(QStringLiteral("TableEditorSplitter"));
+  m_internals->TableEditorSplitter->setChildrenCollapsible(false);
+  m_internals->TableEditorSplitter->addWidget(m_internals->Table);
+  mainLayout->addWidget(m_internals->TableEditorSplitter);
 
   /*
    * Group items cannot be represented faithfully in a single table cell.
    * Provide the standard SMTK attribute editor below the table when the
    * current attribute contains a top-level or conditional group item.
    */
-  m_internals->AttributeEditorFrame = new QGroupBox(tr("Selected Attribute"), m_internals->Widget);
+  m_internals->AttributeEditorScrollArea = new QScrollArea(m_internals->TableEditorSplitter);
+  m_internals->AttributeEditorScrollArea->setObjectName(
+    QStringLiteral("AttributeEditorScrollArea"));
+  m_internals->AttributeEditorScrollArea->setWidgetResizable(true);
+  m_internals->AttributeEditorScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  m_internals->AttributeEditorScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+  m_internals->AttributeEditorFrame =
+    new QGroupBox(tr("Selected Attribute"), m_internals->AttributeEditorScrollArea);
   auto* attributeEditorLayout = new QVBoxLayout(m_internals->AttributeEditorFrame);
   attributeEditorLayout->setContentsMargins(0, 0, 0, 0);
-  m_internals->AttributeEditorFrame->setVisible(false);
-  mainLayout->addWidget(m_internals->AttributeEditorFrame);
+  /*
+   * Let this spacer consume excess splitter height. Without it, the layout
+   * gives the extra height to the qtAttribute widget and its item rows spread
+   * apart.
+   */
+  attributeEditorLayout->addStretch(1);
+  m_internals->AttributeEditorScrollArea->setWidget(m_internals->AttributeEditorFrame);
+  m_internals->AttributeEditorScrollArea->setVisible(false);
+  m_internals->TableEditorSplitter->addWidget(m_internals->AttributeEditorScrollArea);
+  m_internals->TableEditorSplitter->setStretchFactor(0, 1);
+  m_internals->TableEditorSplitter->setStretchFactor(1, 1);
 
   /*
    * Register the top-level widget with qtBaseView.
@@ -777,8 +859,8 @@ void qtAttributeTableView::updateColumnVisibility()
 void qtAttributeTableView::updateAttributeEditor(bool rebuild)
 {
   if (
-    !m_internals->AttributeEditorFrame || !m_internals->Table || !m_internals->Proxy ||
-    !m_internals->Model)
+    !m_internals->AttributeEditorFrame || !m_internals->AttributeEditorScrollArea ||
+    !m_internals->Table || !m_internals->Proxy || !m_internals->Model)
   {
     return;
   }
@@ -798,7 +880,7 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
   {
     delete m_internals->AttributeEditor;
     m_internals->AttributeEditor = nullptr;
-    m_internals->AttributeEditorFrame->setVisible(false);
+    m_internals->AttributeEditorScrollArea->setVisible(false);
     return;
   }
 
@@ -821,8 +903,9 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
 
   if (QWidget* editorWidget = m_internals->AttributeEditor->widget())
   {
-    m_internals->AttributeEditorFrame->layout()->addWidget(editorWidget);
-    m_internals->AttributeEditorFrame->setVisible(true);
+    auto* editorLayout = qobject_cast<QVBoxLayout*>(m_internals->AttributeEditorFrame->layout());
+    editorLayout->insertWidget(0, editorWidget, 0, Qt::AlignTop);
+    m_internals->AttributeEditorScrollArea->setVisible(true);
 
     QObject::connect(
       m_internals->AttributeEditor, &qtAttribute::modified, this, [this, attribute]() {
@@ -840,7 +923,7 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
   }
   else
   {
-    m_internals->AttributeEditorFrame->setVisible(false);
+    m_internals->AttributeEditorScrollArea->setVisible(false);
   }
 }
 

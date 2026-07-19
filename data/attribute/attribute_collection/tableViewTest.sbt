@@ -117,7 +117,7 @@
 </Definitions>
 
   <Views>
-    <View Type="AttributeTable" Title="Main" TopLevel="true"  DeleteOp="foo" HideInactiveChildren="true">
+    <View Type="AttributeTable" Title="Main" TopLevel="true"  DeleteOp="foo" HideInactiveChildren="true" ColumnDisplay="TopLevelDiscrete">
       <AttributeTypes>
         <Att Type="TestDef">
         </Att>
