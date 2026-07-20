@@ -294,11 +294,11 @@ void qtAttributeTableView::createWidget()
    */
   auto* buttonLayout = new QHBoxLayout;
 
-  m_internals->AddButton = new QPushButton(tr("Add Attribute"), m_internals->Widget);
+  m_internals->AddButton = new QPushButton(tr("➕"), m_internals->Widget);
 
   m_internals->AddButton->setToolTip(tr("Create an attribute using the configured definition."));
 
-  m_internals->DeleteButton = new QPushButton(tr("Delete Selected"), m_internals->Widget);
+  m_internals->DeleteButton = new QPushButton(tr("✘"), m_internals->Widget);
 
   m_internals->DeleteButton->setToolTip(
     tr("Delete the attributes represented by the selected rows."));
