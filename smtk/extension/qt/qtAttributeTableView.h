@@ -159,6 +159,13 @@ protected:
    */
   void selectAttribute(const smtk::attribute::AttributePtr& attribute);
 
+  /**
+   * @brief Respond to an operation that may have created/modified/deleted attributes.
+   */
+  void updateViewWithOperationResults(
+    const smtk::operation::Operation& op,
+    const std::shared_ptr<smtk::attribute::Attribute>& result) override;
+
 private:
   class Internal;
   Internal* m_internals{ nullptr };

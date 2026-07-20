@@ -258,6 +258,7 @@ qtAttributeTableView::qtAttributeTableView(const smtk::view::Information& info)
   : qtBaseAttributeView(info)
   , m_internals(new Internal)
 {
+  this->enableOperationObserver();
 }
 
 qtAttributeTableView::~qtAttributeTableView()
@@ -1103,6 +1104,43 @@ void qtAttributeTableView::attributeModified(const smtk::attribute::AttributePtr
    * and expunged components to operation observers and other views.
    */
   Q_EMIT this->qtBaseView::modified();
+}
+
+void qtAttributeTableView::updateViewWithOperationResults(
+  const smtk::operation::Operation& op,
+  const std::shared_ptr<smtk::attribute::Attribute>& result)
+{
+  (void)op;
+  bool shouldUpdate = false;
+  for (const auto& created : *result->findComponent("created"))
+  {
+    if (auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(created))
+    {
+      if (att->resource() == this->attributeResource())
+      {
+        shouldUpdate = true;
+        break;
+      }
+    }
+  }
+  if (!shouldUpdate)
+  {
+    for (const auto& expunged : *result->findComponent("expunged"))
+    {
+      if (auto att = std::dynamic_pointer_cast<smtk::attribute::Attribute>(expunged))
+      {
+        if (att->resource() == this->attributeResource())
+        {
+          shouldUpdate = true;
+          break;
+        }
+      }
+    }
+  }
+  if (shouldUpdate)
+  {
+    this->updateUI();
+  }
 }
 
 } // namespace extension
