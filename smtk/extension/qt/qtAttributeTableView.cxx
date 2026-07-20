@@ -732,20 +732,24 @@ void qtAttributeTableView::deleteSelectedAttributes()
     return;
   }
 
-  const QString confirmationText = attributesToDelete.size() == 1
-    ? tr("Delete the selected attribute?")
-    : tr("Delete the %1 selected attributes?").arg(attributesToDelete.size());
-
-  const auto answer = QMessageBox::question(
-    m_internals->Widget,
-    tr("Delete Attributes"),
-    confirmationText,
-    QMessageBox::Yes | QMessageBox::No,
-    QMessageBox::No);
-
-  if (answer != QMessageBox::Yes)
+  const auto& details = this->configuration()->details();
+  if (details.attributeAsBool("AskToDelete"))
   {
-    return;
+    const QString confirmationText = attributesToDelete.size() == 1
+      ? tr("Delete the selected attribute?")
+      : tr("Delete the %1 selected attributes?").arg(attributesToDelete.size());
+
+    const auto answer = QMessageBox::question(
+      m_internals->Widget,
+      tr("Delete Attributes"),
+      confirmationText,
+      QMessageBox::Yes | QMessageBox::No,
+      QMessageBox::No);
+
+    if (answer != QMessageBox::Yes)
+    {
+      return;
+    }
   }
 
   auto opManager = this->uiManager()->operationManager();

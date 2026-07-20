@@ -22,6 +22,10 @@ configuration attribute. When enabled, selecting a row hides columns for
 conditional children that are inactive for that row. The columns are updated
 when a discrete value is edited and are restored when no row is selected.
 
+Attribute-table views accept an optional ``AskToDelete`` boolean configuration
+attribute that, if true, will use a modal popup dialog to confirm attribute deletions.
+Otherwise, clicking the delete button will immediately delete all selected attributes.
+
 When an attribute definition contains group items, either at the top level or
 beneath a discrete item, selecting its table row displays a standard attribute
 editor below the table. This makes group contents, including extensible groups,
