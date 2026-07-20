@@ -29,6 +29,7 @@
 #include "smtk/view/Information.h"
 
 #include <QAbstractItemView>
+#include <QDebug>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -754,15 +755,19 @@ void qtAttributeTableView::deleteSelectedAttributes()
   }
 
   auto opManager = this->uiManager()->operationManager();
-  const auto& details = this->configuration()->details();
   std::shared_ptr<smtk::operation::Operation> deleterOp;
   std::string deleteOpName;
   if (details.attribute("DeleteOp", deleteOpName))
   {
     deleterOp = opManager->create(deleteOpName);
   }
-  else
+  if (!deleterOp)
   {
+    if (!deleteOpName.empty())
+    {
+      qCritical() << "Could not create \"" << QString::fromStdString(deleteOpName)
+                  << "\" operation.";
+    }
     deleterOp = opManager->create("smtk::attribute::DeleteAttribute");
   }
 
