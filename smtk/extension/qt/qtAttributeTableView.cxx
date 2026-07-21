@@ -15,6 +15,8 @@
 #include "smtk/extension/qt/qtAttributeTableModel.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/task/Manager.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
@@ -760,6 +762,18 @@ void qtAttributeTableView::deleteSelectedAttributes()
   if (details.attribute("DeleteOp", deleteOpName))
   {
     deleterOp = opManager->create(deleteOpName);
+    if (deleterOp)
+    {
+      // If the deletion operation can accept the active task (and
+      // there is one), the populate it here.
+      if (auto taskItem = deleterOp->parameters()->findComponent("task"))
+      {
+        if (auto* activeTask = smtk::task::getActiveTask(this->uiManager()->managers()))
+        {
+          taskItem->appendValue(activeTask->shared_from_this());
+        }
+      }
+    }
   }
   if (!deleterOp)
   {
