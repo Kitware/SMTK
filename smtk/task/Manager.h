@@ -273,6 +273,10 @@ private:
   // Expression constraint for placing worklets at the toplevel of a workflow.
   smtk::common::Categories::Expression m_expression;
 };
+
+/// Fetch the active task (if any) or return a null pointer.
+SMTKCORE_EXPORT Task* getActiveTask(const smtk::common::TypeContainer& context);
+
 } // namespace task
 } // namespace smtk
 

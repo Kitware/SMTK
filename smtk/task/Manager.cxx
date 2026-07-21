@@ -11,6 +11,7 @@
 #include "smtk/task/Manager.h"
 #include "smtk/task/ObjectsInRoles.h"
 
+#include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 
 #include "smtk/operation/Operation.h"
@@ -790,6 +791,29 @@ bool Manager::changePortName(Port* port, const std::string& newName, std::functi
   // Currently there are no internal data structures that need to be called so just call
   // the function passed in
   return fp();
+}
+
+Task* getActiveTask(const smtk::common::TypeContainer& context)
+{
+  Task* activeTask = nullptr;
+  if (context.contains<smtk::project::Manager::Ptr>())
+  {
+    if (const auto& projectManager = context.get<smtk::project::Manager::Ptr>())
+    {
+      for (const auto& project : projectManager->projectsSet())
+      {
+        if (project)
+        {
+          activeTask = project->taskManager().active().task();
+          if (activeTask)
+          {
+            return activeTask;
+          }
+        }
+      }
+    }
+  }
+  return activeTask;
 }
 
 } // namespace task
