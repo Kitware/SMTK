@@ -809,7 +809,7 @@ void qtAttributeTableView::deleteSelectedAttributes()
       this->updateUI();
 
       auto numExpunged = res->findComponent("expunged")->numberOfValues();
-      if (attributesToDelete.size() < numExpunged)
+      if (attributesToDelete.size() > numExpunged)
       {
         QMessageBox::warning(
           m_internals->Widget,
