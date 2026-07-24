@@ -326,6 +326,7 @@ void qtComponentAttributeView::createWidget()
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // create a list box for all the entries
   this->Internals->ListTable = new qtTableWidget(frame);
+  this->Internals->ListTable->setObjectName("componentList");
   this->Internals->ListTable->setColumnCount(2);
   QStringList headers;
   // Set Headers

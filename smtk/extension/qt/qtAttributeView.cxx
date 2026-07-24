@@ -386,6 +386,7 @@ void qtAttributeView::createWidget()
 
   // Attribute table
   m_internals->ValuesTable = new qtTableWidget(frame);
+  m_internals->ValuesTable->setObjectName("values");
   m_internals->ValuesTable->setSizePolicy(tableSizePolicy);
 
   m_internals->SearchBox = new QFrame(TopFrame);
