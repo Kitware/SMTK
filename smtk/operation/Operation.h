@@ -71,6 +71,9 @@ public:
   /// A priority for Handlers.
   using Priority = int;
 
+  /// A map that orders handlers for an operation by their priority.
+  using HandlerMap = std::multimap<Priority, Handler>;
+
   /// A hash value uniquely representing the operation.
   typedef std::size_t Index;
 
@@ -348,7 +351,33 @@ public:
   /// Run an operation given a key returned by Operation::childKey().
   Result operate(const BaseKey& key);
 
+  /// Register an override for invoking operation handlers.
+  ///
+  /// The purpose of this override is to allow handlers to be invoked on a thread
+  /// other than the operation's thread of execution (especially a GUI thread).
+  /// When provided, an operation will call your \a handlerOverride function instead
+  /// of invoking its handlers. Then, \a handlerOverride should lead to
+  /// callHandlersDirectly() (see below) being invoked on a potentially-different thread.
+  ///
+  /// Note that your \a handlerOverride **MUST** block until callHandlersDirectly()
+  /// has been invoked for this operation. Otherwise, the operation's set of handlers
+  /// will not be kept in memory as needed.
+  ///
+  /// This is a global (process-wide) setting. All operations within a process will
+  /// be invoked via the override.
+  static void overrideHandlerInvocation(Handler handlerOverride);
+
+  /// Invoke handlers for the given operation directly (but may be called from any thread).
+  ///
+  /// Use this method from within your handler override.
+  /// The handlers for the operation are looked up in an internal map.
+  bool callHandlersDirectly(const Result& result) const;
+
 private:
+  /// This is an internal method called by the public variant of the same name.
+  /// The handler map provided is stored internal to the operation's implementation.
+  void callHandlersDirectly(const HandlerMap& handlers, const Result& result) const;
+
   // Construct the operation's specification. This is typically done by reading
   // an attribute .sbt file, but can be done by first constructing a base
   // specification and then augmenting the specification to include the derived
@@ -363,7 +392,7 @@ private:
   std::vector<std::weak_ptr<smtk::attribute::Attribute>> m_results;
   ResourceAccessMap m_lockedResources;
   std::mutex m_handlerLock;
-  std::multimap<Priority, Handler> m_handlers;
+  HandlerMap m_handlers;
 };
 
 /**\brief Return the outcome of an operation given its \a result object.
