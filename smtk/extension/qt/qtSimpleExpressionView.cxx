@@ -131,6 +131,7 @@ void qtSimpleExpressionView::createWidget()
   this->Internals->FuncList = new QListWidget(frame);
 
   this->Internals->FuncTable = new qtTableWidget(frame);
+  this->Internals->FuncTable->setObjectName("functionTable");
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   this->Internals->FuncTable->setSizePolicy(tableSizePolicy);
 
