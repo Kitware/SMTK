@@ -10,6 +10,8 @@
 
 #include "smtk/view/OperationIcons.h"
 
+using namespace smtk::string::literals;
+
 namespace smtk
 {
 namespace view
@@ -24,31 +26,63 @@ std::string OperationIcons::createIcon(
   const std::string& operationName,
   const std::string& secondaryColor) const
 {
+  return this->createIcon(operationName, secondaryColor, "normal"_token);
+}
+
+std::string OperationIcons::createIcon(
+  const std::string& operationName,
+  const std::string& secondaryColor,
+  smtk::string::Token mode) const
+{
   auto nameIt = m_indices.find(operationName);
   FunctorMap::const_iterator ctorIt;
-  if (nameIt == m_indices.end() || ((ctorIt = m_functors.find(nameIt->second)) == m_functors.end()))
+  FunctorMap2::const_iterator ctorIt2;
+  if (nameIt != m_indices.end())
   {
-    if (m_defaultIconConstructor)
+    ctorIt = m_functors.find(nameIt->second);
+    if (ctorIt != m_functors.end())
     {
-      return m_defaultIconConstructor(secondaryColor);
+      return ctorIt->second(secondaryColor);
     }
-    return std::string();
+    ctorIt2 = m_functors2.find(nameIt->second);
+    if (ctorIt2 != m_functors2.end())
+    {
+      return ctorIt2->second(secondaryColor, mode);
+    }
   }
-  return ctorIt->second(secondaryColor);
+  if (m_defaultIconConstructor)
+  {
+    return m_defaultIconConstructor(secondaryColor);
+  }
+  return std::string();
 }
 
 std::string OperationIcons::createIcon(const Index& index, const std::string& secondaryColor) const
 {
-  auto ctorIt = m_functors.find(index);
-  if (ctorIt == m_functors.end())
-  {
-    if (m_defaultIconConstructor)
-    {
-      return m_defaultIconConstructor(secondaryColor);
-    }
-    return std::string();
-  }
-  return ctorIt->second(secondaryColor);
+  return this->createIcon(index, secondaryColor, "normal"_token);
 }
+
+std::string OperationIcons::createIcon(
+  const Index& index,
+  const std::string& secondaryColor,
+  smtk::string::Token mode) const
+{
+  auto ctorIt2 = m_functors2.find(index);
+  if (ctorIt2 != m_functors2.end())
+  {
+    return ctorIt2->second(secondaryColor, mode);
+  }
+  auto ctorIt = m_functors.find(index);
+  if (ctorIt != m_functors.end())
+  {
+    return ctorIt->second(secondaryColor);
+  }
+  if (m_defaultIconConstructor)
+  {
+    return m_defaultIconConstructor(secondaryColor);
+  }
+  return std::string();
+}
+
 } // namespace view
 } // namespace smtk

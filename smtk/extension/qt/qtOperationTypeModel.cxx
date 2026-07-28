@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/extension/qt/qtOperationTypeModel.h"
 
-#include "smtk/extension/qt/SVGIconEngine.h"
 #include "smtk/extension/qt/qtOperationAction.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 

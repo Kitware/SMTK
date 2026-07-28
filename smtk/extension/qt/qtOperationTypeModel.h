@@ -165,6 +165,18 @@ public:
     this->insertActionIntoToolbar<0, OperationTuple>(toolbar);
   }
 
+  /// Insert a single \a OperationType operation into the given \a toolbar.
+  ///
+  /// This returns a qtOperationAction for the operation.
+  template<typename OperationType>
+  qtOperationAction* insertOperationIntoToolbar(QToolBar* toolbar)
+  {
+    auto* result = this->actionFor<OperationType>();
+    result->forceStyle(
+      Qt::ToolButtonIconOnly, [toolbar](qtOperationAction* action) { toolbar->addAction(action); });
+    return result;
+  }
+
 public Q_SLOTS:
   /**\brief Run an operation of the given type with its default parameters.
     *
