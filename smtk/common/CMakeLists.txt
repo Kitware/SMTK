@@ -23,6 +23,7 @@ set(commonClasses
   Paths
   RangeDetector
   RuntimeTypeContainer
+  SharedActive
   Singleton
   Singletons
   Status

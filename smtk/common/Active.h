@@ -20,18 +20,21 @@ namespace smtk
 namespace common
 {
 
-/// This object provides applications a way to change and observe an active
-/// object from a set of objects which inherit shared_from_this.
-///
-/// When passed an Instances object at construction, only managed objects may be active.
-/// This ensures that before an object is destroyed this object
-/// can notify observers the active object is becoming inactive.
-///
-/// If not passed an Instances object at construction, any task may become active but
-/// unmanaged objects might be deleted without any notification that the active
-/// objects changed.
-/// You are strongly encouraged to pass Instances to the constructor.
-
+/**\brief This object provides applications a way to change and observe an active
+  *       object from a set of objects which inherit std::enable_shared_from_this.
+  *
+  * When passed an Instances object at construction, only managed objects may be active.
+  * This ensures that before an object is destroyed this object
+  * can notify observers the active object is becoming inactive.
+  *
+  * If not passed an Instances object at construction, any task may become active but
+  * unmanaged objects might be deleted without any notification that the active
+  * objects changed.
+  * You are strongly encouraged to pass Instances to the constructor.
+  *
+  * Also consider SharedActive if it is acceptable for a shared pointer to the active
+  * object to be held.
+  */
 template<typename InstancesType, typename ObjectType = typename InstancesType::ObjectType>
 class SMTK_ALWAYS_EXPORT Active
 {
@@ -117,6 +120,7 @@ private:
   std::weak_ptr<ObjectType> m_active;
   Observers m_observers;
 };
+
 } // namespace common
 } // namespace smtk
 
