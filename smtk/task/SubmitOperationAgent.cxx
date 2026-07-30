@@ -278,7 +278,7 @@ void SubmitOperationAgent::configure(const Configuration& config)
     {
       smtkErrorMacro(
         smtk::io::Logger::instance(),
-        "Could not deserialize parameters \"" << result->dump(2) << "\".");
+        "Could not deserialize parameters \"" << result->dump(2) << "\"; " << e.what() << ".");
     }
   }
   result = config.find("watching");
