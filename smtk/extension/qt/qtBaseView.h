@@ -58,6 +58,7 @@ public:
   friend class qtUIManager;
 
   smtkTypenameMacro(qtBaseView);
+  smtkSuperclassMacro(smtk::view::BaseView);
 
   qtBaseView(const smtk::view::Information& info);
 
