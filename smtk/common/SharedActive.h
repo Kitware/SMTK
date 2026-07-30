@@ -44,7 +44,13 @@ public:
   using Observers = smtk::common::Observers<Observer>;
 
   /// Construct an active-task tracker.
-  SharedActive() = default;
+  SharedActive()
+    : m_observers([this](Observer observer) -> void {
+      std::shared_ptr<ObjectType> blank;
+      observer(blank, m_active);
+    })
+  {
+  }
   virtual ~SharedActive() = default;
 
   /// Return the active object (or nullptr if no object is active).
