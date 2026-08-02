@@ -39,7 +39,8 @@
 
 namespace py = pybind11;
 
-inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribute_Attribute(py::module &m)
+inline PySharedPtrClass< smtk::attribute::Attribute, smtk::resource::Component>
+pybind11_init_smtk_attribute_Attribute(py::module &m)
 {
   PySharedPtrClass< smtk::attribute::Attribute, smtk::resource::Component > instance(m, "Attribute", py::dynamic_attr());
   instance
@@ -147,7 +148,6 @@ inline PySharedPtrClass< smtk::attribute::Attribute > pybind11_init_smtk_attribu
     .def_static("CastTo", [](const std::shared_ptr<smtk::resource::Component> i) {
         return std::dynamic_pointer_cast<smtk::attribute::Attribute>(i);
       })
-    ;
     ;
   return instance;
 }
