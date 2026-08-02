@@ -60,8 +60,8 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
   // Import modules so that return types of smtk.common.Managers' get() method are known.
   py::module::import("smtk.string");
   py::module::import("smtk.resource");
-  py::module::import("smtk.operation");
   py::module::import("smtk.geometry");
+  py::module::import("smtk.operation");
   py::module::import("smtk.project");
   py::module::import("smtk.job");
   py::module::import("smtk.view");
