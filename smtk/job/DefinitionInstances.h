@@ -28,7 +28,6 @@ public:
   smtkCreateMacro(smtk::job::DefinitionInstances);
 
   DefinitionInstances() = default;
-  DefinitionInstances(DefinitionInstances&&) = default;
   virtual ~DefinitionInstances() = default;
 
   std::shared_ptr<Definition> findByName(const std::string& name);
