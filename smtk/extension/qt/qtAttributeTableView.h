@@ -15,6 +15,8 @@
 
 #include <QPointer>
 
+#include <vector>
+
 class QPushButton;
 class QTableView;
 class QWidget;
@@ -128,9 +130,14 @@ protected:
   void rebuildAttributeList();
 
   /**
-   * @brief Notify the SMTK UI that an attribute was modified.
+   * @brief Notify the SMTK UI and operation observers that an attribute changed.
+   *
+   * itemPaths identifies the modified items for the Signal operation. It is
+   * empty for attribute-level changes such as renaming.
    */
-  void attributeModified(const smtk::attribute::AttributePtr& attribute);
+  void attributeModified(
+    const smtk::attribute::AttributePtr& attribute,
+    const std::vector<std::string>& itemPaths = {});
 
   /**
    * @brief Update conditional-child column visibility for the current row.

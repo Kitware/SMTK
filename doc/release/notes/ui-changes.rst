@@ -84,3 +84,8 @@ be activated by at least one enumeration, and no enumeration may activate
 more than one candidate. The attribute subsystem provides
 ``validateExclusiveConditionalItems()`` for this definition-level validation;
 invalid shared columns are ignored with a diagnostic.
+
+Edits made through either the table or the selected-attribute editor now
+launch an ``smtk::attribute::Signal`` operation. Item edits include the
+modified item's runtime path (including the active candidate for a shared
+column); attribute-level changes report an empty item-path list.

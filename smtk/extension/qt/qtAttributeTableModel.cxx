@@ -377,6 +377,7 @@ bool qtAttributeTableModel::setData(const QModelIndex& index, const QVariant& va
   }
 
   bool modified = false;
+  smtk::attribute::ItemPtr modifiedItem;
 
   if (descriptor->Kind == ColumnKind::AttributeName && role == Qt::EditRole)
   {
@@ -426,6 +427,16 @@ bool qtAttributeTableModel::setData(const QModelIndex& index, const QVariant& va
     {
       modified = setValueItemData(item, descriptor->Element, value);
     }
+
+    if (modified)
+    {
+      /*
+       * itemForIndex() resolves the actual active candidate for a shared
+       * column. Retaining that item ensures the Signal operation reports the
+       * path that changed rather than the logical column's configuration name.
+       */
+      modifiedItem = item;
+    }
   }
 
   if (!modified)
@@ -450,7 +461,12 @@ bool qtAttributeTableModel::setData(const QModelIndex& index, const QVariant& va
       Qt::ToolTipRole });
   if (m_attributeModified)
   {
-    m_attributeModified(attribute);
+    std::vector<std::string> itemPaths;
+    if (modifiedItem)
+    {
+      itemPaths.push_back(modifiedItem->path());
+    }
+    m_attributeModified(attribute, itemPaths);
   }
 
   return true;

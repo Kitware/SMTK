@@ -13,6 +13,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeTableDelegate.h"
 #include "smtk/extension/qt/qtAttributeTableModel.h"
+#include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/task/Manager.h"
@@ -238,6 +239,9 @@ public:
 
   /// Prevent a detail edit's model refresh from rebuilding its signal sender.
   bool UpdatingFromAttributeEditor{ false };
+
+  /// Suppress qtAttribute::modified after handling its preceding itemModified.
+  bool SuppressNextAttributeEditorModified{ false };
 
   /// Per-definition inline attribute-editor configuration from AttributeTypes.
   std::map<std::string, smtk::view::Configuration::Component> AttributeComponents;
@@ -548,7 +552,10 @@ void qtAttributeTableView::createWidget()
    * Notify the view after the table model commits an item edit.
    */
   m_internals->Model->setAttributeModifiedCallback(
-    [this](const smtk::attribute::AttributePtr& attribute) { this->attributeModified(attribute); });
+    [this](
+      const smtk::attribute::AttributePtr& attribute, const std::vector<std::string>& itemPaths) {
+      this->attributeModified(attribute, itemPaths);
+    });
 
   /*
    * Connect the management controls to the corresponding resource actions.
@@ -961,6 +968,7 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
   {
     delete m_internals->AttributeEditor;
     m_internals->AttributeEditor = nullptr;
+    m_internals->SuppressNextAttributeEditorModified = false;
     m_internals->AttributeEditorScrollArea->setVisible(false);
     return;
   }
@@ -977,6 +985,7 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
 
   delete m_internals->AttributeEditor;
   m_internals->AttributeEditor = nullptr;
+  m_internals->SuppressNextAttributeEditorModified = false;
 
   m_internals->AttributeEditor = new qtAttribute(
     attribute, this->findStyle(attribute->definition()), m_internals->AttributeEditorFrame, this);
@@ -989,12 +998,44 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
     m_internals->AttributeEditorScrollArea->setVisible(true);
 
     QObject::connect(
-      m_internals->AttributeEditor, &qtAttribute::modified, this, [this, attribute]() {
+      m_internals->AttributeEditor,
+      &qtAttribute::itemModified,
+      this,
+      [this, attribute](qtItem* qtItem) {
+        /*
+         * qtAttribute emits itemModified immediately before modified for item
+         * edits. Handle the path-aware signal here and suppress the following
+         * path-less notification so observers receive exactly one operation.
+         */
+        m_internals->SuppressNextAttributeEditorModified = true;
         m_internals->UpdatingFromAttributeEditor = true;
         m_internals->Model->refreshAttribute(attribute);
         m_internals->UpdatingFromAttributeEditor = false;
         this->updateColumnVisibility();
-        this->attributeModified(attribute);
+
+        std::vector<std::string> itemPaths;
+        if (qtItem && qtItem->item())
+        {
+          itemPaths.push_back(qtItem->item()->path());
+        }
+        this->attributeModified(attribute, itemPaths);
+      });
+
+    QObject::connect(
+      m_internals->AttributeEditor, &qtAttribute::modified, this, [this, attribute]() {
+        if (m_internals->SuppressNextAttributeEditorModified)
+        {
+          m_internals->SuppressNextAttributeEditorModified = false;
+          return;
+        }
+
+        // Attribute-level edits (for example units) have no qtItem path but
+        // must still refresh the row and launch a Signal operation.
+        m_internals->UpdatingFromAttributeEditor = true;
+        m_internals->Model->refreshAttribute(attribute);
+        m_internals->UpdatingFromAttributeEditor = false;
+        this->updateColumnVisibility();
+        this->attributeModified(attribute, {});
       });
 
     if (this->advanceLevelVisible())
@@ -1179,20 +1220,25 @@ void qtAttributeTableView::rebuildAttributeList()
   m_internals->Model->setAttributes(attributes);
 }
 
-void qtAttributeTableView::attributeModified(const smtk::attribute::AttributePtr& attribute)
+void qtAttributeTableView::attributeModified(
+  const smtk::attribute::AttributePtr& attribute,
+  const std::vector<std::string>& itemPaths)
 {
   if (!attribute)
   {
     return;
   }
 
-  /*
-   * Inform listeners that an item in the attribute resource changed.
-   *
-   * SMTK's Signal operation can also be used to identify modified, created,
-   * and expunged components to operation observers and other views.
-   */
+  // Preserve the existing local Qt notification.
   Q_EMIT this->qtBaseView::modified();
+
+  /*
+   * qtBaseAttributeView::attributeChanged() creates and launches an
+   * smtk::attribute::Signal operation. The attribute is placed in the
+   * operation's "modified" item and itemPaths is copied to "items" so
+   * observers can retrieve the exact item that changed.
+   */
+  this->attributeChanged(attribute, itemPaths);
 }
 
 void qtAttributeTableView::updateViewWithOperationResults(

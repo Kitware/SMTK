@@ -137,7 +137,13 @@ public:
     bool isShared() const { return !Alternatives.empty(); }
   };
 
-  using AttributeModifiedCallback = std::function<void(const smtk::attribute::AttributePtr&)>;
+  /**
+   * Callback invoked after the model commits an attribute change. Item edits
+   * report the runtime item path; attribute-level changes such as renaming
+   * report an empty path vector.
+   */
+  using AttributeModifiedCallback = std::function<
+    void(const smtk::attribute::AttributePtr&, const std::vector<std::string>& itemPaths)>;
 
   explicit qtAttributeTableModel(QObject* parent = nullptr);
   ~qtAttributeTableModel() override = default;

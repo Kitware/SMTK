@@ -47,6 +47,15 @@ int UnitTestAttributeTableSharedColumn(int /*unused*/, char** const /*unused*/)
   model.setDefinition(definition);
   model.setAttributes({ first, second });
 
+  smtk::attribute::AttributePtr reportedAttribute;
+  std::vector<std::string> reportedItemPaths;
+  model.setAttributeModifiedCallback(
+    [&reportedAttribute, &reportedItemPaths](
+      const smtk::attribute::AttributePtr& attribute, const std::vector<std::string>& itemPaths) {
+      reportedAttribute = attribute;
+      reportedItemPaths = itemPaths;
+    });
+
   // Attribute name, controlling selector, and one shared value column. The
   // candidate children must not also appear as ordinary columns.
   smtkTest(model.columnCount() == 3, "Unexpected shared-column schema.");
@@ -64,6 +73,12 @@ int UnitTestAttributeTableSharedColumn(int /*unused*/, char** const /*unused*/)
   smtkTest(
     second->itemAtPathAs<smtk::attribute::DoubleItem>("selector/bValue")->value() == 4.5,
     "The shared-column edit targeted the wrong child.");
+  smtkTest(reportedAttribute == second, "The modification callback reported the wrong attribute.");
+  smtkTest(reportedItemPaths.size() == 1, "The modification callback did not report one item.");
+  smtkTest(
+    reportedItemPaths[0] ==
+      second->itemAtPathAs<smtk::attribute::DoubleItem>("selector/bValue")->path(),
+    "The modification callback did not report the active shared-column candidate.");
 
   firstSelector->setDiscreteIndex(2);
   model.refreshAttribute(first);
