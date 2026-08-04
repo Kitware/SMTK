@@ -11,6 +11,8 @@
 #include "smtk/extension/qt/qtAttributeTableModel.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/attribute/utility/Queries.h"
+
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
@@ -22,6 +24,8 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+
+#include "smtk/io/Logger.h"
 
 #include <QBrush>
 #include <QColor>
@@ -124,9 +128,12 @@ void qtAttributeTableModel::setAttributeModifiedCallback(AttributeModifiedCallba
 
 void qtAttributeTableModel::setColumnDisplay(
   ColumnDisplay display,
-  const std::set<std::string>& itemPaths)
+  const std::set<std::string>& itemPaths,
+  const std::vector<SharedColumn>& sharedColumns)
 {
-  if (m_columnDisplay == display && m_columnItemPaths == itemPaths)
+  if (
+    m_columnDisplay == display && m_columnItemPaths == itemPaths &&
+    m_sharedColumns == sharedColumns)
   {
     return;
   }
@@ -134,6 +141,7 @@ void qtAttributeTableModel::setColumnDisplay(
   beginResetModel();
   m_columnDisplay = display;
   m_columnItemPaths = itemPaths;
+  m_sharedColumns = sharedColumns;
   if (m_definition)
   {
     rebuildColumns();
@@ -197,6 +205,21 @@ QVariant qtAttributeTableModel::data(const QModelIndex& index, int role) const
 
   if (!item)
   {
+    if (descriptor->isShared())
+    {
+      if (role == Qt::DisplayRole)
+      {
+        return QStringLiteral("—");
+      }
+      if (role == Qt::BackgroundRole)
+      {
+        return QBrush(QColor(Qt::gray));
+      }
+      if (role == Qt::ToolTipRole)
+      {
+        return QStringLiteral("No configured item is active for this row.");
+      }
+    }
     return {};
   }
 
@@ -538,11 +561,47 @@ smtk::attribute::ItemPtr qtAttributeTableModel::itemForIndex(const QModelIndex& 
   const auto attribute = this->attributeForRow(index.row());
   const auto* descriptor = this->columnDescriptor(index.column());
 
-  if (!attribute || !descriptor || descriptor->ItemPath.empty())
+  if (!attribute || !descriptor)
   {
     return nullptr;
   }
 
+  if (descriptor->isShared())
+  {
+    /*
+     * A shared column has no single ItemPath. Resolve every configured path
+     * against this row's attribute and select the candidate whose complete
+     * conditional-parent chain is active. The attribute utility proved that
+     * at most one candidate can be active for any enumeration of the common
+     * controlling item.
+     */
+    smtk::attribute::ItemPtr activeItem;
+    for (const auto& candidate : descriptor->Alternatives)
+    {
+      const auto item = attribute->itemAtPath(candidate.Path);
+      if (!item || !this->isItemActive(item))
+      {
+        continue;
+      }
+
+      // Static validation should make this impossible. Refuse to choose an
+      // arbitrary value if a malformed resource violates the invariant.
+      if (activeItem)
+      {
+        smtkErrorMacro(
+          smtk::io::Logger::instance(),
+          "Multiple active items found for shared table column \"" << descriptor->Label << "\".");
+        return nullptr;
+      }
+      activeItem = item;
+    }
+    return activeItem;
+  }
+
+  if (descriptor->ItemPath.empty())
+  {
+    return nullptr;
+  }
   return attribute->itemAtPath(descriptor->ItemPath);
 }
 
@@ -584,13 +643,47 @@ smtk::attribute::ItemDefinitionPtr qtAttributeTableModel::itemDefinitionForIndex
     return nullptr;
   }
 
-  const auto* descriptor = this->columnDescriptor(index.column());
+  if (const auto item = this->itemForIndex(index))
+  {
+    const auto* descriptor = this->columnDescriptor(index.column());
+    if (descriptor && descriptor->isShared())
+    {
+      /*
+       * The definition for a shared column is row-dependent: one row may use
+       * aValue while another uses bValue. qtAttributeTableDelegate asks this
+       * method for the active definition so it can construct the correct
+       * editor and validator.
+       *
+       * Item::definition() returns a ConstItemDefinitionPtr from this const
+       * method, while this model's public API historically returns the
+       * non-const ItemDefinitionPtr consumed by the delegate. Do not remove
+       * constness with a cast. Instead, identify the active definition by
+       * address and return the non-const pointer retained during schema
+       * validation in SharedItemCandidate.
+       */
+      const auto itemDefinition = item->definition();
+      for (const auto& candidate : descriptor->Alternatives)
+      {
+        if (candidate.Definition.get() == itemDefinition.get())
+        {
+          return candidate.Definition;
+        }
+      }
+    }
+  }
 
+  const auto* descriptor = this->columnDescriptor(index.column());
   if (!descriptor)
   {
     return nullptr;
   }
 
+  /*
+   * Ordinary columns always use their schema definition. An inactive shared
+   * column also reaches this fallback; its first validated candidate provides
+   * stable type metadata for non-row-specific queries, while flags() prevents
+   * creation of an editor until a candidate becomes active.
+   */
   return descriptor->Definition;
 }
 
@@ -629,6 +722,12 @@ bool qtAttributeTableModel::isDiscrete(const QModelIndex& index) const
   return valueItem && valueItem->isDiscrete();
 }
 
+bool qtAttributeTableModel::isSharedColumn(const QModelIndex& index) const
+{
+  const auto* descriptor = index.isValid() ? this->columnDescriptor(index.column()) : nullptr;
+  return descriptor && descriptor->isShared();
+}
+
 QStringList qtAttributeTableModel::discreteValues(const QModelIndex& index) const
 {
   QStringList values;
@@ -665,6 +764,37 @@ QStringList qtAttributeTableModel::discreteValues(const QModelIndex& index) cons
     values.push_back(QString::fromStdString(definition->discreteEnum(i)));
   }
 
+  return values;
+}
+
+QStringList qtAttributeTableModel::possibleDiscreteValues(const QModelIndex& index) const
+{
+  QStringList values;
+  const auto* descriptor = index.isValid() ? this->columnDescriptor(index.column()) : nullptr;
+  if (!descriptor || !descriptor->isShared())
+  {
+    return this->discreteValues(index);
+  }
+
+  // Include candidates that happen to be inactive in all current rows so
+  // resizeColumnsToContents() still accounts for their longest enumeration.
+  for (const auto& candidate : descriptor->Alternatives)
+  {
+    const auto definition =
+      std::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(candidate.Definition);
+    if (!definition || !definition->isDiscrete())
+    {
+      continue;
+    }
+    for (std::size_t i = 0; i < definition->numberOfDiscreteValues(); ++i)
+    {
+      const QString value = QString::fromStdString(definition->discreteEnum(i));
+      if (!values.contains(value))
+      {
+        values.push_back(value);
+      }
+    }
+  }
   return values;
 }
 
@@ -792,6 +922,7 @@ void qtAttributeTableModel::rebuildColumns()
 
   if (m_columnDisplay == ColumnDisplay::All)
   {
+    this->appendSharedColumns();
     return;
   }
 
@@ -825,6 +956,111 @@ void qtAttributeTableModel::rebuildColumns()
         return false;
       }),
     m_columns.end());
+
+  this->appendSharedColumns();
+}
+
+void qtAttributeTableModel::appendSharedColumns()
+{
+  /*
+   * Track paths already claimed by an earlier logical column. Allowing one
+   * conditional child to supply two shared columns would make the resulting
+   * schema ambiguous and could expose two editors for the same underlying
+   * value.
+   */
+  std::set<std::string> consumedPaths;
+  for (const auto& shared : m_sharedColumns)
+  {
+    if (shared.Name.empty() && shared.Label.empty())
+    {
+      smtkWarningMacro(smtk::io::Logger::instance(), "Ignoring an unnamed shared table column.");
+      continue;
+    }
+
+    const auto validation =
+      smtk::attribute::utility::validateExclusiveConditionalItems(m_definition, shared.ItemPaths);
+    if (!validation)
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Ignoring shared table column \"" << shared.Label << "\": " << validation.error);
+      continue;
+    }
+
+    /*
+     * validateExclusiveConditionalItems() handles definition-tree and
+     * activation semantics. The checks below are table-specific: a single
+     * table cell can currently edit only one fixed value, and candidates must
+     * have a common Item::Type so display, editing, and sorting are coherent.
+     */
+    bool compatible = true;
+    smtk::attribute::Item::Type itemType = smtk::attribute::Item::NUMBER_OF_TYPES;
+    for (std::size_t i = 0; i < validation.itemDefinitions.size(); ++i)
+    {
+      const auto valueDefinition = std::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(
+        validation.itemDefinitions[i]);
+      if (
+        !valueDefinition || valueDefinition->isExtensible() ||
+        valueDefinition->numberOfRequiredValues() != 1)
+      {
+        compatible = false;
+        break;
+      }
+      if (i == 0)
+      {
+        itemType = valueDefinition->type();
+      }
+      else if (valueDefinition->type() != itemType)
+      {
+        compatible = false;
+        break;
+      }
+      if (consumedPaths.find(shared.ItemPaths[i]) != consumedPaths.end())
+      {
+        compatible = false;
+        break;
+      }
+    }
+
+    if (!compatible)
+    {
+      smtkWarningMacro(
+        smtk::io::Logger::instance(),
+        "Ignoring shared table column \"" << shared.Label
+                                          << "\": candidates must be unique, scalar, "
+                                             "non-extensible value items of the same type.");
+      continue;
+    }
+
+    consumedPaths.insert(shared.ItemPaths.begin(), shared.ItemPaths.end());
+
+    // A valid shared column replaces the candidates' ordinary columns under
+    // modes such as All; UserSpecified configurations normally never added
+    // those ordinary paths in the first place.
+    const std::set<std::string> candidatePaths(shared.ItemPaths.begin(), shared.ItemPaths.end());
+    m_columns.erase(
+      std::remove_if(
+        std::next(m_columns.begin()),
+        m_columns.end(),
+        [&candidatePaths](const ColumnDescriptor& column) {
+          return candidatePaths.find(column.ItemPath) != candidatePaths.end();
+        }),
+      m_columns.end());
+
+    ColumnDescriptor descriptor;
+    descriptor.Kind = ColumnKind::ItemValue;
+    descriptor.Label = shared.Label.empty() ? shared.Name : shared.Label;
+    descriptor.Element = 0;
+    // Keep a deterministic fallback definition for rows where no candidate is
+    // active. Row-specific editor queries use Alternatives instead.
+    descriptor.Definition = validation.itemDefinitions.front();
+    descriptor.ControllingItemPath = validation.controllingPath;
+    for (std::size_t i = 0; i < shared.ItemPaths.size(); ++i)
+    {
+      descriptor.Alternatives.push_back({ shared.ItemPaths[i], validation.itemDefinitions[i] });
+    }
+    m_columns.push_back(std::move(descriptor));
+  }
 }
 
 void qtAttributeTableModel::appendItemDefinitionColumns(

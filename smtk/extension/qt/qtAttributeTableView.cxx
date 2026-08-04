@@ -250,6 +250,9 @@ public:
 
   /// Exact item paths included by the UserSpecified column-display policy.
   std::set<std::string> ColumnItemPaths;
+
+  /// Logical columns backed by mutually-exclusive conditional children.
+  std::vector<qtAttributeTableModel::SharedColumn> SharedColumns;
 };
 
 qtBaseView* qtAttributeTableView::createViewWidget(const smtk::view::Information& info)
@@ -355,17 +358,53 @@ void qtAttributeTableView::createWidget()
     for (std::size_t i = 0; i < tableItems.numberOfChildren(); ++i)
     {
       const auto& itemComponent = tableItems.child(i);
-      if (itemComponent.name() != "Item")
+      if (itemComponent.name() == "Item")
+      {
+        std::string itemPath;
+        if (
+          (itemComponent.attribute("Path", itemPath) ||
+           itemComponent.attribute("Name", itemPath)) &&
+          !itemPath.empty())
+        {
+          m_internals->ColumnItemPaths.insert(itemPath);
+        }
+        continue;
+      }
+
+      if (itemComponent.name() != "Column")
       {
         continue;
       }
 
-      std::string itemPath;
-      if (
-        (itemComponent.attribute("Path", itemPath) || itemComponent.attribute("Name", itemPath)) &&
-        !itemPath.empty())
+      qtAttributeTableModel::SharedColumn sharedColumn;
+      itemComponent.attribute("Name", sharedColumn.Name);
+      if (!itemComponent.attribute("Label", sharedColumn.Label))
       {
-        m_internals->ColumnItemPaths.insert(itemPath);
+        sharedColumn.Label = sharedColumn.Name;
+      }
+
+      for (std::size_t j = 0; j < itemComponent.numberOfChildren(); ++j)
+      {
+        const auto& candidate = itemComponent.child(j);
+        if (candidate.name() != "Item")
+        {
+          continue;
+        }
+
+        std::string itemPath;
+        if (
+          (candidate.attribute("Path", itemPath) || candidate.attribute("Name", itemPath)) &&
+          !itemPath.empty())
+        {
+          sharedColumn.ItemPaths.push_back(itemPath);
+        }
+      }
+
+      // The attribute utility reports a detailed warning later if the list is
+      // incomplete or the candidate activation rules are invalid.
+      if (!sharedColumn.ItemPaths.empty())
+      {
+        m_internals->SharedColumns.push_back(std::move(sharedColumn));
       }
     }
   }
@@ -416,7 +455,8 @@ void qtAttributeTableView::createWidget()
   m_internals->Table->setTabKeyNavigation(true);
   m_internals->Model = new qtAttributeTableModel(m_internals->Table);
   m_internals->Model->setUIManager(this->uiManager());
-  m_internals->Model->setColumnDisplay(m_internals->ColumnDisplay, m_internals->ColumnItemPaths);
+  m_internals->Model->setColumnDisplay(
+    m_internals->ColumnDisplay, m_internals->ColumnItemPaths, m_internals->SharedColumns);
 
   /*
    * Insert a proxy model between the table and source model so sorting and

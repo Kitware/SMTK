@@ -11,7 +11,7 @@
 #ifndef smtk_extension_qtAttributeTableModel_h
 #define smtk_extension_qtAttributeTableModel_h
 
-#include "smtk/CoreExports.h"
+#include "smtk/extension/qt/Exports.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -45,7 +45,7 @@ class qtUIManager; // Needed to access color information
  * All attributes are expected to share a common definition so that a single
  * stable set of table columns can be constructed.
  */
-class qtAttributeTableModel : public QAbstractTableModel
+class SMTKQTEXT_EXPORT qtAttributeTableModel : public QAbstractTableModel
 {
   Q_OBJECT
 
@@ -64,6 +64,37 @@ public:
     ItemValue,
     ItemEnabledState,
     ItemSummary
+  };
+
+  /**
+   * @brief Configuration for one logical column backed by conditional items.
+   *
+   * For each row, the column resolves to the one active item among ItemPaths.
+   */
+  struct SharedColumn
+  {
+    /// Stable configuration identifier; used as the label when Label is empty.
+    std::string Name;
+
+    /// Text shown in the horizontal header.
+    std::string Label;
+
+    /// Paths of children that are candidates to supply this column's value.
+    std::vector<std::string> ItemPaths;
+
+    bool operator==(const SharedColumn& other) const
+    {
+      return Name == other.Name && Label == other.Label && ItemPaths == other.ItemPaths;
+    }
+  };
+
+  struct SharedItemCandidate
+  {
+    /// Runtime item path used to resolve the candidate in each attribute row.
+    std::string Path;
+
+    /// Validated, non-const schema definition retained for delegate creation.
+    smtk::attribute::ItemDefinitionPtr Definition;
   };
 
   struct ColumnDescriptor
@@ -90,8 +121,20 @@ public:
    */
     std::size_t Element{ 0 };
 
-    /// Definition that describes the item's type, constraints, and metadata.
+    /**
+     * Definition that describes an ordinary column's item. For a shared
+     * column, this is the first candidate definition and serves only as a
+     * schema-level fallback when no candidate is active in a particular row.
+     */
     smtk::attribute::ItemDefinitionPtr Definition;
+
+    /// Mutually-exclusive candidates for a logical shared column.
+    std::vector<SharedItemCandidate> Alternatives;
+
+    /// Path of the discrete item controlling Alternatives.
+    std::string ControllingItemPath;
+
+    bool isShared() const { return !Alternatives.empty(); }
   };
 
   using AttributeModifiedCallback = std::function<void(const smtk::attribute::AttributePtr&)>;
@@ -119,7 +162,10 @@ public:
    * User-specified paths use the same slash-separated syntax as ItemPath.
    * The attribute-name column is always present.
    */
-  void setColumnDisplay(ColumnDisplay display, const std::set<std::string>& itemPaths = {});
+  void setColumnDisplay(
+    ColumnDisplay display,
+    const std::set<std::string>& itemPaths = {},
+    const std::vector<SharedColumn>& sharedColumns = {});
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 
@@ -146,7 +192,10 @@ public:
    * @brief Return the item definition represented by a table index.
    *
    * The index must belong to this source model. Proxy indices should be mapped
-   * to the source model before calling this method.
+   * to the source model before calling this method. Ordinary columns always
+   * return their descriptor definition. Shared columns return the definition
+   * of the candidate active in the index's row, since different rows can use
+   * different item definitions and therefore different delegates.
    */
   smtk::attribute::ItemDefinitionPtr itemDefinitionForIndex(const QModelIndex& index) const;
 
@@ -170,12 +219,23 @@ public:
    */
   bool isDiscrete(const QModelIndex& index) const;
 
+  /// Return true when the index belongs to a logical shared column.
+  bool isSharedColumn(const QModelIndex& index) const;
+
   /**
    * @brief Return the enumeration names currently available for a discrete item.
    *
    * These names are used by the table delegate to populate a QComboBox.
    */
   QStringList discreteValues(const QModelIndex& index) const;
+
+  /**
+   * @brief Return every discrete value that a column may display.
+   *
+   * Unlike discreteValues(), this includes all candidates in a shared column
+   * and is intended for column sizing rather than editor population.
+   */
+  QStringList possibleDiscreteValues(const QModelIndex& index) const;
 
   /**
    * @brief Return the currently selected discrete enumeration name.
@@ -197,6 +257,9 @@ private:
     const smtk::attribute::ItemDefinitionPtr& itemDefinition,
     const std::string& itemPath,
     const std::string& labelPrefix);
+
+  /// Validate and append explicitly configured logical shared columns.
+  void appendSharedColumns();
 
   QVariant valueItemData(const smtk::attribute::ItemPtr& item, std::size_t element, int role) const;
 
@@ -227,6 +290,7 @@ private:
   std::vector<ColumnDescriptor> m_columns;
   ColumnDisplay m_columnDisplay{ ColumnDisplay::All };
   std::set<std::string> m_columnItemPaths;
+  std::vector<SharedColumn> m_sharedColumns;
 
   AttributeModifiedCallback m_attributeModified;
   smtk::extension::qtUIManager* m_uiManager;

@@ -22,6 +22,7 @@ set(unit_tests_headers_data
 )
 
 set(unit_tests
+  UnitTestAttributeTableSharedColumn.cxx
   UnitTestDoubleClickButton.cxx
   UnitTestEmittingStringBuffer.cxx
   UnitTestForceRequiredItem.cxx

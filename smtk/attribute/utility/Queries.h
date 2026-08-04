@@ -37,6 +37,45 @@ enum class EditableParameters
   Mandatory //!< Some editable parameters exist that have no valid default.
 };
 
+/**\brief The result of validating a set of mutually-exclusive conditional children.
+  *
+  * This structure is intentionally part of the attribute subsystem rather than
+  * a UI package. It can be reused by any consumer that needs several children
+  * of one discrete item to occupy a single logical role.
+  */
+struct SMTKCORE_EXPORT ExclusiveConditionalItems
+{
+  /// The discrete item definition that controls all of the children.
+  smtk::attribute::ValueItemDefinitionPtr controllingDefinition;
+
+  /// The slash-separated path to controllingDefinition.
+  std::string controllingPath;
+
+  /// Definitions corresponding to the requested paths, in the same order.
+  std::vector<smtk::attribute::ItemDefinitionPtr> itemDefinitions;
+
+  /// A diagnostic when validation fails; empty when the result is valid.
+  std::string error;
+
+  bool valid() const { return controllingDefinition != nullptr && error.empty(); }
+  explicit operator bool() const { return this->valid(); }
+};
+
+/**\brief Resolve and validate conditional-child definition paths.
+  *
+  * Each path must identify a direct child of the same discrete value-item
+  * definition. Every child must be activated by at least one enumeration and
+  * no enumeration may activate more than one requested child. An enumeration
+  * may activate none of the requested children.
+  *
+  * Paths use '/' separators and may begin with '/'. Intermediate definitions
+  * may be group items or value items with children.
+  */
+SMTKCORE_EXPORT
+ExclusiveConditionalItems validateExclusiveConditionalItems(
+  const smtk::attribute::DefinitionPtr& definition,
+  const std::vector<std::string>& itemPaths);
+
 /// Filter out Resource Components that fail a ComponentItem's Uniqueness Criteria
 SMTKCORE_EXPORT
 std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(

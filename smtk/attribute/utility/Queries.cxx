@@ -24,6 +24,10 @@
 
 #include "smtk/resource/Manager.h"
 
+#include <algorithm>
+#include <set>
+#include <sstream>
+
 using namespace smtk::attribute;
 
 namespace smtk
@@ -32,6 +36,172 @@ namespace attribute
 {
 namespace utility
 {
+namespace
+{
+std::vector<std::string> pathComponents(const std::string& path)
+{
+  // Ignore empty components so callers may use either "selector/value" or
+  // the absolute-looking form "/selector/value".
+  std::vector<std::string> result;
+  std::string component;
+  std::istringstream stream(path);
+  while (std::getline(stream, component, '/'))
+  {
+    if (!component.empty())
+    {
+      result.push_back(component);
+    }
+  }
+  return result;
+}
+
+ItemDefinitionPtr childDefinition(const ItemDefinitionPtr& parent, const std::string& childName)
+{
+  // Definition paths can pass through the two definition types that own
+  // nested definitions. Group children are positional; value-item children
+  // are named conditional children.
+  if (const auto valueParent = std::dynamic_pointer_cast<ValueItemDefinition>(parent))
+  {
+    const auto& children = valueParent->childrenItemDefinitions();
+    const auto child = children.find(childName);
+    return child == children.end() ? nullptr : child->second;
+  }
+
+  if (const auto groupParent = std::dynamic_pointer_cast<GroupItemDefinition>(parent))
+  {
+    const int position = groupParent->findItemPosition(childName);
+    return position < 0 ? nullptr : groupParent->itemDefinition(position);
+  }
+
+  return nullptr;
+}
+} // anonymous namespace
+
+ExclusiveConditionalItems validateExclusiveConditionalItems(
+  const DefinitionPtr& definition,
+  const std::vector<std::string>& itemPaths)
+{
+  ExclusiveConditionalItems result;
+
+  if (!definition)
+  {
+    result.error = "No attribute definition was provided.";
+    return result;
+  }
+  if (itemPaths.size() < 2)
+  {
+    result.error = "At least two conditional item paths are required.";
+    return result;
+  }
+
+  std::set<std::string> uniquePaths;
+  std::vector<std::string> childNames;
+  for (const auto& path : itemPaths)
+  {
+    if (path.empty())
+    {
+      result.error = "A conditional item path cannot be empty.";
+      return result;
+    }
+    if (!uniquePaths.insert(path).second)
+    {
+      result.error = "Duplicate conditional item path: " + path;
+      return result;
+    }
+
+    const auto components = pathComponents(path);
+    if (components.size() < 2)
+    {
+      result.error = "Conditional item is not a child path: " + path;
+      return result;
+    }
+
+    // Resolve every component except the final child. The final parent must
+    // be discrete; accepting a merely nested item would not provide the
+    // activation guarantees required by this utility.
+    const int topLevelPosition = definition->findItemPosition(components.front());
+    ItemDefinitionPtr current =
+      topLevelPosition < 0 ? nullptr : definition->itemDefinition(topLevelPosition);
+    std::string currentPath = components.front();
+    for (std::size_t i = 1; current && i + 1 < components.size(); ++i)
+    {
+      current = childDefinition(current, components[i]);
+      currentPath += "/" + components[i];
+    }
+
+    const auto parent = std::dynamic_pointer_cast<ValueItemDefinition>(current);
+    if (!parent || !parent->isDiscrete())
+    {
+      result.error = "Item is not a direct child of a discrete item: " + path;
+      return result;
+    }
+
+    const auto& children = parent->childrenItemDefinitions();
+    const auto child = children.find(components.back());
+    if (child == children.end() || !child->second)
+    {
+      result.error = "Could not resolve conditional item path: " + path;
+      return result;
+    }
+
+    if (!result.controllingDefinition)
+    {
+      result.controllingDefinition = parent;
+      result.controllingPath = currentPath;
+    }
+    else if (result.controllingDefinition != parent || result.controllingPath != currentPath)
+    {
+      result.error = "Conditional items do not share the same discrete parent.";
+      result.controllingDefinition.reset();
+      return result;
+    }
+
+    result.itemDefinitions.push_back(child->second);
+    childNames.push_back(components.back());
+  }
+
+  std::set<std::string> activatedChildren;
+  /*
+   * Inspect every possible enumeration, rather than just a default value or
+   * current attribute instance. This proves the invariant for all attributes:
+   * each enumeration activates zero or one of the requested children.
+   */
+  for (std::size_t i = 0; i < result.controllingDefinition->numberOfDiscreteValues(); ++i)
+  {
+    const std::string enumName = result.controllingDefinition->discreteEnum(i);
+    const auto conditionalItems = result.controllingDefinition->conditionalItems(enumName);
+    std::size_t numberOfRequestedChildren = 0;
+    for (const auto& childName : childNames)
+    {
+      if (
+        std::find(conditionalItems.begin(), conditionalItems.end(), childName) !=
+        conditionalItems.end())
+      {
+        activatedChildren.insert(childName);
+        ++numberOfRequestedChildren;
+      }
+    }
+    if (numberOfRequestedChildren > 1)
+    {
+      result.error =
+        "Discrete value \"" + enumName + "\" activates multiple requested conditional items.";
+      result.controllingDefinition.reset();
+      return result;
+    }
+  }
+
+  for (const auto& childName : childNames)
+  {
+    if (activatedChildren.find(childName) == activatedChildren.end())
+    {
+      result.error = "Conditional item is not activated by any discrete value: " + childName;
+      result.controllingDefinition.reset();
+      return result;
+    }
+  }
+  return result;
+}
+
 std::set<smtk::resource::PersistentObjectPtr> checkUniquenessCondition(
   const ComponentItemPtr& compItem,
   const std::set<smtk::resource::PersistentObjectPtr>& objSet)

@@ -63,3 +63,24 @@ For example:
 ``Path`` uses SMTK's slash-separated item-path syntax. ``Name`` is also
 accepted as a convenience for top-level items. The attribute-name column is
 always displayed.
+
+Mutually-exclusive conditional children may share one logical column by using
+a ``Column`` entry. The active child supplies the value and editor for each
+row; when none of the candidates is active, the cell is shown as inactive.
+
+.. code-block:: xml
+
+   <TableItems>
+     <Item Path="boundaryType"/>
+     <Column Name="BoundaryValue" Label="Value">
+       <Item Path="boundaryType/temperature"/>
+       <Item Path="boundaryType/pressure"/>
+     </Column>
+   </TableItems>
+
+Shared-column candidates must be scalar, non-extensible value items of the
+same type. They must be direct children of the same discrete item, each must
+be activated by at least one enumeration, and no enumeration may activate
+more than one candidate. The attribute subsystem provides
+``validateExclusiveConditionalItems()`` for this definition-level validation;
+invalid shared columns are ignored with a diagnostic.

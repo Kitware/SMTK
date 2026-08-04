@@ -186,7 +186,13 @@ QSize qtAttributeTableDelegate::sizeHint(
   }
 
   const QModelIndex srcIndex = this->sourceIndex(index);
-  if (!srcIndex.isValid() || !m_model->isDiscrete(srcIndex))
+  if (!srcIndex.isValid())
+  {
+    return result;
+  }
+
+  const QStringList possibleValues = m_model->possibleDiscreteValues(srcIndex);
+  if (!m_model->isDiscrete(srcIndex) && possibleValues.empty())
   {
     return result;
   }
@@ -199,7 +205,7 @@ QSize qtAttributeTableDelegate::sizeHint(
   QString widestValue = tr("<unset>");
   int widestText = option.fontMetrics.horizontalAdvance(widestValue);
 
-  for (const QString& value : m_model->discreteValues(srcIndex))
+  for (const QString& value : possibleValues)
   {
     const int textWidth = option.fontMetrics.horizontalAdvance(value);
     if (textWidth > widestText)
