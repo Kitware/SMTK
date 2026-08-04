@@ -17,6 +17,8 @@
 
 #include "smtk/task/Manager.h"
 
+#include "smtk/view/Selection.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
@@ -900,6 +902,21 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
     }
   }
 
+  if (!attribute)
+  {
+    if (auto smtkSelection = this->uiManager()->selection())
+    {
+      std::vector<smtk::resource::Component::Ptr> blank;
+      smtkSelection->modifySelection(
+        blank,
+        "qtAttributeTableView",
+        (1 << this->uiManager()->selectionBit()),
+        smtk::view::SelectionAction::UNFILTERED_REPLACE,
+        /*bitwise*/ true);
+      // smtkSelection->resetSelectionBits("qtAttributeTableView", this->uiManager()->selectionBit());
+    }
+  }
+
   if (!attribute || !containsGroupItem(attribute->definition()))
   {
     delete m_internals->AttributeEditor;
@@ -948,6 +965,19 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
   else
   {
     m_internals->AttributeEditorScrollArea->setVisible(false);
+  }
+
+  // Replace SMTK's primary selection with the newly-selected attribute.
+  if (auto smtkSelection = this->uiManager()->selection())
+  {
+    std::vector<smtk::attribute::Attribute::Ptr> seln;
+    seln.push_back(attribute);
+    smtkSelection->modifySelection(
+      seln,
+      "qtAttributeTableView",
+      (1 << this->uiManager()->selectionBit()),
+      smtk::view::SelectionAction::UNFILTERED_REPLACE,
+      /*bitwise*/ true);
   }
 }
 
