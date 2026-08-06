@@ -351,6 +351,9 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   QString volumeArg =
     QString("--volume=%1:%2:z").arg(job->caseDirectory().c_str()).arg(mountPoint.c_str());
   processArguments << volumeArg;
+  // Do not leave container lying around on podman desktop; once it exits,
+  // remove it:
+  processArguments << "--rm";
 
   // QString executable = "./" + QString::fromStdString(job->script().string());
   // Containers are Linux and do not like windows path separators; so use generic_string():
@@ -365,7 +368,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     std::cerr << " " << arg.toStdString();
   }
   std::cerr << "\"\n";
-#endif
+#endif // 0
   // Set the job stage and status:
   job->setStage(-1);
   job->setState(smtk::job::State::Scheduled);
@@ -375,7 +378,13 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   // until we get the container ID as output; it will serve as the job's queue ID.
   proc.start();
   proc.waitForFinished(-1);
+#if 0
+  std::cerr
+    << "  exit status " << static_cast<int>(proc.exitStatus())
+    << " code " << proc.exitCode() << "\n";
+#endif // 0
   auto queueId = proc.readAllStandardOutput().toStdString();
+  std::cerr << "     job id " << queueId << "\n";
   // Trim the queue ID to eliminate newlines from stdout.
   // When podman/docker are run with "-d", they print the container's UUID to stdout.
   job->setQueueId(trim(queueId));
