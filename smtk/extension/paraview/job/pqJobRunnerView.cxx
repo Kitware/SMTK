@@ -688,6 +688,12 @@ pqJobRunnerView::pqJobRunnerView(const smtk::view::Information& info)
     std::make_unique<Internal>(this, this->configuration()); // NB: Must come after createWidget().
 }
 
+pqJobRunnerView::~pqJobRunnerView()
+{
+  // Empty the UI before the pointer to the job in m_p->m_currentJob is destroyed.
+  m_p->emptyGrids();
+}
+
 smtk::job::Job* pqJobRunnerView::currentJob() const
 {
   auto lastJob = m_p->m_lastJob.lock();

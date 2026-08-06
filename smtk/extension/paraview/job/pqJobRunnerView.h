@@ -49,7 +49,7 @@ public:
 
   static qtBaseView* createViewWidget(const smtk::view::Information& info);
   pqJobRunnerView(const smtk::view::Information& info);
-  ~pqJobRunnerView() override = default;
+  ~pqJobRunnerView() override;
 
   bool isEmpty() const override { return false; }
 
