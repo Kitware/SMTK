@@ -197,6 +197,16 @@ std::time_t to_time_t(TP tp)
   return system_clock::to_time_t(sctp);
 }
 
+QFont solidFontAwesome()
+{
+  // Font Awesome identifies "Font Awesome 7 Free" as its family and "Solid"
+  // as its style. Request them separately since macOS/CoreText does not reliably
+  // resolve the combined full-face name as a font family.
+  QFont font(QStringLiteral("Font Awesome 7 Free"));
+  font.setStyleName(QStringLiteral("Solid"));
+  return font;
+}
+
 } // anonymous namespace
 
 class qtArtifactControlWidget : public QWidget
@@ -209,7 +219,7 @@ public:
     : m_view(view)
     , m_stage(stage)
   {
-    QFont fontAwesome("Font Awesome 7 Free Solid");
+    QFont fontAwesome = solidFontAwesome();
     auto* layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     this->setLayout(layout);
@@ -456,7 +466,7 @@ public:
     // Configure the widget.
     auto* topLevelLayout = new QVBoxLayout;
     auto* upperLayout = new QHBoxLayout;
-    QFont fontAwesome("Font Awesome 7 Free Solid");
+    QFont fontAwesome = solidFontAwesome();
     m_lastRun = new QLabel("Last update: —");
     m_lastRun->setObjectName("LastRunLabel");
     m_lastRunStatus = new QLabel;
@@ -519,22 +529,24 @@ public:
       default:
       case smtk::job::Status::Pending:
         // Spinner: f2f1  or f110  or f1ce 
-        m_lastRunStatus->setText("");
+        // Use explicit private-use code points so the source-file encoding cannot
+        // alter the Font Awesome glyphs.
+        m_lastRunStatus->setText(QStringLiteral("\uf2f1"));            // Spinner
         palette.setColor(QPalette::WindowText, QColor(100, 100, 100)); // medium grey
         break;
       case smtk::job::Status::Failed:
         // Exclamation: f06a 
-        m_lastRunStatus->setText("");
+        m_lastRunStatus->setText(QStringLiteral("\uf06a"));          // Exclamation
         palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
       case smtk::job::Status::Succeeded:
         // Circle check: f058 
-        m_lastRunStatus->setText("");
+        m_lastRunStatus->setText(QStringLiteral("\uf058"));          // Circle check
         palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // dark green
         break;
       case smtk::job::Status::Terminated:
         // Circle x-mark: f057
-        m_lastRunStatus->setText("");
+        m_lastRunStatus->setText(QStringLiteral("\uf057"));          // Circle x-mark
         palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
     }
@@ -548,7 +560,7 @@ public:
       return;
     }
     int ii = 0;
-    QFont fontAwesome("Font Awesome 7 Free Solid");
+    QFont fontAwesome = solidFontAwesome();
     for (const auto& stage : jobType->stages())
     {
       auto* stageLabel = new QLabel(QString::fromStdString(stage->name()));
