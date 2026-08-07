@@ -90,6 +90,36 @@ inline std::string& trim(std::string& s)
   return s;
 }
 
+bool usesPodmanMachine(const smtk::string::Token& engine)
+{
+  if (engine.data() != "podman")
+  {
+    return false;
+  }
+#if SMTK_PLATFORM_UNIX
+  // Native Linux Podman does not normally use a machine/remote connection.
+  // SMTK_PODMAN_MACHINE opts into the same VM behavior used on macOS and Windows.
+  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
+  return forceVM && forceVM[0];
+#else
+  return true;
+#endif
+}
+
+void addConnectionArguments(
+  QStringList& arguments,
+  const smtk::string::Token& engine,
+  const std::string& queueName)
+{
+  if (usesPodmanMachine(engine))
+  {
+    // Starting a named Podman machine does not make its connection the global
+    // default. Select it explicitly so another (possibly stale) default cannot
+    // direct this command to the wrong Podman socket.
+    arguments << "--connection" << QString::fromStdString(queueName);
+  }
+}
+
 } // anonymous namespace
 
 using namespace smtk::job;
@@ -245,15 +275,7 @@ ContainerQueue::ContainerQueue(
 
 ContainerQueue::~ContainerQueue()
 {
-  bool containersInVM = true;
-#if SMTK_PLATFORM_UNIX
-  // On linux, only use a virtual machine if forced to by an environment variable.
-  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
-  if (!forceVM || !forceVM[0])
-  {
-    containersInVM = false;
-  }
-#endif
+  bool containersInVM = usesPodmanMachine(m_p->m_engine);
   if (m_removeQueueOnDestruction && containersInVM)
   {
     // std::cerr << "Destroying virtual machine for " << this->name() << "\n";
@@ -328,6 +350,7 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   }
 #endif
   QStringList processArguments;
+  addConnectionArguments(processArguments, m_p->m_engine, this->name());
   processArguments << "run"
                    << "-d";
   switch (m_p->m_engine.id())
@@ -377,17 +400,26 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   // Because launching a container with "-d" (--detach) returns immediately, wait
   // until we get the container ID as output; it will serve as the job's queue ID.
   proc.start();
-  proc.waitForFinished(-1);
+  bool didFinish = proc.waitForFinished(-1);
 #if 0
   std::cerr
     << "  exit status " << static_cast<int>(proc.exitStatus())
     << " code " << proc.exitCode() << "\n";
 #endif // 0
   auto queueId = proc.readAllStandardOutput().toStdString();
+  auto errorOutput = proc.readAllStandardError().toStdString();
   std::cerr << "     job id " << queueId << "\n";
-  if (proc.exitStatus() == QProcess::CrashExit || (proc.exitCode() != 0 && queueId.empty()))
+  if (
+    !didFinish || proc.exitStatus() == QProcess::CrashExit ||
+    (proc.exitCode() != 0 && queueId.empty()))
   {
-    std::cerr << "*** ERROR: FAILED TO SCHEDULE JOB\n";
+    // Podman uses exit code 125 for failures in Podman itself (for example, a
+    // failed remote connection), before the requested container can be started.
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not start container for job " << job->id() << ": " << proc.errorString().toStdString()
+                                           << " (exit code " << proc.exitCode() << ").\n"
+                                           << errorOutput);
     job->setState(smtk::job::State::Unscheduled);
     job->setStatus(smtk::job::Status::Terminated);
     m_p->stopPollingJobProgress(job.get());
@@ -417,6 +449,7 @@ bool ContainerQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
   QProcess proc;
   proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
   QStringList processArguments;
+  addConnectionArguments(processArguments, m_p->m_engine, this->name());
   processArguments << "container"
                    << "kill" << QString::fromStdString(job->queueId().substr(0, 12));
   proc.setArguments(processArguments);
@@ -486,6 +519,7 @@ bool ContainerQueue::pullContainerImage(const std::string& imageUrl)
   QProcess proc;
   proc.setProgram(QString::fromStdString(this->engineExecutable().string()));
   QStringList processArguments;
+  addConnectionArguments(processArguments, m_p->m_engine, this->name());
   processArguments << "pull" << QString::fromStdString(imageUrl);
   proc.setArguments(processArguments);
 #if 0
@@ -529,14 +563,10 @@ bool ContainerQueue::setRootJobDirectoryAsString(const QString& mountPoint)
 
 void ContainerQueue::projectRootChanged(const std::filesystem::path& nextProjectRoot)
 {
-#if SMTK_PLATFORM_UNIX
-  // On linux, only use a virtual machine if forced to by an environment variable.
-  auto* forceVM = std::getenv("SMTK_PODMAN_MACHINE");
-  if (!forceVM || !forceVM[0])
+  if (!usesPodmanMachine(m_p->m_engine))
   {
     return;
   }
-#endif
   // Restart podman machine (on Windows and MacOS only) with a new "-v" option
   // mapping ProjectsRootFolder into the machine.
   // This allows containers running on the machine to mount case directories.
