@@ -89,3 +89,26 @@ Edits made through either the table or the selected-attribute editor now
 launch an ``smtk::attribute::Signal`` operation. Item edits include the
 modified item's runtime path (including the active candidate for a shared
 column); attribute-level changes report an empty item-path list.
+
+Task-diagram port layout
+------------------------
+
+Automatic Graphviz layout now positions only top-level diagram nodes. Child
+nodes, such as external task ports, retain coordinates relative to their
+parent task and move with it. Arcs connected to child nodes are mapped to
+their top-level nodes for layout purposes, preserving dependency ordering
+without allowing Graphviz scene coordinates to be interpreted as
+parent-relative port coordinates. Duplicate mapped arcs and arcs internal to
+one top-level node are omitted from the Graphviz input.
+
+Emplacing a task worklet now preserves the relative positions of its task
+nodes and ports. The drop-point translation is applied according to the
+coordinate system used by each diagram item:
+
+* Task-node positions are scene coordinates and are translated.
+* Internal task ports are independent scene items and are translated.
+* External task ports are children of task nodes; their parent-relative
+  positions are not translated.
+
+Worklet layouts without a top-level task-node position no longer cause an
+invalid centroid calculation; their drop location is ignored with a warning.
