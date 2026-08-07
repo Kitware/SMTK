@@ -49,6 +49,11 @@ ScheduleJob::Result ScheduleJob::operateInternal()
     std::filesystem::remove(job->caseDirectory() / "logs" / "progress");
   }
   bool scheduled = job->queue()->schedule(job);
+  if (!scheduled)
+  {
+    // Force job observers to be invoked when scheduling a job fails.
+    modified = true;
+  }
 
   auto result = this->createResult(
     scheduled ? smtk::operation::Operation::Outcome::SUCCEEDED

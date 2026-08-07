@@ -534,8 +534,8 @@ public:
         break;
       case smtk::job::Status::Terminated:
         // Circle x-mark: f057
-        text << "<b><span style=\"color: black; font-family:Font Awesome 7 Free "
-                "Solid\"></span></b>&nbsp;";
+        m_lastRunStatus->setText("");
+        palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
     }
     m_lastRunStatus->setPalette(palette);
@@ -744,7 +744,7 @@ void pqJobRunnerView::onRunClicked()
       auto op = m_p->m_agent ? m_p->m_agent->operation() : nullptr;
       if (!op)
       {
-        QString message("Internal Error: failed to fetch operation.");
+        QString message("Internal Error: failed to fetch operation used to schedule jobs.");
         QMessageBox::critical(this->Widget, "Error", message);
         return;
       }

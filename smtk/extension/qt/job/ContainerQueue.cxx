@@ -385,6 +385,15 @@ bool ContainerQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
 #endif // 0
   auto queueId = proc.readAllStandardOutput().toStdString();
   std::cerr << "     job id " << queueId << "\n";
+  if (proc.exitStatus() == QProcess::CrashExit || (proc.exitCode() != 0 && queueId.empty()))
+  {
+    std::cerr << "*** ERROR: FAILED TO SCHEDULE JOB\n";
+    job->setState(smtk::job::State::Unscheduled);
+    job->setStatus(smtk::job::Status::Terminated);
+    m_p->stopPollingJobProgress(job.get());
+    this->updateJobDatabaseInfo(job);
+    return false;
+  }
   // Trim the queue ID to eliminate newlines from stdout.
   // When podman/docker are run with "-d", they print the container's UUID to stdout.
   job->setQueueId(trim(queueId));
