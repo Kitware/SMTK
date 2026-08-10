@@ -112,3 +112,16 @@ coordinate system used by each diagram item:
 
 Worklet layouts without a top-level task-node position no longer cause an
 invalid centroid calculation; their drop location is ignored with a warning.
+
+Task-editor project closure
+---------------------------
+
+The task editor now releases its project-specific state safely when a project
+is expunged. It removes the active-task observer before clearing the active
+task, then clears the task path and the worklet palette's parent task while the
+project is still available through the operation result. Finally, it releases
+its task-manager pointer before subsequent diagram updates are processed.
+
+This ordering prevents active-task callbacks from attempting to obtain shared
+ownership of tasks that are already being released, which previously could
+raise a ``std::bad_weak_ptr`` exception when closing or switching projects.

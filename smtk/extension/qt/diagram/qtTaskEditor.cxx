@@ -712,10 +712,21 @@ void qtTaskEditor::updateSceneNodes(
   // Currently only deal with the project being deleted
   for (auto* obj : expunged)
   {
-    if (dynamic_cast<smtk::project::Project*>(obj) != nullptr)
+    if (auto* project = dynamic_cast<smtk::project::Project*>(obj))
     {
-      // Make sure that the task path has been cleared.
+      // Stop observing the active task before clearing it. During project
+      // removal, tasks may already be losing their owning shared pointers;
+      // invoking the active-task observer at that point can attempt
+      // shared_from_this() on a task that is being released.
+      project->taskManager().active().observers().erase(m_p->m_activeObserverKey);
+
+      // The task path and worklet palette both retain references into the
+      // project's task manager. Clear them while the expunged project is still
+      // kept alive by the operation result, then forget the task manager before
+      // any later diagram observer can use it.
+      m_p->m_worklets->setParentTask({});
       m_taskPath->gotoRoot();
+      m_p->m_taskManager = nullptr;
     }
   }
 
@@ -826,13 +837,9 @@ void qtTaskEditor::updateSceneArcs(
         this->diagram()->removeNode(node);
       }
     }
-    else if (auto* project = dynamic_cast<smtk::project::Project*>(obj))
-    {
-      // NB: If we want to support multiple projects, we should check
-      // that project == the project we were observing.
-      project->taskManager().active().observers().erase(m_p->m_activeObserverKey);
-      m_p->m_taskManager = nullptr;
-    }
+    // Project-level task-manager cleanup is performed by updateSceneNodes().
+    // Nodes are processed before arcs, so doing it there prevents callbacks
+    // from observing tasks while their project is being expunged.
   }
 
   // Finally, if changes were made, draw attention to the task-diagram.
