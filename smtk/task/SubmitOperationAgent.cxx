@@ -1197,6 +1197,30 @@ State SubmitOperationAgent::computeInternalState()
     m_internalState = State::Irrelevant;
     return m_internalState;
   }
+  try
+  {
+    // If the operation has a "task" parameter that is a ComponentItem, set it to the current
+    // task if it is not set.
+    if (auto taskItem = m_operation->parameters()->findComponent("task"))
+    {
+      auto task = this->parent()->shared_from_this();
+      if (taskItem->numberOfValues() < 1 || !taskItem->isSet(0))
+      {
+        taskItem->setNumberOfValues(1);
+        taskItem->setValue(task);
+      }
+    }
+  }
+  catch (std::bad_weak_ptr&)
+  {
+    // When this method is called from inside the parent task's constructor,
+    // we cannot yet fetch a shared pointer to our parent task. In that case,
+    // assume we are completable depending on the run style and run-since-edited status.
+    if (m_runStyle == RunStyle::OnCompletion || m_runSinceEdited)
+    {
+      m_internalState = State::Completable;
+    }
+  }
   if (m_operation->ableToOperate())
   {
     switch (m_runStyle)
