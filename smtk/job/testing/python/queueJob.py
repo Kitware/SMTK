@@ -77,7 +77,9 @@ class TestQueueJob(smtk.testing.TestCase):
             print(
                 'SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )', file=script)
             print('cd ${SCRIPT_DIR}', file=script)
+            print(f'echo 0 0 > logs/progress', file=script)
             print(f'echo Floopy > logs/echo.log', file=script)
+            print(f'echo 1 0 > logs/progress', file=script)
         os.chmod(scriptPath, 0o755)
         job.setSize(2)
         print(f'queue is {queue.name()}')
@@ -107,7 +109,9 @@ class TestQueueJob(smtk.testing.TestCase):
             print(
                 'SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )', file=script)
             print('cd ${SCRIPT_DIR}', file=script)
+            print(f'echo 0 0 > logs/progress', file=script)
             print(f'echo Floopy > logs/echo.log', file=script)
+            print(f'echo 1 0 > logs/progress', file=script)
         os.chmod(scriptPath, 0o755)
         job.setSize(2)
         print(f'queue is {queue.name()}')

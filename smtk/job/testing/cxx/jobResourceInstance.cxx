@@ -53,14 +53,14 @@ smtk::common::UUID jobId;
 // TODO: This should test concurrency with mpiexec (or srun, etc.).
 std::string job_script_text = R"(#!/bin/bash
 echo Foo
-echo "0" > logs/progress
+echo "0 0" > logs/progress
 echo "not yet" > logs/job.log
 sleep 2
 echo "wait for it" >> logs/job.log
-echo "1" > logs/progress
+echo "1 0" > logs/progress
 echo "done" >> logs/job.log
 sleep 1
-echo "-2" > logs/progress
+echo "2 0" > logs/progress
 )";
 
 class JobCreatorOp : public smtk::operation::Operation

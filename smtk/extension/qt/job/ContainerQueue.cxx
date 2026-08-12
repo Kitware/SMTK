@@ -186,7 +186,9 @@ public:
       pp >> stage;
       if (pp.good() && stage > -3)
       {
-        // std::cerr << "  Stage " << stage << "\n";
+        int exitCode = 0;
+        pp >> exitCode;
+        // std::cerr << "  Stage " << stage << " exited with " << exitCode << "\n";
         if (auto job = m_self->findJob(jobId))
         {
           if (
@@ -206,6 +208,15 @@ public:
               : stage < job->jobType()->stages().size()
               ? static_cast<int>(smtk::job::State::Running)
               : static_cast<int>(smtk::job::State::Completed));
+          if (stage >= 0 && exitCode != 0)
+          {
+            updater->parameters()->findInt("status")->setIsEnabled(true);
+            updater->parameters()->findInt("status")->setValue(
+              static_cast<int>(smtk::job::Status::Failed));
+            updater->parameters()->findInt("state")->setIsEnabled(true);
+            updater->parameters()->findInt("state")->setValue(
+              static_cast<int>(smtk::job::State::Completed));
+          }
           if (stage < 0)
           {
             updater->parameters()->findInt("status")->setIsEnabled(true);

@@ -70,34 +70,34 @@ std::string job_script_text = R"foo(#!/bin/bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 # echo TestJob: starting
-echo "0" > logs/progress
+echo "0 0" > logs/progress
 echo "not yet" > logs/job.log
 # echo TestJob: Progress initialized
 sleep 0.00625
 echo "wait for it" >> logs/job.log
-echo "1" > logs/progress
+echo "1 0" > logs/progress
 # echo TestJob: Stage 1 complete
 echo "done" >> logs/job.log
 sleep 0.00625
 # echo TestJob: Stage 2 complete
-echo "2" > logs/progress
+echo "2 0" > logs/progress
 )foo";
 
 std::string job_script_cancel_text = R"foo(#!/bin/bash
 # echo TestJob: starting
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
-echo "0" > logs/progress
+echo "0 0" > logs/progress
 echo "not yet" > logs/job.log
 # echo TestJob: Progress initialized
 sleep 2
 echo "wait for it" >> logs/job.log
-echo "1" > logs/progress
+echo "1 0" > logs/progress
 # echo TestJob: Stage 1 complete
 echo "done" >> logs/job.log
 sleep 20
 # echo TestJob: Stage 2 complete
-echo "2" > logs/progress
+echo "2 0" > logs/progress
 )foo";
 
 smtk::common::UUID g_jobId;
