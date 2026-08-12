@@ -125,11 +125,6 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
     };
 #endif
 
-#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
-  // Do not support local runs on Windows.
-  (void)managers;
-  smtkInfoMacro(smtk::io::Logger::instance(), "No support for shell_queue on Windows.");
-#else
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
   auto jobManager = managers->get<smtk::job::Manager::Ptr>();
@@ -150,13 +145,19 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       resourceManager,
       operationManager,
       jobManager);
+#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
+    // Windows cannot execute a Bash script directly. Resolve bash.exe using
+    // PATH by default; applications may replace this with an absolute path to
+    // a bundled interpreter (such as the Bash distributed with OpenFOAM).
+    shellQueue->setInterpreter("bash.exe");
+    shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
+#endif
     g_queuesToRemove.insert(shellQueue);
     if (jobManager->queues().manage(shellQueue))
     {
       jobManager->activeQueue().switchTo(shellQueue.get());
     }
   }
-#endif
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)

@@ -5,8 +5,8 @@ set(unit_tests
 if (SMTK_ENABLE_QT_SUPPORT)
   if (UNIX)
     # Do not run on Windows for now.
-    # The problem is that we don't have CI set up with podman+wsl2
-    # and we don't support ShellQueue on Windows at all.
+    # Windows CI does not currently provide the Bash interpreter required by
+    # the ShellQueue portion of this test or Podman for ContainerQueue.
     list(APPEND unit_tests
       jobQueue.cxx
     )

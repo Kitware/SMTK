@@ -267,6 +267,11 @@ public:
       m_resourceManager,
       m_operationManager,
       m_jobManager);
+    // Exercise the interpreter launch path used by Windows OpenFOAM. The test
+    // scripts are Bash scripts, so this is equivalent to direct execution on
+    // Unix while covering argument insertion and relative script handling.
+    m_shellQueue->setInterpreter("/bin/bash");
+    m_shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
     std::shared_ptr<smtk::job::Queue> queue = m_shellQueue;
     std::cout << "Queue " << queue->name() << " is a " << queue->typeName() << "\n";
 

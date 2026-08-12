@@ -15,8 +15,11 @@
 #include "smtk/job/DatabaseQueue.h"
 
 #include <QObject>
+#include <QProcessEnvironment>
 
+#include <filesystem>
 #include <memory>
+#include <vector>
 
 namespace smtk
 {
@@ -62,11 +65,31 @@ public:
   /// Return the set of all jobs in this queue.
   std::set<std::shared_ptr<smtk::job::Job>> allJobs() const override;
 
+  /// Set/get an optional interpreter used to run job scripts.
+  ///
+  /// When empty (the default), the job script is executed directly. This is
+  /// the traditional behavior on Unix. On Windows, callers can set this to a
+  /// Bash executable (for example, the Bash bundled with OpenFOAM) so that
+  /// Unix shell scripts do not need a native executable suffix or file mode.
+  void setInterpreter(const std::filesystem::path& interpreter);
+  std::filesystem::path interpreter() const;
+
+  /// Set/get arguments inserted between the interpreter and the job script.
+  void setInterpreterArguments(const std::vector<std::string>& arguments);
+  std::vector<std::string> interpreterArguments() const;
+
+  /// Set/get the environment inherited by newly launched jobs.
+  void setProcessEnvironment(const QProcessEnvironment& environment);
+  QProcessEnvironment processEnvironment() const;
+
 protected Q_SLOTS:
   virtual void fileUpdated(const QString& path);
   virtual void directoryUpdated(const QString& path);
 
 private:
+  /// Terminate the process tree for \a job. Must run on this object's thread.
+  bool cancelProcess(const std::shared_ptr<smtk::job::Job>& job);
+
   class Internal;
   std::unique_ptr<Internal> m_p;
 };

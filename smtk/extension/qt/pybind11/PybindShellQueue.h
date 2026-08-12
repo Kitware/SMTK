@@ -54,6 +54,17 @@ pybind11_init_smtk_qt_job_ShellQueue(py::module &m)
       py::arg("operation_manager") = std::shared_ptr<smtk::operation::Manager>(),
       py::arg("job_manager") = std::shared_ptr<smtk::job::Manager>()
     )
+    .def("setInterpreter", [](smtk::qt::job::ShellQueue& self, const std::string& path)
+      {
+        self.setInterpreter(path);
+      }, py::arg("path"))
+    .def("interpreter", [](const smtk::qt::job::ShellQueue& self)
+      {
+        return self.interpreter().string();
+      })
+    .def("setInterpreterArguments", &smtk::qt::job::ShellQueue::setInterpreterArguments,
+      py::arg("arguments"))
+    .def("interpreterArguments", &smtk::qt::job::ShellQueue::interpreterArguments)
     ;
   return instance;
 }
