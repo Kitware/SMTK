@@ -609,13 +609,35 @@ public:
     }
     int stageIndex = job->stage();
     int ii = 0;
+    bool crashed = job->status() == smtk::job::Status::Failed;
     for (const auto& stage : job->jobType()->stages())
     {
       if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 2))
       {
         if (auto* label = dynamic_cast<QLabel*>(layoutItem->widget()))
         {
-          label->setText(ii < stageIndex ? "" : (ii == stageIndex ? "" : ""));
+          if (crashed)
+          {
+            // The final stage label should be marked with failure and colored red
+            // while all completed stages should be marked with check marks and green.
+            // clang-format off
+            QPalette palette = label->palette();
+            palette.setColor(
+              QPalette::WindowText,
+              ii < stageIndex - 1 ?
+                QColor(74, 166, 33) /* medium green */ :
+                QColor(210,  65,  34) /* dark red */);
+            // clang-format on
+            label->setPalette(palette);
+            label->setText(ii < stageIndex - 1 ? " " : (ii == stageIndex - 1 ? " " : ""));
+          }
+          else
+          {
+            QPalette palette = label->palette();
+            palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // medium green
+            label->setPalette(palette);
+            label->setText(ii < stageIndex ? "" : (ii == stageIndex ? "" : ""));
+          }
         }
       }
       if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 4))
