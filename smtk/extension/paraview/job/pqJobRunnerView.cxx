@@ -407,14 +407,17 @@ public:
       bool didCreate;
       std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
       auto* source = getPipelineSource(fullArtifactPath, didCreate);
-      auto* repProxy = activeViewRepresentation(source, true);
-      vtkSMPropertyHelper(repProxy, "Visibility").Set(makeVisible);
-      repProxy->UpdateVTKObjects();
-      if (auto view = pqActiveObjects::instance().activeView())
+      // The source may be null if fullArtifactPath does not exist.
+      if (auto* repProxy = activeViewRepresentation(source, true))
       {
-        view->render();
+        vtkSMPropertyHelper(repProxy, "Visibility").Set(makeVisible);
+        repProxy->UpdateVTKObjects();
+        if (auto view = pqActiveObjects::instance().activeView())
+        {
+          view->render();
+        }
+        return true;
       }
-      return true;
     }
     return false;
   }
