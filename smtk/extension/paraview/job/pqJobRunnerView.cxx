@@ -302,7 +302,7 @@ public:
       m_artifactButton, &QPushButton::clicked, this, &qtArtifactControlWidget::toggleControls);
   }
 
-  ~qtArtifactControlWidget() { this->hideArtifacts(); }
+  ~qtArtifactControlWidget() override = default;
 
   void updateJobStage(int currentJobStage)
   {
@@ -504,8 +504,10 @@ public:
 
   ~Internal()
   {
-    // Destroy widgets in layouts in order to hide artifacts
-    this->emptyGrids();
+    // The owning view normally empties these grids first. Do not modify
+    // representation visibility from this destructor because application
+    // shutdown may already be destroying ParaView's rendering UI observers.
+    this->emptyGrids(/* hideArtifacts */ false);
   }
 
   void updateLastRunTime(smtk::job::Job* job)
@@ -654,12 +656,22 @@ public:
     }
   }
 
-  void emptyGrids()
+  void emptyGrids(bool hideArtifacts = true)
   {
     // Reset grids.
     QLayoutItem* child;
     while ((child = m_stageGrid->takeAt(0)) != 0)
     {
+      // Hiding is part of a normal view/job transition, not widget
+      // destruction. Destructors may run while ParaView's color-map editor
+      // and other active-representation observers are being torn down.
+      if (hideArtifacts)
+      {
+        if (auto* control = dynamic_cast<qtArtifactControlWidget*>(child->widget()))
+        {
+          control->hideArtifacts();
+        }
+      }
       delete child->widget();
       delete child;
     }
@@ -727,8 +739,11 @@ pqJobRunnerView::pqJobRunnerView(const smtk::view::Information& info)
 
 pqJobRunnerView::~pqJobRunnerView()
 {
-  // Empty the UI before the pointer to the job in m_p->m_currentJob is destroyed.
-  m_p->emptyGrids();
+  // Empty the UI before the pointer to the job in m_p is destroyed, but do not
+  // change representation visibility during application shutdown. Doing so
+  // emits active-representation events to ParaView widgets that may already
+  // be partially destroyed.
+  m_p->emptyGrids(/* hideArtifacts */ false);
 }
 
 smtk::job::Job* pqJobRunnerView::currentJob() const

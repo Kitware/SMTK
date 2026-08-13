@@ -223,6 +223,21 @@ bool pqSMTKAttributePanel::updatePipeline()
   return this->displayPipelineSource(dataSource);
 }
 
+void pqSMTKAttributePanel::queueDisplayPipelineSource(pqPipelineSource* psrc)
+{
+  QPointer<pqSMTKAttributePanel> self(this);
+  QPointer<pqPipelineSource> source(psrc);
+  QMetaObject::invokeMethod(
+    this,
+    [self, source]() {
+      if (self && source)
+      {
+        self->displayPipelineSource(source.data());
+      }
+    },
+    Qt::QueuedConnection);
+}
+
 void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 {
   (void)rsrcMgr;
@@ -278,8 +293,7 @@ void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
       &pqActiveObjects::instance(),
       SIGNAL(sourceChanged(pqPipelineSource*)),
       this,
-      SLOT(displayPipelineSource(pqPipelineSource*)),
-      Qt::QueuedConnection);
+      SLOT(queueDisplayPipelineSource(pqPipelineSource*)));
     QObject::connect(
       &pqActiveObjects::instance(),
       SIGNAL(dataUpdated()),
@@ -293,7 +307,7 @@ void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
       &pqActiveObjects::instance(),
       SIGNAL(sourceChanged(pqPipelineSource*)),
       this,
-      SLOT(displayPipelineSource(pqPipelineSource*)));
+      SLOT(queueDisplayPipelineSource(pqPipelineSource*)));
     QObject::disconnect(
       &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
   }

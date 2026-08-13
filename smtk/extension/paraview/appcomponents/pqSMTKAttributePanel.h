@@ -118,6 +118,15 @@ public Q_SLOTS:
   void focusPanel();
 
 protected Q_SLOTS:
+  /**\brief Queue display of \a psrc while guarding its QObject lifetime.
+    *
+    * Active-source changes can be followed immediately by removal of the
+    * source (for example, while switching projects). This relay captures a
+    * QPointer before posting work to the event loop so a deleted source is not
+    * later delivered to displayPipelineSource() as a dangling raw pointer.
+    */
+  virtual void queueDisplayPipelineSource(pqPipelineSource* psrc);
+
   /**\brief Called when vtkSMTKSettings is modified, indicating user preferences have changed.
     *
     * The attribute panel listens for changes to the highlight-on-hover
