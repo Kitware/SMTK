@@ -29,6 +29,8 @@
 
 #include "smtk/geometry/Manager.h"
 
+#include "smtk/job/Manager.h"
+
 #include "smtk/plugin/Manager.txx"
 
 #include "smtk/project/Manager.h"
@@ -106,6 +108,43 @@ vtkSMTKWrapper::~vtkSMTKWrapper()
   this->SetActiveResource(nullptr);
   this->SetSelectionObj(nullptr);
   this->SetSelectedPort(nullptr);
+
+  // The constructor registers this manager collection with every loaded
+  // plugin. Those registrations hold shared pointers to both the collection
+  // and the managers created inside it. Release them explicitly while SMTK's
+  // process-wide services (for example, the UUID generator) are still alive.
+  // Otherwise a plugin's static Client can retain projects, task agents, and
+  // operation specifications until library finalization, when destroying them
+  // is no longer safe.
+  //
+  // Unregister dependent managers before their resource and operation
+  // managers; registrar teardown may need to access those dependencies.
+  auto pluginManager = smtk::plugin::Manager::instance();
+  if (this->Managers->contains<smtk::view::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::view::Manager::Ptr>());
+  }
+  if (this->Managers->contains<smtk::project::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::project::Manager::Ptr>());
+  }
+  if (this->Managers->contains<smtk::job::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::job::Manager::Ptr>());
+  }
+  if (this->Managers->contains<smtk::geometry::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::geometry::Manager::Ptr>());
+  }
+  if (this->Managers->contains<smtk::operation::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::operation::Manager::Ptr>());
+  }
+  if (this->Managers->contains<smtk::resource::Manager::Ptr>())
+  {
+    pluginManager->unregisterPluginsFrom(this->Managers->get<smtk::resource::Manager::Ptr>());
+  }
+  pluginManager->unregisterPluginsFrom(this->Managers);
 }
 
 void vtkSMTKWrapper::PrintSelf(ostream& os, vtkIndent indent)

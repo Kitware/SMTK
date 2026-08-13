@@ -713,8 +713,10 @@ void ReferenceItem::detachOwningResource()
   AttributePtr myAtt = this->m_referencedAttribute.lock();
   if (myAtt != nullptr)
   {
-    // Populate the cache
-    this->resolve();
+    // Preserve values that are already present in the cache, but do not try
+    // to resolve expired link surrogates while detaching. Detachment commonly
+    // occurs during operation or project destruction; resolving here could
+    // perform I/O and reload resources that the application just closed.
 
     // Remove links to referenced items
     for (auto& key : m_keys)
