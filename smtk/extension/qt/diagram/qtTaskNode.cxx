@@ -560,9 +560,11 @@ protected:
 };
 
 const std::string qtTaskNameItem::s_hasChildrenSymbol =
-  "<b><span style=\"font-family:Font Awesome 7 Free\">&#x1f4c1;</span></b>&nbsp;";
+  "<span style=\"font-family:'Font Awesome 7 Free'; font-style:normal; font-weight:900\">"
+  "&#xf07b;</span>&nbsp;";
 const std::string qtTaskNameItem::s_canHaveChildrenSymbol =
-  "<span style=\"font-family:Font Awesome 7 Free\">&#x1f4c1;</span>&nbsp;";
+  "<span style=\"font-family:'Font Awesome 7 Free'; font-style:normal; font-weight:400\">"
+  "&#xf07b;</span>&nbsp;";
 
 qtTaskNode::qtTaskNode(qtDiagramGenerator* generator, smtk::task::Task* task, QGraphicsItem* parent)
   : Superclass(generator, task, parent)

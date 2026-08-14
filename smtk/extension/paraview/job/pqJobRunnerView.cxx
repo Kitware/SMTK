@@ -225,7 +225,7 @@ public:
     this->setLayout(layout);
     m_artifactButton = new QPushButton;
     m_artifactButton->setFont(fontAwesome);
-    m_artifactButton->setText("");
+    m_artifactButton->setText(QStringLiteral("\uf013"));
     layout->addWidget(m_artifactButton);
     m_artifactControls = new QWidget;
     auto* acLayout = new QVBoxLayout;
@@ -257,6 +257,9 @@ public:
       aLayout->setObjectName(QString::number(std::filesystem::hash_value(artifact), 16));
       auto* visibilityButton = new QPushButton;
       visibilityButton->setObjectName("visibility");
+      // These buttons contain Font Awesome private-use glyphs, so they must
+      // explicitly use the same solid face as the other artifact controls.
+      visibilityButton->setFont(fontAwesome);
       visibilityButton->setCheckable(true);
       visibilityButton->setChecked(true);
       QObject::connect(
@@ -265,7 +268,8 @@ public:
         [this, visibilityButton, &artifact](bool makeVisible) {
           if (this->toggleArtifactVisibility(artifact, makeVisible))
           {
-            visibilityButton->setText(makeVisible ? "" : "");
+            visibilityButton->setText(
+              makeVisible ? QStringLiteral("\uf06e") : QStringLiteral("\uf070"));
           }
         });
       auto* opacitySlider = new QSlider;
@@ -275,13 +279,14 @@ public:
       if (repProxy)
       {
         vtkSMPropertyHelper vis(repProxy, "Visibility");
-        visibilityButton->setText(vis.GetAsInt() ? "" : ""); // Or 
+        visibilityButton->setText(
+          vis.GetAsInt() ? QStringLiteral("\uf06e") : QStringLiteral("\uf070"));
         vtkSMPropertyHelper alpha(repProxy, "Opacity");
         opacitySlider->setValue(static_cast<int>(alpha.GetAsDouble() * 255.0));
       }
       else
       {
-        visibilityButton->setText("");
+        visibilityButton->setText(QStringLiteral("\uf070"));
         opacitySlider->setValue(255);
       }
       // Keep these *after* the slider is initialized above.
@@ -533,19 +538,19 @@ public:
     {
       default:
       case smtk::job::Status::Pending:
-        // Spinner: f2f1  or f110  or f1ce 
+        // Spinner: f2f1 (alternatives include f110 and f1ce).
         // Use explicit private-use code points so the source-file encoding cannot
         // alter the Font Awesome glyphs.
         m_lastRunStatus->setText(QStringLiteral("\uf2f1"));            // Spinner
         palette.setColor(QPalette::WindowText, QColor(100, 100, 100)); // medium grey
         break;
       case smtk::job::Status::Failed:
-        // Exclamation: f06a 
+        // Exclamation: f06a.
         m_lastRunStatus->setText(QStringLiteral("\uf06a"));          // Exclamation
         palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
       case smtk::job::Status::Succeeded:
-        // Circle check: f058 
+        // Circle check: f058.
         m_lastRunStatus->setText(QStringLiteral("\uf058"));          // Circle check
         palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // dark green
         break;
@@ -581,7 +586,7 @@ public:
       {
         auto* stageLog = new QPushButton;
         stageLog->setFont(fontAwesome);
-        stageLog->setText("");
+        stageLog->setText(QStringLiteral("\uf15c"));
         stageLog->setObjectName("log stage " + QString::number(ii));
         m_stageGrid->addWidget(stageLog, ii, 3);
         QObject::connect(stageLog, &QPushButton::clicked, [&]() {
@@ -634,14 +639,18 @@ public:
                 QColor(210,  65,  34) /* dark red */);
             // clang-format on
             label->setPalette(palette);
-            label->setText(ii < stageIndex - 1 ? " " : (ii == stageIndex - 1 ? " " : ""));
+            label->setText(
+              ii < stageIndex - 1 ? QStringLiteral("\uf058 ")
+                                  : (ii == stageIndex - 1 ? QStringLiteral("\uf06a ") : QString()));
           }
           else
           {
             QPalette palette = label->palette();
             palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // medium green
             label->setPalette(palette);
-            label->setText(ii < stageIndex ? "" : (ii == stageIndex ? "" : ""));
+            label->setText(
+              ii < stageIndex ? QStringLiteral("\uf058")
+                              : (ii == stageIndex ? QStringLiteral("\uf2f1") : QString()));
           }
         }
       }
