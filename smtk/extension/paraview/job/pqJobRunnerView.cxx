@@ -22,6 +22,8 @@
 #include "smtk/job/agents/JobAgent.h"
 #include "smtk/job/operators/CancelJob.h"
 
+#include "smtk/task/Active.h"
+#include "smtk/task/Manager.h"
 #include "smtk/task/ObjectsInRoles.h"
 #include "smtk/task/Port.h"
 #include "smtk/task/Task.h"
@@ -502,6 +504,23 @@ public:
     QObject::connect(m_jobControl, &QPushButton::clicked, self, &::pqJobRunnerView::onRunClicked);
     m_agent = smtk::job::agents::JobAgent::activeJobAgent(
       self->uiManager()->managers(), smtk::string::Token());
+    m_taskManager = self->uiManager()->managers().get<smtk::task::Manager::Ptr>();
+    if (auto taskManager = m_taskManager.lock())
+    {
+      // A normal task transition occurs while ParaView's rendering UI is
+      // intact. Hide this task's artifacts here instead of relying on widget
+      // destruction, which may occur too late to be safe during shutdown.
+      m_activeTaskObserver = taskManager->active().observers().insert(
+        [this](smtk::task::Task* previous, smtk::task::Task* next) {
+          if (previous != next && m_agent && previous == m_agent->parent())
+          {
+            this->hideArtifacts();
+          }
+        },
+        0,
+        false,
+        "pqJobRunnerView: Hide artifacts when leaving the owning task.");
+    }
     // Stuff that must be updated with each job.
     this
       ->updateJobControls(); // Add per-stage status and log button. Add artifact vis controls. Update label of m_jobControl button.
@@ -509,6 +528,10 @@ public:
 
   ~Internal()
   {
+    if (auto taskManager = m_taskManager.lock())
+    {
+      taskManager->active().observers().erase(m_activeTaskObserver);
+    }
     // The owning view normally empties these grids first. Do not modify
     // representation visibility from this destructor because application
     // shutdown may already be destroying ParaView's rendering UI observers.
@@ -667,20 +690,14 @@ public:
 
   void emptyGrids(bool hideArtifacts = true)
   {
+    if (hideArtifacts)
+    {
+      this->hideArtifacts();
+    }
     // Reset grids.
     QLayoutItem* child;
     while ((child = m_stageGrid->takeAt(0)) != 0)
     {
-      // Hiding is part of a normal view/job transition, not widget
-      // destruction. Destructors may run while ParaView's color-map editor
-      // and other active-representation observers are being torn down.
-      if (hideArtifacts)
-      {
-        if (auto* control = dynamic_cast<qtArtifactControlWidget*>(child->widget()))
-        {
-          control->hideArtifacts();
-        }
-      }
       delete child->widget();
       delete child;
     }
@@ -688,6 +705,20 @@ public:
     {
       delete child->widget();
       delete child;
+    }
+  }
+
+  void hideArtifacts()
+  {
+    // Hiding is part of a normal task/view transition, not widget
+    // destruction. Destructors may run while ParaView's color-map editor
+    // and other active-representation observers are being torn down.
+    for (int ii = 0; ii < m_stageGrid->count(); ++ii)
+    {
+      if (auto* control = dynamic_cast<qtArtifactControlWidget*>(m_stageGrid->itemAt(ii)->widget()))
+      {
+        control->hideArtifacts();
+      }
     }
   }
 
@@ -729,6 +760,8 @@ public:
   smtk::job::agents::JobAgent* m_agent{ nullptr };
   int m_jobObserver{ -1 };
   std::weak_ptr<smtk::job::Job> m_lastJob;
+  std::weak_ptr<smtk::task::Manager> m_taskManager;
+  smtk::task::Active::Observers::Key m_activeTaskObserver;
 };
 
 smtk::extension::qtBaseView* pqJobRunnerView::createViewWidget(const smtk::view::Information& info)

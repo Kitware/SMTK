@@ -26,9 +26,11 @@ task manager has been destroyed.
 
 Job-runner artifact controls no longer change ParaView representation
 visibility from their destructors. Normal job and view transitions continue
-to hide displayed artifacts explicitly, while application shutdown deletes
-the controls without emitting active-representation events to rendering UI
-observers that may already be partially destroyed.
+to hide displayed artifacts explicitly. Active-task transitions also hide the
+previous task's artifacts while the rendering UI is still valid, while
+application shutdown deletes the controls without emitting
+active-representation events to rendering UI observers that may already be
+partially destroyed.
 
 The attribute panel now guards queued active-pipeline-source updates with a
 ``QPointer``. If a source is removed before Qt processes the update, as can
