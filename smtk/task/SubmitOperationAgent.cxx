@@ -294,6 +294,12 @@ void SubmitOperationAgent::configure(const Configuration& config)
        ? SubmitOperationAgent::RunStyleValue(result->get<smtk::string::Token>())
        : RunStyle::Iteratively);
 
+  // Most operations must run again after their task is explicitly reopened.
+  // Some operations, however, produce persistent state that remains valid; let
+  // those workflows preserve their successful run when the task is uncompleted.
+  result = config.find("rerun-on-uncompletion");
+  m_rerunOnUncompletion = result == config.end() ? true : result->get<bool>();
+
   if (mgrs)
   {
     if (auto operationManager = mgrs->get<smtk::operation::Manager::Ptr>())
@@ -442,6 +448,10 @@ Agent::Configuration SubmitOperationAgent::configuration() const
     config["watching"] = m_watching;
   }
   config["run-style"] = SubmitOperationAgent::RunStyleToken(m_runStyle);
+  if (!m_rerunOnUncompletion)
+  {
+    config["rerun-on-uncompletion"] = false;
+  }
   if (m_runSinceEdited)
   {
     config["run-since-edited"] = true;
@@ -740,10 +750,32 @@ bool SubmitOperationAgent::setNeedsToRun()
   return true;
 }
 
+bool SubmitOperationAgent::setRunSinceEdited()
+{
+  if (m_runSinceEdited && m_internalState >= State::Completable)
+  {
+    return false;
+  }
+  State prev = m_internalState;
+  m_runSinceEdited = true;
+  // The caller has independently validated the persisted operation result.
+  // Do not call computeInternalState() here: while a project is being restored,
+  // port-driven operation parameters may not have been repopulated yet, and
+  // ableToOperate() would incorrectly discard that external validation.
+  m_internalState = State::Completable;
+  m_parent->updateAgentState(this, prev, m_internalState);
+  return true;
+}
+
 void SubmitOperationAgent::taskStateChanged(State prev, State& next)
 {
-  // If we are downgraded from a completed state, require the operation to re-run.
-  if (prev == State::Completed && next < prev)
+  // If we are downgraded from a completed state, require user-run operations
+  // to run again. An OnCompletion operation must remain completable: making it
+  // incomplete here creates a cycle where the operation cannot launch until
+  // the task is completed, but the task cannot be completed until it launches.
+  if (
+    m_rerunOnUncompletion && m_runStyle != RunStyle::OnCompletion && prev == State::Completed &&
+    next < prev)
   {
     State prevInternalState = m_internalState;
     m_internalState = m_internalState > State::Incomplete ? State::Incomplete : m_internalState;

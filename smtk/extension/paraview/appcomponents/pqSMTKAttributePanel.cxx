@@ -387,19 +387,39 @@ void pqSMTKAttributePanel::handleProjectEvent(
               return;
             }
             // Stop observing the prior task (if any).
-            m_currentTaskObserverKey.release();
-
-            (void)oldTask;
             if (m_currentTask)
             {
               m_currentTask->observers().erase(m_currentTaskObserverKey);
-              self->displayResource(nullptr);
             }
             m_currentTask = nullptr;
-            if (newTask)
+
+            // Always remove the previous top-level view. Some non-task display
+            // paths intentionally clear m_currentTask while leaving a task
+            // group visible; conditioning this reset on m_currentTask allowed
+            // that group's fixed child views to survive a task transition.
+            self->displayResource(nullptr);
+
+            (void)oldTask; // Equal to newTask during observer initialization.
+            if (!newTask)
             {
-              self->displayTaskAttribute(newTask);
+              return;
             }
+
+            // Other active-task observers update agents and port data during
+            // this same notification. Defer view construction until they have
+            // finished so getViewData() sees the new task's configured resource
+            // set rather than leaving the prior task's group in the panel.
+            std::weak_ptr<smtk::task::Task> weakTask =
+              std::static_pointer_cast<smtk::task::Task>(newTask->shared_from_this());
+            QTimer::singleShot(0, [self, weakTask]() {
+              auto task = weakTask.lock();
+              if (!(self && task && task->manager() &&
+                    task->manager()->active().task() == task.get()))
+              {
+                return;
+              }
+              self->displayTaskAttribute(task.get());
+            });
           },
           /* priority */ 0,
           /* initialize */ true,

@@ -302,6 +302,13 @@ public:
   /// if true is returned.
   bool setNeedsToRun();
 
+  /// Record that the configured operation's result has been externally validated.
+  ///
+  /// This is intended for custom user interfaces that can verify persisted
+  /// operation output without launching the operation again. It returns true
+  /// when the agent's run status changed and recomputes the parent task's state.
+  bool setRunSinceEdited();
+
   // bool editableCompletion() const override;
 
 protected:
@@ -379,6 +386,11 @@ protected:
   ParameterSpec m_associationSpec;
   RunStyle m_runStyle{ RunStyle::Iteratively };
   bool m_runSinceEdited{ false };
+  /// Whether marking a completed task incomplete should invalidate a successful run.
+  ///
+  /// This defaults to true for existing workflows. Agents whose operation produces
+  /// persistent, still-valid state may disable it with ``rerun-on-uncompletion``.
+  bool m_rerunOnUncompletion{ true };
   std::shared_ptr<smtk::operation::Operation> m_operation;
 
   /// Allow users to name a port+role where this agent produces a

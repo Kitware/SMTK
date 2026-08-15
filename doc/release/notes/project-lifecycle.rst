@@ -38,6 +38,19 @@ happen when leaving post-processing mode or switching projects, the pending
 display request is discarded instead of passing a dangling pipeline-source
 pointer to the panel.
 
+Active-task changes now always remove the prior top-level attribute view and
+defer construction of the new task's view until all task and port observers
+have finished. This prevents dynamic task-control children from updating inside
+an otherwise stale group view from the previously active task.
+
+Submit-operation agents may now set ``rerun-on-uncompletion`` to false when a
+successful operation's output remains valid after its task is reopened. Such
+agents preserve their successful state, allowing the task's completion control
+to remain enabled without rerunning an otherwise destructive operation.
+Operations configured to run upon task completion are also kept completable
+when reopened, avoiding a cycle where the operation cannot run until the task
+is complete but the task cannot be completed until the operation runs.
+
 Together, these changes prevent crashes observed when switching projects or
 quitting an SMTK-based application after displaying task, attribute, or job
 result views.
