@@ -191,6 +191,35 @@ vtkSMRepresentationProxy* activeViewRepresentation(pqPipelineSource* source, boo
   return proxy;
 }
 
+void hideRepresentations(pqPipelineSource* source)
+{
+  if (!source)
+  {
+    return;
+  }
+
+  // An artifact can have a representation in more than the currently-active
+  // view. During a task transition, the active view can also change before
+  // cleanup is performed. Hide every representation owned by the artifact
+  // source and render each affected view instead of relying on active objects.
+  const auto views = source->getViews();
+  for (auto* view : views)
+  {
+    if (!view)
+    {
+      continue;
+    }
+    for (auto* representation : source->getRepresentations(view))
+    {
+      if (representation)
+      {
+        representation->setVisible(false);
+      }
+    }
+    view->render();
+  }
+}
+
 template<typename TP>
 std::time_t to_time_t(TP tp)
 {
@@ -333,7 +362,7 @@ public:
             auto it = s_artifacts.find(fullArtifactPath);
             if (it != s_artifacts.end())
             {
-              activeViewRepresentation(it->second, /*show*/ false);
+              hideRepresentations(it->second);
             }
           }
         }
@@ -504,7 +533,14 @@ public:
     QObject::connect(m_jobControl, &QPushButton::clicked, self, &::pqJobRunnerView::onRunClicked);
     m_agent = smtk::job::agents::JobAgent::activeJobAgent(
       self->uiManager()->managers(), smtk::string::Token());
-    m_taskManager = self->uiManager()->managers().get<smtk::task::Manager::Ptr>();
+    // Task managers are owned by projects and are not required to be present
+    // in the application's Managers container. Obtain the exact manager that
+    // owns this view's job agent instead of looking for an application-scoped
+    // task manager (which leaves the observer uninstalled in CorpsFoam).
+    if (m_agent && m_agent->parent() && m_agent->parent()->manager())
+    {
+      m_taskManager = m_agent->parent()->manager()->shared_from_this();
+    }
     if (auto taskManager = m_taskManager.lock())
     {
       // A normal task transition occurs while ParaView's rendering UI is
@@ -517,7 +553,12 @@ public:
             this->hideArtifacts();
           }
         },
-        0,
+        // Run before attribute-panel observers (which use the default
+        // priority). They replace the old task's view synchronously and thus
+        // destroy this object and unregister this observer. At the default
+        // priority, that could happen before this callback was invoked,
+        // leaving the old task's artifact representations visible.
+        1,
         false,
         "pqJobRunnerView: Hide artifacts when leaving the owning task.");
     }

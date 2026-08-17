@@ -30,7 +30,15 @@ to hide displayed artifacts explicitly. Active-task transitions also hide the
 previous task's artifacts while the rendering UI is still valid, while
 application shutdown deletes the controls without emitting
 active-representation events to rendering UI observers that may already be
-partially destroyed.
+partially destroyed. Job-runner views obtain their active-task observer from
+the project-owned task manager associated with their job agent rather than
+assuming a task manager exists in the application-wide manager collection.
+Artifact cleanup observers run before attribute-panel observers so the
+outgoing task's artifact controls remain available to hide their
+representations before its view is destroyed. Cleanup hides the artifact
+source in every view where it has a representation and renders each affected
+view, rather than depending on which render view is active during the task
+transition.
 
 The attribute panel now guards queued active-pipeline-source updates with a
 ``QPointer``. If a source is removed before Qt processes the update, as can
