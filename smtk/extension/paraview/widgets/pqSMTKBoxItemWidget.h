@@ -25,6 +25,11 @@ class QCheckBox;
   * In the future, other item types (such as a GroupItem holding
   * children specifying corner points and rotations) may be supported.
   *
+  * When all bound DoubleItems have defaults, a Reset to Defaults button
+  * is shown. Item-view configurations may set
+  * `HideResetBoundsWhenDefaults="true"` to hide ParaView's data-bounds
+  * reset button and its block-visibility checkbox in this case.
+  *
   * Currently, there is no support to initialize the box coordinates;
   * the item's values will be copied to the 3-D representation only if
   * they exist and there is no default or if they are non-default.
@@ -49,6 +54,8 @@ protected Q_SLOTS:
   bool updateItemFromWidgetInternal() override;
   /// Retrieve property values from the attribute's Item and update the ParaView proxy.
   bool updateWidgetFromItemInternal() override;
+  /// Restore all box-defining items to their defaults and update the 3-D widget.
+  void resetToDefaults();
 
 protected:
   /// Describe how an attribute's items specify a bounding box.

@@ -125,3 +125,22 @@ its task-manager pointer before subsequent diagram updates are processed.
 This ordering prevents active-task callbacks from attempting to obtain shared
 ownership of tasks that are already being released, which previously could
 raise a ``std::bad_weak_ptr`` exception when closing or switching projects.
+
+Box-widget defaults
+-------------------
+
+The ParaView box item widget now displays a **Reset to Defaults** button when
+all of the numeric attribute items defining its box have default values. The
+button restores every bound coordinate and rotation value, updates the
+ParaView widget proxy, and renders the box using the restored values.
+
+Box item views may set ``HideResetBoundsWhenDefaults="true"`` to hide
+ParaView's **Reset Bounds** button and **Take account of block visibility**
+checkbox when the box has defaults. The option is false by default.
+
+.. code-block:: xml
+
+<View
+  Item="box"
+  Type="Box"
+  HideResetBoundsWhenDefaults="true"/>
