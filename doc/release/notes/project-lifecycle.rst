@@ -18,6 +18,15 @@ item's cache are preserved, but detachment does not perform I/O or reload a
 resource that an application has just closed. This prevents operation and task
 destruction from reopening project resources during teardown.
 
+Project readers now reject calls that lack the application manager collection
+or project manager. Resource-surrogate resolution can encounter this condition
+while deferred UI operation parameters from a closed project are being
+validated; the read now fails cleanly instead of dereferencing a null project
+manager during a project switch.
+The registered project-reader function also returns immediately for a
+manager-less surrogate request, avoiding repeated error messages for stale
+project references while a replacement project's worklet is being emplaced.
+
 Task-path tool buttons now hold weak references to tasks. Since these widgets
 may be deleted asynchronously by Qt, they unregister their task observer only
 when the task is still alive. Thus, deferred widget deletion neither retains a
