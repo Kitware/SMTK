@@ -20,7 +20,8 @@
 
 namespace py = pybind11;
 
-inline PySharedPtrClass< smtk::markup::SpatialData> pybind11_init_smtk_markup_SpatialData(py::module &m)
+inline PySharedPtrClass<smtk::markup::SpatialData, smtk::markup::Component>
+pybind11_init_smtk_markup_SpatialData(py::module &m)
 {
   PySharedPtrClass< smtk::markup::SpatialData, smtk::markup::Component> instance(m, "SpatialData");
   instance

@@ -26,6 +26,20 @@ inline PySharedPtrClass< smtk::graph::Component> pybind11_init_smtk_graph_Compon
   instance
     .def("setId", &smtk::graph::Component::setId, py::arg("uuid"))
     .def("disconnect", &smtk::graph::Component::disconnect, py::arg("onlyExplicit") = false)
+    .def("incoming", [](smtk::graph::Component& self, const std::string& arcTypeName)
+      {
+        return self.incoming(arcTypeName);
+      },
+      py::arg("arc_typename"),
+      py::return_value_policy::reference_internal
+    )
+    .def("outgoing", [](smtk::graph::Component& self, const std::string& arcTypeName)
+      {
+        return self.outgoing(arcTypeName);
+      },
+      py::arg("arc_typename"),
+      py::return_value_policy::reference_internal
+    )
     ;
   return instance;
 }
