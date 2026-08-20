@@ -149,6 +149,17 @@ void pqSMTKDiagramPanel::resourceManagerAdded(pqSMTKWrapper* wrapper, pqServer* 
   {
     return;
   }
+  for (const auto& entry : m_diagram->generators())
+  {
+    if (auto taskEditor = std::dynamic_pointer_cast<smtk::extension::qtTaskEditor>(entry.second))
+    {
+      QObject::connect(
+        taskEditor.get(),
+        &smtk::extension::qtTaskEditor::focusRequested,
+        this,
+        &pqSMTKDiagramPanel::focusPanel);
+    }
+  }
   m_diagram->widget()->setObjectName("qtDiagramView");
   std::string title;
   m_view->details().attribute("Title", title);

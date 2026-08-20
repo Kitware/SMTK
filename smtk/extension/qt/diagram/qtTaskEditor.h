@@ -128,6 +128,10 @@ public:
   const qtTaskPath* taskPath() const { return m_taskPath; }
   qtTaskPath* taskPath() { return m_taskPath; }
 
+Q_SIGNALS:
+  /// Emitted when a project with no active task should display the diagram.
+  void focusRequested();
+
 protected:
   /// Used to create/destroy arcs incident to the node for \a object.
   ///

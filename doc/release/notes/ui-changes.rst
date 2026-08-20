@@ -126,6 +126,14 @@ This ordering prevents active-task callbacks from attempting to obtain shared
 ownership of tasks that are already being released, which previously could
 raise a ``std::bad_weak_ptr`` exception when closing or switching projects.
 
+Task-diagram display for projects without an active task
+---------------------------------------------------------
+
+When a project is created, or when a loaded project has no active task, the
+application now brings the task-diagram panel forward. Newly created projects
+also reset the task diagram to its root view so that all top-level tasks are
+shown. Loaded projects retain any restored diagram navigation state.
+
 Box-widget defaults
 -------------------
 

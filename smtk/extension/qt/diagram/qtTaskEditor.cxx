@@ -42,6 +42,8 @@
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 
+#include "smtk/operation/groups/CreatorGroup.h"
+
 #include "smtk/task/Active.h"
 #include "smtk/task/Adaptor.h"
 #include "smtk/task/Instances.h"
@@ -637,6 +639,21 @@ void qtTaskEditor::updateSceneNodes(
         0,
         true,
         "qtTaskEditor watching active task.");
+
+      if (!project->taskManager().active().task())
+      {
+        // A newly-created project should always begin at the diagram root. A
+        // loaded project may have restored a more specific diagram view, so
+        // preserve that state while still showing the diagram when idle.
+        auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+        if (
+          operationManager &&
+          smtk::operation::CreatorGroup(operationManager).contains(operation.index()))
+        {
+          m_taskPath->gotoRoot();
+        }
+        Q_EMIT this->focusRequested();
+      }
     }
   }
 
