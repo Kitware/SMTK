@@ -14,6 +14,8 @@
 #include "smtk/job/Job.h"
 #include "smtk/job/Queue.h"
 #include "smtk/job/operators/JobUpdated.h"
+#include "smtk/resource/Manager.h"
+#include "smtk/resource/Observer.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -22,7 +24,11 @@
 #include <QPointer>
 #include <QProcess>
 #include <QThread>
+#include <QTimer>
 
+#include <atomic>
+#include <cerrno>
+#include <charconv>
 #include <fstream>
 
 #if defined(Q_OS_WIN)
@@ -30,6 +36,8 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#else
+#include <csignal>
 #endif
 
 namespace smtk
@@ -53,6 +61,29 @@ public:
       m_watcher.data(), &QFileSystemWatcher::fileChanged, self, &ShellQueue::fileUpdated);
     QObject::connect(
       m_watcher.data(), &QFileSystemWatcher::directoryChanged, self, &ShellQueue::directoryUpdated);
+    // QFileSystemWatcher notifications can be missed while the application is
+    // closed (and when a progress file is replaced). Polling also discovers
+    // persisted jobs after a project and its tasks have been restored.
+    m_timer.setInterval(1000);
+    m_timer.setSingleShot(false);
+    QObject::connect(&m_timer, &QTimer::timeout, self, &ShellQueue::updateJobStates);
+    m_timer.start();
+    if (auto resourceManager = self->manager())
+    {
+      m_resourceObserver = resourceManager->observers().insert(
+        [this](const smtk::resource::Resource&, smtk::resource::EventType event) {
+          if (event == smtk::resource::EventType::ADDED)
+          {
+            // A restored project may satisfy persisted job-origin links. Queue
+            // the retry because resource-manager observers must not modify it.
+            m_restoreLinks = true;
+            QMetaObject::invokeMethod(m_self, &ShellQueue::updateJobStates, Qt::QueuedConnection);
+          }
+        },
+        /* priority */ 0,
+        /* initialize */ false,
+        "ShellQueue restores job origin links when resources are loaded.");
+    }
   }
 
   using PathUpdateResponder = std::function<void(const QString&)>;
@@ -62,15 +93,17 @@ public:
     auto it = m_dispatch.find(path);
     if (it != m_dispatch.end())
     {
-      std::cerr << "WARNING: Replacing a dispatch for path (" << path.toStdString() << ").\n";
       it->second = function;
     }
     else
     {
       m_dispatch[path] = function;
     }
-    bool didAdd = m_watcher->addPath(path);
-    return didAdd;
+    if (m_watcher->files().contains(path) || m_watcher->directories().contains(path))
+    {
+      return true;
+    }
+    return m_watcher->addPath(path);
   }
 
   void dispatchUpdate(const QString& path)
@@ -84,14 +117,18 @@ public:
 
   ShellQueue* m_self{ nullptr };
   QScopedPointer<QFileSystemWatcher> m_watcher;
+  QTimer m_timer;
+  smtk::resource::Observers::Key m_resourceObserver;
+  std::atomic_bool m_restoreLinks{ true };
   std::unordered_map<QString, std::function<void(const QString&)>> m_dispatch;
   std::filesystem::path m_interpreter;
   std::vector<std::string> m_interpreterArguments;
   QProcessEnvironment m_processEnvironment{ QProcessEnvironment::systemEnvironment() };
   std::unordered_map<smtk::common::UUID, QPointer<QProcess>> m_activeProcesses;
 #if defined(Q_OS_WIN)
-  // A Windows Job Object makes cancellation apply to the complete process
-  // tree (Bash, OpenFOAM solvers, and MPI children), not just to bash.exe.
+  // A Windows Job Object makes explicit cancellation apply to the complete
+  // process tree. It intentionally does not use KILL_ON_JOB_CLOSE: simulations
+  // must survive application shutdown.
   std::unordered_map<smtk::common::UUID, HANDLE> m_windowsJobObjects;
 #endif
 };
@@ -100,7 +137,6 @@ public:
 ShellQueue::ShellQueue()
   : m_p(new ShellQueue::Internal(this))
 {
-  // TODO: Deserialize local jobs from storage?
 }
 
 ShellQueue::ShellQueue(
@@ -113,6 +149,18 @@ ShellQueue::ShellQueue(
 
 ShellQueue::~ShellQueue()
 {
+  // QProcess::~QProcess terminates a process that is still running. Detach the
+  // wrappers before QObject child destruction so simulations keep running when
+  // SMTK exits. The operating system reclaims these wrapper objects at exit.
+  for (auto& entry : m_p->m_activeProcesses)
+  {
+    if (entry.second)
+    {
+      entry.second->disconnect(this);
+      entry.second->setParent(nullptr);
+    }
+  }
+  m_p->m_activeProcesses.clear();
 #if defined(Q_OS_WIN)
   for (const auto& entry : m_p->m_windowsJobObjects)
   {
@@ -153,6 +201,15 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   auto* proc = new QProcess(this);
   proc->setWorkingDirectory(QString::fromStdString(job->caseDirectory().string()));
   proc->setProcessEnvironment(m_p->m_processEnvironment);
+  // Do not leave the child connected to QProcess-owned pipes: those handles
+  // disappear when SMTK exits and can cause a surviving child to receive a
+  // broken pipe. Files remain valid independently of the parent process.
+  auto logsDirectory = job->caseDirectory() / "logs";
+  std::filesystem::create_directories(logsDirectory);
+  proc->setStandardOutputFile(
+    QString::fromStdString((logsDirectory / "shell-queue.stdout.log").string()), QIODevice::Append);
+  proc->setStandardErrorFile(
+    QString::fromStdString((logsDirectory / "shell-queue.stderr.log").string()), QIODevice::Append);
   if (m_p->m_interpreter.empty())
   {
     proc->setProgram(QString::fromStdString((job->caseDirectory() / job->script()).string()));
@@ -171,55 +228,7 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     arguments.append("./" + QString::fromStdString(job->script().generic_string()));
     proc->setArguments(arguments);
   }
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs").string()),
-    [job, this](const QString& path) {
-      if (path.endsWith("logs"))
-      {
-        // Watch "progress" inside this dir.
-        m_p->m_watcher->addPath(path + "/progress");
-      }
-    });
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs" / "progress").string()),
-    [job, this](const QString& path) {
-      if (path.endsWith("progress"))
-      {
-        std::ifstream pp(path.toStdString().c_str());
-        int stage = -3;
-        pp >> stage;
-        if (pp.good() && stage > -3)
-        {
-          // std::cerr << "  Stage " << stage << "\n";
-          if (auto operationManager = this->operationManager())
-          {
-            auto updater = operationManager->create<smtk::job::JobUpdated>();
-            updater->parameters()->associate(job);
-            updater->parameters()->findInt("stage")->setIsEnabled(true);
-            updater->parameters()->findInt("stage")->setValue(stage);
-            updater->parameters()->findInt("state")->setIsEnabled(true);
-            updater->parameters()->findInt("state")->setValue(
-              stage < 0 ? static_cast<int>(smtk::job::State::Scheduled)
-                : stage < job->jobType()->stages().size()
-                ? static_cast<int>(smtk::job::State::Running)
-                : static_cast<int>(smtk::job::State::Completed));
-            if (stage < 0)
-            {
-              updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(
-                static_cast<int>(smtk::job::Status::Pending));
-            }
-            else if (stage == job->jobType()->stages().size())
-            {
-              updater->parameters()->findInt("status")->setIsEnabled(true);
-              updater->parameters()->findInt("status")->setValue(
-                static_cast<int>(smtk::job::Status::Succeeded));
-            }
-            operationManager->launchers()(updater);
-          }
-        }
-      }
-    });
+  this->watchJob(job);
 #if 0
   {
     // For debugging:
@@ -239,8 +248,9 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   QObject::connect(proc, &QProcess::started, this, [this, job, proc]() {
     job->setQueueId(std::to_string(proc->processId()));
 #if defined(Q_OS_WIN)
-    // Assign the new process to a kill-on-close Job Object. Descendants inherit
-    // membership, which makes cancellation reliable for shell-launched tools.
+    // Descendants inherit Job Object membership, making explicit cancellation
+    // reliable for shell-launched tools. Do not enable KILL_ON_JOB_CLOSE;
+    // closing SMTK must not terminate a long-running simulation.
     HANDLE processHandle = OpenProcess(
       PROCESS_SET_QUOTA | PROCESS_TERMINATE | PROCESS_QUERY_LIMITED_INFORMATION,
       FALSE,
@@ -248,12 +258,7 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     HANDLE jobHandle = CreateJobObjectW(nullptr, nullptr);
     if (processHandle && jobHandle)
     {
-      JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
-      limits.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-      if (
-        SetInformationJobObject(
-          jobHandle, JobObjectExtendedLimitInformation, &limits, sizeof(limits)) &&
-        AssignProcessToJobObject(jobHandle, processHandle))
+      if (AssignProcessToJobObject(jobHandle, processHandle))
       {
         m_p->m_windowsJobObjects[job->id()] = jobHandle;
         jobHandle = nullptr; // Ownership transferred to m_windowsJobObjects.
@@ -292,6 +297,16 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
           // persistence, this notifies queue observers that the process ended.
           auto updater = operationManager->create<smtk::job::JobUpdated>();
           updater->parameters()->associate(job);
+          // Capture the last progress value before marking the job completed;
+          // the periodic monitor intentionally ignores terminal jobs.
+          std::ifstream progress(job->caseDirectory() / "logs" / "progress");
+          int stage = -3;
+          progress >> stage;
+          if (progress.good() && stage > job->stage())
+          {
+            updater->parameters()->findInt("stage")->setIsEnabled(true);
+            updater->parameters()->findInt("stage")->setValue(stage);
+          }
           updater->parameters()->findInt("state")->setIsEnabled(true);
           updater->parameters()->findInt("state")->setValue(
             static_cast<int>(smtk::job::State::Completed));
@@ -395,7 +410,14 @@ bool ShellQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
 bool ShellQueue::cancelProcess(const std::shared_ptr<smtk::job::Job>& job)
 {
   auto processIt = m_p->m_activeProcesses.find(job->id());
-  if (processIt == m_p->m_activeProcesses.end() || !processIt->second)
+  QProcess* process =
+    processIt == m_p->m_activeProcesses.end() ? nullptr : processIt->second.data();
+  qint64 processId = 0;
+  const auto& queueId = job->queueId();
+  auto parseResult = std::from_chars(queueId.data(), queueId.data() + queueId.size(), processId);
+  if (
+    parseResult.ec != std::errc() || parseResult.ptr != queueId.data() + queueId.size() ||
+    processId <= 0)
   {
     return false;
   }
@@ -406,39 +428,45 @@ bool ShellQueue::cancelProcess(const std::shared_ptr<smtk::job::Job>& job)
   {
     terminated = TerminateJobObject(handleIt->second, ERROR_CANCELLED) != FALSE;
   }
-  if (!terminated && processIt->second->processId() > 0)
+  if (!terminated)
   {
-    // Assignment to a Job Object can be rejected when the parent application
-    // is itself constrained by another Job Object. taskkill /T is the fallback
-    // that still terminates the complete descendant tree in that situation.
+    // This is also the recovery path after restarting SMTK, when the persisted
+    // PID remains available but the original Job Object handle does not.
     QProcess taskkill;
-    taskkill.start(
-      "taskkill.exe", { "/PID", QString::number(processIt->second->processId()), "/T", "/F" });
+    taskkill.start("taskkill.exe", { "/PID", QString::number(processId), "/T", "/F" });
     terminated =
       taskkill.waitForStarted(3000) && taskkill.waitForFinished(10000) && taskkill.exitCode() == 0;
   }
 #else
-  processIt->second->terminate();
-  terminated = processIt->second->waitForFinished(3000);
+  if (process)
+  {
+    process->terminate();
+    terminated = process->waitForFinished(3000);
+  }
+  else
+  {
+    // A restored queue has no QProcess wrapper, but the persisted PID still
+    // permits cancellation with the behavior used by the original ShellQueue.
+    terminated = ::kill(static_cast<pid_t>(processId), SIGTERM) == 0;
+  }
 #endif
-  if (!terminated)
+  if (!terminated && process)
   {
     // QProcess::kill is a last-resort fallback. On Windows the Job Object path
     // above is preferred because kill() alone does not terminate descendants.
-    processIt->second->kill();
-    terminated = processIt->second->waitForFinished(3000);
+    process->kill();
+    terminated = process->waitForFinished(3000);
   }
   return terminated;
 }
 
 State ShellQueue::jobState(const std::shared_ptr<smtk::job::Job>& job)
 {
-  if (!job || job->queue() != this || job->queueId().empty())
+  if (!job || job->queue() != this)
   {
     return State::Unscheduled;
   }
-  // TODO: Run "ps" to get state of job->queueId().
-  return State::Completed;
+  return job->state();
 }
 
 Status ShellQueue::jobStatus(const std::shared_ptr<smtk::job::Job>& job)
@@ -447,13 +475,90 @@ Status ShellQueue::jobStatus(const std::shared_ptr<smtk::job::Job>& job)
   {
     return Status::Pending;
   }
-  return job->queueId().empty() ? Status::Succeeded : Status::Pending;
+  return job->status();
 }
 
 std::set<std::shared_ptr<smtk::job::Job>> ShellQueue::allJobs() const
 {
-  std::set<std::shared_ptr<smtk::job::Job>> result;
-  return result;
+  return this->Superclass::allJobs();
+}
+
+void ShellQueue::watchJob(const std::shared_ptr<smtk::job::Job>& job)
+{
+  if (!job)
+  {
+    return;
+  }
+  m_p->addPathDispatch(
+    QString::fromStdString((job->caseDirectory() / "logs").string()), [this](const QString& path) {
+      if (path.endsWith("logs"))
+      {
+        m_p->m_watcher->addPath(path + "/progress");
+      }
+    });
+  m_p->addPathDispatch(
+    QString::fromStdString((job->caseDirectory() / "logs" / "progress").string()),
+    [this](const QString&) { this->updateJobStates(); });
+}
+
+void ShellQueue::updateJobStates()
+{
+  auto operationManager = this->operationManager();
+  if (!operationManager)
+  {
+    return;
+  }
+  bool restoreLinks = m_p->m_restoreLinks.exchange(false);
+  for (const auto& job : this->Superclass::allJobs())
+  {
+    if (restoreLinks)
+    {
+      // Projects and tasks are commonly loaded after queues. Resource-manager
+      // additions request this retry so persisted origin links reconnect once.
+      this->fetchJobLinks(job);
+    }
+    if (job->state() != State::Scheduled && job->state() != State::Running)
+    {
+      continue;
+    }
+    this->watchJob(job);
+    std::ifstream progress(job->caseDirectory() / "logs" / "progress");
+    int stage = -3;
+    int exitCode = 0;
+    progress >> stage;
+    if (!progress.good() || stage <= -3 || stage == job->stage())
+    {
+      continue;
+    }
+    progress >> exitCode;
+    auto updater = operationManager->create<smtk::job::JobUpdated>();
+    updater->parameters()->associate(job);
+    updater->parameters()->findInt("stage")->setIsEnabled(true);
+    updater->parameters()->findInt("stage")->setValue(stage);
+    updater->parameters()->findInt("state")->setIsEnabled(true);
+    updater->parameters()->findInt("state")->setValue(
+      stage < 0 ? static_cast<int>(State::Scheduled)
+        : stage < static_cast<int>(job->jobType()->stages().size())
+        ? static_cast<int>(State::Running)
+        : static_cast<int>(State::Completed));
+    if (stage < 0)
+    {
+      updater->parameters()->findInt("status")->setIsEnabled(true);
+      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Pending));
+    }
+    else if (exitCode != 0)
+    {
+      updater->parameters()->findInt("state")->setValue(static_cast<int>(State::Completed));
+      updater->parameters()->findInt("status")->setIsEnabled(true);
+      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Failed));
+    }
+    else if (stage >= static_cast<int>(job->jobType()->stages().size()))
+    {
+      updater->parameters()->findInt("status")->setIsEnabled(true);
+      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Succeeded));
+    }
+    operationManager->launchers()(updater);
+  }
 }
 
 void ShellQueue::setInterpreter(const std::filesystem::path& interpreter)

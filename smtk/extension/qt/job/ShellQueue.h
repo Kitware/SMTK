@@ -85,8 +85,13 @@ public:
 protected Q_SLOTS:
   virtual void fileUpdated(const QString& path);
   virtual void directoryUpdated(const QString& path);
+  /// Poll persisted running jobs so monitoring resumes after an application restart.
+  virtual void updateJobStates();
 
 private:
+  /// Add filesystem monitoring for a newly-launched or restored job.
+  void watchJob(const std::shared_ptr<smtk::job::Job>& job);
+
   /// Terminate the process tree for \a job. Must run on this object's thread.
   bool cancelProcess(const std::shared_ptr<smtk::job::Job>& job);
 

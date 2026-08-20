@@ -24,3 +24,10 @@ queue's Qt thread. On Windows, cancellation uses a Windows Job Object to
 terminate the interpreter and its descendant process tree. If Job Object
 assignment is unavailable, ``taskkill /T /F`` is used as a fallback. This is
 important for shell scripts that launch solver or MPI child processes.
+
+Running shell jobs are no longer terminated when an SMTK application exits.
+When the application restarts, ``ShellQueue`` reloads persisted jobs, restores
+their project/task origin links as resources become available, and resumes
+monitoring each active case's ``logs/progress`` file. Explicit cancellation is
+still supported after a restart using the persisted process identifier; on
+Windows, this uses ``taskkill /T /F`` to terminate the recovered process tree.

@@ -634,7 +634,9 @@ std::shared_ptr<smtk::job::Job> DatabaseQueue::fetchJobData(const smtk::common::
     jobImageUrl,
     jobMountPoint,
     jobAutoSchedule != 0);
-  // TODO: Restore job links
+  // Restore origin links immediately when their resources are available.
+  // Queue implementations may retry this after projects are loaded.
+  const_cast<DatabaseQueue*>(this)->fetchJobLinks(job);
   {
     std::lock_guard<std::mutex> lock(m_jobMutex);
     m_liveJobs[uid] = job;
@@ -1206,7 +1208,8 @@ void DatabaseQueue::loadAllJobs() const
   std::vector<smtk::common::UUID> jobIds;
   for (jobIds.reserve(delta); true; jobIds.clear(), offset += delta)
   {
-    query << "select uid from jobs order by uid limit " << delta << " offset " << offset << ";";
+    query << "select uid from jobs where queue=" << m_queueId << " order by uid limit " << delta
+          << " offset " << offset << ";";
     if (!query.bindText(0, jobIds).execute())
     {
       break;
