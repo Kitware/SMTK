@@ -85,6 +85,7 @@ set(QAttrLibSrcs
 
   job/ShellQueue.cxx
   job/ContainerQueue.cxx
+  job/qtQueueItem.cxx
 
   diagram/qtBaseArc.cxx
   diagram/qtBaseNode.cxx
@@ -212,6 +213,7 @@ set(QAttrLibMocHeaders
 
   job/ShellQueue.h
   job/ContainerQueue.h
+  job/qtQueueItem.h
 
   diagram/qtBaseArc.h
   diagram/qtBaseNode.h

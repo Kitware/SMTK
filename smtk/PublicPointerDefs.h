@@ -102,6 +102,15 @@ class Operation;
 class Manager;
 } // namespace operation
 
+namespace job
+{
+class DatabaseQueue;
+class Job;
+class Manager;
+class Queue;
+class Stage;
+} // namespace job
+
 namespace extension
 {
 class qtSelectionManager;
@@ -331,6 +340,13 @@ typedef smtk::shared_ptr<smtk::operation::Manager> ManagerPtr;
 /// @see smtk::operation::Manager
 typedef smtk::weak_ptr<smtk::operation::Manager> WeakManagerPtr;
 } // namespace operation
+
+namespace job
+{
+using JobPtr = std::shared_ptr<smtk::job::Job>;
+using ManagerPtr = std::shared_ptr<smtk::job::Manager>;
+using QueuePtr = std::shared_ptr<smtk::job::Queue>;
+} // namespace job
 
 namespace model
 {

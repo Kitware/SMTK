@@ -22,6 +22,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/job/Manager.h"
+
 #include "smtk/project/Container.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -460,6 +462,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
     m_opManager = nullptr;
     m_viewManager = nullptr;
     m_projectManager = nullptr;
+    m_jobManager = nullptr;
     return false;
   }
   // Keep hold of the selection instance for the active server connection
@@ -468,6 +471,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
   m_opManager = managers->get<smtk::operation::Manager::Ptr>();
   m_viewManager = managers->get<smtk::view::Manager::Ptr>();
   m_projectManager = managers->get<smtk::project::Manager::Ptr>();
+  m_jobManager = managers->get<smtk::job::Manager::Ptr>();
   return true;
 }
 
@@ -484,6 +488,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
   m_attrUIMgr->setViewManager(m_viewManager);
   m_attrUIMgr->managers().insert(m_projectManager);
+  m_attrUIMgr->managers().insert(m_jobManager);
   m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
   m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
 
