@@ -70,6 +70,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFont>
+#include <QFontDatabase>
 #include <QLabel>
 #include <QLayout>
 #include <QMessageBox>
@@ -230,12 +231,13 @@ std::time_t to_time_t(TP tp)
 
 QFont solidFontAwesome()
 {
-  // Font Awesome identifies "Font Awesome 7 Free" as its family and "Solid"
-  // as its style. Request them separately since macOS/CoreText does not reliably
-  // resolve the combined full-face name as a font family.
-  QFont font(QStringLiteral("Font Awesome 7 Free"));
-  font.setStyleName(QStringLiteral("Solid"));
-  return font;
+  // Resolve the registered application font directly. Setting the style on a
+  // generic QFont can cause Windows to substitute a font without these glyphs,
+  // while using the combined full-face name is unreliable on macOS.
+  return QFontDatabase().font(
+    QStringLiteral("Font Awesome 7 Free"),
+    QStringLiteral("Solid"),
+    QApplication::font().pointSize());
 }
 
 } // anonymous namespace
