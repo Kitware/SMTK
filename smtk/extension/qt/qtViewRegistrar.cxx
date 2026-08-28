@@ -151,6 +151,7 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
     // Windows cannot execute a Bash script directly. Resolve bash.exe using
     // PATH by default; applications may replace this with an absolute path to
     // a bundled interpreter (such as the Bash distributed with OpenFOAM).
+    smtk::common::Paths pp;
     auto interpreter =
       std::filesystem::path(pp.toplevelDirectory()) / "of" / "msys64" / "usr" / "bin" / "bash.exe";
     if (!std::filesystem::exists(interpreter))
