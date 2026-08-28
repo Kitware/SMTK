@@ -41,6 +41,7 @@ set(adaptors
 
 set(operations
   AddDependency
+  ChangeTaskCompletion
   ConnectPorts
   DisconnectPorts
   EmplaceWorklet
