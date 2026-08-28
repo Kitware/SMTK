@@ -20,10 +20,8 @@ namespace smtk
 namespace task
 {
 
-/**\brief Emplace (instantiate) a worklet into a project.
+/**\brief Change a task's name.
   *
-  * This operation deserializes a worklet's JSON into the
-  * it's project's task manager.
   */
 class SMTKCORE_EXPORT RenameTask : public smtk::operation::XMLOperation
 {
