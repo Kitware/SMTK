@@ -147,14 +147,19 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       resourceManager,
       operationManager,
       jobManager);
-    smtk::common::Paths pp;
-    qInfo() << "ShellQueue. top dir " << QString::fromStdString(pp.toplevelDirectory())
-            << " exe dir " << QString::fromStdString(pp.executableDirectory()) << "\n";
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
     // Windows cannot execute a Bash script directly. Resolve bash.exe using
     // PATH by default; applications may replace this with an absolute path to
     // a bundled interpreter (such as the Bash distributed with OpenFOAM).
-    shellQueue->setInterpreter("bash.exe");
+    auto interpreter =
+      std::filesystem::path(pp.toplevelDirectory()) / "of" / "msys64" / "usr" / "bin" / "bash.exe";
+    if (!std::filesystem::exists(interpreter))
+    {
+      qInfo() << "ShellQueue could not find OpenFOAM interpreter at "
+              << QString::fromStdString(interpreter.string()) << ", using \"bash.exe\".";
+      interpreter = "bash.exe";
+    }
+    shellQueue->setInterpreter(interpreter);
     shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
 #endif
     g_queuesToRemove.insert(shellQueue);
