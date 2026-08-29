@@ -60,6 +60,7 @@
 
 #include <QApplication>
 #include <QCoreApplication>
+#include <QDir>
 #include <QFontDatabase>
 #include <QTimer>
 #include <QtDebug>
@@ -148,12 +149,12 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       operationManager,
       jobManager);
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
-    // Windows cannot execute a Bash script directly. Resolve bash.exe using
-    // PATH by default; applications may replace this with an absolute path to
-    // a bundled interpreter (such as the Bash distributed with OpenFOAM).
+    // Windows cannot execute a Bash script directly. Use the Bash distributed
+    // with OpenFOAM and initialize its environment before running each job.
     smtk::common::Paths pp;
-    auto interpreter =
-      std::filesystem::path(pp.toplevelDirectory()) / "of" / "msys64" / "usr" / "bin" / "bash.exe";
+    auto openFoamRoot = std::filesystem::path(pp.toplevelDirectory()) / "of";
+    auto msysBin = openFoamRoot / "msys64" / "usr" / "bin";
+    auto interpreter = msysBin / "bash.exe";
     if (!std::filesystem::exists(interpreter))
     {
       qInfo() << "ShellQueue could not find OpenFOAM interpreter at "
@@ -161,7 +162,22 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       interpreter = "bash.exe";
     }
     shellQueue->setInterpreter(interpreter);
-    shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
+    // QProcess uses the native Windows environment to locate DLLs and tools
+    // needed while Bash starts. The sourced OpenFOAM setup then adds its own
+    // executables to the POSIX PATH seen by job scripts.
+    auto environment = shellQueue->processEnvironment();
+    auto path = environment.value("PATH");
+    environment.insert(
+      "PATH",
+      QString::fromStdString(msysBin.string()) +
+        (path.isEmpty() ? QString() : QDir::listSeparator() + path));
+    shellQueue->setProcessEnvironment(environment);
+    shellQueue->setInterpreterArguments(
+      { "--noprofile",
+        "--norc",
+        "-c",
+        ". /home/ofuser/OpenFOAM/OpenFOAM-v2606/etc/bashrc && exec \"$1\"",
+        "smtk-shell-queue" });
 #endif
     g_queuesToRemove.insert(shellQueue);
     if (jobManager->queues().manage(shellQueue))
