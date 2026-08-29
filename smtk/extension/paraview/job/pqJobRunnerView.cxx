@@ -231,13 +231,16 @@ std::time_t to_time_t(TP tp)
 
 QFont solidFontAwesome()
 {
-  // Resolve the registered application font directly. Setting the style on a
-  // generic QFont can cause Windows to substitute a font without these glyphs,
-  // while using the combined full-face name is unreliable on macOS.
+  // The solid OTF advertises a legacy combined family name to Windows, while
+  // CoreText and fontconfig expose Solid as a style of the base family.
+#if defined(Q_OS_WIN)
+  return QFont(QStringLiteral("Font Awesome 7 Free Solid"));
+#else
   return QFontDatabase().font(
     QStringLiteral("Font Awesome 7 Free"),
     QStringLiteral("Solid"),
     QApplication::font().pointSize());
+#endif
 }
 
 } // anonymous namespace
