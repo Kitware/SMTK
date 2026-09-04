@@ -173,11 +173,32 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       QString::fromStdString(msysBin.string()) +
         (path.isEmpty() ? QString() : QDir::listSeparator() + path));
     shellQueue->setProcessEnvironment(environment);
+
+    auto openFoamProjects = openFoamRoot / "msys64" / "home" / "ofuser" / "OpenFOAM";
+    std::string openFoamProjectName;
+    if (std::filesystem::is_directory(openFoamProjects))
+    {
+      for (const auto& entry : std::filesystem::directory_iterator(openFoamProjects))
+      {
+        const auto name = entry.path().filename().string();
+        if (entry.is_directory() && name.rfind("OpenFOAM-", 0) == 0 && name > openFoamProjectName)
+        {
+          openFoamProjectName = name;
+        }
+      }
+    }
+    if (openFoamProjectName.empty())
+    {
+      qWarning() << "ShellQueue could not find an OpenFOAM installation under"
+                 << QString::fromStdString(openFoamProjects.string());
+    }
+    const auto bashrc = "/home/ofuser/OpenFOAM/" + openFoamProjectName + "/etc/bashrc";
+
     shellQueue->setInterpreterArguments(
       { "--noprofile",
         "--norc",
         "-c",
-        ". /home/ofuser/OpenFOAM/OpenFOAM-v2606/etc/bashrc && exec \"$1\"",
+        "export PATH=/usr/bin:$PATH; . \"" + bashrc + "\" && exec \"$1\"",
         "smtk-shell-queue" });
 #endif
     g_queuesToRemove.insert(shellQueue);
