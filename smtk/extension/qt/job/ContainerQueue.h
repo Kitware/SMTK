@@ -30,7 +30,7 @@ namespace job
 
 ///\brief ContainerQueue schedules jobs locally by immediately running them.
 ///
-/// This class depends on Qt for process and filesystem monitoring.
+/// This class depends on Qt for process execution and timer-based progress polling.
 class SMTKQTEXT_EXPORT ContainerQueue
   : public QObject
   , public smtk::job::DatabaseQueue

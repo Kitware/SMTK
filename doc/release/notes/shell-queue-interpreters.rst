@@ -31,3 +31,13 @@ their project/task origin links as resources become available, and resumes
 monitoring each active case's ``logs/progress`` file. Explicit cancellation is
 still supported after a restart using the persisted process identifier; on
 Windows, this uses ``taskkill /T /F`` to terminate the recovered process tree.
+
+Reliable progress polling
+-------------------------
+
+``ShellQueue`` and ``ContainerQueue`` now share a timer-based progress monitor.
+The monitor polls the ``logs/progress`` file for each active job and ignores a
+missing, unreadable, or partially-written file until its next pass. ``ShellQueue``
+no longer uses ``QFileSystemWatcher``. This avoids missed notifications and
+``FindNextChangeNotification`` access-denied errors observed on Windows while
+retaining progress monitoring for jobs restored after an application restart.

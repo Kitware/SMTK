@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/extension/qt/job/ShellQueue.h"
+#include "smtk/extension/qt/job/ProgressMonitor.h"
 
 #include "smtk/job/Definition.h"
 #include "smtk/job/Job.h"
@@ -20,11 +21,9 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 
-#include <QFileSystemWatcher>
 #include <QPointer>
 #include <QProcess>
 #include <QThread>
-#include <QTimer>
 
 #include <atomic>
 #include <cerrno>
@@ -55,19 +54,8 @@ class ShellQueue::Internal
 public:
   Internal(ShellQueue* self)
     : m_self(self)
-    , m_watcher(new QFileSystemWatcher)
+    , m_progressMonitor(self, self, 100, [self]() { self->updateJobStates(); })
   {
-    QObject::connect(
-      m_watcher.data(), &QFileSystemWatcher::fileChanged, self, &ShellQueue::fileUpdated);
-    QObject::connect(
-      m_watcher.data(), &QFileSystemWatcher::directoryChanged, self, &ShellQueue::directoryUpdated);
-    // QFileSystemWatcher notifications can be missed while the application is
-    // closed (and when a progress file is replaced). Polling also discovers
-    // persisted jobs after a project and its tasks have been restored.
-    m_timer.setInterval(1000);
-    m_timer.setSingleShot(false);
-    QObject::connect(&m_timer, &QTimer::timeout, self, &ShellQueue::updateJobStates);
-    m_timer.start();
     if (auto resourceManager = self->manager())
     {
       m_resourceObserver = resourceManager->observers().insert(
@@ -86,41 +74,10 @@ public:
     }
   }
 
-  using PathUpdateResponder = std::function<void(const QString&)>;
-
-  bool addPathDispatch(const QString& path, PathUpdateResponder function)
-  {
-    auto it = m_dispatch.find(path);
-    if (it != m_dispatch.end())
-    {
-      it->second = function;
-    }
-    else
-    {
-      m_dispatch[path] = function;
-    }
-    if (m_watcher->files().contains(path) || m_watcher->directories().contains(path))
-    {
-      return true;
-    }
-    return m_watcher->addPath(path);
-  }
-
-  void dispatchUpdate(const QString& path)
-  {
-    auto it = m_dispatch.find(path);
-    if (it != m_dispatch.end())
-    {
-      it->second(path);
-    }
-  }
-
   ShellQueue* m_self{ nullptr };
-  QScopedPointer<QFileSystemWatcher> m_watcher;
-  QTimer m_timer;
+  ProgressMonitor m_progressMonitor;
   smtk::resource::Observers::Key m_resourceObserver;
   std::atomic_bool m_restoreLinks{ true };
-  std::unordered_map<QString, std::function<void(const QString&)>> m_dispatch;
   std::filesystem::path m_interpreter;
   std::vector<std::string> m_interpreterArguments;
   QProcessEnvironment m_processEnvironment{ QProcessEnvironment::systemEnvironment() };
@@ -175,8 +132,8 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
   {
     return false;
   }
-  // Operations may request scheduling from a worker thread. QProcess and
-  // QFileSystemWatcher must only be used from their owning QObject thread.
+  // Operations may request scheduling from a worker thread. QProcess and the
+  // progress monitor's QTimer must only be used from their owning QObject thread.
   // Use a queued handoff rather than a blocking one: SMTK's application thread
   // may be waiting for this worker operation to return.
   if (QThread::currentThread() != this->thread())
@@ -228,21 +185,7 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     arguments.append("./" + QString::fromStdString(job->script().generic_string()));
     proc->setArguments(arguments);
   }
-  this->watchJob(job);
-#if 0
-  {
-    // For debugging:
-    std::cerr << "  Watcher Inventory\n";
-    for (const auto& dir : m_p->m_watcher->directories())
-    {
-      std::cerr << "    " << dir.toStdString() << " (dir)\n";
-    }
-    for (const auto& file : m_p->m_watcher->files())
-    {
-      std::cerr << "    " << file.toStdString() << " (file)\n";
-    }
-  }
-#endif
+  m_p->m_progressMonitor.start(job.get());
 
   m_p->m_activeProcesses[job->id()] = proc;
   QObject::connect(proc, &QProcess::started, this, [this, job, proc]() {
@@ -483,31 +426,8 @@ std::set<std::shared_ptr<smtk::job::Job>> ShellQueue::allJobs() const
   return this->Superclass::allJobs();
 }
 
-void ShellQueue::watchJob(const std::shared_ptr<smtk::job::Job>& job)
-{
-  if (!job)
-  {
-    return;
-  }
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs").string()), [this](const QString& path) {
-      if (path.endsWith("logs"))
-      {
-        m_p->m_watcher->addPath(path + "/progress");
-      }
-    });
-  m_p->addPathDispatch(
-    QString::fromStdString((job->caseDirectory() / "logs" / "progress").string()),
-    [this](const QString&) { this->updateJobStates(); });
-}
-
 void ShellQueue::updateJobStates()
 {
-  auto operationManager = this->operationManager();
-  if (!operationManager)
-  {
-    return;
-  }
   bool restoreLinks = m_p->m_restoreLinks.exchange(false);
   for (const auto& job : this->Superclass::allJobs())
   {
@@ -521,44 +441,9 @@ void ShellQueue::updateJobStates()
     {
       continue;
     }
-    this->watchJob(job);
-    std::ifstream progress(job->caseDirectory() / "logs" / "progress");
-    int stage = -3;
-    int exitCode = 0;
-    progress >> stage;
-    if (!progress.good() || stage <= -3 || stage == job->stage())
-    {
-      continue;
-    }
-    progress >> exitCode;
-    auto updater = operationManager->create<smtk::job::JobUpdated>();
-    updater->parameters()->associate(job);
-    updater->parameters()->findInt("stage")->setIsEnabled(true);
-    updater->parameters()->findInt("stage")->setValue(stage);
-    updater->parameters()->findInt("state")->setIsEnabled(true);
-    updater->parameters()->findInt("state")->setValue(
-      stage < 0 ? static_cast<int>(State::Scheduled)
-        : stage < static_cast<int>(job->jobType()->stages().size())
-        ? static_cast<int>(State::Running)
-        : static_cast<int>(State::Completed));
-    if (stage < 0)
-    {
-      updater->parameters()->findInt("status")->setIsEnabled(true);
-      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Pending));
-    }
-    else if (exitCode != 0)
-    {
-      updater->parameters()->findInt("state")->setValue(static_cast<int>(State::Completed));
-      updater->parameters()->findInt("status")->setIsEnabled(true);
-      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Failed));
-    }
-    else if (stage >= static_cast<int>(job->jobType()->stages().size()))
-    {
-      updater->parameters()->findInt("status")->setIsEnabled(true);
-      updater->parameters()->findInt("status")->setValue(static_cast<int>(Status::Succeeded));
-    }
-    operationManager->launchers()(updater);
+    m_p->m_progressMonitor.start(job.get());
   }
+  m_p->m_progressMonitor.update();
 }
 
 void ShellQueue::setInterpreter(const std::filesystem::path& interpreter)
@@ -589,18 +474,6 @@ void ShellQueue::setProcessEnvironment(const QProcessEnvironment& environment)
 QProcessEnvironment ShellQueue::processEnvironment() const
 {
   return m_p->m_processEnvironment;
-}
-
-void ShellQueue::fileUpdated(const QString& path)
-{
-  // std::cerr << "File Path \"" << path.toStdString() << "\" updated.\n";
-  m_p->dispatchUpdate(path);
-}
-
-void ShellQueue::directoryUpdated(const QString& path)
-{
-  // std::cerr << "Directory Path \"" << path.toStdString() << "\" updated.\n";
-  m_p->dispatchUpdate(path);
 }
 
 } // namespace job

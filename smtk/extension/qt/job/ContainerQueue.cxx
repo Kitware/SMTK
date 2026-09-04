@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/extension/qt/job/ContainerQueue.h"
+#include "smtk/extension/qt/job/ProgressMonitor.h"
 
 #include "smtk/extension/qt/job/UpdateContainerQueueMachine.h"
 
@@ -29,7 +30,6 @@
 
 #include <QPointer>
 #include <QProcess>
-#include <QTimer>
 
 #include <algorithm>
 #include <cctype>
@@ -131,135 +131,21 @@ public:
   Internal(ContainerQueue* self)
     : m_self(self)
     , m_engine("podman")
+    , m_progressMonitor(self, self)
   {
-    // Every 100ms, poll any case-directory progress files that may have changed.
-    m_timer.setInterval(100 /*ms*/);
-    m_timer.setSingleShot(false);
-    QObject::connect(&m_timer, &QTimer::timeout, self, &ContainerQueue::updateJobStates);
-    m_timer.start();
-    // QObject::connect(m_watcher.data(), &QFileSystemWatcher::fileChanged,
-    //   self, &ContainerQueue::fileUpdated);
-    // QObject::connect(m_watcher.data(), &QFileSystemWatcher::directoryChanged,
-    //   self, &ContainerQueue::directoryUpdated);
   }
 
-  using PathUpdateResponder = std::function<void(const QString&)>;
+  void startPollingJobProgress(Job* job) { m_progressMonitor.start(job); }
 
-  void startPollingJobProgress(Job* job)
-  {
-    if (!job)
-    {
-      return;
-    }
-    std::lock_guard<std::mutex> lock(m_pollLock);
-    m_pathsToPoll[job->caseDirectory() / "logs" / "progress"] = job->id();
-  }
+  void stopPollingJobProgress(Job* job) { m_progressMonitor.stop(job); }
 
-  void stopPollingJobProgress(Job* job)
-  {
-    if (!job)
-    {
-      return;
-    }
-
-    std::lock_guard<std::mutex> lock(m_pollLock);
-    m_pathsToPoll.erase(job->caseDirectory() / "logs" / "progress");
-  }
-
-  void updateJobStates()
-  {
-    auto operationManager = m_self->operationManager();
-    if (!operationManager)
-    {
-      return;
-    }
-
-    std::unordered_map<std::filesystem::path, smtk::common::UUID> pathMap;
-    {
-      std::lock_guard<std::mutex> lock(m_pollLock);
-      pathMap = m_pathsToPoll;
-    }
-    for (auto [path, jobId] : pathMap)
-    {
-      std::ifstream pp(path);
-      int stage = -3;
-      pp >> stage;
-      if (pp.good() && stage > -3)
-      {
-        int exitCode = 0;
-        pp >> exitCode;
-        // std::cerr << "  Stage " << stage << " exited with " << exitCode << "\n";
-        if (auto job = m_self->findJob(jobId))
-        {
-          if (
-            job->stage() == stage || job->state() < smtk::job::Scheduled ||
-            job->state() > smtk::job::Running)
-          {
-            // Do not fire an update when not needed.
-            continue;
-          }
-          auto updater = operationManager->create<smtk::job::JobUpdated>();
-          updater->parameters()->associate(job);
-          updater->parameters()->findInt("stage")->setIsEnabled(true);
-          updater->parameters()->findInt("stage")->setValue(stage);
-          updater->parameters()->findInt("state")->setIsEnabled(true);
-          updater->parameters()->findInt("state")->setValue(
-            stage < 0 ? static_cast<int>(smtk::job::State::Scheduled)
-              : stage < job->jobType()->stages().size()
-              ? static_cast<int>(smtk::job::State::Running)
-              : static_cast<int>(smtk::job::State::Completed));
-          if (stage >= 0 && exitCode != 0)
-          {
-            updater->parameters()->findInt("status")->setIsEnabled(true);
-            updater->parameters()->findInt("status")->setValue(
-              static_cast<int>(smtk::job::Status::Failed));
-            updater->parameters()->findInt("state")->setIsEnabled(true);
-            updater->parameters()->findInt("state")->setValue(
-              static_cast<int>(smtk::job::State::Completed));
-          }
-          if (stage < 0)
-          {
-            updater->parameters()->findInt("status")->setIsEnabled(true);
-            updater->parameters()->findInt("status")->setValue(
-              static_cast<int>(smtk::job::Status::Pending));
-          }
-          else if (stage == job->jobType()->stages().size())
-          {
-            updater->parameters()->findInt("status")->setIsEnabled(true);
-            updater->parameters()->findInt("status")->setValue(
-              static_cast<int>(smtk::job::Status::Succeeded));
-            // No need to watch this job any longer.
-            {
-              std::lock_guard<std::mutex> lock(m_pollLock);
-              m_pathsToPoll.erase(path);
-            }
-          }
-          operationManager->launchers()(updater);
-        }
-        else
-        {
-          // Job was removed from Queue?
-          smtkErrorMacro(
-            smtk::io::Logger::instance(),
-            "Job " << jobId << " has been updated but is not present in queue.");
-        }
-      }
-    }
-  }
+  void updateJobStates() { m_progressMonitor.update(); }
 
   /// The parent queue which owns this Internal object.
   ContainerQueue* m_self{ nullptr };
   /// The container engine (podman or docker) used to run jobs.
   smtk::string::Token m_engine;
-  /// A timer for polling "active" jobs for updates.
-  QTimer m_timer;
-  /// A mutex used to lock access to m_pathsToPoll. This is needed since the GUI
-  /// thread will be polling jobs while operations will be adding/removing/updating them.
-  std::mutex m_pollLock;
-  /// The active job set. A map from absolute paths to "logs/progress" files to job UUID.
-  /// Each time m_timer fires, all of these paths are polled to see if the job's stage
-  /// can be updated.
-  std::unordered_map<std::filesystem::path, smtk::common::UUID> m_pathsToPoll;
+  ProgressMonitor m_progressMonitor;
 
   /// The user ID to use when running processes in a docker container.
   int m_dockerUserId{ -1 };
@@ -487,11 +373,8 @@ bool ContainerQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
     //   "Kill command failed (status " << proc.exitStatus() << " code " << proc.exitCode() << ").");
     return false;
   }
-  // Lock the map of paths to poll and remove this job's progress path.
-  // After this, we can guarantee no more operations will be queued from
-  // updateJobStates(), though some jobs updating the job may already
-  // have been submitted. They should not update the job state, though,
-  // once it is set to canceled/terminated.
+  // Stop polling this job. A JobUpdated operation that was already submitted
+  // will ignore the job after its state is changed to canceled below.
   m_p->stopPollingJobProgress(job.get());
   job->setState(State::Canceled);
   job->setStatus(Status::Terminated);
