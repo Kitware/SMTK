@@ -27,6 +27,7 @@
 #include "vtkSMSessionProxyManager.h"
 
 #include <QTimer>
+#include <QtGlobal> // For Q_OS_WIN
 
 #include <set>
 
@@ -140,7 +141,11 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
     g_projectRootLink.setAutoUpdateVTKObjects(true);
     if (jobManager->queues().manage(containerQueue))
     {
+#ifndef Q_OS_WIN
+      // Make the container queue the active queue active, except
+      // on windows. (We should undo this change when possible.)
       jobManager->activeQueue().switchTo(containerQueue.get());
+#endif
     }
     syncSettingsProjectsRootFolder();
   }
