@@ -152,7 +152,8 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
     // Windows cannot execute a Bash script directly. Use the Bash distributed
     // with OpenFOAM and initialize its environment before running each job.
     smtk::common::Paths pp;
-    auto openFoamRoot = std::filesystem::path(pp.toplevelDirectory()) / "of";
+    auto executableDirectory = std::filesystem::path(pp.executableDirectory());
+    auto openFoamRoot = executableDirectory.parent_path() / "of";
     auto msysBin = openFoamRoot / "msys64" / "usr" / "bin";
     auto interpreter = msysBin / "bash.exe";
     if (!std::filesystem::exists(interpreter))
