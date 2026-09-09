@@ -1,6 +1,37 @@
 QT Changes
 ===========
 
+Controlling Child-Item Indentation
+----------------------------------
+
+Qt item views now accept an optional ``IndentChildren`` boolean attribute.
+Set it to ``false`` to align an item's children with the item instead of
+indenting them. Unindented children use the parent's label width so that both
+their labels and editing widgets share the parent's columns. This applies to
+group-item contents and to conditional children of discrete-value and
+reference items. The attribute defaults to ``true`` so existing views retain
+their current layout.
+
+Attribute-table editors calculate this shared label width from the attribute's
+item hierarchy. ``MaxValueLabelLength`` remains an upper bound on the
+calculated width; labels wider than the bound wrap onto multiple lines instead
+of expanding the label column.
+
+For example, the conditional children of ``boundaryType`` can be displayed
+without indentation as follows:
+
+.. code-block:: xml
+
+   <View Type="Instanced" Title="Boundary Conditions" TopLevel="true">
+     <InstancedAttributes>
+       <Att Name="boundary-condition" Type="BoundaryCondition">
+         <ItemViews>
+           <View Path="/boundaryType" IndentChildren="false" />
+         </ItemViews>
+       </Att>
+     </InstancedAttributes>
+   </View>
+
 qtComponentAttributeView
 --------------------------
 
@@ -16,6 +47,13 @@ Added the following classes:
 * qtAttributeTableView - a View that manages attributes of a specified type using a table-based approach
 * qtAttributeTableModel - a Qt Model for attributes of a given type used by the above View
 * qtAttributeTableDelegate - a Qt delegate used by the above classes
+
+The ``AttributeNameColumnLabel`` configuration attribute customizes the first
+column's header; when omitted, the header remains ``Attribute``.
+
+The ``DeleteButtonToolTip`` configuration attribute customizes the delete
+button's tooltip. When omitted, the tooltip remains "Delete the attributes
+represented by the selected rows." An empty value disables the tooltip.
 
 Attribute-table views accept an optional ``HideInactiveChildren`` boolean
 configuration attribute. When enabled, selecting a row hides columns for

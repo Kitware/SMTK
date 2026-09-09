@@ -198,7 +198,7 @@ void qtAttribute::createWidget(bool createWidgetWhenEmpty)
   m_widget = attFrame;
 
   QVBoxLayout* layout = new QVBoxLayout(m_widget);
-  layout->setMargin(3);
+  layout->setContentsMargins(0, 3, 3, 3);
   m_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 }
 

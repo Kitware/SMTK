@@ -216,6 +216,7 @@ void qtIntValidator::fixup(QString& input) const
 class qtInputsItemInternals
 {
 public:
+  QPointer<QGridLayout> MainLayout;
   QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;
 
@@ -781,7 +782,7 @@ void qtInputsItem::addInputEditor(int i)
     else
     {
       childLayout = new QHBoxLayout;
-      childLayout->setContentsMargins(4, 0, 0, 0);
+      childLayout->setContentsMargins(m_itemInfo.indentChildren() ? 4 : 0, 0, 0, 0);
     }
 
     childLayout->setObjectName(QString("childLayout%1").arg(i));
@@ -847,9 +848,27 @@ void qtInputsItem::addInputEditor(int i)
     // combo boxes.
     if (item->isDiscrete() && childLayout)
     {
-      int row = m_internals->VectorItemOrient == Qt::Vertical ? 2 : 1;
-      int col = m_internals->VectorItemOrient == Qt::Vertical ? 1 : 2;
-      m_internals->EntryLayout->addLayout(childLayout, row, col);
+      if (m_internals->VectorItemOrient == Qt::Vertical)
+      {
+        if (m_itemInfo.indentChildren())
+        {
+          // Keep indented children beneath the editor column, but outside
+          // the data frame so they do not affect the parent label's vertical
+          // alignment with its editor.
+          m_internals->MainLayout->addLayout(childLayout, i + 1, 1);
+        }
+        else
+        {
+          // The data frame begins to the right of the item's label. Place
+          // unindented children in the outer grid so they can span both the
+          // label and data columns and truly align with the parent item.
+          m_internals->MainLayout->addLayout(childLayout, i + 1, 0, 1, 2);
+        }
+      }
+      else
+      {
+        m_internals->EntryLayout->addLayout(childLayout, 1, 2);
+      }
     }
   }
   else // going horizontal
@@ -949,14 +968,7 @@ QFrame* qtInputsItem::createLabelFrame(
   label->setSizePolicy(sizeFixedPolicy);
   if (iview)
   {
-    int requiredLen = m_itemInfo.uiManager()->getWidthOfText(
-      vitem->label(), m_itemInfo.uiManager()->advancedFont());
-    int labLen = iview->fixedLabelWidth();
-    if ((requiredLen / 2) > labLen)
-    {
-      labLen = requiredLen;
-    }
-    label->setFixedWidth(labLen - padding);
+    label->setFixedWidth(std::max(0, iview->fixedLabelWidth() - padding));
   }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -1046,17 +1058,18 @@ void qtInputsItem::updateUI()
   {
     m_widget->setEnabled(false);
   }
-  auto* mainlayout = new QHBoxLayout(m_widget);
-  mainlayout->setMargin(0);
-  mainlayout->setSpacing(0);
-  mainlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  m_internals->MainLayout = new QGridLayout(m_widget);
+  m_internals->MainLayout->setObjectName("MainLayout");
+  m_internals->MainLayout->setMargin(0);
+  m_internals->MainLayout->setSpacing(0);
+  m_internals->MainLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   m_internals->m_dataFrame = new QFrame(m_widget);
   m_internals->m_dataFrame->setObjectName("dataFrame");
 
   // Add Label Information
   QFrame* labelFrame = this->createLabelFrame(dataObj.get(), itemDef.get());
-  mainlayout->addWidget(labelFrame);
+  m_internals->MainLayout->addWidget(labelFrame, 0, 0);
 
   // Add Data Section
   auto* dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
@@ -1079,7 +1092,13 @@ void qtInputsItem::updateUI()
   // one-line items (i.e. the grid layout has one row)
   if (m_internals->EntryLayout->rowCount() == 1)
   {
-    labelFrame->layout()->setAlignment(Qt::AlignLeft);
+    labelFrame->layout()->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    m_internals->MainLayout->setAlignment(labelFrame, Qt::AlignLeft | Qt::AlignVCenter);
+  }
+  else
+  {
+    labelFrame->layout()->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    m_internals->MainLayout->setAlignment(labelFrame, Qt::AlignLeft | Qt::AlignTop);
   }
   dataLayout->addWidget(m_internals->m_valuesFrame);
 
@@ -1090,7 +1109,7 @@ void qtInputsItem::updateUI()
     dataLayout->addWidget(m_internals->m_expressionFrame);
   }
 
-  mainlayout->addWidget(m_internals->m_dataFrame);
+  m_internals->MainLayout->addWidget(m_internals->m_dataFrame, 0, 1);
 
   // Lets see if this item is always suppose to be an expression
   if (m_internals->m_expressionButton)

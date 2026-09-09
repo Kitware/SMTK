@@ -44,6 +44,7 @@ int UnitTestAttributeTableSharedColumn(int /*unused*/, char** const /*unused*/)
 
   smtk::extension::qtAttributeTableModel model;
   model.setAttributeResource(resource);
+  model.setAttributeNameColumnLabel("Boundary");
   model.setColumnDisplay(
     smtk::extension::qtAttributeTableModel::ColumnDisplay::All,
     {},
@@ -63,6 +64,9 @@ int UnitTestAttributeTableSharedColumn(int /*unused*/, char** const /*unused*/)
   // Attribute name, controlling selector, and one shared value column. The
   // candidate children must not also appear as ordinary columns.
   smtkTest(model.columnCount() == 3, "Unexpected shared-column schema.");
+  smtkTest(
+    model.headerData(0, Qt::Horizontal).toString() == QStringLiteral("Boundary"),
+    "The configured attribute-name column label was not used.");
   smtkTest(model.isSharedColumn(model.index(0, 2)), "The logical column is not shared.");
   smtkTest(
     model.data(model.index(0, 2), Qt::DisplayRole).toDouble() == 1.25,

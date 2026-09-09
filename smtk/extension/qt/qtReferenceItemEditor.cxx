@@ -794,7 +794,7 @@ void qtReferenceItemEditor::updateContents()
   m_internals->m_childrenFrame->setObjectName("ChildItemsFrame");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   QVBoxLayout* clayout = new QVBoxLayout(m_internals->m_childrenFrame);
-  clayout->setMargin(3);
+  clayout->setMargin(m_itemInfo.indentChildren() ? 3 : 0);
   m_internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
   m_internals->m_childrenFrame->setFrameShape(QFrame::Box);
 
@@ -817,10 +817,10 @@ void qtReferenceItemEditor::updateContents()
 
   auto* iiview = m_itemInfo.baseView();
   int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
-
-  int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
-  if (iiview)
+  bool indentChildren = m_itemInfo.indentChildren();
+  if (iiview && indentChildren)
   {
+    int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
     iiview->setFixedLabelWidth(tmpLen);
   }
 
@@ -861,7 +861,7 @@ void qtReferenceItemEditor::updateContents()
     }
   }
 
-  if (iiview)
+  if (iiview && indentChildren)
   {
     iiview->setFixedLabelWidth(currentLen);
   }

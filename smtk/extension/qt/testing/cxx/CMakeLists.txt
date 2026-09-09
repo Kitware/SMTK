@@ -27,6 +27,7 @@ set(unit_tests
   UnitTestEmittingStringBuffer.cxx
   UnitTestForceRequiredItem.cxx
   UnitTestOperationTypeModel.cxx
+  UnitTestQtAttributeItemInfo.cxx
 )
 
 set(unit_tests_which_require_data

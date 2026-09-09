@@ -63,6 +63,11 @@ public:
   /// \brief Methods to set and retrieve the Component Style Information to be used to generate a qtItem
   void setComponent(const smtk::view::Configuration::Component& comp) { m_component = comp; }
   smtk::view::Configuration::Component component() const { return m_component; }
+  /// Return whether the item's children should be indented in Qt layouts.
+  ///
+  /// Item views may set IndentChildren="false" to align children with their
+  /// parent. Children are indented by default for backward compatibility.
+  bool indentChildren() const;
   ///@}
 
   /// @{

@@ -162,6 +162,9 @@ public:
 
   void setAttributeModifiedCallback(AttributeModifiedCallback callback);
 
+  /// Set the text displayed above the attribute-name column.
+  void setAttributeNameColumnLabel(const std::string& label);
+
   /**
    * @brief Set which item definitions should be represented by table columns.
    *
@@ -294,6 +297,7 @@ private:
 
   std::vector<smtk::attribute::AttributePtr> m_attributes;
   std::vector<ColumnDescriptor> m_columns;
+  std::string m_attributeNameColumnLabel{ "Attribute" };
   ColumnDisplay m_columnDisplay{ ColumnDisplay::All };
   std::set<std::string> m_columnItemPaths;
   std::vector<SharedColumn> m_sharedColumns;

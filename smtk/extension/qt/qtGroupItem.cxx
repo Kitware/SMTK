@@ -182,8 +182,9 @@ void qtGroupItem::createWidget()
   auto* contentsLayout = new QVBoxLayout(m_internals->m_contentsFrame);
   contentsLayout->setObjectName("contentsLayout");
   contentsLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-  // Lets indent the contents a bit to the right.
-  contentsLayout->setContentsMargins(10, 0, 0, 0);
+  // Indent the contents unless the item-view configuration requests that
+  // children be aligned with their parent.
+  contentsLayout->setContentsMargins(m_itemInfo.indentChildren() ? 10 : 0, 0, 0, 0);
   m_internals->m_contentsFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
   m_internals->m_contentsFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -445,10 +446,14 @@ void qtGroupItem::addSubGroup(int i)
       item->item(i, static_cast<int>(j))->definition();
     childDefs.push_back(smtk::const_pointer_cast<attribute::ItemDefinition>(itDef));
   }
-  const int tmpLen = m_itemInfo.uiManager()->getWidthOfItemsMaxLabel(
-    childDefs, m_itemInfo.uiManager()->advancedFont());
   const int currentLen = iview->fixedLabelWidth();
-  iview->setFixedLabelWidth(tmpLen);
+  const bool indentChildren = m_itemInfo.indentChildren();
+  if (indentChildren)
+  {
+    const int tmpLen = m_itemInfo.uiManager()->getWidthOfItemsMaxLabel(
+      childDefs, m_itemInfo.uiManager()->advancedFont());
+    iview->setFixedLabelWidth(tmpLen);
+  }
 
   for (std::size_t j = 0; j < numItems; j++)
   {
@@ -484,7 +489,10 @@ void qtGroupItem::addSubGroup(int i)
     }
   }
   this->calculateTableHeight();
-  iview->setFixedLabelWidth(currentLen);
+  if (indentChildren)
+  {
+    iview->setFixedLabelWidth(currentLen);
+  }
   frameLayout->addWidget(subGroupFrame);
   this->onChildWidgetSizeChanged();
 }

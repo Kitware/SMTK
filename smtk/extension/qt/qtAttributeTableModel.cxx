@@ -126,6 +126,21 @@ void qtAttributeTableModel::setAttributeModifiedCallback(AttributeModifiedCallba
   m_attributeModified = std::move(callback);
 }
 
+void qtAttributeTableModel::setAttributeNameColumnLabel(const std::string& label)
+{
+  if (m_attributeNameColumnLabel == label)
+  {
+    return;
+  }
+
+  m_attributeNameColumnLabel = label;
+  if (!m_columns.empty())
+  {
+    m_columns.front().Label = label;
+    Q_EMIT headerDataChanged(Qt::Horizontal, 0, 0);
+  }
+}
+
 void qtAttributeTableModel::setColumnDisplay(
   ColumnDisplay display,
   const std::set<std::string>& itemPaths,
@@ -916,7 +931,7 @@ QString qtAttributeTableModel::currentDiscreteValue(const QModelIndex& index) co
 void qtAttributeTableModel::rebuildColumns()
 {
   m_columns.clear();
-  m_columns.push_back({ ColumnKind::AttributeName, "Attribute", {}, 0, nullptr });
+  m_columns.push_back({ ColumnKind::AttributeName, m_attributeNameColumnLabel, {}, 0, nullptr });
 
   if (!m_definition)
   {

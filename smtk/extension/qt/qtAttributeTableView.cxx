@@ -24,6 +24,7 @@
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/ReferenceItemDefinition.h"
 #include "smtk/attribute/Resource.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -63,6 +64,55 @@ namespace extension
 
 namespace
 {
+
+void appendItemDefinitions(
+  const smtk::attribute::ItemDefinitionPtr& definition,
+  QList<smtk::attribute::ItemDefinitionPtr>& definitions)
+{
+  if (!definition)
+  {
+    return;
+  }
+
+  definitions.push_back(definition);
+  if (
+    auto groupDefinition =
+      std::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(definition))
+  {
+    for (std::size_t i = 0; i < groupDefinition->numberOfItemDefinitions(); ++i)
+    {
+      appendItemDefinitions(groupDefinition->itemDefinition(static_cast<int>(i)), definitions);
+    }
+  }
+  else if (
+    auto valueDefinition =
+      std::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(definition))
+  {
+    for (const auto& child : valueDefinition->childrenItemDefinitions())
+    {
+      appendItemDefinitions(child.second, definitions);
+    }
+  }
+  else if (
+    auto referenceDefinition =
+      std::dynamic_pointer_cast<smtk::attribute::ReferenceItemDefinition>(definition))
+  {
+    for (const auto& child : referenceDefinition->childrenItemDefinitions())
+    {
+      appendItemDefinitions(child.second, definitions);
+    }
+  }
+}
+
+int attributeLabelWidth(const smtk::attribute::DefinitionPtr& definition, qtUIManager* uiManager)
+{
+  QList<smtk::attribute::ItemDefinitionPtr> itemDefinitions;
+  for (std::size_t i = 0; i < definition->numberOfItemDefinitions(); ++i)
+  {
+    appendItemDefinitions(definition->itemDefinition(static_cast<int>(i)), itemDefinitions);
+  }
+  return uiManager->getWidthOfItemsMaxLabel(itemDefinitions, uiManager->advancedFont());
+}
 
 bool containsGroupItem(const smtk::attribute::ItemDefinitionPtr& definition)
 {
@@ -257,6 +307,9 @@ public:
 
   /// Logical columns backed by mutually-exclusive conditional children.
   std::vector<qtAttributeTableModel::SharedColumn> SharedColumns;
+
+  /// Text displayed above the attribute-name column.
+  std::string AttributeNameColumnLabel{ "Attribute" };
 };
 
 qtBaseView* qtAttributeTableView::createViewWidget(const smtk::view::Information& info)
@@ -327,10 +380,17 @@ void qtAttributeTableView::createWidget()
 
   const auto& details = this->configuration()->details();
 
+  std::string deleteButtonToolTip;
+  if (details.attribute("DeleteButtonToolTip", deleteButtonToolTip))
+  {
+    m_internals->DeleteButton->setToolTip(QString::fromStdString(deleteButtonToolTip));
+  }
+
   details.attributeAsBool("DisableAddAttribute", disableAdd);
 
   details.attributeAsBool("DisableDeleteAttribute", disableDelete);
   details.attributeAsBool("HideInactiveChildren", m_internals->HideInactiveChildren);
+  details.attribute("AttributeNameColumnLabel", m_internals->AttributeNameColumnLabel);
 
   std::string columnDisplay;
   if (details.attribute("ColumnDisplay", columnDisplay))
@@ -459,6 +519,7 @@ void qtAttributeTableView::createWidget()
   m_internals->Table->setTabKeyNavigation(true);
   m_internals->Model = new qtAttributeTableModel(m_internals->Table);
   m_internals->Model->setUIManager(this->uiManager());
+  m_internals->Model->setAttributeNameColumnLabel(m_internals->AttributeNameColumnLabel);
   m_internals->Model->setColumnDisplay(
     m_internals->ColumnDisplay, m_internals->ColumnItemPaths, m_internals->SharedColumns);
 
@@ -987,6 +1048,10 @@ void qtAttributeTableView::updateAttributeEditor(bool rebuild)
   m_internals->AttributeEditor = nullptr;
   m_internals->SuppressNextAttributeEditorModified = false;
 
+  // Keep this width for the lifetime of the selected-attribute editor.
+  // Conditional children can be created after this method returns, and they
+  // must use the same label column as the widgets created here.
+  this->setFixedLabelWidth(attributeLabelWidth(attribute->definition(), this->uiManager()));
   m_internals->AttributeEditor = new qtAttribute(
     attribute, this->findStyle(attribute->definition()), m_internals->AttributeEditorFrame, this);
   m_internals->AttributeEditor->createBasicLayout(false);
