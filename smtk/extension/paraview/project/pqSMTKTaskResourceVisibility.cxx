@@ -281,26 +281,42 @@ void pqSMTKTaskResourceVisibility::processTaskEvent(
     for (const auto& styleTag : styleSet)
     {
       auto styleSpec = m_currentTaskManager->getStyle(styleTag);
-      if (!styleSpec.contains("3d-view"))
+      if (styleSpec.contains("3d-view"))
       {
-        continue;
-      }
-      auto viewSpec = styleSpec.at("3d-view");
-      for (const auto& entry : viewSpec.items())
-      {
-        smtk::string::Token directive(entry.key());
-        switch (directive.id())
+        auto viewSpec = styleSpec.at("3d-view");
+        for (const auto& entry : viewSpec.items())
         {
-            // clang-format off
-        case "color-by"_hash: this->applyColorBy(entry.value(), task, event); break;
-        case "hide"_hash:     this->applyShowObjects(entry.value(), false, task, event); break;
-        case "show"_hash:     this->applyShowObjects(entry.value(), true,  task, event); break;
-        default:
-          smtkWarningMacro(smtk::io::Logger::instance(),
-            "Unknown directive \"" << directive.data()
-            << "\" for style \"" << styleTag.data() << "\". Skipping.");
-          break;
-            // clang-format on
+          smtk::string::Token directive(entry.key());
+          switch (directive.id())
+          {
+              // clang-format off
+          case "color-by"_hash: this->applyColorBy(entry.value(), task, event); break;
+          case "hide"_hash:     this->applyShowObjects(entry.value(), false, task, event); break;
+          case "show"_hash:     this->applyShowObjects(entry.value(), true,  task, event); break;
+          default:
+            smtkWarningMacro(smtk::io::Logger::instance(),
+              "Unknown directive \"" << directive.data()
+              << "\" for style \"" << styleTag.data() << "\". Skipping.");
+            break;
+              // clang-format on
+          }
+        }
+      }
+      if (styleSpec.contains("postprocessing"))
+      {
+        auto ppSpec = styleSpec.at("postprocessing");
+        auto it = ppSpec.find("mode");
+        if (it == ppSpec.end())
+        {
+          smtkWarningMacro(
+            smtk::io::Logger::instance(),
+            "Postprocessing mode mentioned by style \"" << styleTag.data()
+                                                        << "\" but has no mode.");
+        }
+        else
+        {
+          auto* behavior = pqSMTKBehavior::instance();
+          behavior->setPostProcessingMode(it->get<bool>());
         }
       }
     }

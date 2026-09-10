@@ -28,7 +28,8 @@ class pqRepresentation;
 class pqSMTKWrapper;
 class pqServer;
 
-/**\brief Let the active task control the visibility of resources/components.
+/**\brief Let the active task control the visibility of resources/components
+  *       and the postprocessing mode (for cmb-based applications).
   *
   * When a project is loaded, this class monitors the task manager for changes
   * to the active task. When a change is detected, the style of the previous
@@ -71,7 +72,7 @@ class pqServer;
   * An example is:
   * ```json
   * "styles": {
-  *   "default": { "3d-view": { "color-by": { "mode": "none" } } },
+  *   "default": { "3d-view": { "color-by": { "mode": "none" } }, "postprocessing": { "mode": false } },
   *   "example": {
   *     "3d-view": {
   *       "color-by": { "mode": "attribute-association", "definition": "BoundaryCondition",
@@ -87,7 +88,8 @@ class pqServer;
   *         { "source": { "type": "active task port", "port": "output" },
   *           "filter": [ ["*", null], ["*", "*"] ], "event": "deactivated" }
   *       ]
-  *     }
+  *     },
+  *     "postprocessing": { "mode": true }
   *   }
   * }
   * ```
@@ -104,6 +106,9 @@ class pqServer;
   * + show both resources and components (toggling as needed) on the active task's "output" port
   *   when any task with the "example" style is deactivated. (This way, as long as the task is
   *   active, its input port data is visible; when deactivated, its output port data is visible.)
+  * + turn CMB's postprocessing mode off when no task is active and on when a task marked with
+  *   the "example" style is active. If the active task has no style indicating a postprocessing
+  *   mode, all parent tasks of the active task are traversed and their styles examined.
   */
 class SMTKPQPROJECTEXT_EXPORT pqSMTKTaskResourceVisibility : public QObject
 {
