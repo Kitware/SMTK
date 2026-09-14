@@ -21,10 +21,12 @@
 #include "smtk/view/Manager.h"
 
 #include "smtk/attribute/ComponentItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/operation/Manager.h"
 #include "smtk/project/Manager.h"
 #include "smtk/task/Active.h"
 #include "smtk/task/Manager.h"
+#include "smtk/task/operators/ChangeTaskCompletion.h"
 
 #include "smtk/common/Managers.h"
 
@@ -491,7 +493,7 @@ bool pqTaskControlView::isValid() const
 void pqTaskControlView::updateUI()
 {
   auto projMgr = this->uiManager()->managers().get<smtk::project::Manager::Ptr>();
-  auto project = projMgr ? *projMgr->projects().begin() : nullptr;
+  auto project = projMgr && !projMgr->projects().empty() ? *projMgr->projects().begin() : nullptr;
   auto* taskMgr = project ? &project->taskManager() : nullptr;
   auto* activeTask = taskMgr ? taskMgr->active().task() : nullptr;
   this->updateWithActiveTask(activeTask);
@@ -530,15 +532,27 @@ void pqTaskControlView::returnToDiagram()
 void pqTaskControlView::updateTaskCompletion(bool completed)
 {
   auto projMgr = this->uiManager()->managers().get<smtk::project::Manager::Ptr>();
-  auto project = projMgr ? *projMgr->projects().begin() : nullptr;
+  auto project = projMgr && !projMgr->projects().empty() ? *projMgr->projects().begin() : nullptr;
   auto* taskMgr = project ? &project->taskManager() : nullptr;
   if (taskMgr)
   {
     auto* task = taskMgr->active().task();
     if (task && task->state() >= smtk::task::State::Completable)
     {
-      QTimer::singleShot(0, [this, task, completed]() {
-        if (task->markCompleted(completed) && completed)
+      auto opMgr = this->uiManager()->managers().get<smtk::operation::Manager::Ptr>();
+      auto operation = opMgr ? opMgr->create<smtk::task::ChangeTaskCompletion>() : nullptr;
+      if (!operation)
+      {
+        return;
+      }
+      operation->setTask(task->shared_from_this());
+      operation->setCompleted(completed);
+      QTimer::singleShot(0, this, [this, operation, completed]() {
+        auto result = operation->operate();
+        if (
+          completed &&
+          result->findInt("outcome")->value() ==
+            static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
         {
           this->returnToDiagram();
         }

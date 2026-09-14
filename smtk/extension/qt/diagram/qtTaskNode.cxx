@@ -216,8 +216,8 @@ public:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override
   {
     (void)event;
-    // Try to changed the task's completeness state and if successful, update the item
-    if (m_node->task()->markCompleted(m_node->task()->state() != smtk::task::State::Completed))
+    // Try to change the task's completeness state and if successful, update the item.
+    if (m_node->markCompleted(m_node->task()->state() != smtk::task::State::Completed))
     {
       this->update();
     }
