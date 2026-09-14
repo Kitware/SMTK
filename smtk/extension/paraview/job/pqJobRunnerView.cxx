@@ -70,14 +70,17 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
+#include <QFile>
 #include <QFont>
-#include <QFontDatabase>
+#include <QIconEngine>
 #include <QLabel>
 #include <QLayout>
 #include <QMessageBox>
+#include <QPainter>
 #include <QPushButton>
 #include <QScreen>
 #include <QSlider>
+#include <QSvgRenderer>
 
 #include <chrono>
 #include <ctime>
@@ -103,19 +106,108 @@ std::time_t to_time_t(TP tp)
   return system_clock::to_time_t(sctp);
 }
 
-QFont solidFontAwesome()
+// Render embedded paths directly; no application font or SVG plugin is needed.
+class JobIconEngine : public QIconEngine
 {
-  // The solid OTF advertises a legacy combined family name to Windows, while
-  // CoreText and fontconfig expose Solid as a style of the base family.
-#if defined(Q_OS_WIN)
-  return QFont(QStringLiteral("Font Awesome 7 Free Solid"));
-#else
-  return QFontDatabase().font(
-    QStringLiteral("Font Awesome 7 Free"),
-    QStringLiteral("Solid"),
-    QApplication::font().pointSize());
-#endif
+public:
+  JobIconEngine(const QString& name, QWidget* widget)
+    : m_name(name)
+    , m_widget(widget)
+  {
+  }
+
+  QIconEngine* clone() const override { return new JobIconEngine(m_name, m_widget); }
+
+  void paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State) override
+  {
+    const auto palette = m_widget ? m_widget->palette() : QApplication::palette();
+    const auto color = palette.color(
+      mode == QIcon::Disabled ? QPalette::Disabled : QPalette::Active, QPalette::WindowText);
+    if (m_color != color || !m_renderer.isValid())
+    {
+      QFile file(":/icons/diagram/" + m_name + ".svg");
+      if (file.open(QIODevice::ReadOnly))
+      {
+        auto data = file.readAll();
+        data.replace("#000000", color.name().toUtf8());
+        m_renderer.load(data);
+        m_color = color;
+      }
+    }
+    painter->save();
+    painter->setOpacity(painter->opacity() * color.alphaF());
+    m_renderer.render(painter, rect);
+    painter->restore();
+  }
+
+  QPixmap pixmap(const QSize& size, QIcon::Mode mode, QIcon::State state) override
+  {
+    QPixmap result(size);
+    result.fill(Qt::transparent);
+    QPainter painter(&result);
+    this->paint(&painter, QRect(QPoint(), size), mode, state);
+    return result;
+  }
+
+private:
+  QString m_name;
+  QPointer<QWidget> m_widget;
+  QColor m_color;
+  QSvgRenderer m_renderer;
+};
+
+QIcon jobIcon(const QString& name, QWidget* widget)
+{
+  return QIcon(new JobIconEngine(name, widget));
 }
+
+class JobStatusLabel : public QLabel
+{
+public:
+  void setSymbol(const QString& name)
+  {
+    m_name = name;
+    this->setAccessibleName(name);
+    m_color = QColor();
+    this->update();
+  }
+
+  QSize sizeHint() const override
+  {
+    const int side = this->fontMetrics().height();
+    return QSize(side, side);
+  }
+
+protected:
+  void paintEvent(QPaintEvent*) override
+  {
+    if (m_name.isEmpty())
+    {
+      return;
+    }
+    const auto color = this->palette().color(QPalette::WindowText);
+    if (m_color != color)
+    {
+      QFile file(":/icons/diagram/" + m_name + ".svg");
+      if (file.open(QIODevice::ReadOnly))
+      {
+        auto data = file.readAll();
+        data.replace("#000000", color.name().toUtf8());
+        m_renderer.load(data);
+        m_color = color;
+      }
+    }
+    QPainter painter(this);
+    const int side = qMin(this->width(), this->height());
+    m_renderer.render(&painter, QRectF(0, (this->height() - side) / 2.0, side, side));
+  }
+
+private:
+  QString m_name;
+  QPointer<QWidget> m_widget;
+  QColor m_color;
+  QSvgRenderer m_renderer;
+};
 
 } // anonymous namespace
 
@@ -129,13 +221,12 @@ public:
     : m_view(view)
     , m_stage(stage)
   {
-    QFont fontAwesome = solidFontAwesome();
     auto* layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     this->setLayout(layout);
     m_artifactButton = new QPushButton;
-    m_artifactButton->setFont(fontAwesome);
-    m_artifactButton->setText(QString(QChar(0xf013)));
+    m_artifactButton->setIcon(jobIcon("settings", m_artifactButton));
+    m_artifactButton->setToolTip("Artifact controls");
     layout->addWidget(m_artifactButton);
     m_artifactControls = new QWidget;
     auto* acLayout = new QVBoxLayout;
@@ -167,9 +258,7 @@ public:
       aLayout->setObjectName(QString::number(std::filesystem::hash_value(artifact), 16));
       auto* visibilityButton = new QPushButton;
       visibilityButton->setObjectName("visibility");
-      // These buttons contain Font Awesome private-use glyphs, so they must
-      // explicitly use the same solid face as the other artifact controls.
-      visibilityButton->setFont(fontAwesome);
+      visibilityButton->setToolTip("Toggle artifact visibility");
       visibilityButton->setCheckable(true);
       visibilityButton->setChecked(true);
       QObject::connect(
@@ -178,7 +267,8 @@ public:
         [this, visibilityButton, &artifact](bool makeVisible) {
           if (this->toggleArtifactVisibility(artifact, makeVisible))
           {
-            visibilityButton->setText(QString(QChar(makeVisible ? 0xf06e : 0xf070)));
+            visibilityButton->setIcon(
+              jobIcon(makeVisible ? "visible" : "hidden", visibilityButton));
           }
         });
       auto* opacitySlider = new QSlider;
@@ -188,13 +278,13 @@ public:
       if (repProxy)
       {
         vtkSMPropertyHelper vis(repProxy, "Visibility");
-        visibilityButton->setText(QString(QChar(vis.GetAsInt() ? 0xf06e : 0xf070)));
+        visibilityButton->setIcon(jobIcon(vis.GetAsInt() ? "visible" : "hidden", visibilityButton));
         vtkSMPropertyHelper alpha(repProxy, "Opacity");
         opacitySlider->setValue(static_cast<int>(alpha.GetAsDouble() * 255.0));
       }
       else
       {
-        visibilityButton->setText(QString(QChar(0xf070)));
+        visibilityButton->setIcon(jobIcon("hidden", visibilityButton));
         opacitySlider->setValue(255);
       }
       // Keep these *after* the slider is initialized above.
@@ -385,12 +475,10 @@ public:
     // Configure the widget.
     auto* topLevelLayout = new QVBoxLayout;
     auto* upperLayout = new QHBoxLayout;
-    QFont fontAwesome = solidFontAwesome();
     m_lastRun = new QLabel("Last update: —");
     m_lastRun->setObjectName("LastRunLabel");
-    m_lastRunStatus = new QLabel;
+    m_lastRunStatus = new JobStatusLabel;
     m_lastRunStatus->setObjectName("LastRunStatus");
-    m_lastRunStatus->setFont(fontAwesome);
     m_jobControl = new QPushButton("Run");
     m_jobControl->setObjectName("JobControl");
     m_stageGrid = new QGridLayout;
@@ -482,25 +570,19 @@ public:
     {
       default:
       case smtk::job::Status::Pending:
-        // Spinner: f2f1 (alternatives include f110 and f1ce).
-        // Construct private-use characters numerically so MSVC does not convert
-        // them through the Windows execution character set.
-        m_lastRunStatus->setText(QString(QChar(0xf2f1)));              // Spinner
+        m_lastRunStatus->setSymbol(QStringLiteral("pending"));         // Spinner
         palette.setColor(QPalette::WindowText, QColor(100, 100, 100)); // medium grey
         break;
       case smtk::job::Status::Failed:
-        // Exclamation: f06a.
-        m_lastRunStatus->setText(QString(QChar(0xf06a)));            // Exclamation
+        m_lastRunStatus->setSymbol(QStringLiteral("warning"));       // Exclamation
         palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
       case smtk::job::Status::Succeeded:
-        // Circle check: f058.
-        m_lastRunStatus->setText(QString(QChar(0xf058)));            // Circle check
+        m_lastRunStatus->setSymbol(QStringLiteral("success"));       // Circle check
         palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // dark green
         break;
       case smtk::job::Status::Terminated:
-        // Circle x-mark: f057
-        m_lastRunStatus->setText(QString(QChar(0xf057)));            // Circle x-mark
+        m_lastRunStatus->setSymbol(QStringLiteral("failure"));       // Circle x-mark
         palette.setColor(QPalette::WindowText, QColor(210, 65, 34)); // dark red
         break;
     }
@@ -514,14 +596,12 @@ public:
       return;
     }
     int ii = 0;
-    QFont fontAwesome = solidFontAwesome();
     for (const auto& stage : jobType->stages())
     {
       auto* stageLabel = new QLabel(QString::fromStdString(stage->name()));
       stageLabel->setToolTip(QString::fromStdString(stage->description()));
       m_stageGrid->addWidget(stageLabel, ii, 1);
-      auto* stageDone = new QLabel;
-      stageDone->setFont(fontAwesome);
+      auto* stageDone = new JobStatusLabel;
       QPalette palette = stageDone->palette();
       palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // medium green
       stageDone->setPalette(palette);
@@ -529,8 +609,8 @@ public:
       if (!stage->log().empty())
       {
         auto* stageLog = new QPushButton;
-        stageLog->setFont(fontAwesome);
-        stageLog->setText(QString(QChar(0xf15c)));
+        stageLog->setIcon(jobIcon("log", stageLog));
+        stageLog->setToolTip("View stage log");
         stageLog->setObjectName("log stage " + QString::number(ii));
         m_stageGrid->addWidget(stageLog, ii, 3);
         QObject::connect(stageLog, &QPushButton::clicked, [&]() {
@@ -568,7 +648,7 @@ public:
     {
       if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 2))
       {
-        if (auto* label = dynamic_cast<QLabel*>(layoutItem->widget()))
+        if (auto* label = dynamic_cast<JobStatusLabel*>(layoutItem->widget()))
         {
           if (crashed)
           {
@@ -583,19 +663,18 @@ public:
                 QColor(210,  65,  34) /* dark red */);
             // clang-format on
             label->setPalette(palette);
-            label->setText(
-              ii < stageIndex - 1
-                ? QString(QChar(0xf058)) + QLatin1Char(' ')
-                : (ii == stageIndex - 1 ? QString(QChar(0xf06a)) + QLatin1Char(' ') : QString()));
+            label->setSymbol(
+              ii < stageIndex - 1 ? QStringLiteral("success")
+                                  : (ii == stageIndex - 1 ? QStringLiteral("warning") : QString()));
           }
           else
           {
             QPalette palette = label->palette();
             palette.setColor(QPalette::WindowText, QColor(74, 166, 33)); // medium green
             label->setPalette(palette);
-            label->setText(
-              ii < stageIndex ? QString(QChar(0xf058))
-                              : (ii == stageIndex ? QString(QChar(0xf2f1)) : QString()));
+            label->setSymbol(
+              ii < stageIndex ? QStringLiteral("success")
+                              : (ii == stageIndex ? QStringLiteral("pending") : QString()));
           }
         }
       }
@@ -675,7 +754,7 @@ public:
 
   ::pqJobRunnerView* m_view{ nullptr };
   QLabel* m_lastRun{ nullptr };
-  QLabel* m_lastRunStatus{ nullptr };
+  JobStatusLabel* m_lastRunStatus{ nullptr };
   QPushButton* m_jobControl{ nullptr };
   QGridLayout* m_stageGrid{ nullptr };
   QGridLayout* m_artifactGrid{ nullptr };

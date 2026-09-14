@@ -61,7 +61,6 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDir>
-#include <QFontDatabase>
 #include <QTimer>
 #include <QtDebug>
 
@@ -247,44 +246,6 @@ void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
   qtMgr->diagramGeneratorFactory().registerTypes<DiagramGeneratorList>();
   qtMgr->taskNodeFactory().registerTypes<TaskNodeList>();
   qtMgr->objectNodeFactory().registerTypes<ObjectNodeList>();
-
-  // If there is a Qt Application initialized then we need to add some additional
-  // fonts that are used by classes such as qtTaskNode
-  if (QCoreApplication::instance())
-  {
-    int id = QFontDatabase::addApplicationFont(":/fonts/fontAwesomeRegular.otf");
-    if (id < 0)
-    {
-      qWarning() << "FontAwesomeRegular cannot be loaded !";
-    }
-#if SMTK_DEBUG
-    else
-    {
-      QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-      qInfo() << "Loaded \"" << family << "\".";
-    }
-#endif
-    id = QFontDatabase::addApplicationFont(":/fonts/fontAwesomeSolid.otf");
-    if (id < 0)
-    {
-      qWarning() << "FontAwesomeSolid cannot be loaded !";
-    }
-#if SMTK_DEBUG
-    else
-    {
-      QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-      qInfo() << "Loaded \"" << family << "\".";
-    }
-#endif
-#if SMTK_DEBUG
-    QFontDatabase db;
-    qInfo() << "List fonts:\n";
-    for (int ii = 0; ii < db.families().size(); ++ii)
-    {
-      qInfo() << db.families().at(ii);
-    }
-#endif
-  }
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::extension::qtManager::Ptr& qtMgr)
