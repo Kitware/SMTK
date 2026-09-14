@@ -12,6 +12,7 @@
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 
+#include "smtk/job/Job.h"
 #include "smtk/job/Manager.h"
 
 #include "smtk/task/Manager.h"
@@ -68,6 +69,16 @@ void JobAgent::configure(const Configuration& config)
   if (it != config.end())
   {
     m_jobTypeName = it->get<std::string>();
+  }
+
+  it = config.find("job-role");
+  if (it != config.end())
+  {
+    m_jobRole = it->get<std::string>();
+  }
+  else
+  {
+    m_jobRole.clear();
   }
 
   auto baseDir = this->caseDirectoryBase();
@@ -132,6 +143,10 @@ JobAgent::Configuration JobAgent::configuration() const
   {
     config["job-type"] = m_jobTypeName;
   }
+  if (!m_jobRole.empty())
+  {
+    config["job-role"] = m_jobRole;
+  }
   if (m_job && m_job->queue())
   {
     config["job"] = { { "id", m_job->id() }, { "queue", m_job->queue()->id() } };
@@ -141,7 +156,13 @@ JobAgent::Configuration JobAgent::configuration() const
 
 std::shared_ptr<smtk::task::PortData> JobAgent::portData(const smtk::task::Port* port) const
 {
-  return std::shared_ptr<smtk::task::PortData>();
+  if (m_jobRole.empty() || !port || m_outputPortName != port->name() || !m_job)
+  {
+    return std::shared_ptr<smtk::task::PortData>();
+  }
+  auto data = std::make_shared<smtk::task::ObjectsInRoles>();
+  data->addObject(m_job, m_jobRole);
+  return data;
 }
 
 void JobAgent::portDataUpdated(const smtk::task::Port* port)

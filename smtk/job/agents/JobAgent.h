@@ -194,6 +194,10 @@ protected:
   /// This is not used by the agent but made available to user interface
   /// elements that may need to pre-populate with information about jobs.
   std::string m_jobTypeName;
+
+  /// If set, this is the role on the output port (configured as
+  /// part of SubmitOperationAgent) in which the job will appear.
+  std::string m_jobRole;
 };
 
 } // namespace agents
