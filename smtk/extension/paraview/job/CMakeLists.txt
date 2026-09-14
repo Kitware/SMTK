@@ -1,5 +1,6 @@
 set(classes
   Registrar
+  pqArtifacts
   pqJobRunnerView
 )
 
@@ -11,6 +12,7 @@ vtk_module_add_module(smtkPVJobExt
 qt_wrap_cpp(
   QTMOCSRCS
   pqJobRunnerView.h
+  pqArtifacts.h
   TARGET smtkPVJobExt
 )
 set_property(SOURCE pqJobRunnerView.cxx PROPERTY OBJECT_DEPENDS "${QTMOCSRCS}")

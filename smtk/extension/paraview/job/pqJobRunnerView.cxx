@@ -10,6 +10,7 @@
 #include "pqJobRunnerView.h"
 
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/job/pqArtifacts.h"
 
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtLogView.h"
@@ -93,133 +94,6 @@ using namespace smtk::string::literals;
 
 namespace // anonmyous
 {
-
-std::map<std::filesystem::path, QPointer<pqPipelineSource>> s_artifacts;
-
-pqPipelineSource* getPipelineSource(const std::filesystem::path& fullArtifactPath, bool& didCreate)
-{
-  auto it = s_artifacts.find(fullArtifactPath);
-  if (it != s_artifacts.end())
-  {
-    didCreate = false;
-    return it->second;
-  }
-
-  // Force the reader factory to allow ParaView (not just SMTK) readers:
-  bool ppm = pqSMTKBehavior::instance()->postProcessingMode();
-  pqSMTKBehavior::instance()->setPostProcessingMode(true);
-
-  auto* core = pqApplicationCore::instance();
-  auto* server = core ? core->getActiveServer() : nullptr;
-  auto* session = server ? server->session() : nullptr;
-  auto* proxyManager = vtkSMProxyManager::GetProxyManager();
-  auto* readerFactory = proxyManager ? proxyManager->GetReaderFactory() : nullptr;
-  if (!readerFactory)
-  {
-    return nullptr;
-  }
-
-  if (readerFactory->GetNumberOfRegisteredPrototypes() == 0)
-  {
-    readerFactory->UpdateAvailableReaders();
-  }
-  auto* builder = core->getObjectBuilder();
-  if (!readerFactory->TestFileReadability(fullArtifactPath.string().c_str(), session))
-  {
-    // Can't read because the file doesn't exist.
-    return nullptr;
-  }
-  if (!readerFactory->CanReadFile(fullArtifactPath.string().c_str(), session))
-  {
-    return nullptr;
-  }
-
-  auto* xmlGroup = readerFactory->GetReaderGroup();
-  auto* xmlName = readerFactory->GetReaderName();
-  // Re-disable post-processing mode if needed.
-  pqSMTKBehavior::instance()->setPostProcessingMode(ppm);
-
-  QStringList files;
-  files << QString::fromStdString(fullArtifactPath.string());
-  pqPipelineSource* source = builder->createReader(xmlGroup, xmlName, files, server);
-  auto* readerProxy = source->getSourceProxy();
-  didCreate = true;
-  s_artifacts[fullArtifactPath] = source;
-
-  // Push changes to server so that when the representation gets updated,
-  // it uses the property values we set.
-  readerProxy->UpdateVTKObjects();
-
-  // ensures that new timestep range, if any gets fetched from the server.
-  readerProxy->UpdatePipelineInformation();
-
-  // We have already pushed everything to the server manager.
-  // Thus, there is no state left to be modified.
-  source->setModifiedState(pqProxy::UNMODIFIED);
-
-  return source;
-}
-
-vtkSMRepresentationProxy* activeViewRepresentation(pqPipelineSource* source, bool visibility)
-{
-  if (!source)
-  {
-    return nullptr;
-  }
-  // Create representation for the active view if it's a render view
-  pqView* view = pqActiveObjects::instance().activeView();
-  vtkSMRepresentationProxy* proxy = nullptr;
-  if (pqRenderView* renderView = dynamic_cast<pqRenderView*>(view))
-  {
-    vtkNew<vtkSMParaViewPipelineControllerWithRendering> controller;
-    if (visibility)
-    {
-      proxy = dynamic_cast<vtkSMRepresentationProxy*>(
-        controller->Show(source->getSourceProxy(), 0, renderView->getViewProxy()));
-      // renderView->resetCamera();
-      proxy->SetRepresentationType("Surface With Edges");
-    }
-    else
-    {
-      proxy = dynamic_cast<vtkSMRepresentationProxy*>(
-        controller->Hide(source->getSourceProxy(), 0, renderView->getViewProxy()));
-    }
-  }
-  if (!proxy)
-  {
-    qCritical() << "No active view or data cannot be displayed in it.";
-  }
-  return proxy;
-}
-
-void hideRepresentations(pqPipelineSource* source)
-{
-  if (!source)
-  {
-    return;
-  }
-
-  // An artifact can have a representation in more than the currently-active
-  // view. During a task transition, the active view can also change before
-  // cleanup is performed. Hide every representation owned by the artifact
-  // source and render each affected view instead of relying on active objects.
-  const auto views = source->getViews();
-  for (auto* view : views)
-  {
-    if (!view)
-    {
-      continue;
-    }
-    for (auto* representation : source->getRepresentations(view))
-    {
-      if (representation)
-      {
-        representation->setVisible(false);
-      }
-    }
-    view->render();
-  }
-}
 
 template<typename TP>
 std::time_t to_time_t(TP tp)
@@ -362,10 +236,11 @@ public:
           for (const auto& artifact : stage->artifacts())
           {
             auto fullArtifactPath = job->caseDirectory() / artifact;
-            auto it = s_artifacts.find(fullArtifactPath);
-            if (it != s_artifacts.end())
+            if (
+              auto* source =
+                pqArtifacts::instance()->findOrCreate(fullArtifactPath, "job", nullptr, true))
             {
-              hideRepresentations(it->second);
+              pqArtifacts::hideRepresentations(source);
             }
           }
         }
@@ -430,8 +305,10 @@ public:
             bool didCreate = false;
             auto* visibilityButton = qobject_cast<QPushButton*>(layout->itemAt(1)->widget());
             auto* opacitySlider = qobject_cast<QSlider*>(layout->itemAt(2)->widget());
-            auto* source = getPipelineSource(fullArtifactPath, didCreate);
-            auto* repProxy = activeViewRepresentation(source, visibilityButton->isChecked());
+            auto* source =
+              pqArtifacts::instance()->findOrCreate(fullArtifactPath, "job", &didCreate);
+            auto* repProxy =
+              pqArtifacts::activeViewRepresentation(source, visibilityButton->isChecked());
           }
         }
       }
@@ -445,9 +322,9 @@ public:
     {
       bool didCreate;
       std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
-      auto* source = getPipelineSource(fullArtifactPath, didCreate);
+      auto* source = pqArtifacts::instance()->findOrCreate(fullArtifactPath, "job", &didCreate);
       // The source may be null if fullArtifactPath does not exist.
-      if (auto* repProxy = activeViewRepresentation(source, true))
+      if (auto* repProxy = pqArtifacts::activeViewRepresentation(source, true))
       {
         vtkSMPropertyHelper(repProxy, "Visibility").Set(makeVisible);
         repProxy->UpdateVTKObjects();
@@ -468,8 +345,8 @@ public:
     {
       bool didCreate;
       std::filesystem::path fullArtifactPath = job->caseDirectory() / artifact;
-      auto* source = getPipelineSource(fullArtifactPath, didCreate);
-      auto* repProxy = activeViewRepresentation(source, true);
+      auto* source = pqArtifacts::instance()->findOrCreate(fullArtifactPath, "job", &didCreate);
+      auto* repProxy = pqArtifacts::activeViewRepresentation(source, true);
       vtkSMPropertyHelper(repProxy, "Opacity").Set(value / 255.);
       if (auto view = pqActiveObjects::instance().activeView())
       {
