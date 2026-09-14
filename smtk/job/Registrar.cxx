@@ -11,6 +11,7 @@
 //=============================================================================
 #include "smtk/job/Registrar.h"
 
+#include "smtk/job/DatabaseQueue.h"
 #include "smtk/job/Job.h"
 #include "smtk/job/Queue.h"
 #include "smtk/job/agents/JobAgent.h"
@@ -132,7 +133,16 @@ void Registrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager) {}
 #if 0
 #endif
 
-void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager) {}
+void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
+{
+  auto& typeLabels = resourceManager->objectTypeLabels();
+  typeLabels[smtk::common::typeName<smtk::job::DatabaseQueue>()] = "database queue";
+  typeLabels[smtk::common::typeName<smtk::job::Queue>()] = "queue";
+  typeLabels[smtk::common::typeName<smtk::job::Job>()] = "job";
+  smtk::string::Token dummy1("smtk::job::Queue");
+  smtk::string::Token dummy2("smtk::job::DatabaseQueue");
+  smtk::string::Token dummy3("smtk::job::Job");
+}
 
 void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager) {}
 
