@@ -244,7 +244,10 @@ vtkSMRepresentationProxy* pqArtifacts::activeViewRepresentation(
       proxy = dynamic_cast<vtkSMRepresentationProxy*>(
         controller->Show(source->getSourceProxy(), 0, renderView->getViewProxy()));
       // renderView->resetCamera();
-      proxy->SetRepresentationType("Surface With Edges");
+      if (proxy)
+      {
+        proxy->SetRepresentationType("Surface With Edges");
+      }
     }
     else
     {
@@ -254,7 +257,8 @@ vtkSMRepresentationProxy* pqArtifacts::activeViewRepresentation(
   }
   if (!proxy)
   {
-    qCritical() << "No active view or data cannot be displayed in it.";
+    qCritical() << "No active view or data (" << source->getSMName()
+                << ") cannot be displayed in it.";
   }
   return proxy;
 }
