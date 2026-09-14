@@ -13,3 +13,7 @@ choose a different initial height, for example::
 
 The splitter remains adjustable. Invalid or non-positive values fall back to two
 rows.
+
+``AttributeTable`` views also support ``AttributeListRows`` with the same
+two-row default. Additional height goes to the selected-attribute editor when
+it is shown; when it is hidden, the table fills the available space.

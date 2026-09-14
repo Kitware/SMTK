@@ -172,7 +172,28 @@ class qtAttributeTableWidget : public QTableView
 {
 
 public:
-  using QTableView::QTableView;
+  qtAttributeTableWidget(int rows, QWidget* parent)
+    : QTableView(parent)
+    , m_rows(rows)
+  {
+  }
+
+  QSize sizeHint() const override
+  {
+    QSize hint = QTableView::sizeHint();
+    const qint64 height = 2 * this->frameWidth() +
+      (this->horizontalHeader()->isHidden() ? 0 : this->horizontalHeader()->sizeHint().height()) +
+      static_cast<qint64>(m_rows) * this->verticalHeader()->defaultSectionSize();
+    hint.setHeight(static_cast<int>(qMin<qint64>(height, QWIDGETSIZE_MAX)));
+    return hint;
+  }
+
+  QSize minimumSizeHint() const override
+  {
+    QSize hint = QTableView::minimumSizeHint();
+    hint.setHeight(qMin(hint.height(), this->sizeHint().height()));
+    return hint;
+  }
 
 protected:
   QModelIndex moveCursor(CursorAction cursorAction, Qt::KeyboardModifiers modifiers) override
@@ -238,6 +259,9 @@ protected:
      */
     return QTableView::moveCursor(cursorAction, modifiers);
   }
+
+private:
+  int m_rows;
 };
 
 /**
@@ -515,7 +539,14 @@ void qtAttributeTableView::createWidget()
    * The model accesses SMTK attribute values directly; it does not maintain a
    * separate copy of the attribute data.
    */
-  m_internals->Table = new qtAttributeTableWidget(m_internals->Widget);
+  bool validRows = false;
+  int listRows =
+    QString::fromStdString(details.attributeAsString("AttributeListRows")).toInt(&validRows);
+  if (!validRows || listRows < 1)
+  {
+    listRows = 2;
+  }
+  m_internals->Table = new qtAttributeTableWidget(listRows, m_internals->Widget);
   m_internals->Table->setTabKeyNavigation(true);
   m_internals->Model = new qtAttributeTableModel(m_internals->Table);
   m_internals->Model->setUIManager(this->uiManager());
@@ -598,7 +629,7 @@ void qtAttributeTableView::createWidget()
   m_internals->AttributeEditorScrollArea->setWidget(m_internals->AttributeEditorFrame);
   m_internals->AttributeEditorScrollArea->setVisible(false);
   m_internals->TableEditorSplitter->addWidget(m_internals->AttributeEditorScrollArea);
-  m_internals->TableEditorSplitter->setStretchFactor(0, 1);
+  m_internals->TableEditorSplitter->setStretchFactor(0, 0);
   m_internals->TableEditorSplitter->setStretchFactor(1, 1);
 
   /*
