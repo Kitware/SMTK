@@ -120,6 +120,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   }
   else
   {
+#ifndef Q_OS_WIN
     auto containerQueue =
       smtk::qt::job::ContainerQueue::createOrRestore<smtk::qt::job::ContainerQueue>(
         /* name */ "container_queue",
@@ -145,9 +146,10 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
       // Make the container queue the active queue active, except
       // on windows. (We should undo this change when possible.)
       jobManager->activeQueue().switchTo(containerQueue.get());
-#endif
+#endif // Q_OS_WIN
     }
     syncSettingsProjectsRootFolder();
+#endif // Q_OS_WIN
   }
 }
 
