@@ -111,7 +111,8 @@ class pqServer;
   *   "routes": { "flow": "Flow Results", "probes-*": "Probes" }
   * }
   * ```
-  * Readers are reused for the same job and directory. Results managed by this
+  * Readers are shared with job artifact controls through pqArtifacts using the
+  * results directory and the "job" tag. Results managed by this
   * directive are hidden before applying new routes, including when no successful
   * job or results directory is available. Unrelated user-created plots are retained.
   *

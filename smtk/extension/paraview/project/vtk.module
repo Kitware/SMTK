@@ -3,6 +3,7 @@ NAME
 DEPENDS
   ParaView::pqCore
 PRIVATE_DEPENDS
+  smtkPVJobExt
   ParaView::pqApplicationComponents
   smtkPQComponentsExt
   smtkPVServerExt

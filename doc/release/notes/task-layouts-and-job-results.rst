@@ -41,7 +41,8 @@ Task-manager styles support three activation directives:
   ``postProcessing``, respectively. ``reader`` specifies a ParaView source proxy
   with a ``FileName`` property, and ``routes`` maps output-port wildcard patterns
   to view names in the selected layout. Readers created by this directive are
-  reused for the same job, directory, and reader type. Previously managed results
+  shared with the job artifact controls through ``pqArtifacts``, avoiding duplicate
+  pipeline sources when both interfaces open the same results directory. Previously managed results
   in the selected layout are hidden before applying new routes, including when
   a successful job or results directory is unavailable.
 

@@ -13,6 +13,7 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKDiagramPanel.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKResource.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKWrapper.h"
+#include "smtk/extension/paraview/job/pqArtifacts.h"
 #include "smtk/extension/paraview/project/Utility.h"
 #include "smtk/extension/qt/diagram/qtDiagram.h"
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
@@ -670,44 +671,17 @@ void pqSMTKTaskResourceVisibility::applyJobResults(
   {
     return;
   }
-  const auto path = directory.string();
   const auto readerType = spec.at("reader").get<std::string>();
-  const auto jobId = job->id().toString();
-  vtkSmartPointer<vtkSMSourceProxy> reader;
-  for (auto* source : model->findItems<pqPipelineSource*>(server))
-  {
-    auto* proxy = source->getSourceProxy();
-    const char* id = proxy->GetAnnotation("smtk.job-results");
-    if (
-      id && jobId == id && readerType == proxy->GetXMLName() && proxy->GetProperty("FileName") &&
-      path == vtkSMPropertyHelper(proxy, "FileName").GetAsString())
-    {
-      reader = proxy;
-      break;
-    }
-  }
+  // Share the job artifact cache with the artifact controls in pqJobRunnerView.
+  auto* source =
+    pqArtifacts::instance()->findOrCreate(directory, "job", nullptr, false, "sources", readerType);
+  auto* reader = source ? source->getSourceProxy() : nullptr;
   if (!reader)
   {
-    reader.TakeReference(
-      vtkSMSourceProxy::SafeDownCast(pxm->NewProxy("sources", readerType.c_str())));
-    if (!reader || !reader->GetProperty("FileName"))
-    {
-      smtkErrorMacro(
-        smtk::io::Logger::instance(), "Cannot create job-results reader " << readerType);
-      return;
-    }
-    controller->PreInitializeProxy(reader);
-    vtkSMPropertyHelper(reader, "FileName").Set(path.c_str());
-    controller->PostInitializeProxy(reader);
-    reader->UpdateVTKObjects();
-    reader->UpdatePipeline();
-    reader->SetAnnotation("smtk.job-results", jobId.c_str());
-    controller->RegisterPipelineProxy(reader, "Simulation Results");
-    if (auto* source = model->findItem<pqPipelineSource*>(reader))
-    {
-      source->setModifiedState(pqProxy::UNMODIFIED);
-    }
+    smtkErrorMacro(smtk::io::Logger::instance(), "Cannot create job-results reader " << readerType);
+    return;
   }
+  reader->SetAnnotation("smtk.job-results", job->id().toString().c_str());
   reader->UpdatePipeline();
   for (unsigned int port = 0; port < reader->GetNumberOfOutputPorts(); ++port)
   {

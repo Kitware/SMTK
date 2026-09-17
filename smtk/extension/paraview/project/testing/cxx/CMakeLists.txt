@@ -1,5 +1,5 @@
 add_executable(TestTaskPostprocessing TestTaskPostprocessing.cxx)
-target_link_libraries(TestTaskPostprocessing PRIVATE smtkPQProjectExt)
+target_link_libraries(TestTaskPostprocessing PRIVATE smtkPQProjectExt smtkPVJobExt)
 add_test(NAME pv.taskPostprocessing COMMAND TestTaskPostprocessing)
 set_tests_properties(pv.taskPostprocessing PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 

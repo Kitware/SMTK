@@ -7,8 +7,17 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+// Verify that task activation applies ParaView mode and named view layouts,
+// preserves existing layouts, and continues to work with multiple projects.
+// Also cover legacy mode settings and JobAgent output-port persistence.
+// When SMTK_TEST_READER_PLUGIN specifies a CorpsFoam reader plugin, additionally
+// verify job-result routing to chart views, reader sharing with pqArtifacts in
+// either opening order, and handling of failed jobs, missing results, and deleted
+// readers.
+
 #include "smtk/common/Managers.h"
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
+#include "smtk/extension/paraview/job/pqArtifacts.h"
 #include "smtk/extension/paraview/project/pqSMTKTaskResourceVisibility.h"
 #include "smtk/job/Job.h"
 #include "smtk/job/agents/JobAgent.h"
@@ -54,6 +63,8 @@
 
 namespace
 {
+// Expose protected style and project-event handlers so the test can exercise
+// task activation with an explicitly selected task manager.
 class TaskStyleBehavior : public pqSMTKTaskResourceVisibility
 {
 public:
@@ -69,6 +80,7 @@ public:
   using pqSMTKTaskResourceVisibility::processTaskEvent;
 };
 
+// Supply a job through an input port without constructing an entire workflow.
 class JobInputTask : public smtk::task::Task
 {
 public:
@@ -85,6 +97,8 @@ public:
   }
 };
 
+// Allow a test job to be assigned directly when checking that a reloaded
+// agent preserves its output-port configuration and publishes the job.
 class TestJobAgent : public smtk::job::agents::JobAgent
 {
 public:
@@ -331,83 +345,110 @@ int main(int argc, char* argv[])
       check(
         vtkSMProxyManager::GetProxyManager()->GetPluginManager()->LoadLocalPlugin(plugin),
         "Could not load results reader plugin.");
-      behavior.applyLayout(postStyle.at("layout"));
-      auto* resultsLayout = tabs.layoutProxy();
-      QTemporaryDir temporary;
-      check(temporary.isValid(), "Could not create results fixture.");
-      const auto caseDirectory =
-        std::filesystem::path(temporary.path().toStdString()) / "custom-case";
-      const auto results = caseDirectory / "postProcessing";
-      auto write = [&](const std::string& relative, const std::string& text) {
-        auto file = results / relative;
-        std::filesystem::create_directories(file.parent_path());
-        std::ofstream stream(file);
-        stream << text;
-      };
-      write("flow_in/0/values.dat", "# Time sum(phi)\n0 1\n1 2\n");
-      write("forces-ForceProbe1/0/force.dat", "# Time force\n0 3\n1 4\n");
-      write("forces_ForceProbe-0/0/force.dat", "# Time force\n0 9\n1 10\n");
-      write("probes/0/p", "# Probe 0 (0 0 0)\n# Time\n0 5\n1 6\n");
-      write("other/0/values.dat", "# Time value\n0 7\n1 8\n");
-      auto job = smtk::job::Job::create();
-      job->setCaseDirectory(caseDirectory);
-      JobInputTask inputTask;
-      inputTask.data->addObject(job.get(), "job");
-      const auto config = nlohmann::json::parse(R"({
-        "reader": "CorpsFoamPostProcessingReader", "directory": "postProcessing",
-        "routes": { "flow": "Flow Results", "forces-ForceProbe*": "Force Probes", "forces_ForceProbe*": "Force Probes", "probes-*": "Probes" }
-      })");
-      const auto sourceCount = pxm->GetNumberOfProxies("sources");
-      behavior.applyJobResults(config, &inputTask);
-      check(
-        pxm->GetNumberOfProxies("sources") == sourceCount, "Pending jobs must not load results.");
-      job->setState(smtk::job::State::Completed);
-      job->setStatus(smtk::job::Status::Succeeded);
-      behavior.applyJobResults(config, &inputTask);
-      check(pxm->GetNumberOfProxies("sources") == sourceCount + 1, "Expected one results reader.");
-      auto* reader = vtkSMSourceProxy::SafeDownCast(pxm->GetProxy("sources", "Simulation Results"));
-      check(
-        reader &&
-          std::string(vtkSMPropertyHelper(reader, "FileName").GetAsString()) == results.string(),
-        "Reader must use the job case directory, including nonstandard case paths.");
-      auto* source = core.getServerManagerModel()->findItem<pqPipelineSource*>(reader);
-      auto checkRouting = [&](bool visible) {
-        check(reader->GetNumberOfOutputPorts() == 5, "Expected five fixture output ports.");
-        for (unsigned int port = 0; port < reader->GetNumberOfOutputPorts(); ++port)
+      for (bool artifactFirst : { false, true })
+      {
+        behavior.applyLayout(postStyle.at("layout"));
+        auto* resultsLayout = tabs.layoutProxy();
+        QTemporaryDir temporary;
+        check(temporary.isValid(), "Could not create results fixture.");
+        const auto caseDirectory =
+          std::filesystem::path(temporary.path().toStdString()) / "custom-case";
+        const auto results = caseDirectory / "postProcessing";
+        auto write = [&](const std::string& relative, const std::string& text) {
+          auto file = results / relative;
+          std::filesystem::create_directories(file.parent_path());
+          std::ofstream stream(file);
+          stream << text;
+        };
+        write("flow_in/0/values.dat", "# Time sum(phi)\n0 1\n1 2\n");
+        write("forces-ForceProbe1/0/force.dat", "# Time force\n0 3\n1 4\n");
+        write("forces_ForceProbe-0/0/force.dat", "# Time force\n0 9\n1 10\n");
+        write("probes/0/p", "# Probe 0 (0 0 0)\n# Time\n0 5\n1 6\n");
+        write("other/0/values.dat", "# Time value\n0 7\n1 8\n");
+        auto job = smtk::job::Job::create();
+        job->setCaseDirectory(caseDirectory);
+        JobInputTask inputTask;
+        inputTask.data->addObject(job.get(), "job");
+        const auto config = nlohmann::json::parse(R"({
+          "reader": "CorpsFoamPostProcessingReader", "directory": "postProcessing",
+          "routes": { "flow": "Flow Results", "forces-ForceProbe*": "Force Probes", "forces_ForceProbe*": "Force Probes", "probes-*": "Probes" }
+        })");
+        const auto sourceCount = pxm->GetNumberOfProxies("sources");
+        behavior.applyJobResults(config, &inputTask);
+        check(
+          pxm->GetNumberOfProxies("sources") == sourceCount, "Pending jobs must not load results.");
+        pqPipelineSource* artifactSource = nullptr;
+        if (artifactFirst)
         {
-          const std::string name = reader->GetOutputPortName(port);
-          int target = name == "flow"                                         ? 1
-            : name == "probes-p"                                              ? 5
-            : (name == "forces-ForceProbe1" || name == "forces_ForceProbe-0") ? 6
-                                                                              : -1;
-          for (int location : { 1, 5, 6 })
-          {
-            auto* view =
-              core.getServerManagerModel()->findItem<pqView*>(resultsLayout->GetView(location));
-            auto* representation = source->getOutputPort(port)->getRepresentation(view);
-            check(
-              (representation && representation->isVisible()) == (visible && location == target),
-              "Output port must be visible only in its designated chart.");
-          }
+          artifactSource = pqArtifacts::instance()->findOrCreate(
+            results / ".", "job", nullptr, false, "sources", "CorpsFoamPostProcessingReader");
+          check(artifactSource, "Artifact controls must create a reader.");
         }
-      };
-      checkRouting(true);
-      const auto representationCount = pxm->GetNumberOfProxies("representations");
-      behavior.applyJobResults(config, &inputTask);
-      check(
-        pxm->GetNumberOfProxies("sources") == sourceCount + 1 &&
-          pxm->GetNumberOfProxies("representations") == representationCount,
-        "Reactivation must reuse the reader and its chart representations.");
-      job->setStatus(smtk::job::Status::Failed);
-      behavior.applyJobResults(config, &inputTask);
-      checkRouting(false);
-      job->setStatus(smtk::job::Status::Succeeded);
-      job->setCaseDirectory(caseDirectory / "missing-case");
-      behavior.applyJobResults(config, &inputTask);
-      checkRouting(false);
-      check(
-        pxm->GetNumberOfProxies("sources") == sourceCount + 1,
-        "Missing results directory must not create a reader.");
+        job->setState(smtk::job::State::Completed);
+        job->setStatus(smtk::job::Status::Succeeded);
+        behavior.applyJobResults(config, &inputTask);
+        check(
+          pxm->GetNumberOfProxies("sources") == sourceCount + 1, "Expected one results reader.");
+        auto* sharedSource = pqArtifacts::instance()->findOrCreate(results, "job", nullptr, true);
+        check(
+          sharedSource && (!artifactFirst || sharedSource == artifactSource),
+          "Inspect Results must reuse the artifact reader.");
+        auto* reader = sharedSource->getSourceProxy();
+        check(
+          pqArtifacts::instance()->findOrCreate(results / ".", "job") == sharedSource &&
+            pxm->GetNumberOfProxies("sources") == sourceCount + 1,
+          "Artifact controls must reuse the task reader, including equivalent paths.");
+        check(
+          reader &&
+            std::string(vtkSMPropertyHelper(reader, "FileName").GetAsString()) == results.string(),
+          "Reader must use the job case directory, including nonstandard case paths.");
+        auto* source = core.getServerManagerModel()->findItem<pqPipelineSource*>(reader);
+        auto checkRouting = [&](bool visible) {
+          check(reader->GetNumberOfOutputPorts() == 5, "Expected five fixture output ports.");
+          for (unsigned int port = 0; port < reader->GetNumberOfOutputPorts(); ++port)
+          {
+            const std::string name = reader->GetOutputPortName(port);
+            int target = name == "flow"                                         ? 1
+              : name == "probes-p"                                              ? 5
+              : (name == "forces-ForceProbe1" || name == "forces_ForceProbe-0") ? 6
+                                                                                : -1;
+            for (int location : { 1, 5, 6 })
+            {
+              auto* view =
+                core.getServerManagerModel()->findItem<pqView*>(resultsLayout->GetView(location));
+              auto* representation = source->getOutputPort(port)->getRepresentation(view);
+              check(
+                (representation && representation->isVisible()) == (visible && location == target),
+                "Output port must be visible only in its designated chart.");
+            }
+          }
+        };
+        checkRouting(true);
+        const auto representationCount = pxm->GetNumberOfProxies("representations");
+        behavior.applyJobResults(config, &inputTask);
+        check(
+          pxm->GetNumberOfProxies("sources") == sourceCount + 1 &&
+            pxm->GetNumberOfProxies("representations") == representationCount,
+          "Reactivation must reuse the reader and its chart representations.");
+        job->setStatus(smtk::job::Status::Failed);
+        behavior.applyJobResults(config, &inputTask);
+        checkRouting(false);
+        job->setStatus(smtk::job::Status::Succeeded);
+        job->setCaseDirectory(caseDirectory / "missing-case");
+        behavior.applyJobResults(config, &inputTask);
+        checkRouting(false);
+        check(
+          pxm->GetNumberOfProxies("sources") == sourceCount + 1,
+          "Missing results directory must not create a reader.");
+        core.getObjectBuilder()->destroy(sharedSource);
+        check(
+          !pqArtifacts::instance()->findOrCreate(results, "job", nullptr, true),
+          "Deleted artifact readers must be treated as cache misses.");
+        bool recreated = false;
+        auto* replacement = pqArtifacts::instance()->findOrCreate(
+          results, "job", &recreated, false, "sources", "CorpsFoamPostProcessingReader");
+        check(replacement && recreated, "Deleted artifact readers must be recreated safely.");
+      }
       std::cout << "Real reader job-input routing integration passed.\n";
     }
   }

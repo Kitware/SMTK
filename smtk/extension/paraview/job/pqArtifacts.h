@@ -11,6 +11,7 @@
 #define smtk_extension_paraview_job_pqArtifacts_h
 
 #include "smtk/SharedFromThis.h"
+#include "smtk/extension/paraview/job/smtkPVJobExtModule.h"
 #include "smtk/string/Token.h"
 
 #include <QPointer>
@@ -42,7 +43,7 @@ class Job;
   * tag, and reader are unique.
   *
   */
-class pqArtifacts : public QObject
+class SMTKPVJOBEXT_EXPORT pqArtifacts : public QObject
 {
   Q_OBJECT
 public:

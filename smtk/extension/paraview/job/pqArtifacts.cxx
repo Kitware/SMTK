@@ -74,20 +74,20 @@ public:
       return nullptr;
     }
     auto i2 = it->second.find(tag);
-    if (i2 == it->second.end())
+    if (i2 == it->second.end() || !i2->second)
     {
       return nullptr;
     }
     if (
       !readerGroup.empty() && !readerName.empty() &&
-      i2->second->getSMGroup().toStdString() != readerGroup &&
-      i2->second->getSMName().toStdString() != readerName)
+      (std::string(i2->second->getProxy()->GetXMLGroup()) != readerGroup ||
+       std::string(i2->second->getProxy()->GetXMLName()) != readerName))
     {
       smtkWarningMacro(
         smtk::io::Logger::instance(),
-        "Reader is a (" << i2->second->getSMGroup().toStdString() << ", "
-                        << i2->second->getSMName().toStdString() << "), not a (" << readerGroup
-                        << ", " << readerName << ").");
+        "Reader is a (" << std::string(i2->second->getProxy()->GetXMLGroup()) << ", "
+                        << std::string(i2->second->getProxy()->GetXMLName()) << "), not a ("
+                        << readerGroup << ", " << readerName << ").");
       return nullptr;
     }
     return i2->second.data();
@@ -201,7 +201,13 @@ pqPipelineSource* pqArtifacts::findOrCreate(
   const std::string& readerGroup,
   const std::string& readerName)
 {
-  if (auto* pipeline = m_p->hasPipeline(path, tag, readerGroup, readerName))
+  std::error_code error;
+  auto normalizedPath = std::filesystem::weakly_canonical(path, error);
+  if (error)
+  {
+    normalizedPath = path.lexically_normal();
+  }
+  if (auto* pipeline = m_p->hasPipeline(normalizedPath, tag, readerGroup, readerName))
   {
     if (didCreate)
     {
@@ -217,7 +223,7 @@ pqPipelineSource* pqArtifacts::findOrCreate(
     }
     return nullptr;
   }
-  auto* src = m_p->createPipeline(path, tag, readerGroup, readerName);
+  auto* src = m_p->createPipeline(normalizedPath, tag, readerGroup, readerName);
   if (src && didCreate)
   {
     *didCreate = true;
