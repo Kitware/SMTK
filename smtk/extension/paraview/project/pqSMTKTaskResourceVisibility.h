@@ -69,10 +69,56 @@ class pqServer;
   * If you wish to provide a project default (when no tasks are active but a task-manager
   * is present), include a style for the tag named "default".
   *
+  * The boolean "paraview-mode" directive is applied on activation. Older
+  * "postprocessing": { "mode": true/false } dictionaries remain supported;
+  * "paraview-mode" takes precedence when both forms are present.
+  * Independently, a top-level "layout" directive selects a named layout on the
+  * active server. It may be a name string or a dictionary with "name" and "views".
+  * "views" is an array containing one view node or two child nodes. A leaf node
+  * specifies a ParaView proxy "type" (e.g., "RenderView" or "XYChartView") and
+  * an optional non-empty "name" for its registered name and visible frame title. A pair
+  * requires "split": "vertical" (top/bottom) or "horizontal" (left/right), with
+  * an optional "fraction" between 0 and 1 (default 0.5). Child nodes may themselves
+  * contain "views" and a "split" to form nested layouts.
+  *
+  * For example, one chart above two charts is:
+  * ```json
+  * "layout": {
+  *   "name": "PostProcessing", "split": "vertical",
+  *   "views": [
+  *     { "type": "XYChartView" },
+  *     { "split": "horizontal", "views": [
+  *       { "type": "XYChartView" }, { "type": "XYChartView" }
+  *     ] }
+  *   ]
+  * }
+  * ```
+  * The tree initializes new layouts or existing unsplit, empty layouts. Populated
+  * layouts retain their views and splits; explicit names are reapplied to matching
+  * views at their configured locations on activation. Layouts and modes are applied
+  * before 3d-view directives so those directives can affect newly created views.
+  *
+  * A top-level "job-results" directive can populate those views on activation.
+  * It reads a completed, successful smtk::job::Job from the task's input port
+  * ("port" defaults to "input", "role" defaults to "job") and opens "directory"
+  * relative to Job::caseDirectory() (default "postProcessing"). The directory
+  * must exist. "reader" names a ParaView source proxy with a FileName property.
+  * "routes" maps output-port wildcard patterns to view names in the selected
+  * layout, for example:
+  * ```json
+  * "job-results": {
+  *   "reader": "CorpsFoamPostProcessingReader",
+  *   "routes": { "flow": "Flow Results", "probes-*": "Probes" }
+  * }
+  * ```
+  * Readers are reused for the same job and directory. Results managed by this
+  * directive are hidden before applying new routes, including when no successful
+  * job or results directory is available. Unrelated user-created plots are retained.
+  *
   * An example is:
   * ```json
   * "styles": {
-  *   "default": { "3d-view": { "color-by": { "mode": "none" } }, "postprocessing": { "mode": false } },
+  *   "default": { "3d-view": { "color-by": { "mode": "none" } }, "paraview-mode": false },
   *   "example": {
   *     "3d-view": {
   *       "color-by": { "mode": "attribute-association", "definition": "BoundaryCondition",
@@ -89,7 +135,8 @@ class pqServer;
   *           "filter": [ ["*", null], ["*", "*"] ], "event": "deactivated" }
   *       ]
   *     },
-  *     "postprocessing": { "mode": true }
+  *     "paraview-mode": true,
+  *     "layout": "PostProcessing"
   *   }
   * }
   * ```
@@ -135,6 +182,8 @@ protected: // NOLINT(readability-redundant-access-specifiers)
   pqSMTKTaskResourceVisibility(QObject* parent = nullptr);
 
   void processTaskEvent(smtk::task::Task* task, smtk::string::Token event);
+  void applyLayout(const nlohmann::json& spec);
+  void applyJobResults(const nlohmann::json& spec, smtk::task::Task* task);
   void applyColorBy(const nlohmann::json& spec, smtk::task::Task* task, smtk::string::Token event);
   void applyShowObjects(
     const nlohmann::json& specArray,
@@ -145,7 +194,7 @@ protected: // NOLINT(readability-redundant-access-specifiers)
   std::map<smtk::project::ManagerPtr, smtk::project::Observers::Key> m_projectManagerObservers;
   smtk::task::Task* m_currentTask{ nullptr };
   smtk::task::Manager* m_currentTaskManager{ nullptr };
-  smtk::task::Active::Observers::Key m_activeTaskObserver;
+  std::map<smtk::task::Manager*, smtk::task::Active::Observers::Key> m_activeTaskObservers;
   smtk::task::Task::Observers::Key m_currentTaskObserver;
 
 private:

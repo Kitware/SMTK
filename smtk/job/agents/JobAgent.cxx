@@ -81,6 +81,10 @@ void JobAgent::configure(const Configuration& config)
     m_jobRole.clear();
   }
 
+  // Job outputs use job-role independently of SubmitOperationAgent's output-role.
+  it = config.find("output-port");
+  m_outputPortName = it == config.end() ? smtk::string::Token() : it->get<smtk::string::Token>();
+
   auto baseDir = this->caseDirectoryBase();
   it = config.find("job");
   if (it != config.end())
@@ -146,6 +150,10 @@ JobAgent::Configuration JobAgent::configuration() const
   if (!m_jobRole.empty())
   {
     config["job-role"] = m_jobRole;
+  }
+  if (m_outputPortName.valid())
+  {
+    config["output-port"] = m_outputPortName;
   }
   if (m_job && m_job->queue())
   {
