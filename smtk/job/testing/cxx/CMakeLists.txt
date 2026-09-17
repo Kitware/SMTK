@@ -1,4 +1,5 @@
 set(unit_tests
+  jobAgent.cxx
   # jobResourceInstance.cxx
 )
 

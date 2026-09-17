@@ -85,7 +85,7 @@ void JobAgent::configure(const Configuration& config)
   it = config.find("output-port");
   m_outputPortName = it == config.end() ? smtk::string::Token() : it->get<smtk::string::Token>();
 
-  auto baseDir = this->caseDirectoryBase();
+  smtk::job::Job* restoredJob = nullptr;
   it = config.find("job");
   if (it != config.end())
   {
@@ -103,14 +103,24 @@ void JobAgent::configure(const Configuration& config)
         {
           if (auto queue = jobManager->queues().findById(quit->get<smtk::common::UUID>()))
           {
-            m_job = queue->findJob(idit->get<smtk::common::UUID>()).get();
+            restoredJob = queue->findJob(idit->get<smtk::common::UUID>()).get();
           }
         }
       }
     }
   }
 
-  this->Superclass::configure(config);
+  // Restore operation settings before observing the job: configuration restores
+  // the saved internal state, which may predate the job's completion. Defer state
+  // updates until the restored job is attached to avoid temporarily downgrading
+  // a completed task while m_job is unset.
+  this->setJob(nullptr);
+  auto operationConfig = config;
+  operationConfig["skip-update"] = true;
+  this->Superclass::configure(operationConfig);
+  this->setJob(restoredJob);
+  auto previous = m_internalState;
+  m_parent->updateAgentState(this, previous, this->computeInternalState());
   if (m_operation)
   {
     // Every time SubmitOperationAgent::configure is run, an operation is created.

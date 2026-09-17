@@ -17,7 +17,10 @@ Tasks can also load results from a successful job and display selected reader
 outputs in named views. Task activation continues to update visualization styles
 when multiple projects are open. Job agents now preserve their output-port
 configuration when saved and reloaded, allowing downstream tasks to access
-the job after reopening a project.
+the job after reopening a project. Restored job agents also reconnect their job
+observers and reconcile saved agent state with the current job status. A successful
+job makes its task completable even if the saved agent state was incomplete;
+the task's saved completion flag is preserved.
 
 Developer changes
 ~~~~~~~~~~~~~~~~~
