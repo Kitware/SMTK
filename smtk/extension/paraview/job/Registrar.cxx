@@ -11,11 +11,14 @@
 //=============================================================================
 #include "smtk/extension/paraview/job/Registrar.h"
 
+#include "smtk/extension/paraview/job/ArtifactStageTracker.h"
+#include "smtk/extension/paraview/job/pqArtifacts.h"
 #include "smtk/extension/paraview/job/pqJobRunnerView.h"
 #include "smtk/extension/paraview/server/vtkSMTKSettings.h"
 #include "smtk/extension/qt/job/ContainerQueue.h"
 #include "smtk/extension/qt/qtTypeDeclarations.h"
 
+#include "smtk/attribute/ComponentItem.h"
 #include "smtk/job/Manager.h"
 #include "smtk/job/Queue.h"
 
@@ -29,6 +32,7 @@
 #include <QTimer>
 #include <QtGlobal> // For Q_OS_WIN
 
+#include <map>
 #include <set>
 
 using namespace smtk::string::literals;
@@ -48,6 +52,9 @@ namespace
 std::set<std::shared_ptr<smtk::qt::job::ContainerQueue>> g_queuesToRemove;
 
 pqPropertyLinks g_projectRootLink;
+
+// Observe completion independently of the lifetime of any task's view.
+std::map<smtk::operation::Manager*, smtk::operation::Observers::Key> g_artifactObservers;
 
 // This is called whenever a new pqServer attaches and monitors the SMTK settings for
 // changes. If the "ProjectsRootFolder" property is modified, any queues created by
@@ -120,6 +127,47 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
   }
   else
   {
+    if (g_artifactObservers.find(operationManager.get()) == g_artifactObservers.end())
+    {
+      // The observer owns tracking for this manager, independently of task views.
+      // Observe all modified-job results, not just JobUpdated: ScheduleJob also
+      // modifies jobs and must reset tracking when a UUID is reused for another run.
+      auto tracker = std::make_shared<detail::ArtifactStageTracker>();
+      g_artifactObservers.emplace(
+        operationManager.get(),
+        operationManager->observers().insert(
+          [tracker](
+            const smtk::operation::Operation&,
+            smtk::operation::EventType event,
+            smtk::operation::Operation::Result result) {
+            if (event == smtk::operation::EventType::DID_OPERATE)
+            {
+              for (const auto& component : *result->findComponent("modified"))
+              {
+                auto job = std::dynamic_pointer_cast<smtk::job::Job>(component);
+                if (job)
+                {
+                  const auto stages = tracker->update(*job);
+                  if (stages.first < stages.second)
+                  {
+                    pqArtifacts::instance()->reload(*job, stages.first, stages.second);
+                  }
+                }
+              }
+              for (const auto& component : *result->findComponent("expunged"))
+              {
+                if (auto job = std::dynamic_pointer_cast<smtk::job::Job>(component))
+                {
+                  tracker->erase(job->id());
+                }
+              }
+            }
+            return 0;
+          },
+          0,
+          false,
+          "Reload artifacts as job stages complete."));
+    }
 #ifndef Q_OS_WIN
     auto containerQueue =
       smtk::qt::job::ContainerQueue::createOrRestore<smtk::qt::job::ContainerQueue>(
@@ -155,6 +203,10 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
 void Registrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
 {
+  if (auto operationManager = managers->get<smtk::operation::Manager::Ptr>())
+  {
+    g_artifactObservers.erase(operationManager.get());
+  }
   auto jobManager = managers->get<smtk::job::Manager::Ptr>();
   if (jobManager)
   {

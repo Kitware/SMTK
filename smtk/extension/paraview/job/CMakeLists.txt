@@ -26,3 +26,7 @@ vtk_module_link(smtkPVJobExt
     ParaView::qttesting
     ParaView::pqComponents
 )
+
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing/cxx)
+endif()

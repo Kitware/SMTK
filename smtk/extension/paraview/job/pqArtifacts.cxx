@@ -12,6 +12,9 @@
 #include "smtk/extension/paraview/appcomponents/pqSMTKBehavior.h"
 
 #include "smtk/io/Logger.h"
+#include "smtk/job/Definition.h"
+#include "smtk/job/Job.h"
+#include "smtk/job/Stage.h"
 
 // ParaView includes
 #include "pqActiveObjects.h"
@@ -19,11 +22,11 @@
 #include "pqDataRepresentation.h"
 #include "pqObjectBuilder.h"
 #include "pqPipelineSource.h"
-#include "pqReloadFilesReaction.h"
 #include "pqRenderView.h"
 #include "pqSMAdaptor.h"
 #include "pqServer.h"
 #include "pqServerManagerModel.h"
+#include "pqUndoStack.h"
 #include "pqView.h"
 
 #include "vtkSMParaViewPipelineControllerWithRendering.h"
@@ -31,6 +34,7 @@
 #include "vtkSMProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMReaderFactory.h"
+#include "vtkSMReaderReloadHelper.h"
 #include "vtkSMRepresentationProxy.h"
 #include "vtkSMSession.h"
 #include "vtkSMSessionProxyManager.h"
@@ -42,7 +46,9 @@
 #include <QPointer>
 #include <QString>
 
+#include <algorithm>
 #include <map>
+#include <set>
 #include <unordered_map>
 
 #include "moc_pqArtifacts.cpp"
@@ -229,6 +235,57 @@ pqPipelineSource* pqArtifacts::findOrCreate(
     *didCreate = true;
   }
   return src;
+}
+
+void pqArtifacts::reload(const smtk::job::Job& job, int firstStage, int endStage)
+{
+  auto definition = job.jobType();
+  if (!definition)
+  {
+    return;
+  }
+
+  // Multiple newly completed stages can name the same artifact. Reload each
+  // source only once per notification; a later stage may reload it again if
+  // that stage also declares it as an output.
+  std::set<pqPipelineSource*> sources;
+  const auto& stages = definition->stages();
+  endStage = std::min(endStage, static_cast<int>(stages.size()));
+  for (int index = std::max(firstStage, 0); index < endStage; ++index)
+  {
+    for (const auto& artifact : stages[index]->artifacts())
+    {
+      if (!artifact.empty())
+      {
+        // findOnly=true keeps job progress from loading artifacts that the user
+        // has never opened. Cached sources are refreshed even when hidden.
+        if (auto* source = this->findOrCreate(job.caseDirectory() / artifact, "job", nullptr, true))
+        {
+          sources.insert(source);
+        }
+      }
+    }
+  }
+
+  // Reload in place to preserve downstream filters and representation settings.
+  // Use the helper directly to avoid the interactive file-series question.
+  vtkNew<vtkSMReaderReloadHelper> helper;
+  bool reloaded = false;
+  // Refreshing files is an external-data update, not an undoable user edit.
+  BEGIN_UNDO_EXCLUDE();
+  for (auto* source : sources)
+  {
+    if (helper->ReloadFiles(source->getSourceProxy()))
+    {
+      reloaded = true;
+    }
+  }
+  if (reloaded)
+  {
+    // Render once after the batch, including views other than the active view.
+    pqApplicationCore::instance()->render();
+  }
+  END_UNDO_EXCLUDE();
 }
 
 vtkSMRepresentationProxy* pqArtifacts::activeViewRepresentation(

@@ -72,6 +72,13 @@ public:
   /// Hide all representations of \a source in all views.
   static void hideRepresentations(pqPipelineSource* source);
 
+  /// Reload existing sources for artifacts in [firstStage, endStage) and render their updated data.
+  /// This does not create sources or change representation settings or visibility.
+  /// Stage indices are zero-based and clipped to the job definition's stage range.
+  /// Stages must declare every artifact they produce or modify; shared sources
+  /// are reloaded once per call, including sources whose representations are hidden.
+  void reload(const smtk::job::Job& job, int firstStage, int endStage);
+
 private:
   class Internal;
   std::unique_ptr<Internal> m_p;
