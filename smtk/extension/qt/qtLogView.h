@@ -44,7 +44,7 @@ public Q_SLOTS:
 
 protected:
   std::filesystem::path m_path;
-  off_t m_lastRead{ 0 };
+  std::streamoff m_lastRead{ 0 };
   std::ifstream m_file;
   QPlainTextEdit* m_contents;
   QDialogButtonBox* m_buttonBox{ nullptr };

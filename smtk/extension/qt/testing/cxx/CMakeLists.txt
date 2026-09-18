@@ -26,6 +26,7 @@ set(unit_tests
   UnitTestDoubleClickButton.cxx
   UnitTestEmittingStringBuffer.cxx
   UnitTestForceRequiredItem.cxx
+  UnitTestLogView.cxx
   UnitTestOperationTypeModel.cxx
   UnitTestQtAttributeItemInfo.cxx
 )

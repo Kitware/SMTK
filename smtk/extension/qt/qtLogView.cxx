@@ -26,7 +26,7 @@ namespace qt
 qtLogView::qtLogView(const std::filesystem::path& logPath, QWidget* parent)
   : QDialog(parent)
   , m_path(logPath)
-  , m_file(m_path)
+  , m_file(m_path, std::ios::binary)
 {
   m_contents = new QPlainTextEdit(this);
   const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -63,12 +63,13 @@ void qtLogView::readMore()
   {
     // Try to re-open
     m_contents->clear();
+    m_lastRead = 0;
     if (std::filesystem::exists(m_path))
     {
-      m_file = std::ifstream(m_path);
+      m_file = std::ifstream(m_path, std::ios::binary);
     }
   }
-  if (!m_file.is_open() || !m_file.good())
+  if (!m_file.is_open())
   {
     // Wait for the timer before trying to reopen
     return;
@@ -85,11 +86,20 @@ void qtLogView::readMore()
   {
     return;
   }
+  // File sizes and offsets are byte counts, so reads must use binary mode
+  // (Windows text mode translates CRLF). A short read must not prevent the
+  // next timer tick from reading data appended after reaching EOF.
+  m_file.clear();
   m_file.seekg(m_lastRead, std::ios_base::beg);
   std::string buf(size - m_lastRead, '\0');
   m_file.read(buf.data(), size - m_lastRead);
+  buf.resize(static_cast<std::size_t>(m_file.gcount()));
+  m_lastRead += m_file.gcount();
+  if (buf.empty())
+  {
+    return;
+  }
   m_contents->appendPlainText(QString::fromStdString(buf));
-  m_lastRead = size;
   QTextCursor cursor(m_contents->document()->lastBlock());
   m_contents->setTextCursor(cursor);
 }
