@@ -71,6 +71,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QFileSystemWatcher>
 #include <QFont>
 #include <QIconEngine>
 #include <QLabel>
@@ -81,6 +82,7 @@
 #include <QScreen>
 #include <QSlider>
 #include <QSvgRenderer>
+#include <QTimer>
 
 #include <chrono>
 #include <ctime>
@@ -227,6 +229,7 @@ public:
     m_artifactButton = new QPushButton;
     m_artifactButton->setIcon(jobIcon("settings", m_artifactButton));
     m_artifactButton->setToolTip("Artifact controls");
+    m_artifactButton->setEnabled(false);
     layout->addWidget(m_artifactButton);
     m_artifactControls = new QWidget;
     auto* acLayout = new QVBoxLayout;
@@ -309,7 +312,27 @@ public:
 
   void updateJobStage(int currentJobStage)
   {
-    m_artifactButton->setEnabled(currentJobStage > m_stage);
+    // Preserve normal access to artifacts from stages the job has already passed.
+    bool available = currentJobStage > m_stage;
+    if (auto* job = m_view->currentJob())
+    {
+      // Debugging may create a reader marker (such as an OpenFOAM .foam file)
+      // after a failed stage. Permit inspection of existing partial artifacts
+      // once the job has stopped, without advancing its stage or changing its
+      // success status. Do not use this fallback while queued or running: files
+      // may still be incomplete or left over from a previous run.
+      if (
+        job->status() != smtk::job::Pending && job->state() != smtk::job::Running &&
+        job->state() != smtk::job::Scheduled)
+      {
+        for (const auto& artifact : job->jobType()->stages()[m_stage]->artifacts())
+        {
+          std::error_code ec;
+          available |= std::filesystem::exists(job->caseDirectory() / artifact, ec);
+        }
+      }
+    }
+    m_artifactButton->setEnabled(available);
   }
 
   void hideArtifacts()
@@ -530,9 +553,43 @@ public:
         false,
         "pqJobRunnerView: Hide artifacts when leaving the owning task.");
     }
-    // Stuff that must be updated with each job.
-    this
-      ->updateJobControls(); // Add per-stage status and log button. Add artifact vis controls. Update label of m_jobControl button.
+    // Creating a debug marker does not change the job's state or emit a job
+    // progress notification. Refresh availability on filesystem changes so the
+    // user can open Artifact controls without leaving and re-entering the task.
+    QObject::connect(&m_artifactWatcher, &QFileSystemWatcher::directoryChanged, self, [this]() {
+      this->updateStages(m_agent->job());
+    });
+    if (auto manager = self->uiManager()->operationManager())
+    {
+      m_operationObserver = manager->observers().insert(
+        [this, selfp](
+          const smtk::operation::Operation&,
+          smtk::operation::EventType event,
+          smtk::operation::Operation::Result result) {
+          if (!selfp || event != smtk::operation::EventType::DID_OPERATE || !result)
+          {
+            return 0;
+          }
+          auto modified = result->findComponent("modified");
+          if (modified)
+          {
+            for (const auto& component : *modified)
+            {
+              if (component.get() == m_agent->job())
+              {
+                // This also covers jobs restored while already running, for which
+                // this view did not install a launch-time queue observer.
+                QTimer::singleShot(0, selfp, &pqJobRunnerView::updateUI);
+                break;
+              }
+            }
+          }
+          return 0;
+        },
+        0,
+        false,
+        "Refresh restored job controls.");
+    }
   }
 
   ~Internal()
@@ -640,6 +697,38 @@ public:
     if (!job)
     {
       return;
+    }
+    // Watch parent directories because a missing artifact cannot itself be
+    // watched. Reconcile the paths on each job update to follow case-directory
+    // changes and pick up directories created by later stages.
+    QStringList directories;
+    for (const auto& stage : job->jobType()->stages())
+    {
+      for (const auto& artifact : stage->artifacts())
+      {
+        auto path = (job->caseDirectory() / artifact).parent_path();
+        std::error_code ec;
+        if (std::filesystem::is_directory(path, ec))
+        {
+          directories.append(QString::fromStdString(path.string()));
+        }
+      }
+    }
+    directories.removeDuplicates();
+    const auto watched = m_artifactWatcher.directories();
+    for (const auto& path : watched)
+    {
+      if (!directories.contains(path))
+      {
+        m_artifactWatcher.removePath(path);
+      }
+    }
+    for (const auto& path : directories)
+    {
+      if (!watched.contains(path))
+      {
+        m_artifactWatcher.addPath(path);
+      }
     }
     int stageIndex = job->stage();
     int ii = 0;
@@ -758,6 +847,8 @@ public:
   QPushButton* m_jobControl{ nullptr };
   QGridLayout* m_stageGrid{ nullptr };
   QGridLayout* m_artifactGrid{ nullptr };
+  QFileSystemWatcher m_artifactWatcher;
+  smtk::operation::Observers::Key m_operationObserver;
   smtk::job::agents::JobAgent* m_agent{ nullptr };
   int m_jobObserver{ -1 };
   std::weak_ptr<smtk::job::Job> m_lastJob;
@@ -778,6 +869,10 @@ pqJobRunnerView::pqJobRunnerView(const smtk::view::Information& info)
   this->createWidget();
   m_p =
     std::make_unique<Internal>(this, this->configuration()); // NB: Must come after createWidget().
+  // Artifact controls call currentJob(), which accesses m_p. Populate them only
+  // after make_unique has returned and the internal state has been assigned.
+  // Doing this in Internal's constructor crashes when reopening an existing job.
+  m_p->updateJobControls();
 }
 
 pqJobRunnerView::~pqJobRunnerView()
