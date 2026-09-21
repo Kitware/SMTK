@@ -69,7 +69,7 @@ public:
   ///
   /// When empty (the default), the job script is executed directly. This is
   /// the traditional behavior on Unix. On Windows, callers can set this to a
-  /// Bash executable (for example, the Bash bundled with OpenFOAM) so that
+  /// Bash executable supplied by the application so that
   /// Unix shell scripts do not need a native executable suffix or file mode.
   void setInterpreter(const std::filesystem::path& interpreter);
   std::filesystem::path interpreter() const;

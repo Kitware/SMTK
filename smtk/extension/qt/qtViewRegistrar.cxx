@@ -45,8 +45,6 @@
 
 #include "smtk/plugin/Manager.h"
 
-#include "smtk/common/Paths.h"
-
 #include "smtk/Options.h"
 #include "smtk/SystemConfig.h"
 
@@ -60,7 +58,6 @@
 
 #include <QApplication>
 #include <QCoreApplication>
-#include <QDir>
 #include <QTimer>
 #include <QtDebug>
 
@@ -148,57 +145,9 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       operationManager,
       jobManager);
 #if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
-    // Windows cannot execute a Bash script directly. Use the Bash distributed
-    // with OpenFOAM and initialize its environment before running each job.
-    smtk::common::Paths pp;
-    auto executableDirectory = std::filesystem::path(pp.executableDirectory());
-    auto openFoamRoot = executableDirectory.parent_path() / "of";
-    auto msysBin = openFoamRoot / "msys64" / "usr" / "bin";
-    auto interpreter = msysBin / "bash.exe";
-    if (!std::filesystem::exists(interpreter))
-    {
-      qInfo() << "ShellQueue could not find OpenFOAM interpreter at "
-              << QString::fromStdString(interpreter.string()) << ", using \"bash.exe\".";
-      interpreter = "bash.exe";
-    }
-    shellQueue->setInterpreter(interpreter);
-    // QProcess uses the native Windows environment to locate DLLs and tools
-    // needed while Bash starts. The sourced OpenFOAM setup then adds its own
-    // executables to the POSIX PATH seen by job scripts.
-    auto environment = shellQueue->processEnvironment();
-    auto path = environment.value("PATH");
-    environment.insert(
-      "PATH",
-      QString::fromStdString(msysBin.string()) +
-        (path.isEmpty() ? QString() : QDir::listSeparator() + path));
-    shellQueue->setProcessEnvironment(environment);
-
-    auto openFoamProjects = openFoamRoot / "msys64" / "home" / "ofuser" / "OpenFOAM";
-    std::string openFoamProjectName;
-    if (std::filesystem::is_directory(openFoamProjects))
-    {
-      for (const auto& entry : std::filesystem::directory_iterator(openFoamProjects))
-      {
-        const auto name = entry.path().filename().string();
-        if (entry.is_directory() && name.rfind("OpenFOAM-", 0) == 0 && name > openFoamProjectName)
-        {
-          openFoamProjectName = name;
-        }
-      }
-    }
-    if (openFoamProjectName.empty())
-    {
-      qWarning() << "ShellQueue could not find an OpenFOAM installation under"
-                 << QString::fromStdString(openFoamProjects.string());
-    }
-    const auto bashrc = "/home/ofuser/OpenFOAM/" + openFoamProjectName + "/etc/bashrc";
-
-    shellQueue->setInterpreterArguments(
-      { "--noprofile",
-        "--norc",
-        "-c",
-        "export PATH=/usr/bin:$PATH; . \"" + bashrc + "\" && exec \"$1\"",
-        "smtk-shell-queue" });
+    // Applications may replace this with their own interpreter and environment.
+    shellQueue->setInterpreter("bash.exe");
+    shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
 #endif
     g_queuesToRemove.insert(shellQueue);
     if (jobManager->queues().manage(shellQueue))

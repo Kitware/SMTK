@@ -267,7 +267,7 @@ public:
       m_resourceManager,
       m_operationManager,
       m_jobManager);
-    // Exercise the interpreter launch path used by Windows OpenFOAM. The test
+    // Exercise the interpreter launch path used by Windows Bash scripts. The test
     // scripts are Bash scripts, so this is equivalent to direct execution on
     // Unix while covering argument insertion and relative script handling.
     m_shellQueue->setInterpreter("/bin/bash");

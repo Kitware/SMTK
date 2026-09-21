@@ -12,8 +12,7 @@ The interpreter and its arguments are also exposed through Python bindings.
 When no interpreter is configured, scripts continue to be executed directly.
 
 This enables native Windows applications to run Bash job scripts using an
-application-provided Bash installation, such as the MSYS2 Bash distributed
-with OpenFOAM. On Windows, the default shell queue resolves ``bash.exe`` from
+application-provided Bash installation. On Windows, the default shell queue resolves ``bash.exe`` from
 ``PATH`` and invokes scripts with ``--noprofile --norc``; applications may
 replace this with an absolute interpreter path.
 
