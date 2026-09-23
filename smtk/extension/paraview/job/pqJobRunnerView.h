@@ -10,6 +10,8 @@
 #ifndef smtk_extension_paraview_job_pqJobRunnerView_h
 #define smtk_extension_paraview_job_pqJobRunnerView_h
 
+#include "smtk/extension/paraview/job/smtkPVJobExtModule.h"
+
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -40,7 +42,7 @@ class Job;
   * in the "created" item of the its result.
   *
   */
-class pqJobRunnerView : public smtk::extension::qtBaseView
+class SMTKPVJOBEXT_EXPORT pqJobRunnerView : public smtk::extension::qtBaseView
 {
   Q_OBJECT
 public:

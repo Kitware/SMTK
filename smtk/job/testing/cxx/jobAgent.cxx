@@ -45,7 +45,7 @@ public:
 };
 } // namespace
 
-int jobAgent(int, char**)
+int jobAgent(int, char*[])
 {
   using smtk::task::State;
   for (bool completed : { false, true })

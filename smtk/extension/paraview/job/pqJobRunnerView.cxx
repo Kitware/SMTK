@@ -972,6 +972,18 @@ void pqJobRunnerView::onRunClicked()
       // It will get re-enabled when the job is queued.
       m_p->m_jobControl->setEnabled(false);
 
+      // Case-construction operations may remove and recreate the entire case
+      // directory. On Windows, leaving QFileSystemWatcher attached while that
+      // happens makes its FindNextChangeNotification call fail with access
+      // denied. Stop watching before launching the operation; the completion
+      // handler below refreshes the controls and reinstalls watches for the
+      // newly-created directories.
+      const auto watchedDirectories = m_p->m_artifactWatcher.directories();
+      if (!watchedDirectories.empty())
+      {
+        m_p->m_artifactWatcher.removePaths(watchedDirectories);
+      }
+
       // Launch the operation with a handler so that when it completes we
       // can submit the input deck as a job in a separate process.
       QPointer<pqJobRunnerView> self(this);
@@ -1020,6 +1032,7 @@ void pqJobRunnerView::onRunClicked()
               }
             }
           }
+          this->updateJobControls();
         },
         0);
       op->manager()->launchers()(op->shared_from_this());

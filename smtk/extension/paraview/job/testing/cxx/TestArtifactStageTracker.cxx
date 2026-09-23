@@ -24,7 +24,7 @@
  * does not launch jobs, dispatch operation observers, load artifact files, or
  * verify ParaView reader reloads, representation settings, or rendering.
  */
-int TestArtifactStageTracker(int, char**)
+int TestArtifactStageTracker(int, char*[])
 {
   using namespace smtk::job;
   smtk::extension::paraview::job::detail::ArtifactStageTracker tracker;
