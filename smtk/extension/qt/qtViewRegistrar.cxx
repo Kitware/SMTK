@@ -126,6 +126,10 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
 
   auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
   auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  // Registry attaches declared dependencies after invoking this registrar.
+  // Ensure the job manager exists before restoring the default queue; the job
+  // registrar preserves an existing manager when dependency registration follows.
+  smtk::job::Registrar::registerTo(managers);
   auto jobManager = managers->get<smtk::job::Manager::Ptr>();
   if (!resourceManager || !operationManager || !jobManager)
   {

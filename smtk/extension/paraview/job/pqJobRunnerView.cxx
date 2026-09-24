@@ -316,7 +316,7 @@ public:
     bool available = currentJobStage > m_stage;
     if (auto* job = m_view->currentJob())
     {
-      // Debugging may create a reader marker (such as an OpenFOAM .foam file)
+      // Debugging may create a reader marker
       // after a failed stage. Permit inspection of existing partial artifacts
       // once the job has stopped, without advancing its stage or changing its
       // success status. Do not use this fallback while queued or running: files
@@ -527,7 +527,7 @@ public:
     // Task managers are owned by projects and are not required to be present
     // in the application's Managers container. Obtain the exact manager that
     // owns this view's job agent instead of looking for an application-scoped
-    // task manager (which leaves the observer uninstalled in CorpsFoam).
+    // task manager (which can leave the observer uninstalled).
     if (m_agent && m_agent->parent() && m_agent->parent()->manager())
     {
       m_taskManager = m_agent->parent()->manager()->shared_from_this();

@@ -101,7 +101,15 @@ public:
       std::make_pair(manager, std::type_index(typeid(Registrar)).hash_code()));
   }
 
+  // A weak owner identifies a manager lifetime even when its address is reused.
+  template<typename Registrar, typename Manager>
+  std::size_t& operator[](const std::weak_ptr<Manager>& manager)
+  {
+    return this->count(manager, std::type_index(typeid(Registrar)).hash_code());
+  }
+
 private:
+  std::size_t& count(const std::weak_ptr<void>& manager, std::size_t registrar);
   ManagerCount();
   ~ManagerCount();
 
@@ -144,7 +152,7 @@ public:
     : m_Manager(manager)
     , m_ManagerAddress(manager.get())
   {
-    if (ManagerCount::instance().operator[]<Registrar, Manager>(m_ManagerAddress)++ == 0)
+    if (ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager)++ == 0)
     {
       (void)Registrar().registerTo(manager);
     }
@@ -156,7 +164,7 @@ public:
     // extend the manager's lifetime. In particular, project-owned task
     // managers must be destroyed with their project instead of being retained
     // by static plugin clients until library finalization.
-    if (--ManagerCount::instance().operator[]<Registrar, Manager>(m_ManagerAddress) == 0)
+    if (--ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager) == 0)
     {
       // Normal explicit unregistration reaches this branch while the manager
       // is alive and invokes the registrar's cleanup. If the manager has
@@ -177,7 +185,7 @@ public:
 
   bool contains(const std::shared_ptr<Manager>& manager) const
   {
-    return manager && manager.get() == m_ManagerAddress;
+    return manager && m_Manager.lock() == manager;
   }
 
 private:

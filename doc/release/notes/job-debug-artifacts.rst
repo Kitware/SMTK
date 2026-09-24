@@ -7,8 +7,8 @@ artifact directories so newly created reader markers become available without
 switching tasks. Restored job views also refresh when job operations report
 progress or completion.
 
-This supports the OpenFOAM plugin's new OpenFoamDebug view, which creates the
-reader markers declared by a stopped job without changing its success status.
+Applications can create reader markers declared by a stopped job to expose
+partial results without changing its success status.
 
 Initial artifact updates run after the job view finishes constructing its internal
 state, so reopening a project with an existing job does not access uninitialized

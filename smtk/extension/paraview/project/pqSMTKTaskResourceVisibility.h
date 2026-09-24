@@ -101,13 +101,14 @@ class pqServer;
   * A top-level "job-results" directive can populate those views on activation.
   * It reads a completed, successful smtk::job::Job from the task's input port
   * ("port" defaults to "input", "role" defaults to "job") and opens "directory"
-  * relative to Job::caseDirectory() (default "postProcessing"). The directory
-  * must exist. "reader" names a ParaView source proxy with a FileName property.
+  * relative to Job::caseDirectory(). "directory" is required and must be a
+  * nonempty string naming an existing directory (use "." for the case itself). "reader" names a ParaView source proxy with a FileName property.
   * "routes" maps output-port wildcard patterns to view names in the selected
   * layout, for example:
   * ```json
   * "job-results": {
-  *   "reader": "CorpsFoamPostProcessingReader",
+  *   "reader": "ApplicationResultsReader",
+  *   "directory": "results",
   *   "routes": { "flow": "Flow Results", "probes-*": "Probes" }
   * }
   * ```

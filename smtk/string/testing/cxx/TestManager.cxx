@@ -71,6 +71,8 @@ nlohmann::json linux_j = { { "members",
 
 } // anonymous namespace
 
+#include <set>
+
 int TestManager(int, char*[])
 {
   using namespace smtk::string;
@@ -233,6 +235,22 @@ int TestManager(int, char*[])
   manager = j;
   test(manager->empty(), "Expected deserializing an empty manager to be empty.");
 
+  // Static initializers in linked libraries may already have interned tokens.
+  // Deserialization merges into that global manager; verify the exact union
+  // instead of assuming the process starts with an empty token database.
+  std::set<std::string> expectedMembers;
+  Token::manager().visitMembers([&](Hash hash) {
+    expectedMembers.insert(Token::manager().value(hash));
+    return smtk::common::Visit::Continue;
+  });
+  for (const auto* fixture : { &macos_j, &linux_j })
+  {
+    for (const auto& member : fixture->at("members").items())
+    {
+      expectedMembers.insert(member.key());
+    }
+  }
+
   // Test deserialization from across platforms
   // with different hash functions. We'll create 2
   // nested DeserializationContext objects to
@@ -278,7 +296,12 @@ int TestManager(int, char*[])
   vcount = 0;
   didHalt = Token::manager().visitMembers(visitor, Manager::Invalid);
   std::cout << vcount << " members\n";
-  test(vcount == 13, "Expected to deserialize 13 members.");
+  test(
+    vcount == expectedMembers.size(), "Expected the union of existing and deserialized members.");
+  for (const auto& member : expectedMembers)
+  {
+    test(Token::manager().find(member) != Manager::Invalid, "Missing token: " + member);
+  }
 
   vcount = 0;
   didHalt = Token::manager().visitSets(visitor);

@@ -19,9 +19,9 @@
  * task. It checks initialization for successful, failed, and running jobs, plus
  * access to a failed job's partial artifact after a reader marker is created.
  * The fixture models the state after project restoration; it does not deserialize
- * a project, submit a job, run OpenFOAM, or load artifact geometry. It refreshes
+ * a project, submit a job, run a solver, or load artifact geometry. It refreshes
  * the view explicitly, so it does not test filesystem-watcher event delivery or
- * the OpenFoamDebug button itself.
+ * application-specific debug controls.
  */
 #include "smtk/attribute/Resource.h"
 #include "smtk/common/Managers.h"
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
   auto type = smtk::job::Definition::create();
   // Declaring an artifact is essential: a stage without artifacts would skip
   // creation of the controls whose initialization originally triggered the crash.
-  type->appendStage("mesh", "Block mesh")->addArtifact("mesh.foam");
+  type->appendStage("mesh", "Generate mesh")->addArtifact("mesh.marker");
   auto job = smtk::job::Job::create();
   job->setJobType(type);
   QTemporaryDir directory;
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
     {
       // Model the Debug action's filesystem effect without changing job status
       // or stage. An explicit refresh must expose the stopped job's partial data.
-      QFile marker(directory.filePath("mesh.foam"));
+      QFile marker(directory.filePath("mesh.marker"));
       test(marker.open(QIODevice::WriteOnly), "Create a partial result marker.");
       marker.close();
       view.updateUI();

@@ -608,10 +608,12 @@ void pqSMTKTaskResourceVisibility::applyJobResults(
 {
   if (
     !task || !spec.is_object() || !spec.contains("reader") || !spec.at("reader").is_string() ||
-    !spec.contains("routes") || !spec.at("routes").is_object())
+    !spec.contains("routes") || !spec.at("routes").is_object() || !spec.contains("directory") ||
+    !spec.at("directory").is_string() || spec.at("directory").get<std::string>().empty())
   {
     smtkErrorMacro(
-      smtk::io::Logger::instance(), "Job results require a reader and port-to-view routes.");
+      smtk::io::Logger::instance(),
+      "Job results require a reader, an explicit nonempty directory, and port-to-view routes.");
     return;
   }
   auto* core = pqApplicationCore::instance();
@@ -658,10 +660,10 @@ void pqSMTKTaskResourceVisibility::applyJobResults(
   {
     return;
   }
-  // The job is authoritative: its case directory may differ from the study's
-  // conventional foam/sim location (e.g. relocated or customized runs).
+  // Resolve the workflow-specified results directory relative to the job, so
+  // relocated or customized case directories remain supported.
   std::error_code error;
-  auto directory = job->caseDirectory() / spec.value("directory", std::string("postProcessing"));
+  auto directory = job->caseDirectory() / spec.at("directory").get<std::string>();
   if (!std::filesystem::is_directory(directory, error))
   {
     return;

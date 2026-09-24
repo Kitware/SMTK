@@ -25,6 +25,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ComponentItem.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
@@ -48,6 +49,7 @@
 #include <QObject>
 #include <QThread>
 #include <QTimer>
+#include <QVariant>
 
 #include <chrono>
 #include <condition_variable>
@@ -150,7 +152,10 @@ public:
       return this->createResult(smtk::operation::Operation::Outcome::FAILED);
     }
     job->setJobType(jobDef);
-    auto tempDir = smtk::common::Paths().userDocumentDirectory("SMTK/Testing");
+    // ContainerQueue mounts SMTK_SCRATCH_DIR into its VM. Create cases under
+    // that same host directory so both shell and container jobs can access them.
+    const auto tempDir = std::filesystem::path(SMTK_SCRATCH_DIR);
+    std::filesystem::create_directories(tempDir);
     std::string pattern = (tempDir / "testQueueJob_XXXXXX").string();
     auto caseDir = generateDirectory(pattern);
     std::filesystem::create_directories(caseDir / "logs");
@@ -171,7 +176,7 @@ public:
     this->writeFile(caseDir, "logs/progress", "-1");
     std::cerr << "Case \"" << caseDir.string() << "\"\n";
 
-    g_jobId = job->id();
+    job->setId(g_jobId);
     job->setSize(1);            // Don't run in parallel
     job->setAutoSchedule(true); // Schedule job as soon as added to the queue.
     if (auto jobManager = this->managers()->get<smtk::job::Manager::Ptr>())
@@ -296,11 +301,25 @@ public:
     // Update the VM manually (unlike the paraview::job::Registrar, which monitors changes
     // to the root_job_directory and recreates the VM as needed).
     auto op = m_operationManager->create("smtk::qt::job::UpdateContainerQueueMachine");
+    // A previous aborted run may leave queue metadata on disk. Explicitly
+    // initialize the runtime mount path even when that metadata already matches.
+    m_containerQueue->setProperty("rootJobDirectory", QString(SMTK_SCRATCH_DIR));
     op->parameters()->associate(m_containerQueue);
-    op->operate();
+    auto setupResult = op->operate();
+    if (
+      setupResult->findInt("outcome")->value() !=
+      static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED))
+    {
+      std::cerr << "ERROR: Could not initialize the test container queue.\n";
+      return;
+    }
     // Pull an image to run.
     std::cout << "  Pulling image ubuntu:26.04\n";
-    m_containerQueue->pullContainerImage("ubuntu:26.04");
+    if (!m_containerQueue->pullContainerImage("ubuntu:26.04"))
+    {
+      std::cerr << "ERROR: Could not pull the test container image.\n";
+      return;
+    }
     std::cout << "    done\n";
 
     m_jobManager->queues().manage(m_shellQueue);
@@ -311,6 +330,7 @@ public:
     // as AddJobToQueue and JobUpdated are invoked in response to JobCreatorOp.
     m_shellQueueUpdateKey = m_shellQueue->observe(nullptr, this->jobStateObserver(), false);
     m_containerQueueUpdateKey = m_containerQueue->observe(nullptr, this->jobStateObserver(), false);
+    m_ready = true;
   }
 
   std::function<void(const smtk::job::Job& job)> jobStateObserver()
@@ -338,54 +358,66 @@ public:
       }
       std::cout << "\n";
 
-      // If we are done, stop the event loop:
-      if (
-        job.stage() == job.jobType()->stages().size() ||
-        job.status() == smtk::job::Status::Terminated)
-      {
-        // Unobserve this job
-        // This needs to happen before we erase the job directory
-        // or the ShellQueue will report status changes as we exit.
-        // It is still possible that a JobUpdate operation has been
-        // launched but not run. Handle that separately below.
-        if (job.queue()->matchesType("smtk::qt::job::ShellQueue"_token))
-        {
-          job.queue()->unobserve(const_cast<Job*>(&job), m_shellQueueUpdateKey);
-        }
-        else
-        {
-          job.queue()->unobserve(const_cast<Job*>(&job), m_containerQueueUpdateKey);
-        }
-
-        // Remember the temporary case directory so we can remove it on cleanup.
-        auto caseDirectory = job.caseDirectory();
-        g_caseDirectories.insert(caseDirectory);
-
-        // Check that the final job state matches what we expect.
-        if (
-          (g_expectToCancel && job.state() == State::Canceled) ||
-          (!g_expectToCancel && job.state() == State::Completed))
-        {
-          m_result = 0;
-        }
-        else
-        {
-          std::cerr << "ERROR: Unexpected end state " << smtk::job::stateAsString(job.state())
-                    << "\n";
-          m_result = 56;
-        }
-
-        // This is needed to call the slot from a non-Qt thread:
-        QMetaObject::invokeMethod(m_timer.data(), "start", Qt::QueuedConnection);
-      }
+      // Queue-wide observers also receive late updates from previous jobs.
+      // Snapshot the notification on the operation thread, then handle phase
+      // state on the Qt thread. Only the current job may finish this phase,
+      // and Canceled -> Completed notifications must not finish it twice.
+      const auto id = job.id();
+      const auto state = job.state();
+      const bool finished = job.stage() == job.jobType()->stages().size() ||
+        job.status() == smtk::job::Status::Terminated;
+      const auto caseDirectory = job.caseDirectory();
+      QMetaObject::invokeMethod(
+        this,
+        [this, id, state, finished, caseDirectory]() {
+          if (id != g_jobId || m_phaseFinished)
+          {
+            return;
+          }
+          // Wait for scheduling instead of assuming that VM/container startup
+          // completes within a fixed delay. Request cancellation only once.
+          if (
+            g_expectToCancel && !m_cancelRequested &&
+            (state == State::Scheduled || state == State::Running))
+          {
+            m_cancelRequested = true;
+            this->cancel_job();
+          }
+          if (!finished)
+          {
+            return;
+          }
+          m_phaseFinished = true;
+          g_caseDirectories.insert(caseDirectory);
+          if (
+            (g_expectToCancel && state == State::Canceled) ||
+            (!g_expectToCancel && state == State::Completed))
+          {
+            m_result = 0;
+          }
+          else
+          {
+            std::cerr << "ERROR: Unexpected end state " << smtk::job::stateAsString(state) << "\n";
+            m_result = 56;
+          }
+          m_timer->start();
+        },
+        Qt::QueuedConnection);
     };
   }
-  void reset() { m_result = 255; }
+  void reset()
+  {
+    m_result = 255;
+    m_phaseFinished = false;
+    m_cancelRequested = false;
+    m_timer->stop();
+  }
 
 public Q_SLOTS:
 
   void test_basic()
   {
+    g_jobId = smtk::common::UUID::random();
     g_expectToCancel = false;
     auto jobOp = m_operationManager->create<JobCreatorOp>();
     jobOp->parameters()->findString("test type")->setValue("basic");
@@ -397,6 +429,7 @@ public Q_SLOTS:
 
   void test_cancel()
   {
+    g_jobId = smtk::common::UUID::random();
     g_expectToCancel = true;
     auto jobOp = m_operationManager->create<JobCreatorOp>();
     jobOp->parameters()->findString("test type")->setValue("cancel");
@@ -429,6 +462,28 @@ public Q_SLOTS:
     // std::cerr << "Launch op " << cancelOp << " to cancel " << g_jobId << "\n";
   }
 
+  // Verify rejection after completion explicitly; a delayed cancellation timer
+  // can otherwise fire in a later phase, or never run before this phase exits.
+  int test_cancel_completed()
+  {
+    auto job = m_jobManager->activeQueue().object()->findJob(g_jobId);
+    if (!job || job->state() != State::Completed)
+    {
+      return 1;
+    }
+    auto op = m_operationManager->create("smtk::job::CancelJob");
+    op->parameters()->associate(job);
+    auto result = op->operate();
+    const bool rejected = result->findInt("outcome")->value() ==
+      static_cast<int>(smtk::operation::Operation::Outcome::FAILED);
+    if (!rejected || job->state() != State::Completed)
+    {
+      std::cerr << "ERROR: Canceling a completed job must fail without changing its state.\n";
+      return 1;
+    }
+    return 0;
+  }
+
   void changeActiveQueue(const smtk::string::Token qq)
   {
     smtk::job::Queue* queue{ nullptr };
@@ -443,6 +498,8 @@ public Q_SLOTS:
     }
     m_jobManager->activeQueue().switchTo(queue);
   }
+
+  bool ready() const { return m_ready; }
 
   int result() const { return m_result; }
 
@@ -467,6 +524,9 @@ protected:
   // We initialize assuming failure so that if the test is interrupted
   // we report failure.
   int m_result{ 255 };
+  bool m_ready{ false };
+  bool m_phaseFinished{ false };
+  bool m_cancelRequested{ false };
   int m_shellQueueUpdateKey{ 0 };
   int m_containerQueueUpdateKey{ 0 };
   std::shared_ptr<smtk::qt::job::ShellQueue> m_shellQueue;
@@ -521,12 +581,32 @@ int jobQueue(int argc, char* argv[])
 {
   smtk::io::Logger::instance().setFlushToStderr(true);
   QCoreApplication app(argc, argv);
-  // Schedule a timeout to cancel the event loop if the test fails.
-  // Comment this out when debugging.
-  QTimer::singleShot(15500, &app, &QCoreApplication::quit);
-
   // Create a QObject we can "run" on the main thread:
   auto* jqt = new JobQueueTest(&app);
+  if (!jqt->ready())
+  {
+    delete jqt;
+    return 1;
+  }
+
+  // VM initialization and image pulls happen in the constructor above and may
+  // exceed the per-phase timeout. Start a fresh watchdog only when a phase runs,
+  // and stop it afterward so an earlier phase cannot time out a later one.
+  QTimer watchdog;
+  watchdog.setSingleShot(true);
+  QObject::connect(&watchdog, &QTimer::timeout, &app, &QCoreApplication::quit);
+  auto runPhase = [&]() {
+    watchdog.start(15500);
+    const int result = app.exec();
+    const bool timedOut = !watchdog.isActive();
+    watchdog.stop();
+    if (timedOut)
+    {
+      std::cerr << "ERROR: Job queue test phase timed out.\n";
+      return result + 1;
+    }
+    return result;
+  };
 
   // -------------- ShellQueue tests
   std::cerr << "\n# ShellQueue tests\n\n";
@@ -536,28 +616,28 @@ int jobQueue(int argc, char* argv[])
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
-  int status = app.exec();
+  int status = runPhase();
   status += jqt->result();
 
   // II. Test that a job may be cancelled successfully.
   std::cerr << "\nII. Test canceling a running job succeeds.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
-  QTimer::singleShot(200, jqt, &JobQueueTest::cancel_job);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
-  status += app.exec();
+  status += runPhase();
   status += jqt->result();
 
   // III. Test that a job may that has been completed cannot be cancelled.
   std::cerr << "\nIII. Test canceling a completed job fails.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
-  QTimer::singleShot(500, jqt, &JobQueueTest::cancel_job);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
-  status += app.exec();
+  status += runPhase();
   status += jqt->result();
+
+  status += jqt->test_cancel_completed();
 
   // -------------- ContainerQueue tests
   std::cerr << "\n# ContainerQueue tests\n\n";
@@ -571,21 +651,21 @@ int jobQueue(int argc, char* argv[])
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
-  status += app.exec();
+  status += runPhase();
   status += jqt->result();
 
   // V. Test that a job may be cancelled successfully.
   std::cerr << "\nV. Test canceling a running job succeeds.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
-  QTimer::singleShot(1000, jqt, &JobQueueTest::cancel_job);
   // Run until the application's quit() slot is invoked, then
   // grab the exit status from the test object.
-  status += app.exec();
+  status += runPhase();
   status += jqt->result();
 
   // Clean up and exit:
   jqt->cleanupCaseDirectories();
   delete jqt;
-  return status;
+  // Normalize accumulated failures so an exit status of 256 cannot appear successful.
+  return status == 0 ? 0 : 1;
 }

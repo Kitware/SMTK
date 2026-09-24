@@ -20,6 +20,11 @@ ManagerCount ManagerCount::m_instance;
 struct ManagerCount::Internals
 {
   std::map<std::pair<void*, std::size_t>, std::size_t> m_ManagerMap;
+  std::map<
+    std::weak_ptr<void>,
+    std::map<std::size_t, std::size_t>,
+    std::owner_less<std::weak_ptr<void>>>
+    m_OwnerMap;
 };
 
 ManagerCount::ManagerCount()
@@ -35,6 +40,10 @@ ManagerCount::~ManagerCount()
 std::size_t& ManagerCount::operator[](const std::pair<void*, std::size_t>& key)
 {
   return m_internals->m_ManagerMap[key];
+}
+std::size_t& ManagerCount::count(const std::weak_ptr<void>& manager, std::size_t registrar)
+{
+  return m_internals->m_OwnerMap[manager][registrar];
 }
 } // namespace detail
 } // namespace plugin
