@@ -88,7 +88,11 @@ public:
 
   /// Subclasses should override this method to provide the number of records
   /// available for the given \a informationKey.
-  virtual std::size_t summaryRecordCount(smtk::string::Token informationKey) { return 0; }
+  virtual std::size_t summaryRecordCount(smtk::string::Token informationKey)
+  {
+    (void)informationKey;
+    return 0;
+  }
 
   /// Subclasses should override this method to provide metadata about
   /// summary information.

@@ -70,7 +70,7 @@ public:
 
   /// A user-presentable name for the queue.
   std::string name() const override;
-  bool setName(const std::string& name);
+  bool setName(const std::string& name) override;
 
   /// A user-presentable description of the queue.
   std::string description() const;

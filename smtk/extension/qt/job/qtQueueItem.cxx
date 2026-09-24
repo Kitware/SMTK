@@ -79,6 +79,7 @@ public:
 
   int columnCount(const QModelIndex& parent) const override
   {
+    (void)parent;
     return static_cast<int>(QueueModel::Column::Count);
   }
 
@@ -351,7 +352,7 @@ qtQueueItem::qtQueueItem(const smtk::extension::qtAttributeItemInfo& info)
   this->createWidget();
 }
 
-qtQueueItem::~qtQueueItem() {}
+qtQueueItem::~qtQueueItem() = default;
 
 void qtQueueItem::setLabelVisible(bool visible)
 {

@@ -18,6 +18,8 @@
 #include <QTextDocument>
 #include <QTimer>
 
+#include <cstdint>
+
 namespace smtk
 {
 namespace qt
@@ -75,14 +77,14 @@ void qtLogView::readMore()
     return;
   }
   auto size = std::filesystem::file_size(m_path);
-  if (size < m_lastRead)
+  if (size < static_cast<std::uintmax_t>(m_lastRead))
   {
     // Assume file has been truncated.
     // Re-read the entire file.
     m_lastRead = 0;
     m_contents->clear();
   }
-  else if (size == m_lastRead)
+  else if (size == static_cast<std::uintmax_t>(m_lastRead))
   {
     return;
   }

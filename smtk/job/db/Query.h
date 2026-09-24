@@ -14,6 +14,13 @@
 
 #include "sqlite3.h"
 
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 namespace smtk
 {
 namespace job

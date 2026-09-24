@@ -931,7 +931,8 @@ QString qtAttributeTableModel::currentDiscreteValue(const QModelIndex& index) co
 void qtAttributeTableModel::rebuildColumns()
 {
   m_columns.clear();
-  m_columns.push_back({ ColumnKind::AttributeName, m_attributeNameColumnLabel, {}, 0, nullptr });
+  m_columns.push_back(
+    { ColumnKind::AttributeName, m_attributeNameColumnLabel, {}, 0, nullptr, {}, {} });
 
   if (!m_definition)
   {
@@ -1113,8 +1114,13 @@ void qtAttributeTableModel::appendItemDefinitionColumns(
 
   if (std::dynamic_pointer_cast<smtk::attribute::VoidItemDefinition>(itemDefinition))
   {
-    m_columns.push_back(
-      { ColumnKind::ItemEnabledState, baseLabel.toStdString(), itemPath, 0, itemDefinition });
+    m_columns.push_back({ ColumnKind::ItemEnabledState,
+                          baseLabel.toStdString(),
+                          itemPath,
+                          0,
+                          itemDefinition,
+                          {},
+                          {} });
 
     return;
   }
@@ -1132,7 +1138,7 @@ void qtAttributeTableModel::appendItemDefinitionColumns(
     if (valueDefinition->isExtensible())
     {
       m_columns.push_back(
-        { ColumnKind::ItemSummary, baseLabel.toStdString(), itemPath, 0, itemDefinition });
+        { ColumnKind::ItemSummary, baseLabel.toStdString(), itemPath, 0, itemDefinition, {}, {} });
     }
     else
     {
@@ -1147,8 +1153,13 @@ void qtAttributeTableModel::appendItemDefinitionColumns(
           label += QStringLiteral(" %1").arg(element + 1);
         }
 
-        m_columns.push_back(
-          { ColumnKind::ItemValue, label.toStdString(), itemPath, element, itemDefinition });
+        m_columns.push_back({ ColumnKind::ItemValue,
+                              label.toStdString(),
+                              itemPath,
+                              element,
+                              itemDefinition,
+                              {},
+                              {} });
       }
     }
 
@@ -1197,7 +1208,7 @@ void qtAttributeTableModel::appendItemDefinitionColumns(
 
   // Complex items are represented as summaries in this first version.
   m_columns.push_back(
-    { ColumnKind::ItemSummary, baseLabel.toStdString(), itemPath, 0, itemDefinition });
+    { ColumnKind::ItemSummary, baseLabel.toStdString(), itemPath, 0, itemDefinition, {}, {} });
 }
 
 QVariant qtAttributeTableModel::valueItemData(

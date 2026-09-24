@@ -15,12 +15,14 @@
 #include "smtk/job/Job.h"
 #include "smtk/operation/Manager.h"
 
+#include <algorithm>
+
 namespace smtk
 {
 namespace job
 {
 
-Queue::Queue() {}
+Queue::Queue() = default;
 
 Queue::Queue(const smtk::common::UUID& uid)
   : DirectSuperclass(uid)
@@ -83,7 +85,7 @@ smtk::resource::ComponentPtr Queue::find(const smtk::common::UUID& compId) const
   return this->findJob(compId);
 }
 
-void Queue::visit(std::function<void(const smtk::resource::ComponentPtr&)>& v) const {}
+void Queue::visit(std::function<void(const smtk::resource::ComponentPtr&)>&) const {}
 
 std::function<bool(const smtk::resource::Component&)> Queue::queryOperation(
   const std::string& query) const
@@ -140,14 +142,9 @@ bool Queue::hasTag(smtk::string::Token tag) const
 
 bool Queue::hasAllTags(const std::unordered_set<smtk::string::Token>& tagSet) const
 {
-  for (const auto& tag : tagSet)
-  {
-    if (m_tags.find(tag) == m_tags.end())
-    {
-      return false;
-    }
-  }
-  return true;
+  return std::all_of(tagSet.begin(), tagSet.end(), [this](const auto& tag) {
+    return m_tags.find(tag) != m_tags.end();
+  });
 }
 
 std::string Queue::location() const
@@ -160,35 +157,33 @@ std::uint64_t Queue::maximumJobSize() const
   return 0;
 }
 
-std::shared_ptr<smtk::job::Job> Queue::findJob(const smtk::common::UUID& uid) const
+std::shared_ptr<smtk::job::Job> Queue::findJob(const smtk::common::UUID&) const
 {
   return std::shared_ptr<smtk::job::Job>();
 }
 
-bool Queue::add(const std::shared_ptr<Job>& job)
+bool Queue::add(const std::shared_ptr<Job>&)
 {
   return false;
 }
 
-bool Queue::schedule(const std::shared_ptr<Job>& job)
+bool Queue::schedule(const std::shared_ptr<Job>&)
 {
   return false;
 }
 
-bool Queue::cancel(const std::shared_ptr<Job>& job)
+bool Queue::cancel(const std::shared_ptr<Job>&)
 {
   return false;
 }
 
-State Queue::jobState(const std::shared_ptr<Job>& job)
+State Queue::jobState(const std::shared_ptr<Job>&)
 {
-  (void)job;
   return State::Unscheduled;
 }
 
-Status Queue::jobStatus(const std::shared_ptr<Job>& job)
+Status Queue::jobStatus(const std::shared_ptr<Job>&)
 {
-  (void)job;
   return Status::Pending;
 }
 
@@ -220,7 +215,7 @@ void Queue::setOperationManager(smtk::operation::Manager::Ptr operationManager)
   {
     m_operationObserverKey = operationManager->observers().insert(
       [this](
-        const smtk::operation::Operation& operation,
+        const smtk::operation::Operation&,
         smtk::operation::EventType event,
         smtk::operation::Operation::Result result) -> int {
         if (event == smtk::operation::EventType::DID_OPERATE)

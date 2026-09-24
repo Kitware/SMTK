@@ -10,6 +10,7 @@
 #ifndef smtk_job_db_BindingText_h
 #define smtk_job_db_BindingText_h
 
+#include "smtk/job/db/Query.h"
 #include "smtk/job/db/SingleValueContainer.h"
 
 #include "sqlite3.h"

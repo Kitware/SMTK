@@ -99,7 +99,7 @@ public:
   bool setId(const common::UUID& uid) override;
 
   /// A user-presentable name for the queue.
-  bool setName(const std::string& name);
+  bool setName(const std::string& name) override;
 
   /// A user-presentable description of the queue.
   bool setDescription(const std::string& description);
@@ -119,7 +119,7 @@ public:
   bool removeTag(smtk::string::Token tag) override;
 
   /// Indicate this queue's maximum job size (concurrent processes/ranks).
-  virtual std::uint64_t maximumJobSize() const;
+  std::uint64_t maximumJobSize() const override;
 
   /// Retrieve a job component given its UUID
   std::shared_ptr<smtk::job::Job> findJob(const smtk::common::UUID& uid) const override;

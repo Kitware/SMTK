@@ -48,8 +48,6 @@ JobUpdated::Result JobUpdated::operateInternal()
   auto statusItem = params->findInt("status");
   auto stageItem = params->findInt("stage");
   bool didModify = false;
-  auto prevState = job->state();
-  auto prevStatus = job->status();
   if (stageItem->isEnabled())
   {
     if (job->stage() > stageItem->value())

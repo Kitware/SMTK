@@ -12,6 +12,8 @@
 
 #include "smtk/CoreExports.h"
 
+#include <cstddef>
+
 namespace smtk
 {
 namespace job

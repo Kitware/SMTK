@@ -47,7 +47,7 @@ bool createdJobManager = false;
 smtk::operation::Observers::Key g_operationObserver;
 
 void attachJobToQueue(
-  const smtk::operation::Operation& op,
+  const smtk::operation::Operation&,
   smtk::operation::Operation::Result result,
   const smtk::operation::Manager::Ptr& operationManager)
 {
@@ -74,7 +74,7 @@ void attachJobToQueue(
         //
         // This is done so that operations which create jobs need not
         // lock any queue which they plan to submit jobs to.
-        if (auto queue = job->queue())
+        if (job->queue())
         {
           auto adder = operationManager->create<smtk::job::AddJobToQueue>();
           adder->parameters()->associate(job);
@@ -127,11 +127,9 @@ void Registrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
   agentFactory.unregisterTypes<AgentList>();
 }
 
-void Registrar::registerTo(const smtk::job::Manager::Ptr& jobManager) {}
+void Registrar::registerTo(const smtk::job::Manager::Ptr&) {}
 
-void Registrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager) {}
-#if 0
-#endif
+void Registrar::unregisterFrom(const smtk::job::Manager::Ptr&) {}
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {
@@ -144,7 +142,7 @@ void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
   smtk::string::Token dummy3("smtk::job::Job");
 }
 
-void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr& resourceManager) {}
+void Registrar::unregisterFrom(const smtk::resource::Manager::Ptr&) {}
 
 void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
 {
@@ -166,9 +164,8 @@ void Registrar::registerTo(const smtk::operation::Manager::Ptr& operationManager
     "Observe operations for jobs to queue.");
 }
 
-void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+void Registrar::unregisterFrom(const smtk::operation::Manager::Ptr&)
 {
-  (void)operationManager;
   g_operationObserver.release();
 }
 } // namespace job

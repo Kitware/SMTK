@@ -46,7 +46,6 @@ public:
     bool monitoring = false;
     if (auto context = task->managers())
     {
-      auto taskManager = task->manager();
       if (auto operationManager = context->get<smtk::operation::Manager::Ptr>())
       {
         monitoring = true;

@@ -241,7 +241,7 @@ void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)
   manager->badgeFactory().unregisterTypes<BadgeList>();
 }
 
-void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr& jobManager) {}
+void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr&) {}
 
 void qtViewRegistrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager)
 {

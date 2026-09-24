@@ -147,6 +147,7 @@ JobRunnerAgent::JobRunnerAgent(Task* owningTask)
 {
 }
 
+// NOLINTNEXTLINE(modernize-use-equals-default)
 JobRunnerAgent::~JobRunnerAgent()
 {
   // TODO: terminate or join all subprocesses, clean up log analyzers.
@@ -167,7 +168,7 @@ JobRunnerAgent::Configuration JobRunnerAgent::configuration() const
   return m_p->m_configuration;
 }
 
-std::shared_ptr<PortData> JobRunnerAgent::portData(const Port* port) const
+std::shared_ptr<PortData> JobRunnerAgent::portData(const Port*) const
 {
   return std::shared_ptr<PortData>();
 }

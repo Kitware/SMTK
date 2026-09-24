@@ -455,7 +455,7 @@ bool ContainerQueue::setRootJobDirectoryAsString(const QString& mountPoint)
   return this->setRootJobDirectory(path);
 }
 
-void ContainerQueue::projectRootChanged(const std::filesystem::path& nextProjectRoot)
+void ContainerQueue::projectRootChanged(const std::filesystem::path&)
 {
   if (!usesPodmanMachine(m_p->m_engine))
   {

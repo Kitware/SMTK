@@ -128,7 +128,7 @@ public:
     const char* xmlName = nullptr;
     if (readerGroup.empty() || readerName.empty())
     {
-      if (!readerFactory->TestFileReadability(path.string().c_str(), session))
+      if (!vtkSMReaderFactory::TestFileReadability(path.string().c_str(), session))
       {
         // Can't read because the file doesn't exist.
         return nullptr;
@@ -185,6 +185,7 @@ pqArtifacts::pqArtifacts()
 {
 }
 
+// NOLINTNEXTLINE(modernize-use-equals-default)
 pqArtifacts::~pqArtifacts()
 {
   // m_p->destroyPipelines();

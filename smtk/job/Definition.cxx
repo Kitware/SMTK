@@ -17,7 +17,7 @@ namespace smtk
 namespace job
 {
 
-Definition::Definition() {}
+Definition::Definition() = default;
 
 std::string Definition::name() const
 {

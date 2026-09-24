@@ -243,16 +243,8 @@ public:
         continue;
       }
 
-      bool isReadable = true;
       std::filesystem::path fullArtifactPath;
-      pqPipelineSource* source;
       vtkSMProxy* repProxy = nullptr;
-      bool didCreate;
-      {
-        isReadable = false;
-        source = nullptr;
-        didCreate = false;
-      }
       auto* nameLabel = new QLabel(QString::fromStdString(artifact.string()));
       int labelWidth = nameLabel->fontMetrics().boundingRect(nameLabel->text()).width();
       m_maximumLabelWidth = std::max(m_maximumLabelWidth, labelWidth);
@@ -337,13 +329,12 @@ public:
 
   void hideArtifacts()
   {
-    bool didHide = false;
     if (m_view && m_stage >= 0)
     {
       if (auto* job = m_view->currentJob())
       {
         const auto& stages = job->jobType()->stages();
-        if (m_stage < stages.size())
+        if (static_cast<std::size_t>(m_stage) < stages.size())
         {
           const auto& stage = stages[m_stage];
           for (const auto& artifact : stage->artifacts())
@@ -391,8 +382,8 @@ public:
       {
         screen = qApp->primaryScreen();
       }
-      auto sr = screen->geometry();
 #if SMTK_DEBUG
+      auto sr = screen->geometry();
       std::cout << "Screen " << screen << " (" << sr.x() << "," << sr.y() << " " << sr.width()
                 << "×" << sr.height() << ") "
                 << "at " << topLeft.x() << ", " << topLeft.y() << "\n";
@@ -417,11 +408,9 @@ public:
           {
             bool didCreate = false;
             auto* visibilityButton = qobject_cast<QPushButton*>(layout->itemAt(1)->widget());
-            auto* opacitySlider = qobject_cast<QSlider*>(layout->itemAt(2)->widget());
             auto* source =
               pqArtifacts::instance()->findOrCreate(fullArtifactPath, "job", &didCreate);
-            auto* repProxy =
-              pqArtifacts::activeViewRepresentation(source, visibilityButton->isChecked());
+            pqArtifacts::activeViewRepresentation(source, visibilityButton->isChecked());
           }
         }
       }
@@ -490,7 +479,7 @@ protected:
 class pqJobRunnerView::Internal
 {
 public:
-  Internal(pqJobRunnerView* self, const smtk::view::ConfigurationPtr& config)
+  Internal(pqJobRunnerView* self, const smtk::view::ConfigurationPtr&)
     : m_view(self)
   {
     QPointer<pqJobRunnerView> selfp(self);
@@ -619,7 +608,18 @@ public:
     }
     else
     {
-      text << "Last update: " << std::asctime(std::localtime(&modificationTime));
+      char timestamp[128];
+      const auto* localTime = std::localtime(&modificationTime);
+      if (
+        localTime &&
+        std::strftime(timestamp, sizeof(timestamp), "%a %b %d %H:%M:%S %Y\n", localTime) != 0)
+      {
+        text << "Last update: " << timestamp;
+      }
+      else
+      {
+        text << "Last update: —";
+      }
     }
     m_lastRun->setText(QString::fromStdString(text.str()));
     QPalette palette = m_lastRunStatus->palette();
@@ -731,9 +731,8 @@ public:
       }
     }
     int stageIndex = job->stage();
-    int ii = 0;
     bool crashed = job->status() == smtk::job::Status::Failed;
-    for (const auto& stage : job->jobType()->stages())
+    for (int ii = 0; static_cast<std::size_t>(ii) < job->jobType()->stages().size(); ++ii)
     {
       if (auto* layoutItem = m_stageGrid->itemAtPosition(ii, 2))
       {
@@ -774,7 +773,6 @@ public:
           control->updateJobStage(stageIndex);
         }
       }
-      ++ii;
     }
   }
 
@@ -786,12 +784,12 @@ public:
     }
     // Reset grids.
     QLayoutItem* child;
-    while ((child = m_stageGrid->takeAt(0)) != 0)
+    while ((child = m_stageGrid->takeAt(0)) != nullptr)
     {
       delete child->widget();
       delete child;
     }
-    while ((child = m_artifactGrid->takeAt(0)) != 0)
+    while ((child = m_artifactGrid->takeAt(0)) != nullptr)
     {
       delete child->widget();
       delete child;
@@ -990,6 +988,7 @@ void pqJobRunnerView::onRunClicked()
       op->addHandler(
         [self,
          this](smtk::operation::Operation& op, const smtk::operation::Operation::Result& res) {
+          (void)op;
           // std::cerr << "Handler, op " << &op << " res " << res << "\n";
           if (!self)
           {
@@ -1020,7 +1019,7 @@ void pqJobRunnerView::onRunClicked()
                   m_p->m_lastJob = job;
                   m_p->m_jobObserver = queue->observe(
                     job.get(),
-                    [self, this](const smtk::job::Job& updatedJob) {
+                    [self, this](const smtk::job::Job&) {
                       if (!self)
                       {
                         return;

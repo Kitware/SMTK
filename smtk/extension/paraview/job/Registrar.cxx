@@ -81,7 +81,7 @@ void serverConnect(pqServer* server)
 }
 
 // When a server disconnects, disconnect any property links.
-void serverDisconnect(pqServer* server)
+void serverDisconnect(pqServer*)
 {
   g_projectRootLink.removeAllPropertyLinks();
 }
@@ -190,11 +190,9 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
     g_projectRootLink.setAutoUpdateVTKObjects(true);
     if (jobManager->queues().manage(containerQueue))
     {
-#ifndef Q_OS_WIN
       // Make the container queue the active queue active, except
       // on windows. (We should undo this change when possible.)
       jobManager->activeQueue().switchTo(containerQueue.get());
-#endif // Q_OS_WIN
     }
     syncSettingsProjectsRootFolder();
 #endif // Q_OS_WIN

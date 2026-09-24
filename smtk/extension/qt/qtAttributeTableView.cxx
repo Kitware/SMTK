@@ -133,14 +133,10 @@ bool containsGroupItem(const smtk::attribute::ItemDefinitionPtr& definition)
     return false;
   }
 
-  for (const auto& child : valueDefinition->childrenItemDefinitions())
-  {
-    if (containsGroupItem(child.second))
-    {
-      return true;
-    }
-  }
-  return false;
+  const auto& children = valueDefinition->childrenItemDefinitions();
+  return std::any_of(children.begin(), children.end(), [](const auto& child) {
+    return containsGroupItem(child.second);
+  });
 }
 
 bool containsGroupItem(const smtk::attribute::DefinitionPtr& definition)

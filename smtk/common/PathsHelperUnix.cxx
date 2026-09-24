@@ -49,7 +49,7 @@ PathsHelperUnix::PathsHelperUnix()
     for (; result >= 0 && result < static_cast<ssize_t>(buf.size()); buf.resize(buf.size() * 2))
     {
       result = readlink("/proc/self/exe", buf.data(), buf.size());
-      if (result > 0 && result < buf.size())
+      if (result > 0 && static_cast<std::vector<char>::size_type>(result) < buf.size())
       {
         buf[result] = '\0';
         Paths::s_executable = buf.data();

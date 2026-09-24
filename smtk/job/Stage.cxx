@@ -20,10 +20,7 @@ namespace job
 class Job;
 class Queue;
 
-Stage::Stage()
-  : m_definition{ nullptr }
-{
-}
+Stage::Stage() = default;
 
 Stage::Stage(
   Definition* jobDef,

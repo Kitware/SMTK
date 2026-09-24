@@ -181,7 +181,7 @@ bool installSchema(sqlite3* db)
 {
   bool ok = true;
   sqlQuery qq(db);
-  for (const auto statement : sqlInstallSchema)
+  for (const auto& statement : sqlInstallSchema)
   {
     // std::cerr << "Prepare statement \"" << statement << "\".\n";
     qq << statement;
@@ -200,6 +200,8 @@ bool installSchema(sqlite3* db)
 
 void updateSchema(sqlite3* db, int fromVersion)
 {
+  (void)db;
+  (void)fromVersion;
   throw std::logic_error("No upgrades available yet.");
 }
 
@@ -424,7 +426,7 @@ void DatabaseQueue::visit(std::function<void(const smtk::resource::ComponentPtr&
     std::lock_guard<std::mutex> lock(m_jobMutex);
     freeze = m_liveJobs;
   }
-  for (auto [uid, job] : freeze)
+  for (const auto& [uid, job] : freeze)
   {
     v(job);
   }
@@ -690,7 +692,7 @@ bool DatabaseQueue::schedule(const std::shared_ptr<Job>& job)
   return jobId != 0;
 }
 
-bool DatabaseQueue::cancel(const std::shared_ptr<Job>& job)
+bool DatabaseQueue::cancel(const std::shared_ptr<Job>&)
 {
   return false;
 }
@@ -737,7 +739,7 @@ std::set<std::shared_ptr<Job>> DatabaseQueue::allJobs() const
   std::set<std::shared_ptr<Job>> result;
   {
     std::lock_guard<std::mutex> lock(m_jobMutex);
-    for (auto [uid, job] : m_liveJobs)
+    for (const auto& [uid, job] : m_liveJobs)
     {
       result.insert(job);
     }
@@ -868,13 +870,12 @@ smtk::common::UUID DatabaseQueue::uuidFromDatabase(
 
 void DatabaseQueue::createQueueData()
 {
-  bool ok = true;
   {
     sqlQuery qq(m_db);
     qq << "insert into queues (uid, name, description, location, max_size) values ("
        << "'" << this->id().toString() << "', '" << m_name << "', '" << m_description << "',"
        << "'" << this->location() << "', " << this->maximumJobSize() << ");";
-    ok = qq.execute();
+    qq.execute();
   }
   m_queueId = static_cast<std::int64_t>(sqlite3_last_insert_rowid(m_db));
   // No need to push tags here as only constructors call this method and none of

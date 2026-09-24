@@ -348,7 +348,7 @@ public:
       {
         std::cout << " (starting)";
       }
-      else if (job.stage() < job.jobType()->stages().size())
+      else if (static_cast<std::size_t>(job.stage()) < job.jobType()->stages().size())
       {
         std::cout << " \"" << job.jobType()->stages()[job.stage()]->name() << "\"";
       }
@@ -364,7 +364,9 @@ public:
       // and Canceled -> Completed notifications must not finish it twice.
       const auto id = job.id();
       const auto state = job.state();
-      const bool finished = job.stage() == job.jobType()->stages().size() ||
+      const bool finished =
+        (job.stage() >= 0 &&
+         static_cast<std::size_t>(job.stage()) == job.jobType()->stages().size()) ||
         job.status() == smtk::job::Status::Terminated;
       const auto caseDirectory = job.caseDirectory();
       QMetaObject::invokeMethod(
@@ -503,7 +505,7 @@ public Q_SLOTS:
 
   int result() const { return m_result; }
 
-  void cleanupCaseDirectories()
+  bool cleanupCaseDirectories()
   {
     bool failed = false;
     for (const auto& caseDirectory : g_caseDirectories)
@@ -517,6 +519,7 @@ public Q_SLOTS:
         continue;
       }
     }
+    return failed;
   }
 
 protected:
@@ -597,7 +600,7 @@ int jobQueue(int argc, char* argv[])
   QObject::connect(&watchdog, &QTimer::timeout, &app, &QCoreApplication::quit);
   auto runPhase = [&]() {
     watchdog.start(15500);
-    const int result = app.exec();
+    const int result = QCoreApplication::exec();
     const bool timedOut = !watchdog.isActive();
     watchdog.stop();
     if (timedOut)
@@ -664,7 +667,10 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // Clean up and exit:
-  jqt->cleanupCaseDirectories();
+  if (jqt->cleanupCaseDirectories())
+  {
+    return 1; // failed to clean directories
+  }
   delete jqt;
   // Normalize accumulated failures so an exit status of 256 cannot appear successful.
   return status == 0 ? 0 : 1;
