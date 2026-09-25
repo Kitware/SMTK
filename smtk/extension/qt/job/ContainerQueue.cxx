@@ -424,11 +424,29 @@ bool ContainerQueue::pullContainerImage(const std::string& imageUrl)
   }
   std::cerr << "\"\n";
 #endif
-  // Because launching a container with "-d" (--detach) returns immediately, wait
-  // until we get the container ID as output; it will serve as the job's queue ID.
+  // Wait for the image pull to finish before reporting success.
   proc.start();
-  proc.waitForFinished(-1);
-  return (proc.exitStatus() == QProcess::ExitStatus::NormalExit && proc.exitCode() == 0);
+  if (!proc.waitForStarted())
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Could not start " << proc.program().toStdString() << " to pull " << imageUrl << ": "
+                         << proc.errorString().toStdString());
+    return false;
+  }
+  const bool finished = proc.waitForFinished(-1);
+  if (!finished || proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0)
+  {
+    smtkErrorMacro(
+      smtk::io::Logger::instance(),
+      "Failed to pull " << imageUrl << " using " << proc.program().toStdString() << " (exit code "
+                        << proc.exitCode() << ").\n"
+                        << (!finished ? proc.errorString().toStdString() : std::string()) << "\n"
+                        << proc.readAllStandardError().toStdString()
+                        << proc.readAllStandardOutput().toStdString());
+    return false;
+  }
+  return true;
 }
 
 bool ContainerQueue::setRootJobDirectory(const std::filesystem::path& mountPoint)

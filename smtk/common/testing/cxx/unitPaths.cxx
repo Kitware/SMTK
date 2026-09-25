@@ -23,6 +23,7 @@ SMTK_THIRDPARTY_PRE_INCLUDE
 SMTK_THIRDPARTY_POST_INCLUDE
 
 #include <cstdio> // for remove()
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -116,22 +117,39 @@ int main(int argc, char* argv[])
   test(
     exedirp1 == fmwkp1 + "/Contents/MacOS",
     "On Mac OS X, the executable directory should be inside the bundle.");
+#elif !defined(_WIN32) || defined(__CYGWIN__)
+  // Unix discovers the executable through /proc when available, including
+  // when running from a build tree rather than the configured install prefix.
+  std::error_code executableError;
+  const auto executable = std::filesystem::read_symlink("/proc/self/exe", executableError);
+  std::filesystem::path expectedExecutableDirectory = std::filesystem::path(instcfgp1) / "bin";
+  std::filesystem::path expectedToplevel = instcfgp1;
+  if (!executableError)
+  {
+    expectedExecutableDirectory = executable.parent_path();
+    const auto executableParent = expectedExecutableDirectory.parent_path();
+    if (std::filesystem::exists(executableParent / "share"))
+    {
+      expectedToplevel = executableParent;
+    }
+  }
+  test(
+    exedirp1 == expectedExecutableDirectory.string(),
+    "The executable directory should come from /proc/self/exe when available, "
+    "or fall back to the configure-time install prefix's bin directory.");
+  test(
+    instp1 == expectedToplevel.string(),
+    "The toplevel directory should be the executable directory's parent when "
+    "it contains share, or the configure-time install prefix otherwise.");
 #else
   test(
     instp1 == instcfgp1,
     "On this platform, default toplevel dir "
     "should be configure-time install prefix.");
-#if !defined(_WIN32) || defined(__CYGWIN__)
-  test(
-    exedirp1 == instp1 + "/bin",
-    "On this platform, the executable directory should be inside the "
-    "configure-time install prefix when no executable path is provided.");
-#else
   test(
     exedirp1 == instp1,
     "On this platform, the executable directory should be exactly the "
     "configure-time install prefix when no executable path is provided.");
-#endif
 #endif
 
   test(argc > 0, "Program name not provided by executable!");

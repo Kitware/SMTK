@@ -133,6 +133,9 @@ def findAvailablePlugins():
     pluginDir = os.path.join(
         smtk.common.Paths.pathToThisLibrary(),
         'smtk-' + smtk.common.Version.number())
+    # Builds without ParaView support do not produce a plugin directory.
+    if not os.path.isdir(pluginDir):
+        return []
     # Each plugin lives in its own directory and has a name that ends with
     # `Plugin.so` (linux, macos) or `Plugin.dll` (windows).
     ending = 'Plugin.so' if sys.platform != 'win32' else 'Plugin.dll'

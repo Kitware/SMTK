@@ -1,3 +1,8 @@
+# This test loads ParaView plugins to register its Qt job queues.
+if (NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
+  return()
+endif()
+
 # Tests that don't require any command-line arguments
 set(plainTests)
 # The queue test loads SMTK plugins through ParaView during setup.

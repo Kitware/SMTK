@@ -64,6 +64,8 @@ using namespace smtk::job;
 namespace // anonymous
 {
 
+constexpr const char* testContainerImage = "docker.io/library/ubuntu:26.04";
+
 // The "job" to perform.
 // TODO: This should test that an input file exists and generate
 //       an output file from it (in addition to "logs/job.log").
@@ -191,7 +193,7 @@ public:
     job->setCaseDirectory(caseDir);
     if (job->queue()->hasTag("container"_token))
     {
-      job->setContainerImage("ubuntu:26.04");
+      job->setContainerImage(testContainerImage);
       job->setCaseDirectoryMountPoint("/testing");
     }
     std::cout << "Created job " << job->id() << "\n";
@@ -314,8 +316,8 @@ public:
       return;
     }
     // Pull an image to run.
-    std::cout << "  Pulling image ubuntu:26.04\n";
-    if (!m_containerQueue->pullContainerImage("ubuntu:26.04"))
+    std::cout << "  Pulling image " << testContainerImage << "\n";
+    if (!m_containerQueue->pullContainerImage(testContainerImage))
     {
       std::cerr << "ERROR: Could not pull the test container image.\n";
       return;
