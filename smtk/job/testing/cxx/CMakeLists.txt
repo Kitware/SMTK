@@ -1,5 +1,6 @@
 set(unit_tests
   jobAgent.cxx
+  jobDatabaseBindings.cxx
   # jobResourceInstance.cxx
 )
 
@@ -22,5 +23,6 @@ smtk_unit_tests(
   SOURCES ${unit_tests}
   LIBRARIES
     smtkCore
+    SQLite::SQLite3
     ${extra_libraries}
 )

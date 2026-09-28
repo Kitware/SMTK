@@ -15,6 +15,8 @@
 
 #include "sqlite3.h"
 
+#include <type_traits>
+
 namespace smtk
 {
 namespace job
@@ -29,25 +31,33 @@ public:
   using container_type = Container;
   sqlBindingText(std::size_t index, const Container& values, std::size_t maxSize = 0)
     : sqlBinding(index, maxSize)
-    , m_values(const_cast<Container*>(&values))
+    , m_values(const_cast<Container&>(values))
   {
   }
 
   bool captureValue(sqlQuery& query) override
   {
-    if (this->maximumSize() && m_values->size() >= this->maximumSize())
+    if (this->maximumSize() && m_values.size() >= this->maximumSize())
     {
       return false;
     }
-    m_values->insert(
-      m_values->end(),
+    m_values.insert(
+      m_values.end(),
       TextType(reinterpret_cast<const char*>(
         sqlite3_column_text(query.cursor(), static_cast<int>(m_index)))));
     return true;
   }
 
 protected:
-  Container* m_values{ nullptr };
+  // Scalar bindings may receive an implicitly constructed temporary wrapper.
+  // Own that wrapper so it survives until execute(); its pointer still refers
+  // to the caller's scalar, which must outlive execution. Other containers stay
+  // referenced so captured rows are inserted into the caller's container.
+  using storage_type = typename std::conditional<
+    std::is_same<Container, sqlSingleValueContainer<TextType>>::value,
+    Container,
+    Container&>::type;
+  storage_type m_values;
 };
 
 } // namespace db
