@@ -50,7 +50,6 @@ class SMTKCORE_EXPORT Definition : public std::enable_shared_from_this<Definitio
 public:
   smtkTypeMacroBase(smtk::job::Definition);
   smtkCreateMacro(smtk::job::Definition);
-  smtkSharedFromThisMacro(smtk::job::Definition);
 
   /// A function that returns a shared pointer to an instance of a log parser.
   using LogParserConstructor = std::function<std::shared_ptr<LogParser>()>;

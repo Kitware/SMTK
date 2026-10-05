@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-int jobDatabaseBindings(int, char**)
+int jobDatabaseBindings(int, char*[])
 {
   using namespace smtk::job::db;
 

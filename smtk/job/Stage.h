@@ -57,7 +57,6 @@ class SMTKCORE_EXPORT Stage : public std::enable_shared_from_this<Stage>
 public:
   smtkTypeMacroBase(smtk::job::Stage);
   smtkCreateMacro(smtk::job::Stage);
-  smtkSharedFromThisMacro(smtk::job::Stage);
 
   /// Destroy a job (from memory, but not from persistent storage if the job
   /// is owned by the job::Resource).

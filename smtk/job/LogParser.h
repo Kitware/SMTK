@@ -48,7 +48,6 @@ class SMTKCORE_EXPORT LogParser : smtkEnableSharedPtr(LogParser)
 {
 public:
   smtkTypeMacroBase(smtk::job::LogParser);
-  smtkSharedFromThisMacro(smtk::job::LogParser);
   smtkCreateMacro(smtk::job::LogParser);
 
   LogParser() = default;

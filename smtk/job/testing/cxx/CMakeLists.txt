@@ -1,6 +1,7 @@
 set(unit_tests
   jobAgent.cxx
   jobDatabaseBindings.cxx
+  jobSharedFromThis.cxx
   # jobResourceInstance.cxx
 )
 
