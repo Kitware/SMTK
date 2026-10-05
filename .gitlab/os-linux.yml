@@ -9,7 +9,7 @@
     # When updating the image in use, remark on its reason and add the tag to
     # cmb-superbuild's `Scripts/ci-bundles/dockerhub-keep-tags`
     # Reason: Update for macOS migration to tart
-    image: "kitware/cmb:ci-smtk-fedora41-20260710"
+    image: "kitware/cmb:ci-smtk-fedora41-20261003"
 
     variables:
         GIT_SUBMODULE_STRATEGY: recursive
@@ -72,7 +72,7 @@
     # When updating the image in use, remark on its reason and add the tag to
     # cmb-superbuild's `Scripts/ci-bundles/dockerhub-keep-tags`
     # Reason: Update for macOS migration to tart
-    image: "kitware/cmb:ci-smtk-fedora41-vtk-20260710"
+    image: "kitware/cmb:ci-smtk-fedora41-vtk-20261003"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_vtk_python3
@@ -82,7 +82,7 @@
     # When updating the image in use, remark on its reason and add the tag to
     # cmb-superbuild's `Scripts/ci-bundles/dockerhub-keep-tags`
     # Reason: Update for macOS migration to tart
-    image: "kitware/cmb:ci-smtk-fedora41-paraview-20260710"
+    image: "kitware/cmb:ci-smtk-fedora41-paraview-20261003"
 
     variables:
         CMAKE_CONFIGURATION: fedora41_paraview

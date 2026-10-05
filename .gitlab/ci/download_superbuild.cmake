@@ -8,13 +8,13 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}-{platform}.tar.gz
-# 20260710 - Update for macOS migration to tart
+# 20261003 - Updated to include SQL-lite support
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_id "19DJ7JszK1dlF3iN8qpW_eWkCKHHfSv5Q")
-  set(file_hash "dee0953ec57cdda479f9388114ae14a4a4e83c0b5fe69fd46ed4cae7b3768f4a70a122d37efbcdbc6cdc20dac53a1347fc04f11cac9b4f64e393ac3f7c072d0a")
+  set(file_id "1ln0ALJsCcZnfMFNS3sFx-ytZ5c4UduHY")
+  set(file_hash "3baac3c823bd9a6c0aaa13cb12fe5ce0e2d3ad55e6b1a82890b495944fc7561663658c3e7d73dbe95e73abbdd3dc13c61fb9e9b22dc484e1b960d2b1c70052cd")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_id "17cxTIRb20ZcIRZPK9CyK5erExU2YMzom")
-  set(file_hash "421199e7baecb99ffc149e6f0188b662f81995e8fa3870bcdad54d23a9dca9451388da6147369ee2d47a50e4213bc89f632c11e6ac99b2cda4d9784410c93bd2")
+  set(file_id "1g8eJ5Qo_CY-x-mr-1FdScy3g-1oGOyUW")
+  set(file_hash "fc52085e6c1056c7fb75d3b77cc3ca05e3b2138378a3687b50da3585e57bc0d2836d832b16574e65b0eec48de87f65a8cfb7a3e4a31da30dc1809240dcab4a81")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")
