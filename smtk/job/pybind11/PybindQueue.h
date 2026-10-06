@@ -18,10 +18,12 @@
 
 namespace py = pybind11;
 
-inline PySharedPtrClass<smtk::job::Queue> pybind11_init_smtk_job_Queue(py::module &m)
+inline PySharedPtrClass<smtk::job::Queue, smtk::resource::Resource> pybind11_init_smtk_job_Queue(py::module &m)
 {
-  PySharedPtrClass<smtk::job::Queue> instance(m, "Queue");
+  PySharedPtrClass<smtk::job::Queue, smtk::resource::Resource> instance(m, "Queue");
   instance
+    .def("setOperationManager", &smtk::job::Queue::setOperationManager,
+      py::arg("manager"))
     .def("name", &smtk::job::Queue::name)
     .def("description", &smtk::job::Queue::description)
     .def("location", &smtk::job::Queue::location)

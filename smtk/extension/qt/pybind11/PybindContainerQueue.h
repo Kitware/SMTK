@@ -26,6 +26,8 @@ pybind11_init_smtk_qt_job_ContainerQueue(py::module &m)
 {
   PySharedPtrClass<smtk::qt::job::ContainerQueue, smtk::job::DatabaseQueue, smtk::job::Queue> instance(m, "ContainerQueue");
   instance
+    .def("pullContainerImage", &smtk::qt::job::ContainerQueue::pullContainerImage,
+      py::arg("image_url"))
     .def_static("create_or_restore", [](
         const std::string& name,
         const std::string& description,
