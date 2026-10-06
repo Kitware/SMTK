@@ -47,6 +47,7 @@
 #include <QCoreApplication>
 #include <QEventLoop>
 #include <QObject>
+#include <QStandardPaths>
 #include <QThread>
 #include <QTimer>
 #include <QVariant>
@@ -282,6 +283,18 @@ public:
     std::shared_ptr<smtk::job::Queue> queue = m_shellQueue;
     std::cout << "Queue " << queue->name() << " is a " << queue->typeName() << "\n";
 
+    m_jobManager->queues().manage(m_shellQueue);
+    m_jobManager->activeQueue().switchTo(m_shellQueue.get());
+    // Observe shell jobs even when the optional container runtime is unavailable.
+    m_shellQueueUpdateKey = m_shellQueue->observe(nullptr, this->jobStateObserver(), false);
+    if (QStandardPaths::findExecutable("podman").isEmpty())
+    {
+      std::cout
+        << "SKIP: ContainerQueue tests require podman on PATH; running ShellQueue tests only.\n";
+      m_ready = true;
+      return;
+    }
+
     m_containerQueue =
       smtk::qt::job::ContainerQueue::createOrRestore<smtk::qt::job::ContainerQueue>(
         "baz",
@@ -324,13 +337,10 @@ public:
     }
     std::cout << "    done\n";
 
-    m_jobManager->queues().manage(m_shellQueue);
     m_jobManager->queues().manage(m_containerQueue);
-    m_jobManager->activeQueue().switchTo(m_shellQueue.get());
 
     // Add a job observer to update JobQueueTest with a result
     // as AddJobToQueue and JobUpdated are invoked in response to JobCreatorOp.
-    m_shellQueueUpdateKey = m_shellQueue->observe(nullptr, this->jobStateObserver(), false);
     m_containerQueueUpdateKey = m_containerQueue->observe(nullptr, this->jobStateObserver(), false);
     m_ready = true;
   }
@@ -504,6 +514,7 @@ public Q_SLOTS:
   }
 
   bool ready() const { return m_ready; }
+  bool hasContainerQueue() const { return m_containerQueue != nullptr; }
 
   int result() const { return m_result; }
 
@@ -645,28 +656,25 @@ int jobQueue(int argc, char* argv[])
   status += jqt->test_cancel_completed();
 
   // -------------- ContainerQueue tests
-  std::cerr << "\n# ContainerQueue tests\n\n";
-  jqt->changeActiveQueue("smtk::qt::job::ContainerQueue"_token);
+  if (jqt->hasContainerQueue())
+  {
+    std::cerr << "\n# ContainerQueue tests\n\n";
+    jqt->changeActiveQueue("smtk::qt::job::ContainerQueue"_token);
 
-  // IV. Test that a basic job runs
-  // I. Test that an operation creating a job causes the (auto-scheduled) job to run.
-  // Schedule the test to run as soon as the event loop starts:
-  std::cerr << "\nIV. Auto-scheduled jobs are scheduled.\n\n";
-  jqt->reset();
-  QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
-  // Run until the application's quit() slot is invoked, then
-  // grab the exit status from the test object.
-  status += runPhase();
-  status += jqt->result();
+    // IV. Test that an auto-scheduled job runs.
+    std::cerr << "\nIV. Auto-scheduled jobs are scheduled.\n\n";
+    jqt->reset();
+    QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);
+    status += runPhase();
+    status += jqt->result();
 
-  // V. Test that a job may be cancelled successfully.
-  std::cerr << "\nV. Test canceling a running job succeeds.\n\n";
-  jqt->reset();
-  QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
-  // Run until the application's quit() slot is invoked, then
-  // grab the exit status from the test object.
-  status += runPhase();
-  status += jqt->result();
+    // V. Test that a job may be cancelled successfully.
+    std::cerr << "\nV. Test canceling a running job succeeds.\n\n";
+    jqt->reset();
+    QTimer::singleShot(0, jqt, &JobQueueTest::test_cancel);
+    status += runPhase();
+    status += jqt->result();
+  }
 
   // Clean up and exit:
   if (jqt->cleanupCaseDirectories())
