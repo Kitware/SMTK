@@ -17,20 +17,6 @@
 import site
 import sys
 
-import smtk.string
-import smtk.common
-import smtk.io
-import smtk.resource
-import smtk.project
-import smtk.job
-import smtk.task
-import smtk.view
-
-__all__ = ('common', 'attribute', 'extension', 'model', 'io', 'job', 'operation', 'project',
-           'resource', 'session', 'simulation', 'string', 'task', 'view')
-
-_appContext = None
-
 def _windows_dll_path():
     import os
     _smtk_python_path = '@SMTK_PYTHON_MODULEDIR@/smtk'
@@ -63,8 +49,24 @@ def _windows_dll_path():
 # CPython 3.8 added behaviors which modified the DLL search path on Windows to
 # only search "blessed" paths. When importing SMTK, ensure that SMTK's DLLs are
 # in this set of "blessed" paths.
+# Nothing from SMTK may be imported before this DLL setup completes, except
+# the _build_paths configuration module used by the setup itself.
 if sys.version_info >= (3, 8) and sys.platform == 'win32':
     _windows_dll_path()
+
+import smtk.string
+import smtk.common
+import smtk.io
+import smtk.resource
+import smtk.project
+import smtk.job
+import smtk.task
+import smtk.view
+
+__all__ = ('common', 'attribute', 'extension', 'model', 'io', 'job', 'operation', 'project',
+           'resource', 'session', 'simulation', 'string', 'task', 'view')
+
+_appContext = None
 
 def shufflePlugins(pluginList):
     """Reorder plugins so they load in a sane order.
