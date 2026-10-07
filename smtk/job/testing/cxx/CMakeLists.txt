@@ -1,5 +1,6 @@
 set(unit_tests
   jobAgent.cxx
+  jobCanceledUpdates.cxx
   jobDatabaseBindings.cxx
   jobSharedFromThis.cxx
   # jobResourceInstance.cxx

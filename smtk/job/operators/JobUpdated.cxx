@@ -42,6 +42,13 @@ JobUpdated::Result JobUpdated::operateInternal()
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
   auto result = this->createResult(smtk::operation::Operation::Outcome::SUCCEEDED);
+  // Progress and process-exit notifications may have been queued before CancelJob
+  // ran. Cancellation is terminal for this run, even though Completed has a
+  // larger enum value. A new run is started explicitly through scheduling.
+  if (job->state() == smtk::job::State::Canceled)
+  {
+    return result;
+  }
   // Modify the job as directed, optionally adding it to the result's list of
   // modified components (if the job was in fact changed).
   auto stateItem = params->findInt("state");

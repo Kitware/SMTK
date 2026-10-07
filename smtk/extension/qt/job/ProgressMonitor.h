@@ -43,6 +43,9 @@ namespace job
 /// update(); without one, the timer calls update() directly. The timer and callback
 /// execute in a context's thread. Calls to start() and stop() may come from other
 /// threads; access to the collection of monitored paths is synchronized.
+/// The optional deferCompletion callback runs on the polling thread. When it
+/// returns true, only nonterminal progress is published; the queue must report
+/// completion and final status from its process-exit notification instead.
 class ProgressMonitor
 {
 public:
@@ -50,7 +53,8 @@ public:
     smtk::job::DatabaseQueue* queue,
     QObject* context,
     int interval = 100,
-    std::function<void()> poll = {});
+    std::function<void()> poll = {},
+    std::function<bool(const smtk::job::Job*)> deferCompletion = {});
 
   /// Begin polling a job's ``logs/progress`` file. Repeated calls are harmless.
   void start(const smtk::job::Job* job);
@@ -62,6 +66,9 @@ public:
 private:
   smtk::job::DatabaseQueue* m_queue{ nullptr };
   QTimer m_timer;
+  // Jobs tracked by a live process use its exit notification for terminal state
+  // and status. Their progress files still report stage changes.
+  std::function<bool(const smtk::job::Job*)> m_deferCompletion;
   /// Protect m_paths because operations may register jobs off the Qt thread.
   std::mutex m_mutex;
   std::unordered_map<std::filesystem::path, smtk::common::UUID> m_paths;

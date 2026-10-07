@@ -29,6 +29,7 @@
 #include <cerrno>
 #include <charconv>
 #include <fstream>
+#include <unordered_set>
 
 #if defined(Q_OS_WIN)
 #ifndef NOMINMAX
@@ -54,7 +55,16 @@ class ShellQueue::Internal
 public:
   Internal(ShellQueue* self)
     : m_self(self)
-    , m_progressMonitor(self, self, 100, [self]() { self->updateJobStates(); })
+    , m_progressMonitor(
+        self,
+        self,
+        100,
+        [self]() { self->updateJobStates(); },
+        [this](const smtk::job::Job* job) {
+          // Restored jobs have no QProcess in this session, so they continue to
+          // use progress-file completion. Locally launched jobs wait for exit.
+          return m_activeProcesses.find(job->id()) != m_activeProcesses.end();
+        })
   {
     if (auto resourceManager = self->manager())
     {
@@ -82,6 +92,10 @@ public:
   std::vector<std::string> m_interpreterArguments;
   QProcessEnvironment m_processEnvironment{ QProcessEnvironment::systemEnvironment() };
   std::unordered_map<smtk::common::UUID, QPointer<QProcess>> m_activeProcesses;
+  // Bridge the interval between removing an exited process and applying its
+  // asynchronous JobUpdated result. Polling must remain stopped in this interval.
+  // Entries are cleared when a terminal state is observed or a new run starts.
+  std::unordered_set<smtk::common::UUID> m_pendingCompletions;
 #if defined(Q_OS_WIN)
   // A Windows Job Object makes explicit cancellation apply to the complete
   // process tree. It intentionally does not use KILL_ON_JOB_CLOSE: simulations
@@ -185,6 +199,7 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     arguments.append("./" + QString::fromStdString(job->script().generic_string()));
     proc->setArguments(arguments);
   }
+  m_p->m_pendingCompletions.erase(job->id());
   m_p->m_progressMonitor.start(job.get());
 
   m_p->m_activeProcesses[job->id()] = proc;
@@ -231,6 +246,9 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
     qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
     this,
     [this, job, proc](int exitCode, QProcess::ExitStatus exitStatus) {
+      // The process exit, not a final progress record written before exit,
+      // determines completion and success for a process owned by this queue.
+      m_p->m_progressMonitor.stop(job.get());
       // Cancellation has already assigned a more specific terminal state.
       if (job->state() != smtk::job::State::Canceled)
       {
@@ -257,6 +275,9 @@ bool ShellQueue::schedule(const std::shared_ptr<smtk::job::Job>& job)
           updater->parameters()->findInt("status")->setValue(static_cast<int>(
             exitStatus == QProcess::NormalExit && exitCode == 0 ? smtk::job::Status::Succeeded
                                                                 : smtk::job::Status::Failed));
+          // Record this before launching: the updater may finish immediately,
+          // or it may still be pending when the next polling timer fires.
+          m_p->m_pendingCompletions.insert(job->id());
           operationManager->launchers()(updater);
         }
         else
@@ -313,12 +334,12 @@ bool ShellQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
     {
       return false;
     }
-    QMetaObject::invokeMethod(
-      this, [this, job]() { this->cancelProcess(job); }, Qt::QueuedConnection);
-    // CancelJob assigns the Canceled state after this method returns. Assign
-    // the terminal status here so its operation result reports both changes.
+    // Mark cancellation before the Qt thread can deliver a process-exit callback.
+    job->setState(State::Canceled);
     job->setStatus(Status::Terminated);
     this->updateJobDatabaseInfo(job);
+    QMetaObject::invokeMethod(
+      this, [this, job]() { this->cancelProcess(job); }, Qt::QueuedConnection);
     return true;
   }
   if (!job || job->queue() != this || job->queueId().empty())
@@ -333,12 +354,17 @@ bool ShellQueue::cancel(const std::shared_ptr<smtk::job::Job>& job)
   }
   if (jobState == State::Running)
   {
-    if (!this->cancelProcess(job))
-    {
-      return false;
-    }
+    // waitForFinished() can emit finished synchronously inside cancelProcess().
+    // Its handler must already see cancellation and avoid queuing completion.
+    const auto previousStatus = job->status();
     job->setState(State::Canceled);
     job->setStatus(Status::Terminated);
+    if (!this->cancelProcess(job))
+    {
+      job->setState(jobState);
+      job->setStatus(previousStatus);
+      return false;
+    }
   }
   else
   {
@@ -438,6 +464,13 @@ void ShellQueue::updateJobStates()
       this->fetchJobLinks(job);
     }
     if (job->state() != State::Scheduled && job->state() != State::Running)
+    {
+      m_p->m_pendingCompletions.erase(job->id());
+      continue;
+    }
+    // A finished QProcess may have queued its JobUpdated operation, which has
+    // not run yet. Do not resume polling while that terminal update is pending.
+    if (m_p->m_pendingCompletions.find(job->id()) != m_p->m_pendingCompletions.end())
     {
       continue;
     }

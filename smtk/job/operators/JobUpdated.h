@@ -32,8 +32,8 @@ namespace job
   * Because of this, some state/status transitions will be rejected (without operation failure)
   * if they cause a job to "regress" (move backward in the list of allowable transitions).
   * This can happen if a job is terminated but a "logs/progress" file modification causes
-  * an out-of-sequence launch of this operation. In that case, the stage will be updated but
-  * not the state or status.
+  * an out-of-sequence launch of this operation. Updates to canceled jobs are ignored
+  * entirely; updates become valid again after explicitly scheduling a new run.
   */
 class SMTKCORE_EXPORT JobUpdated : public smtk::operation::XMLOperation
 {

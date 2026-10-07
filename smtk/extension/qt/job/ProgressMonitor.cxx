@@ -32,8 +32,10 @@ ProgressMonitor::ProgressMonitor(
   smtk::job::DatabaseQueue* queue,
   QObject* context,
   int interval,
-  std::function<void()> poll)
+  std::function<void()> poll,
+  std::function<bool(const smtk::job::Job*)> deferCompletion)
   : m_queue(queue)
+  , m_deferCompletion(std::move(deferCompletion))
 {
   m_timer.setInterval(interval);
   m_timer.setSingleShot(false);
@@ -106,6 +108,10 @@ void ProgressMonitor::update()
       continue;
     }
 
+    // A script can write its final progress record before exiting, then fail
+    // during cleanup. For tracked processes, publish the stage but leave the
+    // terminal state and status to the queue's process-exit callback.
+    const bool deferCompletion = m_deferCompletion && m_deferCompletion(job.get());
     auto updater = operationManager->create<smtk::job::JobUpdated>();
     updater->parameters()->associate(job);
     updater->parameters()->findInt("stage")->setIsEnabled(true);
@@ -113,7 +119,7 @@ void ProgressMonitor::update()
     updater->parameters()->findInt("state")->setIsEnabled(true);
     updater->parameters()->findInt("state")->setValue(
       stage < 0 ? static_cast<int>(smtk::job::State::Scheduled)
-        : stage < static_cast<int>(job->jobType()->stages().size())
+        : deferCompletion || stage < static_cast<int>(job->jobType()->stages().size())
         ? static_cast<int>(smtk::job::State::Running)
         : static_cast<int>(smtk::job::State::Completed));
     if (stage < 0)
@@ -122,7 +128,7 @@ void ProgressMonitor::update()
       updater->parameters()->findInt("status")->setValue(
         static_cast<int>(smtk::job::Status::Pending));
     }
-    else if (exitCode != 0)
+    else if (!deferCompletion && exitCode != 0)
     {
       updater->parameters()->findInt("state")->setValue(
         static_cast<int>(smtk::job::State::Completed));
@@ -130,14 +136,14 @@ void ProgressMonitor::update()
       updater->parameters()->findInt("status")->setValue(
         static_cast<int>(smtk::job::Status::Failed));
     }
-    else if (stage >= static_cast<int>(job->jobType()->stages().size()))
+    else if (!deferCompletion && stage >= static_cast<int>(job->jobType()->stages().size()))
     {
       updater->parameters()->findInt("status")->setIsEnabled(true);
       updater->parameters()->findInt("status")->setValue(
         static_cast<int>(smtk::job::Status::Succeeded));
       std::lock_guard<std::mutex> lock(m_mutex);
-      // A terminal stage needs no further progress-file polling. ShellQueue
-      // independently retains its QProcess until the process actually exits.
+      // Without a live process reporting completion, the final progress record
+      // is authoritative (for example, for container or restored shell jobs).
       m_paths.erase(entry.first);
     }
     operationManager->launchers()(updater);

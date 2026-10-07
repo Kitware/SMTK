@@ -376,10 +376,10 @@ public:
       // and Canceled -> Completed notifications must not finish it twice.
       const auto id = job.id();
       const auto state = job.state();
-      const bool finished =
-        (job.stage() >= 0 &&
-         static_cast<std::size_t>(job.stage()) == job.jobType()->stages().size()) ||
-        job.status() == smtk::job::Status::Terminated;
+      // A final stage can be written before the shell process actually exits.
+      // Ending the phase at that point could hide a later nonzero exit and let
+      // cleanup remove files that the process is still using.
+      const bool finished = state == State::Completed || state == State::Canceled;
       const auto caseDirectory = job.caseDirectory();
       QMetaObject::invokeMethod(
         this,
@@ -421,6 +421,9 @@ public:
   }
   void reset()
   {
+    // Discard old-job notifications even before the next test's singleShot
+    // callback assigns its new job ID.
+    g_jobId = smtk::common::UUID::null();
     m_result = 255;
     m_phaseFinished = false;
     m_cancelRequested = false;
@@ -493,6 +496,17 @@ public Q_SLOTS:
     if (!rejected || job->state() != State::Completed)
     {
       std::cerr << "ERROR: Canceling a completed job must fail without changing its state.\n";
+      return 1;
+    }
+    return 0;
+  }
+
+  int test_canceled_state()
+  {
+    auto job = m_jobManager->activeQueue().object()->findJob(g_jobId);
+    if (!job || job->state() != State::Canceled || job->status() != Status::Terminated)
+    {
+      std::cerr << "ERROR: Process-exit notifications must preserve cancellation.\n";
       return 1;
     }
     return 0;
@@ -645,6 +659,9 @@ int jobQueue(int argc, char* argv[])
   status += jqt->result();
 
   // III. Test that a job may that has been completed cannot be cancelled.
+  // The previous phase waits briefly after its first terminal notification;
+  // verify that process-exit callbacks have not overwritten cancellation.
+  status += jqt->test_canceled_state();
   std::cerr << "\nIII. Test canceling a completed job fails.\n\n";
   jqt->reset();
   QTimer::singleShot(0, jqt, &JobQueueTest::test_basic);

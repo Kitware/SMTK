@@ -115,12 +115,18 @@ class TestQueueJob(smtk.testing.TestCase):
                 job.setContainerImage(image)
                 job.setCaseDirectoryMountPoint('/work')
             (root / 'logs').mkdir()
+            # Leave the failed process alive across several progress polls after
+            # reporting its final stage. Progress alone must not imply success.
+            # The "1 0" record deliberately disagrees with the eventual exit 7:
+            # this exposed premature success when polling won the race with exit.
+            before_exit = 'sleep 1\n' if exit_code != 0 else ''
             (root / 'run.sh').write_text(
                 '#!/bin/bash\nset -eu\n'
                 'cd -- "$(dirname -- "$0")"\n'
                 'echo "0 0" > logs/progress\n'
                 'echo Floopy > logs/echo.log\n'
                 'echo "1 0" > logs/progress\n'
+                f'{before_exit}'
                 f'exit {exit_code}\n')
             (root / 'run.sh').chmod(0o755)
             try:
