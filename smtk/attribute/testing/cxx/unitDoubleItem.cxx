@@ -399,6 +399,46 @@ void testEvaluatorJSONIO()
     nlohmann::json::diff(json1Contents, json2Contents).empty(), "Expected SMTK export to be equal.")
 }
 
+void testDegreeDefaultsJSONIO()
+{
+  for (const std::string units : { "degrees", "°" })
+  {
+    auto resource = Resource::create();
+    auto definition = resource->createDefinition("angle");
+    auto angle = definition->addItemDefinition<DoubleItemDefinition>("angle");
+    smtkTest(angle->setUnits(units), "Could not set angle units to " << units);
+    smtkTest(angle->setDefaultValue(90.0), "Could not set numeric angle default");
+
+    // Loading a numeric default also reevaluates its string representation.
+    for (int pass = 0; pass < 3; ++pass)
+    {
+      nlohmann::json saved;
+      smtk::attribute::to_json(saved, resource);
+      auto imported = Resource::create();
+      smtk::attribute::from_json(nlohmann::json::parse(saved.dump()), imported);
+      auto importedDefinition = std::dynamic_pointer_cast<DoubleItemDefinition>(
+        imported->findDefinition("angle")->itemDefinition(0));
+      smtkTest(importedDefinition->defaultValue() == 90.0, "Angle default changed after JSON load");
+      smtkTest(
+        importedDefinition->defaultValueAsString() == "90 " + units,
+        "Angle default has duplicated units after JSON load: "
+          << importedDefinition->defaultValueAsString());
+      nlohmann::json resaved;
+      smtk::attribute::to_json(resaved, imported);
+      smtkTest(saved == resaved, "Angle defaults changed when resaved as JSON");
+      resource = imported;
+    }
+
+    smtkTest(angle->setDefaultValueAsString("45 " + units), "Could not set angle default string");
+    smtkTest(
+      angle->defaultValueAsString() == "45 " + units, "Explicit angle units were duplicated");
+    smtkTest(angle->defaultValue() == 45.0, "Explicit angle default changed");
+    smtkTest(angle->setDefaultValueAsString("30"), "Could not set bare angle default string");
+    smtkTest(angle->defaultValueAsString() == "30 " + units, "Missing implicit angle units");
+    smtkTest(angle->defaultValue() == 30.0, "Bare angle default changed");
+  }
+}
+
 int unitDoubleItem(int /*argc*/, char** const /*argv*/)
 {
   smtk::io::Logger::instance().reset();
@@ -411,6 +451,7 @@ int unitDoubleItem(int /*argc*/, char** const /*argv*/)
 
   testEvaluatorXMLIO();
   testEvaluatorJSONIO();
+  testDegreeDefaultsJSONIO();
 
   return 0;
 }

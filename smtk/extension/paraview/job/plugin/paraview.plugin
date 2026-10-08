@@ -1,0 +1,10 @@
+NAME
+  smtkPVJobExtPlugin
+DESCRIPTION
+  SMTK extension for ParaView that exposes a local container queue.
+REQUIRES_MODULES
+  smtkPVJobExt
+  smtkPVServerExt
+  ParaView::pqApplicationComponents
+  ParaView::pqComponents
+  ParaView::qttesting

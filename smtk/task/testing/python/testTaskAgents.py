@@ -25,8 +25,8 @@ class TestTaskAgents(smtk.testing.TestCase):
         """Load plugins"""
         # Reset the smtk.common.Managers object used by smtk.read() to eliminate
         # previously-read resources from memory:
-        if smtk.appContext:
-            rsrcMgr = smtk.appContext.get('smtk.resource.Manager')
+        if smtk.applicationContextOrNone():
+            rsrcMgr = smtk.applicationContext().get('smtk.resource.Manager')
             for rsrc in rsrcMgr.resources():
                 rsrcMgr.remove(rsrc)
 
@@ -55,6 +55,8 @@ class TestTaskAgents(smtk.testing.TestCase):
         resources = smtk.read(projFile, ctxt)
         self.assertEqual(len(resources), 1)
         proj = resources[0]
+        attribute_resource = [rr for rr in proj.resources().find(
+            'smtk::attribute::Resource')][0]
 
         print('Fetch tasks from project''s task manager.')
         taskInst = proj.taskManager().taskInstances().instances()
@@ -85,9 +87,15 @@ class TestTaskAgents(smtk.testing.TestCase):
                     assert (agent.data() == None)
                     print(' '*12 + 'Output port', agent.outputPort().name())
                 elif agent.matchesType(token('smtk::task::FillOutAttributesAgent')):
+                    valid = agent.validatedAttributes(attribute_resource)
+                    invalid = agent.unvalidatedAttributes(attribute_resource)
                     print(' '*8 + 'FillOutAttributesAgent')
                     print(' '*12 + 'Input  port', agent.inputPort().name())
                     print(' '*12 + 'Output port', agent.outputPort().name())
+                    print(' '*12 + 'Validated', len(valid))
+                    print(' '*12 + 'Unvalidated', len(invalid))
+                    self.assertEqual(len(valid), 1)
+                    self.assertEqual(len(invalid), 0)
                 elif agent.matchesType(token('smtk::task::SubmitOperationAgent')):
                     op = agent.operation()
                     print(' '*8 + 'SubmitOperationAgent')

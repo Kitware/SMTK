@@ -22,6 +22,8 @@
 
 #include "smtk/io/Logger.h"
 
+#include "smtk/job/Manager.h"
+
 #include "smtk/project/Container.h"
 #include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
@@ -223,6 +225,21 @@ bool pqSMTKAttributePanel::updatePipeline()
   return this->displayPipelineSource(dataSource);
 }
 
+void pqSMTKAttributePanel::queueDisplayPipelineSource(pqPipelineSource* psrc)
+{
+  QPointer<pqSMTKAttributePanel> self(this);
+  QPointer<pqPipelineSource> source(psrc);
+  QMetaObject::invokeMethod(
+    this,
+    [self, source]() {
+      if (self && source)
+      {
+        self->displayPipelineSource(source.data());
+      }
+    },
+    Qt::QueuedConnection);
+}
+
 void pqSMTKAttributePanel::resetPanel(smtk::resource::ManagerPtr rsrcMgr)
 {
   (void)rsrcMgr;
@@ -278,8 +295,7 @@ void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
       &pqActiveObjects::instance(),
       SIGNAL(sourceChanged(pqPipelineSource*)),
       this,
-      SLOT(displayPipelineSource(pqPipelineSource*)),
-      Qt::QueuedConnection);
+      SLOT(queueDisplayPipelineSource(pqPipelineSource*)));
     QObject::connect(
       &pqActiveObjects::instance(),
       SIGNAL(dataUpdated()),
@@ -293,7 +309,7 @@ void pqSMTKAttributePanel::displayActivePipelineSource(bool doDisplay)
       &pqActiveObjects::instance(),
       SIGNAL(sourceChanged(pqPipelineSource*)),
       this,
-      SLOT(displayPipelineSource(pqPipelineSource*)));
+      SLOT(queueDisplayPipelineSource(pqPipelineSource*)));
     QObject::disconnect(
       &pqActiveObjects::instance(), SIGNAL(dataUpdated()), this, SLOT(updatePipeline()));
   }
@@ -373,19 +389,39 @@ void pqSMTKAttributePanel::handleProjectEvent(
               return;
             }
             // Stop observing the prior task (if any).
-            m_currentTaskObserverKey.release();
-
-            (void)oldTask;
             if (m_currentTask)
             {
               m_currentTask->observers().erase(m_currentTaskObserverKey);
-              self->displayResource(nullptr);
             }
             m_currentTask = nullptr;
-            if (newTask)
+
+            // Always remove the previous top-level view. Some non-task display
+            // paths intentionally clear m_currentTask while leaving a task
+            // group visible; conditioning this reset on m_currentTask allowed
+            // that group's fixed child views to survive a task transition.
+            self->displayResource(nullptr);
+
+            (void)oldTask; // Equal to newTask during observer initialization.
+            if (!newTask)
             {
-              self->displayTaskAttribute(newTask);
+              return;
             }
+
+            // Other active-task observers update agents and port data during
+            // this same notification. Defer view construction until they have
+            // finished so getViewData() sees the new task's configured resource
+            // set rather than leaving the prior task's group in the panel.
+            std::weak_ptr<smtk::task::Task> weakTask =
+              std::static_pointer_cast<smtk::task::Task>(newTask->shared_from_this());
+            QTimer::singleShot(0, [self, weakTask]() {
+              auto task = weakTask.lock();
+              if (!(self && task && task->manager() &&
+                    task->manager()->active().task() == task.get()))
+              {
+                return;
+              }
+              self->displayTaskAttribute(task.get());
+            });
           },
           /* priority */ 0,
           /* initialize */ true,
@@ -426,6 +462,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
     m_opManager = nullptr;
     m_viewManager = nullptr;
     m_projectManager = nullptr;
+    m_jobManager = nullptr;
     return false;
   }
   // Keep hold of the selection instance for the active server connection
@@ -434,6 +471,7 @@ bool pqSMTKAttributePanel::updateManagers(const std::shared_ptr<smtk::common::Ma
   m_opManager = managers->get<smtk::operation::Manager::Ptr>();
   m_viewManager = managers->get<smtk::view::Manager::Ptr>();
   m_projectManager = managers->get<smtk::project::Manager::Ptr>();
+  m_jobManager = managers->get<smtk::job::Manager::Ptr>();
   return true;
 }
 
@@ -450,6 +488,7 @@ bool pqSMTKAttributePanel::displayResourceInternal(
   m_attrUIMgr->setOperationManager(m_opManager); // Assign the operation manager
   m_attrUIMgr->setViewManager(m_viewManager);
   m_attrUIMgr->managers().insert(m_projectManager);
+  m_attrUIMgr->managers().insert(m_jobManager);
   m_attrUIMgr->setSelection(m_seln); // NB: m_seln may be null.
   m_attrUIMgr->setSelectionBit(1);   // ToDo: should be set by application
 
@@ -600,6 +639,10 @@ bool pqSMTKAttributePanel::displayTaskAttribute(smtk::task::Task* task)
   smtk::common::TypeContainer taskConfigData;
   if (!task->getViewData(taskConfigData) || !taskConfigData.contains<ResourceSet>())
   {
+    smtkWarningMacro(
+      smtk::io::Logger::instance(),
+      "Could not fetch view configuration data from any agent of the \"" << task->name()
+                                                                         << "\" task.");
     return didDisplay;
   }
   auto managers = task->manager()->managers();

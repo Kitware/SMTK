@@ -24,8 +24,12 @@ set(QAttrLibSrcs
   qtAssociationView.cxx
   qtAssociation2ColumnWidget.cxx
   qtAttributeView.cxx
+  qtAttributeTableDelegate.cxx
+  qtAttributeTableModel.cxx
+  qtAttributeTableView.cxx
   qtInstancedView.cxx
   qtComponentAttributeView.cxx
+  qtLogView.cxx
   qtOperationAction.cxx
   qtOperationDialog.cxx
   qtOperationLauncher.cxx
@@ -76,6 +80,13 @@ set(QAttrLibSrcs
   SVGIconEngine.cxx
   TypeAndColorBadge.cxx
   VisibilityBadge.cxx
+
+  agents/JobRunnerAgent.cxx
+
+  job/ShellQueue.cxx
+  job/ContainerQueue.cxx
+  job/ProgressMonitor.cxx
+  job/qtQueueItem.cxx
 
   diagram/qtBaseArc.cxx
   diagram/qtBaseNode.cxx
@@ -146,9 +157,13 @@ set(QAttrLibMocHeaders
   qtGroupView.h
   qtAnalysisView.h
   qtAssociationView.h
+  qtAttributeTableDelegate.h
+  qtAttributeTableModel.h
+  qtAttributeTableView.h
   qtAttributeView.h
   qtInstancedView.h
   qtComponentAttributeView.h
+  qtLogView.h
   qtNotEditableDelegate.h
   qtOperationAction.h
   qtOperationDialog.h
@@ -194,6 +209,13 @@ set(QAttrLibMocHeaders
   MembershipBadge.h
   SVGIconEngine.h
   VisibilityBadge.h
+
+  agents/JobRunnerAgent.h
+
+  job/ShellQueue.h
+  job/ContainerQueue.h
+  job/ProgressMonitor.h
+  job/qtQueueItem.h
 
   diagram/qtBaseArc.h
   diagram/qtBaseNode.h
@@ -254,6 +276,26 @@ set(QAttrLibHeaders
   qtWorkletPalette.h
 )
 
+set(qtOperators
+  job/UpdateContainerQueueMachine
+)
+
+foreach (operator ${qtOperators})
+  list(APPEND QAttrLibHeaders ${operator}.h)
+  list(APPEND QAttrLibSrcs ${operator}.cxx)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt")
+    smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/${operator}.sbt"
+      HEADER_OUTPUT headerName)
+    list(APPEND _qtDependencies ${headerName})
+    message("Qt operator ${operator} generates ${headerName}")
+  endif()
+endforeach()
+add_custom_target(qtGenHeaders
+  DEPENDS
+    ${_qtDependencies}
+)
+# set(qtDependencies ${_qtDependencies} PARENT_SCOPE)
+
 # Put the contents of this file in a string in a header, ending in `_json.h`.
 smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/ResourcePanelConfiguration.json"
   TYPE "_json"
@@ -281,9 +323,12 @@ add_library(smtkQtExt
   qtReferenceItemIcons.qrc
   qtAttributeIcons.qrc
   diagram/qtDiagramIcons.qrc
-  qtFonts.qrc
   ${rpJsonHeader}
   ${tpXmlHeader}
+)
+# Ensure operator XML files are created before compiling operations:
+add_dependencies(smtkQtExt
+  qtGenHeaders
 )
 
 if (SMTK_ENABLE_PYTHON_WRAPPING)
@@ -314,13 +359,14 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 #set smtkQtExt to publicly link to smtkCore
 target_link_libraries(smtkQtExt
   LINK_PUBLIC
-  smtkCore
-  Qt5::Core
-  Qt5::Svg
-  Qt5::Widgets
+    smtkCore
+    Qt5::Core
+    Qt5::Svg
+    Qt5::Widgets
   LINK_PRIVATE
-  Threads::Threads
-  ${_extra_private_libraries}
+    Threads::Threads
+    SQLite::SQLite3
+    ${_extra_private_libraries}
   )
 # add_dependencies(smtkQtExt ${rpJsonTarget})
 
@@ -332,6 +378,10 @@ smtk_install_library(smtkQtExt)
 if (SMTK_ENABLE_PARAVIEW_SUPPORT)
   set_property(GLOBAL APPEND
     PROPERTY _smtk_plugin_files "${CMAKE_CURRENT_SOURCE_DIR}/plugin/paraview.plugin")
+endif()
+
+if (SMTK_ENABLE_PYTHON_WRAPPING)
+  add_subdirectory(pybind11)
 endif()
 
 if (SMTK_ENABLE_EXAMPLES)

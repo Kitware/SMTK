@@ -43,8 +43,15 @@ template<typename BaseType, typename... InputTypes>
 class SMTK_ALWAYS_EXPORT Instances : public Factory<BaseType, InputTypes...>
 {
 public:
-  /// An alias for the inherited parent class.
-  using Superclass = smtk::common::Factory<BaseType, InputTypes...>;
+  smtkTypedefs(smtk::common::Instances<BaseType, InputTypes...>);
+  std::string typeName() const override
+  {
+    return "smtk::common::Instances<" + smtk::common::typeName<BaseType>() + ">";
+  }
+  smtkSuperclassMacro(smtk::common::Factory<BaseType, InputTypes...>);
+
+  /// An alias for the type of object being managed.
+  using ObjectType = BaseType;
   /// The signature of observers watching managed instance lifecycle events.
   using Observer = std::function<void(InstanceEvent, const std::shared_ptr<BaseType>&)>;
   /// Access to the set of observers of instances.
@@ -120,7 +127,7 @@ public:
   /// This returns true if the instance was added and
   /// false otherwise (which can occur if passed a null
   /// pointer or an already-managed instance).
-  bool manage(const std::shared_ptr<BaseType>& instance)
+  virtual bool manage(const std::shared_ptr<BaseType>& instance)
   {
     if (!instance)
     {
@@ -139,7 +146,7 @@ public:
   /// This may result in the destruction of \a instance
   /// but is not guaranteed to do so (i.e., when other
   /// shared-pointers to \a instance exist).
-  bool unmanage(const std::shared_ptr<BaseType>& instance)
+  virtual bool unmanage(const std::shared_ptr<BaseType>& instance)
   {
     if (!instance)
     {

@@ -31,6 +31,7 @@
 #include "vtkDoubleArray.h"
 #include "vtkExodusIIReader.h"
 #include "vtkGraph.h"
+#include "vtkHDFReader.h"
 #include "vtkIdTypeArray.h"
 #include "vtkImageData.h"
 #include "vtkImageMapToColors.h"
@@ -133,6 +134,7 @@ namespace
   };                                                                                               \
   static bool registered_##FTYPE = ImportAsVTKData_##FTYPE::registerClass()
 
+DeclareReader_type(vtkhdf);
 DeclareReader_type(vtp);
 DeclareReader_type(vtu);
 DeclareReader_type(vti);
@@ -162,12 +164,13 @@ DeclareReader_type(stl);
     rdr->SetFileName(fileInfo.second.c_str());                                                     \
     rdr->Update();                                                                                 \
                                                                                                    \
-    vtkSmartPointer<CLASS> data = vtkSmartPointer<CLASS>::New();                                   \
+    vtkSmartPointer<CLASS> data(CLASS ::SafeDownCast(rdr->GetOutputDataObject(0)->NewInstance())); \
     data->ShallowCopy(rdr->GetOutput());                                                           \
     return data;                                                                                   \
   }
 
 /* clang-format off */
+BasicReader_type(vtkhdf, "VTK HDF", vtkDataObject, vtkHDFReader)
 BasicReader_type(vtp, "VTK PolyData", vtkPolyData, vtkXMLPolyDataReader)
 BasicReader_type(vtu, "VTK Unstructured Grid", vtkUnstructuredGrid, vtkXMLUnstructuredGridReader)
 BasicReader_type(vti, "VTK Image Data", vtkImageData, vtkXMLImageDataReader)

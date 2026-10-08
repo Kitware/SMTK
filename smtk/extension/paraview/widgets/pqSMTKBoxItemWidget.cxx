@@ -39,7 +39,9 @@
 #include "vtkVectorOperators.h"
 #endif
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QPushButton>
 
 #include <algorithm>
 #include <cctype>
@@ -100,6 +102,57 @@ bool pqSMTKBoxItemWidget::createProxyAndWidget(
     return false;
   }
   widget = new pqBoxPropertyWidget(proxy, proxy->GetPropertyGroup(0));
+
+  // A box may be represented by one DoubleItem or by several DoubleItems
+  // inside a GroupItem. Only offer a whole-box reset when every item that
+  // defines the box has defaults; otherwise the button could produce a box
+  // assembled from an unexpected mixture of default and current values.
+  const bool canResetToDefaults =
+    !items.empty() && std::all_of(items.begin(), items.end(), [](const auto& item) {
+      return item && item->hasDefault();
+    });
+  if (canResetToDefaults)
+  {
+    auto* resetButton = new QPushButton(tr("Reset to Defaults"), widget);
+    resetButton->setObjectName("resetToDefaults");
+    resetButton->setToolTip(tr("Restore the box coordinates to their default values."));
+    if (auto* boxLayout = qobject_cast<QBoxLayout*>(widget->layout()))
+    {
+      // ParaView's property widget ends with an expanding vertical spacer.
+      // Insert the button before it so the normal fixed layout spacing remains
+      // between the existing controls and this button as the panel grows.
+      int insertionIndex = boxLayout->count();
+      if (insertionIndex > 0 && boxLayout->itemAt(insertionIndex - 1)->spacerItem())
+      {
+        --insertionIndex;
+      }
+      boxLayout->insertWidget(insertionIndex, resetButton);
+    }
+    else if (widget->layout())
+    {
+      widget->layout()->addWidget(resetButton);
+    }
+    QObject::connect(
+      resetButton, &QPushButton::clicked, this, &pqSMTKBoxItemWidget::resetToDefaults);
+
+    // Applications that provide explicit box defaults may prefer those values
+    // over ParaView's data-bounds placement controls. Keep the existing UI by
+    // default and hide both related controls only when explicitly requested.
+    bool hideResetBounds = false;
+    if (
+      m_itemInfo.component().attributeAsBool("HideResetBoundsWhenDefaults", hideResetBounds) &&
+      hideResetBounds)
+    {
+      if (auto* resetBounds = widget->findChild<QPushButton*>("resetBounds"))
+      {
+        resetBounds->hide();
+      }
+      if (auto* visibleBoundsOnly = widget->findChild<QCheckBox*>("visibleBoundsOnly"))
+      {
+        visibleBoundsOnly->hide();
+      }
+    }
+  }
 
   // Unlike traditional boolean-valued XML attributes, ShowControls defaults
   // to true (even when not present) to preserve existing behavior.
@@ -317,6 +370,45 @@ bool pqSMTKBoxItemWidget::updateItemFromWidgetInternal()
   }
 
   return didChange;
+}
+
+void pqSMTKBoxItemWidget::resetToDefaults()
+{
+  std::vector<smtk::attribute::DoubleItemPtr> items;
+  smtk::attribute::StringItemPtr control;
+  ItemBindings binding;
+  if (!this->fetchBoxItems(binding, items, control))
+  {
+    return;
+  }
+
+  bool didChange = false;
+  for (const auto& item : items)
+  {
+    if (!item || !item->hasDefault())
+    {
+      // This should agree with the test used when creating the button. Guard
+      // against a reconfiguration that changes the bound items afterward.
+      return;
+    }
+    for (std::size_t ii = 0; ii < item->numberOfValues(); ++ii)
+    {
+      didChange |= !item->isUsingDefault(ii);
+      item->setToDefault(ii);
+    }
+  }
+
+  // Synchronize the ParaView proxy immediately so the rendered box reflects
+  // the restored attribute values before the next interaction.
+  this->updateWidgetFromItem();
+  if (auto* propertyWidget = this->propertyWidget())
+  {
+    propertyWidget->widgetProxy()->UpdateVTKObjects();
+  }
+  if (didChange)
+  {
+    Q_EMIT this->modified(this);
+  }
 }
 
 bool pqSMTKBoxItemWidget::updateWidgetFromItemInternal()

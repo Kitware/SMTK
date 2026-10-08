@@ -499,6 +499,18 @@ public:
   /// Return true if the task can accept any worklets
   bool canAcceptWorklets() const;
 
+  /// Return the UUID of the worklet which created this task (if any).
+  smtk::common::UUID originatingWorkletId() const { return m_originatingWorkletId; }
+
+  /// Set the UUID of the worklet which created this task.
+  ///
+  /// The EmplaceWorklet operation (or any other operation used to emplace
+  /// a worklet) should set this to the UUID of the worklet.
+  /// This allows tracking the provenance of a study to some degree
+  /// (although more information is necessary to generate correspondences
+  /// between a worklet's tasks and task instances in a task manager).
+  bool setOriginatingWorkletId(const smtk::common::UUID& workletId);
+
 protected:
   friend SMTKCORE_EXPORT void
   workflowsOfTask(Task*, std::set<smtk::task::Task*>&, std::set<smtk::task::Task*>&);
@@ -599,6 +611,9 @@ protected:
   State m_agentState = State::Completable;
   State m_dependencyState = State::Irrelevant;
   State m_childrenState = State::Irrelevant;
+
+  /// The worklet (if any) that generated this task.
+  smtk::common::UUID m_originatingWorkletId;
 
 private:
 };

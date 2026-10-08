@@ -142,6 +142,9 @@ pqSMTKImportOperationBehavior::pqSMTKImportOperationBehavior(QObject* parent)
     QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* importOperationAction = new QAction(
         QPixmap(":/ImportOperationBehavior/python-28x28.png"), tr("&Import Operation..."), this);
+      // Give applications a stable identifier for controlling this
+      // dynamically-added File-menu action without matching translated text.
+      importOperationAction->setObjectName("actionImportOperation");
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 

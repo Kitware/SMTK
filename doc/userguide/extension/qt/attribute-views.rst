@@ -18,6 +18,29 @@ and displays items of the attribute.
 
 Items displayed inside these views all inherit `smtk::extension::qtItem`.
 
+Attribute list height
+~~~~~~~~~~~~~~~~~~~~~
+
+Both ``Attribute`` and ``AttributeTable`` views accept ``AttributeListRows``, a
+positive integer specifying the preferred initial number of visible table rows.
+It defaults to two; invalid or non-positive values also use two. The header and
+management controls are additional to these rows. For example::
+
+  <View Type="AttributeTable" Title="Boundary Conditions" AttributeListRows="4">
+    <AttributeTypes>
+      <Att Type="BoundaryCondition"/>
+    </AttributeTypes>
+  </View>
+
+The splitter remains adjustable, and additional vertical space goes to the
+selected-attribute editor. In an ``AttributeTable`` view, the table fills the
+available space when the selected-attribute editor is hidden. Available space
+may constrain the requested height; this setting does not limit the number of
+attributes.
+
+Item changes
+~~~~~~~~~~~~
+
 Qt view classes also provide facilities that adapt SMTK's
 :ref:`observers-pattern` to Qt's signals-and-slots system.
 When an item indicates it has modified its parent attribute

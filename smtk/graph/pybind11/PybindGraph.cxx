@@ -23,6 +23,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 
 #include "PybindArcMap.h"
 #include "PybindResourceBase.h"
+#include "PybindRuntimeArcEndpoint.h"
 #include "PybindComponent.h"
 
 #include "smtk/resource/Manager.h"
@@ -39,6 +40,7 @@ PYBIND11_MODULE(_smtkPybindGraph, graph)
   py::module::import("smtk.geometry");
 
   auto smtk_graph_ResourceBase = pybind11_init_smtk_graph_ResourceBase(graph);
+  auto smtk_graph_RuntimeArcEndpoint = pybind11_init_smtk_graph_RuntimeArcEndpoint(graph);
   auto smtk_graph_Component = pybind11_init_smtk_graph_Component(graph);
   auto smtk_graph_ArcMap = pybind11_init_smtk_graph_ArcMap(graph);
 }

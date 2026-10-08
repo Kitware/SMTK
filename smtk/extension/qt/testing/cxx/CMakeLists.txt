@@ -22,10 +22,13 @@ set(unit_tests_headers_data
 )
 
 set(unit_tests
+  UnitTestAttributeTableSharedColumn.cxx
   UnitTestDoubleClickButton.cxx
   UnitTestEmittingStringBuffer.cxx
   UnitTestForceRequiredItem.cxx
+  UnitTestLogView.cxx
   UnitTestOperationTypeModel.cxx
+  UnitTestQtAttributeItemInfo.cxx
 )
 
 set(unit_tests_which_require_data

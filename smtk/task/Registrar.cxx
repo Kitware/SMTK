@@ -37,6 +37,7 @@
 #include "smtk/task/json/jsonTask.h"
 
 #include "smtk/task/operators/AddDependency.h"
+#include "smtk/task/operators/ChangeTaskCompletion.h"
 #include "smtk/task/operators/ConnectPorts.h"
 #include "smtk/task/operators/DisconnectPorts.h"
 #include "smtk/task/operators/EmplaceWorklet.h"
@@ -76,8 +77,14 @@ using AgentList = std::tuple<
   SubmitOperationAgent,
   TrivialProducerAgent>;
 
-using OperationList = std::
-  tuple<AddDependency, ConnectPorts, DisconnectPorts, EmplaceWorklet, RemoveDependency, RenameTask>;
+using OperationList = std::tuple<
+  AddDependency,
+  ChangeTaskCompletion,
+  ConnectPorts,
+  DisconnectPorts,
+  EmplaceWorklet,
+  RemoveDependency,
+  RenameTask>;
 
 void Registrar::registerTo(const smtk::resource::Manager::Ptr& resourceManager)
 {

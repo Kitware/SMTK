@@ -14,7 +14,10 @@
 #include "smtk/CoreExports.h"
 #include "smtk/SystemConfig.h"
 
+#include "smtk/string/Token.h"
+
 #include "smtk/common/Factory.h"
+
 #include "smtk/operation/Operation.h" // for Operation::Index
 
 #include <functional>
@@ -47,12 +50,16 @@ class SMTKCORE_EXPORT OperationIcons
 public:
   /// A function that takes a secondary color and returns icon data (as a string).
   using IconConstructor = std::function<std::string(const std::string&)>;
+  /// A function that takes a secondary color plus a mode returns icon data (as a string).
+  using IconConstructor2 = std::function<std::string(const std::string&, smtk::string::Token)>;
   /// This class indexes icon-constructors the same way Operations are indexed.
   using Index = smtk::operation::Operation::Index;
   /// A map from operation names to operation indices used when creating icons by type-name.
   using IndexMap = std::unordered_map<std::string, Index>;
   /// A map from operation indices to construction functors used when creating icons.
   using FunctorMap = std::unordered_map<Index, IconConstructor>;
+  /// A map from operation indices to improved construction functors used when creating icons.
+  using FunctorMap2 = std::unordered_map<Index, IconConstructor2>;
 
   /// Register an icon constructor identified by the resource it represents.
   template<typename OperationType>
@@ -60,6 +67,16 @@ public:
   {
     Index index = typeid(OperationType).hash_code();
     bool didAdd = m_functors.emplace(std::make_pair(index, functor)).second;
+    didAdd &=
+      m_indices.emplace(std::make_pair(smtk::common::typeName<OperationType>(), index)).second;
+    return didAdd;
+  }
+
+  template<typename OperationType>
+  bool registerOperation(IconConstructor2&& functor)
+  {
+    Index index = typeid(OperationType).hash_code();
+    bool didAdd = m_functors2.emplace(std::make_pair(index, functor)).second;
     didAdd &=
       m_indices.emplace(std::make_pair(smtk::common::typeName<OperationType>(), index)).second;
     return didAdd;
@@ -85,17 +102,32 @@ public:
         ++it;
       }
     }
-    return m_functors.erase(index) > 0;
+    return m_functors.erase(index) > 0 || m_functors2.erase(index);
   }
 
   /// Construct an icon identified by the operation it represents.
-  /// SecondaryColor is a background or nearby color that the icon must contrast with.
+  ///
+  /// \a secondaryColor is a background or nearby color that the icon must contrast with.
   template<typename OperationType>
   std::string createIcon(const std::string& secondaryColor) const
   {
+    using namespace smtk::string::literals;
+
+    return this->createIcon<OperationType>(secondaryColor, "normal"_token);
+  }
+
+  /// Construct an icon identified by the operation it represents.
+  ///
+  /// \a secondaryColor is a background or nearby color that the icon must contrast with.
+  /// \a mode is one of: "normal"_token, "disabled"_token, "selected"_token, "active"_token
+  /// though this may change in the future.
+  template<typename OperationType>
+  std::string createIcon(const std::string& secondaryColor, smtk::string::Token mode) const
+  {
     Index index = typeid(OperationType).hash_code();
     auto it = m_functors.find(index);
-    if (it == m_functors.end())
+    auto it2 = m_functors2.find(index);
+    if (it == m_functors.end() && it2 == m_functors2.end())
     {
       if (m_defaultIconConstructor)
       {
@@ -103,14 +135,28 @@ public:
       }
       return std::string();
     }
-    return it->second(secondaryColor);
+    else if (it != m_functors.end())
+    {
+      return it->second(secondaryColor);
+    }
+    else
+    {
+      return it2->second(secondaryColor, mode);
+    }
   }
 
   std::string createIcon(const std::string& operationName, const std::string& secondaryColor) const;
+  std::string createIcon(
+    const std::string& operationName,
+    const std::string& secondaryColor,
+    smtk::string::Token mode) const;
   std::string createIcon(const Index& index, const std::string& secondaryColor) const;
+  std::string
+  createIcon(const Index& index, const std::string& secondaryColor, smtk::string::Token mode) const;
 
 private:
   FunctorMap m_functors;
+  FunctorMap2 m_functors2;
   IndexMap m_indices;
   IconConstructor m_defaultIconConstructor;
 };

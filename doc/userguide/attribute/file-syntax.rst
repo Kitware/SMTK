@@ -2124,6 +2124,14 @@ An Attribute View allows users to create, modify, and delete smtk::attribute::At
 
        (Optional - default is *true*)
 
+   * - AttributeListRows
+     - A positive integer specifying the preferred initial number of rows visible in the
+       attribute list. The table header and controls are additional to these rows.
+       Users can resize the list with the splitter; this option does not limit the
+       number of attributes. Available space may constrain the initial height.
+
+       (Optional - default is *2*; invalid or non-positive values use the default.)
+
    * - SearchBoxText
      - A string that is used in the search box to indicate what the box is for.
 

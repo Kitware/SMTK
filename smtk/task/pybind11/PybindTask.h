@@ -44,6 +44,8 @@ inline PySharedPtrClass< smtk::task::Task, smtk::resource::Component > pybind11_
     .def("addDependency", &smtk::task::Task::addDependency, py::arg("dependency"))
     .def("removeDependency", &smtk::task::Task::removeDependency, py::arg("dependency"))
     .def("observers", &smtk::task::Task::observers)
+    .def("manager", &smtk::task::Task::manager)
+    .def("managers", &smtk::task::Task::managers)
     //.def("internalState", &smtk::task::Task::internalState)
     ;
   return instance;

@@ -10,6 +10,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 
+#include "smtk/extension/qt/job/qtQueueItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
 #include "smtk/extension/qt/qtComponentItem.h"
 #include "smtk/extension/qt/qtDateTimeItem.h"
@@ -187,6 +188,7 @@ void qtUIManager::commonConstructor()
   this->registerItemConstructor("qtResourceItem", qtResourceItem::createItemWidget);
   this->registerItemConstructor("qtStringItem", qtStringItem::createItemWidget);
   this->registerItemConstructor("qtVoidItem", qtVoidItem::createItemWidget);
+  this->registerItemConstructor("qtQueueItem", smtk::qt::qtQueueItem::createItemWidget);
 
   this->registerItemConstructor("InfixExpression", qtInfixExpressionEditor::createItemWidget);
 

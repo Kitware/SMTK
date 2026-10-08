@@ -301,6 +301,56 @@ FillOutAttributesAgent::PortDataObjects FillOutAttributesAgent::PortDataObjectsV
   }
 }
 
+std::vector<std::shared_ptr<smtk::attribute::Attribute>>
+FillOutAttributesAgent::validatedAttributes(
+  const std::shared_ptr<smtk::attribute::Resource>& resource) const
+{
+  std::vector<std::shared_ptr<smtk::attribute::Attribute>> result;
+  if (!resource)
+  {
+    return result;
+  }
+
+  for (const auto& attributeSet : m_attributeSets)
+  {
+    auto it = attributeSet.m_resources.find(resource->id());
+    if (it == attributeSet.m_resources.end())
+    {
+      continue;
+    }
+    for (const auto& attId : it->second.m_valid)
+    {
+      result.push_back(resource->findAttribute(attId));
+    }
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<smtk::attribute::Attribute>>
+FillOutAttributesAgent::unvalidatedAttributes(
+  const std::shared_ptr<smtk::attribute::Resource>& resource) const
+{
+  std::vector<std::shared_ptr<smtk::attribute::Attribute>> result;
+  if (!resource)
+  {
+    return result;
+  }
+
+  for (const auto& attributeSet : m_attributeSets)
+  {
+    auto it = attributeSet.m_resources.find(resource->id());
+    if (it == attributeSet.m_resources.end())
+    {
+      continue;
+    }
+    for (const auto& attId : it->second.m_invalid)
+    {
+      result.push_back(resource->findAttribute(attId));
+    }
+  }
+  return result;
+}
+
 bool FillOutAttributesAgent::getViewData(smtk::common::TypeContainer& configuration) const
 {
   using ResourceSet = std::

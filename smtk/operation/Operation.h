@@ -262,6 +262,10 @@ public:
     SkipValidation //!< Assume the nested operation's parameters are valid.
   };
 
+  // Construct the operation's base specification. This is done by reading
+  // an attribute .sbt file.
+  Specification createBaseSpecification() const;
+
 protected:
   friend class PythonRunChild;
   Operation();
@@ -294,10 +298,6 @@ protected:
   // Append an output summary string to the output result. Derived classes can
   // reimplement this method to send custom summary strings to the logger.
   virtual void generateSummary(Result&);
-
-  // Construct the operation's base specification. This is done by reading
-  // an attribute .sbt file.
-  Specification createBaseSpecification() const;
 
   int m_debugLevel{ 0 };
   std::weak_ptr<Manager> m_manager;

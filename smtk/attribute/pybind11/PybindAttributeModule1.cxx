@@ -62,7 +62,7 @@ void attributePart1(py::module& attribute)
   py::class_< smtk::attribute::AttributeAssignmentOptions > smtk_attribute_AttributeAssignmentOptions = pybind11_init_smtk_attribute_AttributeAssignmentOptions(attribute);
   py::class_< smtk::attribute::ItemAssignmentOptions > smtk_attribute_ItemAssignmentOptions = pybind11_init_smtk_attribute_ItemAssignmentOptions(attribute);
   py::class_< smtk::attribute::CopyAssignmentOptions > smtk_attribute_CopyAssignmentOptions = pybind11_init_smtk_attribute_CopyAssignmentOptions(attribute);
-  PySharedPtrClass< smtk::attribute::Attribute > smtk_attribute_Attribute = pybind11_init_smtk_attribute_Attribute(attribute);
+  auto smtk_attribute_Attribute = pybind11_init_smtk_attribute_Attribute(attribute);
   PySharedPtrClass< smtk::attribute::Definition > smtk_attribute_Definition = pybind11_init_smtk_attribute_Definition(attribute);
   PySharedPtrClass< smtk::attribute::Item > smtk_attribute_Item = pybind11_init_smtk_attribute_Item(attribute);
   PySharedPtrClass< smtk::attribute::ItemDefinition > smtk_attribute_ItemDefinition = pybind11_init_smtk_attribute_ItemDefinition(attribute);

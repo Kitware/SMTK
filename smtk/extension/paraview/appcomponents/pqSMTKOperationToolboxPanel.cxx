@@ -38,6 +38,8 @@
 #include "smtk/view/json/jsonView.h"
 
 #include "pqApplicationCore.h"
+#include "pqCoreUtilities.h"
+#include "pqPVApplicationCore.h"
 #ifndef PARAVIEW_VERSION_59
 #include "pqKeySequences.h"
 #include "pqModalShortcut.h"
@@ -65,6 +67,27 @@ pqSMTKOperationToolboxPanel::pqSMTKOperationToolboxPanel(QWidget* parent)
   this->setWindowTitle("Toolbox");
   QVBoxLayout* layout = new QVBoxLayout();
   this->setLayout(layout);
+
+#ifndef PARAVIEW_VERSION_59
+  // Register once, independently of the operation palette's configuration.
+  m_findOperationShortcut = pqKeySequences::instance().addModalShortcut(
+    QKeySequence(Qt::CTRL + Qt::Key_Space), nullptr, this);
+  // Use the main window so the shortcut also works when the toolbox is hidden.
+  m_findOperationShortcut->setContextWidget(pqCoreUtilities::mainWidget(), Qt::ApplicationShortcut);
+  QObject::connect(
+    m_findOperationShortcut,
+    &pqModalShortcut::activated,
+    this,
+    &pqSMTKOperationToolboxPanel::quickLaunch);
+#if defined(Q_OS_MAC)
+  // ParaView advertises Option/Alt+Space on macOS. Keep the existing binding too.
+  auto* altSpaceShortcut = pqKeySequences::instance().addModalShortcut(
+    QKeySequence(Qt::ALT + Qt::Key_Space), nullptr, this);
+  altSpaceShortcut->setContextWidget(pqCoreUtilities::mainWidget(), Qt::ApplicationShortcut);
+  QObject::connect(
+    altSpaceShortcut, &pqModalShortcut::activated, this, &pqSMTKOperationToolboxPanel::quickLaunch);
+#endif
+#endif
 
   // Default configuration.
   nlohmann::json jsonConfig = {
@@ -173,6 +196,22 @@ void pqSMTKOperationToolboxPanel::unobserveWrapper(pqSMTKWrapper* wrapper, pqSer
   m_wrapper = nullptr;
 }
 
+void pqSMTKOperationToolboxPanel::quickLaunch()
+{
+  auto* behavior = pqSMTKBehavior::instance();
+  if (behavior && behavior->postProcessingMode())
+  {
+    if (auto* core = pqPVApplicationCore::instance())
+    {
+      core->quickLaunch();
+    }
+  }
+  else
+  {
+    this->searchFocus();
+  }
+}
+
 void pqSMTKOperationToolboxPanel::searchFocus()
 {
   if (m_view)
@@ -275,21 +314,4 @@ void pqSMTKOperationToolboxPanel::reconfigure()
   viewInfo.insert(m_uiMgr.data());
   auto* view = m_uiMgr->setSMTKView(viewInfo);
   m_view = dynamic_cast<smtk::extension::qtOperationPalette*>(view);
-#ifndef PARAVIEW_VERSION_59
-  if (m_view && m_view->searchTextWidget())
-  {
-    if (!m_findOperationShortcut)
-    {
-      m_findOperationShortcut = pqKeySequences::instance().addModalShortcut(
-        QKeySequence(Qt::CTRL + Qt::Key_Space), nullptr, this);
-      // Make the shortcut application-wide:
-      m_findOperationShortcut->setContextWidget(this, Qt::ApplicationShortcut);
-    }
-    QObject::connect(
-      m_findOperationShortcut,
-      &pqModalShortcut::activated,
-      this,
-      &pqSMTKOperationToolboxPanel::searchFocus);
-  }
-#endif
 }

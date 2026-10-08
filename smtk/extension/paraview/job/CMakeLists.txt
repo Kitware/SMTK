@@ -1,0 +1,32 @@
+set(classes
+  Registrar
+  pqArtifacts
+  pqJobRunnerView
+)
+
+vtk_module_add_module(smtkPVJobExt
+  CLASSES ${classes}
+  HEADERS_SUBDIR "smtk/extension/paraview/job"
+)
+
+qt_wrap_cpp(
+  QTMOCSRCS
+  pqJobRunnerView.h
+  pqArtifacts.h
+  TARGET smtkPVJobExt
+)
+set_property(SOURCE pqJobRunnerView.cxx PROPERTY OBJECT_DEPENDS "${QTMOCSRCS}")
+
+vtk_module_link(smtkPVJobExt
+  PUBLIC
+    VTK::CommonDataModel
+    smtkCore
+    smtkQtExt
+    smtkPQComponentsExt
+    ParaView::qttesting
+    ParaView::pqComponents
+)
+
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing/cxx)
+endif()

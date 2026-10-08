@@ -226,6 +226,7 @@ public:
   smtk::attribute::ConstDefinitionPtr findIsUniqueBaseClass(
     smtk::attribute::ConstDefinitionPtr attDef) const;
 
+  /// Renames an attribute and returns true if the renaming was successful.
   bool rename(AttributePtr att, const std::string& newName);
 
   /// Changes the ID of an Attribute.
@@ -399,26 +400,7 @@ public:
   AssociationRules& associationRules() { return m_associationRules; }
   const AssociationRules& associationRules() const { return m_associationRules; }
 
-  class GuardedLinks
-  {
-  public:
-    GuardedLinks(std::mutex& mutex, const smtk::resource::Resource::Links& links)
-      : m_guard(mutex)
-      , m_links(links)
-    {
-    }
-
-    const smtk::resource::Resource::Links* operator->() const { return &m_links; }
-
-    smtk::resource::Resource::Links* operator->()
-    {
-      return const_cast<smtk::resource::Resource::Links*>(&m_links);
-    }
-
-  private:
-    std::unique_lock<std::mutex> m_guard;
-    const smtk::resource::Resource::Links& m_links;
-  };
+  using GuardedLinks = smtk::resource::GuardedResourceLinks;
 
   // Attributes are uniquely used outside of an operation context, where they
   // are not guarded from concurrency issues. Specifically, ReferenceItems use

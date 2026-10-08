@@ -286,6 +286,12 @@ class TestCase(with_metaclass(TestCaseMeta)):
             return True
         return self.assertImageMatch(baseline_path, threshold)
 
+    def assertIsFile(self, path):
+        """Asserts if "path" is not an accessible file on the filesystem."""
+        import pathlib
+        if not pathlib.Path(path).resolve().is_file():
+            raise AssertionError(f'File "{path}" does not exist.')
+
     @staticmethod
     def hex2rgb(hexstr):
         hh = hexstr[1:] if hexstr[0] == '#' else hexstr

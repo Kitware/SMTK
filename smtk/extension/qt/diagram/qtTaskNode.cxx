@@ -27,6 +27,8 @@
 #include <QApplication>
 #include <QColor>
 #include <QEvent>
+#include <QFile>
+#include <QFontMetricsF>
 #include <QGraphicsProxyWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsTextItem>
@@ -36,9 +38,14 @@
 #include <QLayout>
 #include <QMenu>
 #include <QPainter>
+#include <QSvgRenderer>
+#include <QTextBlock>
+#include <QTextBlockFormat>
 #include <QTextDocument>
-#include <QTextOption>
+#include <QTextLayout>
 #include <QTimer>
+
+#include <algorithm>
 
 #include "task/ui_DefaultTaskNode.h"
 
@@ -209,8 +216,8 @@ public:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override
   {
     (void)event;
-    // Try to changed the task's completeness state and if successful, update the item
-    if (m_node->task()->markCompleted(m_node->task()->state() != smtk::task::State::Completed))
+    // Try to change the task's completeness state and if successful, update the item.
+    if (m_node->markCompleted(m_node->task()->state() != smtk::task::State::Completed))
     {
       this->update();
     }
@@ -366,27 +373,7 @@ public:
     auto f = this->font();
     f.setPointSize(18);
     this->setFont(f);
-    qtDiagramViewConfiguration& cfg(*m_node->scene()->configuration());
-    auto* task = m_node->task();
-    if (task)
-    {
-      std::string s;
-      if (task->hasChildren())
-      {
-        s = s_hasChildrenSymbol;
-      }
-      else if (task->hasInternalPorts() || task->canAcceptWorklets())
-      {
-        s = s_canHaveChildrenSymbol;
-      }
-      s.append(task->name());
-      this->setHtml(s.c_str());
-    }
-    // See if we need to adjust the text width based on the configuration
-    double textWidth = this->boundingRect().width();
-    double minTextWidth = cfg.nodeWidth() - (2 * m_node->sideTotalWidth());
-    this->document()->setDefaultTextOption(QTextOption(Qt::AlignHCenter));
-    this->setTextWidth((minTextWidth > textWidth) ? minTextWidth : textWidth);
+    this->dataUpdated();
     // Since all double click events are preceded by a single click event, the item uses a timer
     // to remove all single clicks that were part of a double click.  When a single click event is
     // received, we start a timer and if no double click event occurs before the timeout, we process
@@ -455,17 +442,32 @@ public:
     auto* task = m_node->task();
     if (task)
     {
-      std::string s;
+      // Keep the icon out of the document so renaming only edits the task name.
+      m_iconPath.clear();
       if (task->hasChildren())
       {
-        s = s_hasChildrenSymbol;
+        m_iconPath = ":/icons/diagram/folder-solid.svg";
       }
       else if (task->hasInternalPorts() || task->canAcceptWorklets())
       {
-        s = s_canHaveChildrenSymbol;
+        m_iconPath = ":/icons/diagram/folder-regular.svg";
       }
-      s.append(task->name());
-      this->setHtml(s.c_str());
+      m_loadedIconPath.clear();
+      this->setPlainText(QString::fromStdString(task->name()));
+      const QFontMetricsF metrics(this->font());
+      m_iconSize = metrics.height();
+      const double iconSpace =
+        m_iconPath.isEmpty() ? 0.0 : m_iconSize + metrics.horizontalAdvance(QLatin1Char(' '));
+      QTextCursor cursor(this->document());
+      cursor.select(QTextCursor::Document);
+      QTextBlockFormat format;
+      format.setLeftMargin(iconSpace);
+      format.setAlignment(Qt::AlignHCenter);
+      cursor.mergeBlockFormat(format);
+      this->setTextWidth(-1);
+      const auto& cfg = *m_node->scene()->configuration();
+      this->setTextWidth(
+        std::max(this->document()->idealWidth(), cfg.nodeWidth() - 2 * m_node->sideTotalWidth()));
     }
   }
 
@@ -475,6 +477,47 @@ protected:
     auto& cfg = *m_node->scene()->configuration();
     this->setDefaultTextColor(cfg.textColor());
     QGraphicsTextItem::paint(painter, option, widget);
+    if (!m_iconPath.isEmpty())
+    {
+      if (m_loadedIconPath != m_iconPath || m_iconColor != cfg.textColor())
+      {
+        m_loadedIconPath = m_iconPath;
+        m_iconColor = cfg.textColor();
+        QFile file(m_iconPath);
+        if (file.open(QIODevice::ReadOnly))
+        {
+          auto svg = file.readAll();
+          svg.replace("#000000", m_iconColor.name().toUtf8());
+          if (!m_iconRenderer.load(svg))
+          {
+            qWarning("Could not load task folder SVG");
+          }
+        }
+        else
+        {
+          m_iconRenderer.load(QByteArray());
+          qWarning("Could not read task folder SVG resource");
+        }
+      }
+      if (m_iconRenderer.isValid())
+      {
+        const double margin = this->document()->documentMargin();
+        QPointF position(margin, margin);
+        auto* layout = this->document()->firstBlock().layout();
+        if (layout && layout->lineCount() > 0)
+        {
+          const auto line = layout->lineAt(0);
+          const QFontMetricsF metrics(this->font());
+          position = layout->position() +
+            QPointF(line.cursorToX(0) - m_iconSize - metrics.horizontalAdvance(QLatin1Char(' ')),
+                    line.y() + (line.height() - m_iconSize) / 2.0);
+        }
+        painter->save();
+        painter->setOpacity(painter->opacity() * m_iconColor.alphaF());
+        m_iconRenderer.render(painter, QRectF(position, QSizeF(m_iconSize, m_iconSize)));
+        painter->restore();
+      }
+    }
   }
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* evt) override
@@ -551,18 +594,12 @@ protected:
   }
   qtTaskNode* m_node;
   QTimer* m_timer;
-  /// Unicode character used to indicate that the task contains children
-  static const std::string s_hasChildrenSymbol;
-  /// Unicode character used to indicate that the task can accept tasks
-  /// generated from at least one worklet in the manager or the task
-  /// contains internal ports.
-  static const std::string s_canHaveChildrenSymbol;
+  QString m_iconPath;
+  QString m_loadedIconPath;
+  QColor m_iconColor;
+  QSvgRenderer m_iconRenderer;
+  double m_iconSize{ 0.0 };
 };
-
-const std::string qtTaskNameItem::s_hasChildrenSymbol =
-  "<b><span style=\"font-family:Font Awesome 6 Free\">&#x1f4c1;</span></b>&nbsp;";
-const std::string qtTaskNameItem::s_canHaveChildrenSymbol =
-  "<span style=\"font-family:Font Awesome 6 Free\">&#x1f4c1;</span>&nbsp;";
 
 qtTaskNode::qtTaskNode(qtDiagramGenerator* generator, smtk::task::Task* task, QGraphicsItem* parent)
   : Superclass(generator, task, parent)

@@ -57,7 +57,7 @@ using TaskInstancesBase = smtk::common::Instances<
 class SMTKCORE_EXPORT Instances : public TaskInstancesBase
 {
 public:
-  smtkTypeMacroBase(smtk::task::Instances);
+  smtkTypeMacro(smtk::task::Instances);
   smtkSuperclassMacro(smtk::task::TaskInstancesBase);
 
   Instances(Manager& taskManager);

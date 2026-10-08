@@ -1,5 +1,16 @@
 <RCC>
   <qresource prefix="/icons/diagram">
+    <file alias="settings.svg">icons/settings.svg</file>
+    <file alias="visible.svg">icons/visible.svg</file>
+    <file alias="hidden.svg">icons/hidden.svg</file>
+    <file alias="log.svg">icons/log.svg</file>
+    <file alias="pending.svg">icons/pending.svg</file>
+    <file alias="warning.svg">icons/warning.svg</file>
+    <file alias="success.svg">icons/success.svg</file>
+    <file alias="failure.svg">icons/failure.svg</file>
+
+    <file alias="folder-solid.svg">icons/folder-solid.svg</file>
+    <file alias="folder-regular.svg">icons/folder-regular.svg</file>
     <file alias = "house-solid.svg">icons/house-solid.svg</file>
     <file alias = "align_left.svg">../../../view/icons/align_left.svg</file>
     <file alias = "align_right.svg">../../../view/icons/align_right.svg</file>

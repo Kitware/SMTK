@@ -11,6 +11,7 @@
 #include "smtk/task/Manager.h"
 #include "smtk/task/ObjectsInRoles.h"
 
+#include "smtk/project/Manager.h"
 #include "smtk/project/Project.h"
 
 #include "smtk/operation/Operation.h"
@@ -299,6 +300,76 @@ smtk::resource::Resource* Manager::resource() const
   return m_parent;
 }
 
+nlohmann::json Manager::workflowViewConfigurationToJSONSpec(
+  const smtk::view::Configuration::Component& config)
+{
+  nlohmann::json jsonSpec;
+  nlohmann::json::array_t controls;
+  for (const auto& entry : config.children())
+  {
+    smtk::string::Token tagName = entry.name();
+    switch (tagName.id())
+    {
+      case "ActiveTaskPort"_hash:
+      {
+        auto portName = entry.attributeAsString("Port");
+        auto roleName = entry.attributeAsString("Role");
+        if (portName.empty())
+        {
+          smtkErrorMacro(smtk::io::Logger::instance(), "Missing a port name.");
+          continue;
+        }
+        nlohmann::json sourceSpec{ { "type", "active task port" }, { "port", portName } };
+        if (!roleName.empty())
+        {
+          sourceSpec["role"] = roleName;
+        }
+        auto filters = filtersForSpec(entry);
+        if (!filters.empty())
+        {
+          jsonSpec["filter"] = filters;
+        }
+        jsonSpec["source"] = sourceSpec;
+      }
+      break;
+      case "ProjectResources"_hash:
+      {
+        nlohmann::json sourceSpec{ { "type", "project resources" } };
+        auto filters = filtersForSpec(entry);
+        if (!filters.empty())
+        {
+          jsonSpec["filter"] = filters;
+        }
+        jsonSpec["source"] = sourceSpec;
+      }
+      break;
+      case "Control"_hash:
+      {
+        auto controlType = entry.attributeAsString("Type");
+        if (controlType.empty())
+        {
+          smtkErrorMacro(
+            smtk::io::Logger::instance(), "Control tag must provide a Type attribute.");
+          continue;
+        }
+        controls.emplace_back(controlType);
+      }
+      break;
+      default:
+      {
+        smtkWarningMacro(
+          smtk::io::Logger::instance(),
+          "Unhandled specification tag <" << tagName.data() << ">. Skipping.");
+      }
+    }
+  }
+  if (!controls.empty())
+  {
+    jsonSpec["controls"] = controls;
+  }
+  return jsonSpec;
+}
+
 Manager::ResourceObjectMap Manager::workflowObjects(const nlohmann::json& spec, Task* task)
 {
   // Filter objects by the \a spec.
@@ -445,70 +516,7 @@ Manager::ResourceObjectMap Manager::workflowObjects(
 {
   // To avoid dueling implementations, we'll convert \a spec into JSON and pass
   // it to the variant above.
-  nlohmann::json jsonSpec;
-  nlohmann::json::array_t controls;
-  for (const auto& entry : spec.children())
-  {
-    smtk::string::Token tagName = entry.name();
-    switch (tagName.id())
-    {
-      case "ActiveTaskPort"_hash:
-      {
-        auto portName = entry.attributeAsString("Port");
-        auto roleName = entry.attributeAsString("Role");
-        if (portName.empty())
-        {
-          smtkErrorMacro(smtk::io::Logger::instance(), "Missing a port name.");
-          continue;
-        }
-        nlohmann::json sourceSpec{ { "type", "active task port" }, { "port", portName } };
-        if (!roleName.empty())
-        {
-          sourceSpec["role"] = roleName;
-        }
-        auto filters = filtersForSpec(entry);
-        if (!filters.empty())
-        {
-          jsonSpec["filter"] = filters;
-        }
-        jsonSpec["source"] = sourceSpec;
-      }
-      break;
-      case "ProjectResources"_hash:
-      {
-        nlohmann::json sourceSpec{ { "type", "project resources" } };
-        auto filters = filtersForSpec(entry);
-        if (!filters.empty())
-        {
-          jsonSpec["filter"] = filters;
-        }
-        jsonSpec["source"] = sourceSpec;
-      }
-      break;
-      case "Control"_hash:
-      {
-        auto controlType = entry.attributeAsString("Type");
-        if (controlType.empty())
-        {
-          smtkErrorMacro(
-            smtk::io::Logger::instance(), "Control tag must provide a Type attribute.");
-          continue;
-        }
-        controls.emplace_back(controlType);
-      }
-      break;
-      default:
-      {
-        smtkWarningMacro(
-          smtk::io::Logger::instance(),
-          "Unhandled specification tag <" << tagName.data() << ">. Skipping.");
-      }
-    }
-  }
-  if (!controls.empty())
-  {
-    jsonSpec["controls"] = controls;
-  }
+  auto jsonSpec = this->workflowViewConfigurationToJSONSpec(spec);
   auto objMap = this->workflowObjects(jsonSpec, task);
   return objMap;
 }
@@ -783,6 +791,29 @@ bool Manager::changePortName(Port* port, const std::string& newName, std::functi
   // Currently there are no internal data structures that need to be called so just call
   // the function passed in
   return fp();
+}
+
+Task* getActiveTask(const smtk::common::TypeContainer& context)
+{
+  Task* activeTask = nullptr;
+  if (context.contains<smtk::project::Manager::Ptr>())
+  {
+    if (const auto& projectManager = context.get<smtk::project::Manager::Ptr>())
+    {
+      for (const auto& project : projectManager->projectsSet())
+      {
+        if (project)
+        {
+          activeTask = project->taskManager().active().task();
+          if (activeTask)
+          {
+            return activeTask;
+          }
+        }
+      }
+    }
+  }
+  return activeTask;
 }
 
 } // namespace task

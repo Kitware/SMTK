@@ -17,6 +17,7 @@
 #include "smtk/CoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/resource/Component.h"
+#include "smtk/resource/GuardedLinks.h"
 
 #include "smtk/attribute/CopyAssignmentOptions.h"
 #include "smtk/attribute/ReferenceItem.h"
@@ -110,6 +111,7 @@ public:
   const std::string& type() const;
   std::vector<std::string> types() const;
   bool isA(const smtk::attribute::DefinitionPtr& def) const;
+  bool isA(const std::string& defName) const;
   const smtk::attribute::DefinitionPtr& definition() const { return m_definition; }
 
   const double* color() const;
@@ -435,26 +437,7 @@ public:
   /// An attribute supports units if its definition's units() does not return an empty string.
   bool supportsUnits() const;
 
-  class GuardedLinks
-  {
-  public:
-    GuardedLinks(std::mutex& mutex, const smtk::resource::Component::Links& links)
-      : m_guard(mutex)
-      , m_links(links)
-    {
-    }
-
-    const smtk::resource::Component::Links* operator->() const { return &m_links; }
-
-    smtk::resource::Component::Links* operator->()
-    {
-      return const_cast<smtk::resource::Component::Links*>(&m_links);
-    }
-
-  private:
-    std::unique_lock<std::mutex> m_guard;
-    const smtk::resource::Component::Links& m_links;
-  };
+  using GuardedLinks = smtk::resource::GuardedComponentLinks;
 
   // Attributes are uniquely used outside of an operation context, where they
   // are not guarded from concurrency issues. Specifically, ReferenceItems use

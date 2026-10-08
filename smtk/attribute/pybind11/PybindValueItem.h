@@ -36,6 +36,7 @@ inline PySharedPtrClass< smtk::attribute::ValueItem, smtk::attribute::Item > pyb
     .def("_findChild", (smtk::attribute::ConstItemPtr (smtk::attribute::ValueItem::*)(::std::string const &, ::smtk::attribute::SearchStyle) const) &smtk::attribute::ValueItem::findChild, py::arg("name"), py::arg("arg1"))
     .def("hasDefault", &smtk::attribute::ValueItem::hasDefault)
     .def("isAcceptable", &smtk::attribute::ValueItem::isAcceptable)
+    .def("isChildActive", &smtk::attribute::ValueItem::isChildActive, py::arg("item"))
     .def("isDiscrete", &smtk::attribute::ValueItem::isDiscrete)
     .def("isDiscreteIndexValid", &smtk::attribute::ValueItem::isDiscreteIndexValid, py::arg("value"))
     .def("isExpression", &smtk::attribute::ValueItem::isExpression)

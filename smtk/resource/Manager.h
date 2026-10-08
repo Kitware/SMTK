@@ -149,6 +149,12 @@ public:
   template<typename ResourceType>
   smtk::shared_ptr<const ResourceType> get(const std::string& url) const;
 
+  /// Returns a set of resources that have a given (user-assigned) name.
+  ///
+  /// Currently, this uses visit() but in the future it may index the
+  /// container on the resource name.
+  std::set<ResourcePtr> findByName(const std::string& name);
+
   /// Returns a set of resources that have a given type name.
   std::set<ResourcePtr> find(const std::string& typeName);
 

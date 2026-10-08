@@ -18,6 +18,7 @@
 #include "smtk/attribute/operators/Signal.h"
 
 #include "smtk/operation/Manager.h"
+#include "smtk/operation/Observer.h"
 
 #include "smtk/io/Logger.h"
 
@@ -70,6 +71,7 @@ public:
   QPointer<QHBoxLayout> TopLevelLayout;
   QPointer<QComboBox> m_configurationCombo;
   QPointer<QLabel> m_configurationLabel;
+  smtk::operation::Observers::Key m_operationWatcher;
 };
 
 bool qtBaseAttributeView::validateInformation(const smtk::view::Information& info)
@@ -119,6 +121,37 @@ qtBaseAttributeView::qtBaseAttributeView(const smtk::view::Information& info)
   std::stringstream me;
   me << std::hex << (void const*)this << std::dec;
   m_addressString = me.str();
+}
+
+bool qtBaseAttributeView::enableOperationObserver()
+{
+  if (this->Internals->m_operationWatcher.assigned())
+  {
+    // Already enabled.
+    return false;
+  }
+  if (auto operationManager = this->uiManager()->operationManager())
+  {
+    QPointer<qtBaseAttributeView> self(this);
+    // clang-format off
+    this->Internals->m_operationWatcher = operationManager->observers().insert(
+      [self, this](
+        const smtk::operation::Operation& op,
+        smtk::operation::EventType event,
+        smtk::operation::Operation::Result result)
+      {
+        if (!self) { return 0; }
+        if (event == smtk::operation::EventType::DID_OPERATE)
+        {
+          this->updateViewWithOperationResults(op, result);
+        }
+        return 0;
+      }, /*priority*/0, /*initialize*/false, "qtBaseAttributeView operation monitor."
+    );
+    // clang-format on
+    return true;
+  }
+  return false;
 }
 
 qtBaseAttributeView::~qtBaseAttributeView()
@@ -894,4 +927,12 @@ void qtBaseAttributeView::prepConfigurationComboBox(const std::string& newConfig
   attRes->setActiveCategoriesEnabled(true);
   this->Internals->m_configurationCombo->blockSignals(false);
   this->updateUI();
+}
+
+void qtBaseAttributeView::updateViewWithOperationResults(
+  const smtk::operation::Operation& op,
+  const std::shared_ptr<smtk::attribute::Attribute>& result)
+{
+  (void)op;
+  (void)result;
 }

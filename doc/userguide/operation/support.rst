@@ -64,6 +64,21 @@ that implements ``registerTo()`` and ``unregisterFrom()`` methods.
 Besides informing the operation manager of classes implementing operations,
 your ``registerTo()`` method should also add operations to groups as needed.
 
+If you want to register python operators, you may do so inside
+the registrar's ``registerTo()`` method like so:
+
++ Pass ``pybind11::module::import()`` the name of the module containing the
+  python operators.
+  This will import the python module on the main thread's interpreter.
++ Pass ``smtk::operation::ImportPythonOperation::importOperationsFromModule()``
+  the module name and operation manager. It will return a vector of
+  operation names you can then retain and unregister should your
+  Registrar class be asked to do so.
+
+Registering python operators will either require you to link the library
+containing the registrar to ``pybind11::pybind11`` or create a new registrar
+inside a separate library (which links to pybind11).
+
 Finally, each operation class may have an icon.
 To register an icon for your operation, your Registrar class
 should provide a second ``registerTo()`` method that accepts a

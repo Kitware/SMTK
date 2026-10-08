@@ -2410,12 +2410,30 @@
         <FileListDomain name="folder"/>
         <Hints>
           <UseDirectoryName />
+          <SaveInQSettings both="1"/>
         </Hints>
       </StringVectorProperty>
       <StringVectorProperty
         name="ProjectsRootFolderInfo"
         command="GetProjectsRootFolder"
         information_only="1">
+      </StringVectorProperty>
+      <StringVectorProperty
+        name="ContainerEnginePath"
+        label="Container Engine Path"
+        number_of_elements="1"
+        default_values=""
+        panel_visibility="default">
+        <Documentation>
+          The path to the container engine executable.
+          This is only used when a job's queue requires a container image.
+          Usually this is podman but docker can also be configured to work.
+        </Documentation>
+        <FileListDomain name="files" />
+        <Hints>
+          <PlaceholderText>Only used when a job's queue requires a container image.</PlaceholderText>
+          <SaveInQSettings both="1"/>
+        </Hints>
       </StringVectorProperty>
 
       <Hints>

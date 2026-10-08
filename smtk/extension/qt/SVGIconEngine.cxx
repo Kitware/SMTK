@@ -26,11 +26,20 @@ SVGIconEngine::SVGIconEngine(const std::string& iconBuffer)
 void SVGIconEngine::paint(
   QPainter* painter,
   const QRect& rect,
-  QIcon::Mode /*mode*/,
+  QIcon::Mode mode,
   QIcon::State /*state*/)
 {
+  painter->save();
+  if (mode == QIcon::Disabled)
+  {
+    // Custom icon engines do not receive Qt's synthesized disabled treatment.
+    // Fade the SVG so disabled toolbar actions remain distinct on both light
+    // and dark palettes.
+    painter->setOpacity(painter->opacity() * 0.4);
+  }
   QSvgRenderer renderer(data);
   renderer.render(painter, rect);
+  painter->restore();
 }
 
 QIconEngine* SVGIconEngine::clone() const

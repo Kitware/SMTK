@@ -1,0 +1,66 @@
+<AttDef Type="JobSpec">
+  <BriefDescription>A base attribute for specifying a job to run in a result.</BriefDescription>
+
+  <AssociationsDef Name="job-task" NumberOfRequiredValues="1">
+    <BriefDescription>The task which requires this job to be run.</BriefDescription>
+    <Accepts>
+      <!-- Any task owned by a resource of any type. -->
+      <Resource Name="smtk::resource::Resource" Filter="smtk::task::Task"/>
+    </Accepts>
+  </AssociationsDef>
+  <ItemDefinitions>
+
+    <Directory Name="case directory" NumberOfRequiredValues="1" ShouldExist="true" ShouldBeRelative="true">
+      <BriefDescription>The directory holding job inputs and outputs (including log files).</BriefDescription>
+    </Directory>
+
+    <String Name="job location" NumberOfRequiredValues="1">
+      <BriefDescription>Where the job should run.</BriefDescription>
+      <DiscreteInfo DefaultIndex="0">
+        <Value Enum="localhost">localhost</Value>
+        <Value Enum="server">server</Value>
+      </DiscreteInfo>
+    </String>
+
+    <String Name="job queueing system" NumberOfRequiredValues="1">
+      <BriefDescription>Where the job should run.</BriefDescription>
+      <DiscreteInfo DefaultIndex="0">
+        <Value Enum="shell">sh</Value>
+        <Value Enum="slurm">slurm</Value>
+        <Value Enum="portable batch system">pbs</Value>
+        <Value Enum="flux">flux</Value>
+        <Value Enum="sun grid engine">sge</Value>
+      </DiscreteInfo>
+    </String>
+
+    <String Name="job launcher" NumberOfRequiredValues="1">
+      <BriefDescription>The utility used to launch job processes.</BriefDescription>
+      <DiscreteInfo DefaultIndex="0">
+        <Value Enum="shell">sh</Value>
+        <Value Enum="mpiexec">mpiexec</Value>
+        <Value Enum="srun">srun</Value>
+        <Value Enum="aprun">aprun</Value>
+      </DiscreteInfo>
+    </String>
+
+    <Group Name="scripts" NumberOfRequiredGroups="0" Extensible="true">
+      <ItemDefinitions>
+        <File Name="script" NumberOfRequiredValues="1" ShouldExist="true" ShouldBeRelative="true">
+          <BriefDescription>Path to the script (relative to the case directory).</BriefDescription>
+        </File>
+        <File Name="logs" NumberOfRequiredValues="0" Extensible="true" ShouldBeRelative="true">
+          <BriefDescription>Path to log files (relative to the case directory) for each script segment.</BriefDescription>
+          <DetailedDescription>
+            Each script may have multiple segments (or stages) that run.
+            No segment will start if a previous segment failed to complete successfully.
+            Each segment will have a different log file.
+            Each segment may run a different number of processes.
+            After each segment completes, the `logs/progress` file will be overwritten with
+            a monotonically increasing integer count.
+          </DetailedDescription>
+        </File>
+      </ItemDefinitions>
+    </Group>
+
+  </ItemDefinitions>
+</AttDef>

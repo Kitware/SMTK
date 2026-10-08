@@ -1,71 +1,50 @@
-set(operationSrcs
-  Group.cxx
-  GroupOps.cxx
-  Helper.cxx
-  Launcher.cxx
-  MarkGeometry.cxx
-  Manager.cxx
-  Metadata.cxx
-  Operation.cxx
-  Registrar.cxx
-  ResultOps.cxx
-  SpecificationOps.cxx
-  XMLOperation.cxx
+set(operationClasses
+  Group
+  GroupOps
+  GroupObserver
+  Helper
+  Hints
+  Launcher
+  MarkGeometry
+  Manager
+  Metadata
+  MetadataContainer
+  MetadataObserver
+  Observer
+  Operation
+  Registrar
+  ResultOps
+  SpecificationOps
+  XMLOperation
 
-  groups/ArcCreator.cxx
-  groups/ArcDeleter.cxx
-  groups/CreatorGroup.cxx
-  groups/DeleterGroup.cxx
-  groups/GroupingGroup.cxx
-  groups/ImporterGroup.cxx
-  groups/InternalGroup.cxx
-  groups/ExporterGroup.cxx
-  groups/NamingGroup.cxx
-  groups/ReaderGroup.cxx
-  groups/ResourceIOGroup.cxx
-  groups/UngroupingGroup.cxx
-  groups/WriterGroup.cxx
+  groups/ArcCreator
+  groups/ArcDeleter
+  groups/CreatorGroup
+  groups/DeleterGroup
+  groups/ExporterGroup
+  groups/GroupingGroup
+  groups/ImporterGroup
+  groups/InternalGroup
+  groups/NamingGroup
+  groups/ReaderGroup
+  groups/ResourceIOGroup
+  groups/UngroupingGroup
+  groups/WriterGroup
 
-  operators/ImportResource.cxx
+  queries/SynchronizedCache
 )
 
-set(operationHeaders
-  Launcher.h
-  MarkGeometry.h
-  Group.h
-  GroupObserver.h
-  GroupOps.h
-  Helper.h
-  Hints.h
-  Manager.h
-  Metadata.h
-  MetadataContainer.h
-  MetadataObserver.h
-  Observer.h
-  Operation.h
-  Registrar.h
-  ResultOps.h
-  SpecificationOps.h
-  XMLOperation.h
+set(operationSrcs)
+set(operationHeaders)
 
-  groups/ArcCreator.h
-  groups/ArcDeleter.h
-  groups/CreatorGroup.h
-  groups/DeleterGroup.h
-  groups/GroupingGroup.h
-  groups/ImporterGroup.h
-  groups/InternalGroup.h
-  groups/ExporterGroup.h
-  groups/NamingGroup.h
-  groups/ReaderGroup.h
-  groups/ResourceIOGroup.h
-  groups/UngroupingGroup.h
-  groups/WriterGroup.h
-
-  operators/ImportResource.h
-
-  queries/SynchronizedCache.h
-)
+foreach(class ${operationClasses})
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.h")
+    list(APPEND operationHeaders "${class}.h")
+  endif()
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${class}.cxx")
+    list(APPEND operationSrcs "${class}.cxx")
+  endif()
+endforeach()
 
 set(operationXML
   Hints.xml
@@ -78,6 +57,7 @@ set(operationOperators
   CoordinateTransform
   CopyResources
   EditProperties
+  ImportResource
   MarkModified
   ReadResource
   RemoveResource
@@ -100,11 +80,13 @@ smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/Operation.sbt"
   HEADER_OUTPUT headerName)
 list(APPEND _operationDependencies ${headerName})
 foreach (operator ${operationOperators})
-  smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
-    HEADER_OUTPUT headerName)
-  list(APPEND operationSrcs operators/${operator}.cxx)
   list(APPEND operationHeaders operators/${operator}.h)
-  list(APPEND _operationDependencies ${headerName})
+  list(APPEND operationSrcs operators/${operator}.cxx)
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt")
+    smtk_encode_file("${CMAKE_CURRENT_SOURCE_DIR}/operators/${operator}.sbt"
+      HEADER_OUTPUT headerName)
+    list(APPEND _operationDependencies ${headerName})
+  endif()
 endforeach()
 add_custom_target(operationGenHeaders
   DEPENDS

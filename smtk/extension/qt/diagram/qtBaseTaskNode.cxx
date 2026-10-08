@@ -18,6 +18,12 @@
 #include "smtk/task/Active.h"
 #include "smtk/task/Manager.h"
 #include "smtk/task/Task.h"
+#include "smtk/task/operators/ChangeTaskCompletion.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/common/Managers.h"
+#include "smtk/operation/Manager.h"
 
 #include <cassert>
 
@@ -68,6 +74,24 @@ smtk::resource::PersistentObject* qtBaseTaskNode::object() const
 void qtBaseTaskNode::setOutlineStyle(OutlineStyle os)
 {
   m_outlineStyle = os;
+}
+
+bool qtBaseTaskNode::markCompleted(bool completed)
+{
+  auto* taskManager = m_task ? m_task->manager() : nullptr;
+  auto managers = taskManager ? taskManager->managers() : nullptr;
+  auto operationManager = managers ? managers->get<smtk::operation::Manager::Ptr>() : nullptr;
+  auto operation =
+    operationManager ? operationManager->create<smtk::task::ChangeTaskCompletion>() : nullptr;
+  if (!operation)
+  {
+    return false;
+  }
+  operation->setTask(m_task->shared_from_this());
+  operation->setCompleted(completed);
+  auto result = operation->operate();
+  return result->findInt("outcome")->value() ==
+    static_cast<int>(smtk::operation::Operation::Outcome::SUCCEEDED);
 }
 
 bool qtBaseTaskNode::isActive() const

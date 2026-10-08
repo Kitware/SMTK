@@ -29,6 +29,7 @@
 #endif // SMTK_ENABLE_GRAPHVIZ_SUPPORT
 
 #include <cmath>
+#include <set>
 
 using namespace smtk::string::literals;
 
@@ -63,6 +64,40 @@ bool qtDiagramScene::computeLayout(
   const std::unordered_set<qtBaseArc*>& arcs)
 {
 #if SMTK_ENABLE_GRAPHVIZ_SUPPORT
+  // Graphviz returns positions in scene coordinates, while QGraphicsItem::setPos()
+  // interprets a child item's position in its parent's coordinate system. Collapse
+  // child nodes (such as task ports) onto their top-level node so Graphviz never
+  // assigns a scene position directly to a child.
+  auto layoutNode = [](qtBaseNode* node) -> qtBaseNode* {
+    if (!node)
+    {
+      return nullptr;
+    }
+
+    auto* result = node;
+    for (auto* parent = node->parentItem(); parent; parent = parent->parentItem())
+    {
+      if (auto* parentNode = dynamic_cast<qtBaseNode*>(parent))
+      {
+        result = parentNode;
+      }
+    }
+    return result;
+  };
+
+  std::unordered_set<qtBaseNode*> layoutNodes;
+  for (auto* node : nodes)
+  {
+    if (auto* root = layoutNode(node))
+    {
+      layoutNodes.insert(root);
+    }
+  }
+  if (layoutNodes.empty())
+  {
+    return false;
+  }
+
   // compute dot string
   QPointF oldCenter;
   std::string dotString;
@@ -70,8 +105,8 @@ bool qtDiagramScene::computeLayout(
     std::stringstream nodeString;
     std::stringstream edgeString;
 
-    double scale = 1. / nodes.size();
-    for (const auto& node : nodes)
+    double scale = 1. / layoutNodes.size();
+    for (const auto& node : layoutNodes)
     {
       // Ignore hidden nodes
       // if (!node->isVisible() || !node->nodeId())
@@ -82,7 +117,7 @@ bool qtDiagramScene::computeLayout(
       const QRectF& b = node->sceneBoundingRect();
       qreal width = b.width() / POINTS_PER_INCH; // convert from points to inches
       qreal height = b.height() / POINTS_PER_INCH;
-      oldCenter += scale * node->pos();
+      oldCenter += scale * node->scenePos();
 
       // Construct the string declaring a node.
       // See https://www.graphviz.org/pdf/libguide.pdf for more detail
@@ -93,12 +128,25 @@ bool qtDiagramScene::computeLayout(
                  << "];\n";
     }
 
-    // Construct the string representing all arcs in the graph
-    // See https://www.graphviz.org/pdf/libguide.pdf for more detail
+    // Preserve the graph relationships contributed by child nodes by mapping
+    // each arc endpoint to its layout node. Ignore arcs internal to one layout
+    // node and coalesce duplicates produced by multiple ports on the same task.
+    std::set<std::pair<qtBaseNode*, qtBaseNode*>> layoutEdges;
     for (const auto& arc : arcs)
     {
-      edgeString << "n" << arc->predecessor() << " -> "
-                 << "n" << arc->successor() << ";\n";
+      auto* predecessor = layoutNode(arc->predecessor());
+      auto* successor = layoutNode(arc->successor());
+      if (predecessor && successor && predecessor != successor)
+      {
+        layoutEdges.emplace(predecessor, successor);
+      }
+    }
+    // Construct the string representing all arcs in the graph.
+    // See https://www.graphviz.org/pdf/libguide.pdf for more detail.
+    for (const auto& edge : layoutEdges)
+    {
+      edgeString << "n" << edge.first << " -> "
+                 << "n" << edge.second << ";\n";
     }
 
     // describe the overall look of the graph. For example : rankdir=LR -> Left To Right layout
@@ -108,7 +156,7 @@ bool qtDiagramScene::computeLayout(
       nodeString.str() + edgeString.str() + "\n}";
   }
 
-  std::vector<qreal> coords(2 * nodes.size(), 0.0);
+  std::vector<qreal> coords(2 * layoutNodes.size(), 0.0);
   // compute layout
   {
     Agraph_t* G = agmemread(dotString.data());
@@ -122,7 +170,7 @@ bool qtDiagramScene::computeLayout(
 
     // read layout
     int i = -2;
-    for (const auto& node : nodes)
+    for (const auto& node : layoutNodes)
     {
       // if (!node->isVisible() || !node->nodeId())
       // {
@@ -170,7 +218,7 @@ bool qtDiagramScene::computeLayout(
     }
     oldCenter -= newCenter;
     int i = -2;
-    for (const auto& node : nodes)
+    for (const auto& node : layoutNodes)
     {
       // if (!node->isVisible() || !node->nodeId())
       // {

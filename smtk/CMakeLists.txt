@@ -24,6 +24,9 @@ smtk_source_group(attribute)
 add_subdirectory(operation)
 smtk_source_group(operation)
 
+add_subdirectory(job)
+smtk_source_group(job)
+
 add_subdirectory(project)
 smtk_source_group(project)
 
@@ -56,6 +59,7 @@ set(smtk_headers
   ${graphHeaders}
   ${attributeHeaders}
   ${operationHeaders}
+  ${jobHeaders}
   ${modelHeaders}
   ${projectHeaders}
   ${viewHeaders}
@@ -73,6 +77,7 @@ set(smtk_srcs
   ${graphSrcs}
   ${attributeSrcs}
   ${operationSrcs}
+  ${jobSrcs}
   ${projectSrcs}
   ${modelSrcs}
   ${viewSrcs}
@@ -101,9 +106,9 @@ set(smtkCore_private_link_libraries
   Boost::date_time
   Boost::filesystem
   Boost::system
-  LibArchive::LibArchive
   Eigen3::Eigen
   fmt::fmt
+  SQLite::SQLite3
 )
 
 if (TARGET Boost::dll)
@@ -139,6 +144,7 @@ add_dependencies(smtkCore
   graphGenHeaders
   modelGenHeaders
   operationGenHeaders
+  jobGenHeaders
   projectGenHeaders
   taskGenHeaders
   viewGenHeaders

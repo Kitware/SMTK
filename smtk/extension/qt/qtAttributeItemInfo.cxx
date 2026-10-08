@@ -33,6 +33,13 @@ qtAttributeItemInfo::qtAttributeItemInfo(
   m_baseView = qobject_cast<qtBaseAttributeView*>(bview);
 }
 
+bool qtAttributeItemInfo::indentChildren() const
+{
+  bool indent = true;
+  m_component.attributeAsBool("IndentChildren", indent);
+  return indent;
+}
+
 qtUIManager* qtAttributeItemInfo::uiManager() const
 {
   if (m_baseView)

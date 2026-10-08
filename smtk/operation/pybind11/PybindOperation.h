@@ -20,6 +20,7 @@
 
 #include "smtk/operation/Operation.h"
 
+#include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
 namespace smtk
@@ -121,6 +122,17 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
         return self.log();
       }, pybind11::return_value_policy::reference
     )
+    .def("identifyLocksRequired", [](smtk::operation::Operation& self)
+      {
+        if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
+        {
+          // Release the GIL as identifyLocksRequired() will re-acquire it.
+          pybind11::gil_scoped_release thread_state(true);
+          return pyself->identifyLocksRequired();
+        }
+        return smtk::operation::ResourceAccessMap{}; // self.identifyLocksRequired();
+      }
+    )
     .def("specification", [](smtk::operation::Operation& self)
       {
         if (auto* pyself = dynamic_cast<smtk::operation::PyOperation*>(&self))
@@ -133,6 +145,17 @@ inline PySharedPtrClass< smtk::operation::Operation, smtk::operation::PyOperatio
       }
     )
     .def("createBaseSpecification", static_cast<smtk::operation::Operation::Specification (smtk::operation::Operation::*)() const>(&smtk::operation::PyOperation::createBaseSpecification))
+    .def("xmlSpecification", [](smtk::operation::Operation& op, const std::string& xmlFile)
+      {
+        smtk::io::AttributeReader reader;
+        auto spec = op.createBaseSpecification();
+        if (reader.read(spec, xmlFile, /*includePath*/true, op.log()))
+        {
+          smtkErrorMacro(op.log(), "Error loading specification file \"" << xmlFile << "\".");
+        }
+        return spec;
+      }, py::arg("xml_file")
+    )
     .def("_parameters", (smtk::operation::Operation::Parameters (smtk::operation::Operation::*)()) &smtk::operation::Operation::parameters)
     .def("createResult", &smtk::operation::Operation::createResult, py::arg("arg0"))
     .def("manager", &smtk::operation::Operation::manager)

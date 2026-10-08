@@ -249,6 +249,19 @@ smtk::resource::ConstResourcePtr Manager::get(const std::string& url) const
   return smtk::resource::ConstResourcePtr();
 }
 
+std::set<ResourcePtr> Manager::findByName(const std::string& name)
+{
+  std::set<ResourcePtr> result;
+  this->visit([name, &result](Resource& rsrc) -> smtk::common::Processing {
+    if (rsrc.name() == name)
+    {
+      result.insert(rsrc.shared_from_this());
+    }
+    return smtk::common::Processing::CONTINUE;
+  });
+  return result;
+}
+
 std::set<smtk::resource::ResourcePtr> Manager::find(const std::string& typeName)
 {
   ScopedLockGuard guard(m_lock, LockType::Read);

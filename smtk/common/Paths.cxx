@@ -70,6 +70,12 @@ std::string Paths::s_toplevelDir;
 std::string Paths::s_bundleDir;
 /// The ordered list of directories to search for Remus worker files.
 std::vector<std::string> Paths::s_workerSearchPaths;
+/// The current user's configuration directory
+std::filesystem::path Paths::s_userHomeDirectory;
+/// The current user's configuration directory
+std::filesystem::path Paths::s_userConfigurationDirectory;
+/// The current user's configuration directory
+std::filesystem::path Paths::s_userDocumentDirectory;
 
 /// Construct a path-discovery instance without providing the current executable's path.
 Paths::Paths() = default;
@@ -347,6 +353,48 @@ std::vector<std::string> Paths::findAvailablePlugins(const std::set<std::string>
 std::string Paths::toplevelDirectoryConfigured()
 {
   return Paths::s_toplevelDirCfg;
+}
+
+std::filesystem::path Paths::userHomeDirectory()
+{
+  this->update();
+  return s_userHomeDirectory;
+}
+
+std::filesystem::path Paths::userConfigurationDirectory(
+  const std::string& applicationName,
+  bool createIfMissing)
+{
+  this->update();
+  // clang-format off
+  auto dir = applicationName.empty() ?
+    s_userConfigurationDirectory :
+    s_userConfigurationDirectory / applicationName;
+  // clang-format on
+  if (!std::filesystem::exists(dir) && createIfMissing)
+  {
+    std::error_code ec;
+    std::filesystem::create_directories(dir, ec);
+  }
+  return dir;
+}
+
+std::filesystem::path Paths::userDocumentDirectory(
+  const std::string& applicationName,
+  bool createIfMissing)
+{
+  this->update();
+  // clang-format off
+  auto dir = applicationName.empty() ?
+    s_userDocumentDirectory :
+    s_userDocumentDirectory / applicationName;
+  // clang-format on
+  if (!std::filesystem::exists(dir) && createIfMissing)
+  {
+    std::error_code ec;
+    std::filesystem::create_directories(dir, ec);
+  }
+  return dir;
 }
 
 /**\brief Force the path cache to be rebuilt.

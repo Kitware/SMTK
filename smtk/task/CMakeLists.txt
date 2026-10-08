@@ -1,3 +1,20 @@
+set(taskClasses
+  Active
+  AgentlessTask
+  Adaptor
+  Gallery
+  Instances
+  Manager
+  ObjectsInRoles
+  Port
+  PortData
+  PortInstances
+  Registrar
+  State
+  WorkflowObjectMonitor
+  Worklet
+)
+
 # Tasks are classes (with header and source files) that also have
 # JSON classes (with header and source files).
 set(tasks
@@ -24,6 +41,7 @@ set(adaptors
 
 set(operations
   AddDependency
+  ChangeTaskCompletion
   ConnectPorts
   DisconnectPorts
   EmplaceWorklet
@@ -32,17 +50,6 @@ set(operations
 )
 
 set(taskSrcs
-  Active.cxx
-  AgentlessTask.cxx
-  Adaptor.cxx
-  Gallery.cxx
-  Instances.cxx
-  Manager.cxx
-  ObjectsInRoles.cxx
-  Port.cxx
-  PortInstances.cxx
-  Registrar.cxx
-  Worklet.cxx
   adaptor/ResourceAndRole.cxx
   json/Configurator.cxx
   json/Helper.cxx
@@ -54,19 +61,6 @@ set(taskSrcs
 )
 
 set(taskHeaders
-  Active.h
-  AgentlessTask.h
-  Adaptor.h
-  Gallery.h
-  Instances.h
-  Manager.h
-  ObjectsInRoles.h
-  Port.h
-  PortData.h
-  PortInstances.h
-  Registrar.h
-  State.h
-  Worklet.h
   adaptor/Instances.h
   adaptor/ResourceAndRole.h
   json/Configurator.h
@@ -78,6 +72,15 @@ set(taskHeaders
   json/jsonPort.h
   json/jsonWorklet.h
 )
+
+foreach(taskClass ${taskClasses})
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${taskClass}.h")
+    list(APPEND taskHeaders "${taskClass}.h")
+  endif()
+  if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${taskClass}.cxx")
+    list(APPEND taskSrcs "${taskClass}.cxx")
+  endif()
+endforeach()
 
 foreach(task ${tasks})
   list(APPEND taskSrcs ${task}.cxx json/json${task}.cxx)

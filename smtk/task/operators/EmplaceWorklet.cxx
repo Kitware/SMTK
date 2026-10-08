@@ -32,6 +32,7 @@
 #include "smtk/project/Manager.h"
 #include "smtk/project/json/jsonProject.h"
 
+#include "smtk/task/Port.h"
 #include "smtk/task/json/Helper.h"
 #include "smtk/task/json/jsonManager.h"
 #include "smtk/task/json/jsonTask.h"
@@ -41,6 +42,7 @@
 #include "smtk/task/operators/EmplaceWorklet_xml.h"
 
 #include <string>
+#include <vector>
 
 using namespace smtk::string::literals;
 
@@ -102,8 +104,14 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
             int nxy = 0;
             if (lit != taskPanelState.end())
             {
+              // Task-node and internal-port positions are scene coordinates, while
+              // external task-port positions are relative to their parent task.
+              // Record which entries use scene coordinates so only those entries
+              // receive the drop-point translation.
+              std::vector<bool> translateEntry(lit->size(), false);
               // Pass 1. Replace integer task IDs with newly-created UUIDs and
-              //         computer average nodal position.
+              //         compute the average top-level task-node position.
+              std::size_t entryIndex = 0;
               for (auto& entry : *lit)
               {
                 auto* obj = taskHelper.objectFromJSONSpec(entry[0], "task"_token);
@@ -113,6 +121,7 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
                 }
                 if (auto* task = dynamic_cast<smtk::task::Task*>(obj))
                 {
+                  translateEntry[entryIndex] = true;
                   // Only include top-level task nodes in average coordinate.
                   if (!task->parent())
                   {
@@ -123,22 +132,43 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
                     ++nxy;
                   }
                 }
+                else if (auto* port = dynamic_cast<smtk::task::Port*>(obj))
+                {
+                  // Internal ports are independent graphics items with no task-node
+                  // parent, so their saved positions are in scene coordinates.
+                  translateEntry[entryIndex] = port->access() == smtk::task::Port::Access::Internal;
+                }
+                ++entryIndex;
               }
-              // Compute adjustment to task node locations based on drop point:
-              // std::cout << "Average worklet pt  " << (xy[0]/nxy) << " " << (xy[1]/nxy) << "\n";
-              for (int ii = 0; ii < 2; ++ii)
+              if (nxy > 0)
               {
-                xy[ii] = dropPoint[ii] - xy[ii] / static_cast<double>(nxy);
-              }
-              // std::cout << "Adjust worklets by " << (xy[0]/nxy) << " " << (xy[1]/nxy) << "\n";
-              // Pass 2. Adjust nodal position so average lies at drop point.
-              for (auto& entry : *lit)
-              {
+                // Compute the scene-coordinate translation that places the average
+                // top-level task-node position at the requested drop point.
                 for (int ii = 0; ii < 2; ++ii)
                 {
-                  entry[1][ii] = entry[1][ii].get<double>() + xy[ii];
+                  xy[ii] = dropPoint[ii] - xy[ii] / static_cast<double>(nxy);
                 }
-                // std::cout << "            Task @ " << entry[1][0] << " " << entry[1][1] << "\n";
+
+                // Pass 2. Translate scene-positioned task nodes and internal ports.
+                // External ports retain their task-relative positions and move with
+                // their parent task.
+                entryIndex = 0;
+                for (auto& entry : *lit)
+                {
+                  if (translateEntry[entryIndex])
+                  {
+                    for (int ii = 0; ii < 2; ++ii)
+                    {
+                      entry[1][ii] = entry[1][ii].get<double>() + xy[ii];
+                    }
+                  }
+                  ++entryIndex;
+                }
+              }
+              else
+              {
+                smtkWarningMacro(
+                  log(), "Worklet layout has no top-level task node; ignoring its drop location.");
               }
             }
             if (!it->second->configure(taskPanelState))
@@ -185,6 +215,12 @@ EmplaceWorklet::Result EmplaceWorklet::operateInternal()
     {
       auto sharedTask = task->shared_from_this();
       sharedTasks.push_back(sharedTask);
+      // In addition to fetching the shared pointer, set the originating
+      // worklet UUID for all top-level tasks (but not others).
+      if (!task->parent() || task->parent() == parentTask.get())
+      {
+        task->setOriginatingWorkletId(worklet->id());
+      }
     }
     if (parentTask)
     {

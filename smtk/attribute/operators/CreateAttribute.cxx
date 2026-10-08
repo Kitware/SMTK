@@ -26,6 +26,9 @@
 
 #include "smtk/io/Logger.h"
 
+#include <chrono>
+#include <thread>
+
 namespace smtk
 {
 namespace attribute
@@ -33,6 +36,8 @@ namespace attribute
 
 CreateAttribute::Result CreateAttribute::operateInternal()
 {
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(2000ms);
   auto params = this->parameters();
   auto resource = params->associations()->valueAs<smtk::attribute::Resource>();
   if (!resource)

@@ -434,6 +434,10 @@ void qtDiscreteValueEditor::updateContents()
     else
     {
       clayout = new QVBoxLayout(this->Internals->m_childrenFrame);
+      if (!this->Internals->m_inputItem->m_itemInfo.indentChildren())
+      {
+        clayout->setContentsMargins(0, 0, 0, 0);
+      }
     }
 
     clayout->setObjectName("activeChildLayout");
@@ -457,9 +461,10 @@ void qtDiscreteValueEditor::updateContents()
 
     auto* iiview = this->Internals->m_inputItem->m_itemInfo.baseView();
     int currentLen = iiview ? iiview->fixedLabelWidth() : 0;
-    int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
-    if (iiview)
+    bool indentChildren = this->Internals->m_inputItem->m_itemInfo.indentChildren();
+    if (iiview && indentChildren)
     {
+      int tmpLen = uiManager->getWidthOfItemsMaxLabel(activeChildDefs, uiManager->advancedFont());
       iiview->setFixedLabelWidth(tmpLen);
     }
     bool hasVisibleChildren = false;
@@ -504,7 +509,7 @@ void qtDiscreteValueEditor::updateContents()
       }
     }
 
-    if (iiview)
+    if (iiview && indentChildren)
     {
       iiview->setFixedLabelWidth(currentLen);
     }

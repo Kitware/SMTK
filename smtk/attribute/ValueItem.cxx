@@ -19,7 +19,7 @@
 #include "units/Converter.h"
 #include "units/System.h"
 
-#include <algorithm> // for std::find
+#include <algorithm> // for std::any_of and std::find
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -964,6 +964,14 @@ std::vector<std::string> ValueItem::relevantEnums(
     }
   }
   return result;
+}
+
+bool ValueItem::isChildActive(const smtk::attribute::ItemPtr& item) const
+{
+  return std::any_of(
+    m_activeChildrenItems.begin(), m_activeChildrenItems.end(), [&item](const auto& child) {
+      return child == item;
+    });
 }
 
 const std::string& ValueItem::units() const

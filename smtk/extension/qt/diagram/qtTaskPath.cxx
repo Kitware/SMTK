@@ -62,14 +62,16 @@ public:
     smtk::extension::qtTaskPath* tpath,
     QWidget* parent = nullptr)
     : QToolButton(parent)
-    , m_task(t)
+    , m_task(
+        t ? std::dynamic_pointer_cast<smtk::task::Task>(t->shared_from_this())
+          : std::shared_ptr<smtk::task::Task>())
     , m_taskPath(tpath)
   {
     // Set up an observer if we have been given a task
-    if (m_task)
+    if (auto task = m_task.lock())
     {
       QPointer<qtTaskToolButton> tb(this);
-      m_key = m_task->observers().insert(
+      m_key = task->observers().insert(
         [tb](smtk::task::Task& t, smtk::task::State prev, smtk::task::State next) {
           (void)t;
           (void)prev;
@@ -87,15 +89,24 @@ public:
 
   ~qtTaskToolButton() override
   {
-    if (m_task)
+    // Path buttons are removed with deleteLater(), so their task may have
+    // already been destroyed as part of closing a project. Only unregister
+    // the observer when its subject is still alive.
+    if (auto task = m_task.lock())
     {
-      m_task->observers().erase(m_key);
+      task->observers().erase(m_key);
     }
   }
-  [[nodiscard]] smtk::task::Task* task() const { return m_task; }
+  [[nodiscard]] smtk::task::Task* task() const
+  {
+    auto task = m_task.lock();
+    return task.get();
+  }
 
 protected:
-  smtk::task::Task* m_task;
+  // Do not let a deferred UI deletion extend the lifetime of a closed
+  // project's task hierarchy.
+  std::weak_ptr<smtk::task::Task> m_task;
   smtk::task::Task::Observers::Key m_key;
   smtk::extension::qtTaskPath* m_taskPath;
 };

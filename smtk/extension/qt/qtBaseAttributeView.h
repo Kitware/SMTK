@@ -103,6 +103,11 @@ protected Q_SLOTS:
   void onConfigurationChanged(int levelIdx);
 
 protected:
+  /// Start observing the UI manager's operation observer for updates.
+  ///
+  /// Unless this method is called after/during view construction, the
+  /// updateViewWithOperationResults() method will never be invoked.
+  bool enableOperationObserver();
   /// Create the UI related to the view and assigns it to the parent widget.
   void buildUI() override;
   /// Adds properties associated with respects to a top level view
@@ -128,6 +133,14 @@ protected:
   void topLevelPrepAdvanceLevels(const smtk::view::ConfigurationPtr& view);
   void prepConfigurationComboBox(const std::string& newConfigurationName);
   void checkConfigurations(smtk::attribute::ItemPtr& item);
+
+  /// This method is called whenever an operation completes.
+  ///
+  /// You must call enableOperationObserver() on the view before this method will be invoked.
+  virtual void updateViewWithOperationResults(
+    const smtk::operation::Operation& op,
+    const std::shared_ptr<smtk::attribute::Attribute>& result);
+
   QScrollArea* m_ScrollArea;
   bool m_topLevelInitialized;
   bool m_topLevelCanCreateConfigurations{ false };

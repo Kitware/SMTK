@@ -101,7 +101,15 @@ public:
       std::make_pair(manager, std::type_index(typeid(Registrar)).hash_code()));
   }
 
+  // A weak owner identifies a manager lifetime even when its address is reused.
+  template<typename Registrar, typename Manager>
+  std::size_t& operator[](const std::weak_ptr<Manager>& manager)
+  {
+    return this->count(manager, std::type_index(typeid(Registrar)).hash_code());
+  }
+
 private:
+  std::size_t& count(const std::weak_ptr<void>& manager, std::size_t registrar);
   ManagerCount();
   ~ManagerCount();
 
@@ -142,19 +150,30 @@ class SMTK_ALWAYS_EXPORT MaybeRegister<Registrar, Manager, std::true_type>
 public:
   MaybeRegister(const std::shared_ptr<Manager>& manager)
     : m_Manager(manager)
+    , m_ManagerAddress(manager.get())
   {
-    if (ManagerCount::instance().operator[]<Registrar, Manager>(manager.get())++ == 0)
+    if (ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager)++ == 0)
     {
-      (void)Registrar().registerTo(m_Manager);
+      (void)Registrar().registerTo(manager);
     }
   }
 
   ~MaybeRegister()
   {
-    if (
-      m_Manager && --ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager.get()) == 0)
+    // A registry describes a plugin's attachment to a manager; it must not
+    // extend the manager's lifetime. In particular, project-owned task
+    // managers must be destroyed with their project instead of being retained
+    // by static plugin clients until library finalization.
+    if (--ManagerCount::instance().operator[]<Registrar, Manager>(m_Manager) == 0)
     {
-      (void)Registrar().unregisterFrom(m_Manager);
+      // Normal explicit unregistration reaches this branch while the manager
+      // is alive and invokes the registrar's cleanup. If the manager has
+      // already expired, its own destruction has made cleanup unnecessary and
+      // calling unregisterFrom would be unsafe.
+      if (auto manager = m_Manager.lock())
+      {
+        (void)Registrar().unregisterFrom(manager);
+      }
     }
   }
 
@@ -164,10 +183,14 @@ public:
     return false;
   }
 
-  bool contains(const std::shared_ptr<Manager>& manager) const { return manager == m_Manager; }
+  bool contains(const std::shared_ptr<Manager>& manager) const
+  {
+    return manager && m_Manager.lock() == manager;
+  }
 
 private:
-  std::shared_ptr<Manager> m_Manager;
+  std::weak_ptr<Manager> m_Manager;
+  Manager* m_ManagerAddress{ nullptr };
 };
 
 /// Registrars may declare dependencies to other Registrars by defining a type

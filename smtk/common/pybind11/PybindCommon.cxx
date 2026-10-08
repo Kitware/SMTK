@@ -47,6 +47,9 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindUUIDGenerator.h"
 #include "PybindUnionFind.h"
 #include "PybindVersion.h"
+#include "PybindVisit.h"
+
+#include "smtk/common/Instances.h"
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, std::shared_ptr<T>);
 
@@ -57,9 +60,19 @@ PYBIND11_MODULE(_smtkPybindCommon, common)
   // Import modules so that return types of smtk.common.Managers' get() method are known.
   py::module::import("smtk.string");
   py::module::import("smtk.resource");
-  py::module::import("smtk.operation");
   py::module::import("smtk.geometry");
+  py::module::import("smtk.operation");
+  py::module::import("smtk.project");
+  py::module::import("smtk.job");
   py::module::import("smtk.view");
+
+  py::enum_<smtk::common::InstanceEvent>(common, "InstanceEvent")
+    .value("Managed", smtk::common::InstanceEvent::Managed)
+    .value("Unmanaged", smtk::common::InstanceEvent::Unmanaged)
+    .value("Modified", smtk::common::InstanceEvent::Modified)
+    ;
+
+  auto visit = pybind11_init_smtk_common_Visit(common);
 
   // The order of these function calls is important! It was determined by
   // comparing the dependencies of each of the wrapped objects.

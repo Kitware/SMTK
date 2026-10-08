@@ -1,0 +1,7 @@
+NAME
+  smtkPVJobExt
+PRIVATE_DEPENDS
+  ParaView::RemotingApplication
+  ParaView::RemotingServerManager
+  ParaView::VTKExtensionsExtraction
+  smtkPVServerExt

@@ -21,6 +21,8 @@
 #include <QMetaType>
 #include <QVector>
 
+#include <filesystem>
+
 // Allow QVariant objects to hold shared pointers to
 // persistent objects and descriptive phrases.
 Q_DECLARE_METATYPE(smtk::resource::PersistentObject::Ptr)
@@ -28,5 +30,6 @@ Q_DECLARE_METATYPE(smtk::view::BadgeSet::BadgeList)
 Q_DECLARE_METATYPE(smtk::view::DescriptivePhrase::Ptr)
 Q_DECLARE_METATYPE(smtk::attribute::DefinitionPtr)
 Q_DECLARE_METATYPE(QVector<int>)
+Q_DECLARE_METATYPE(std::filesystem::path)
 
 #endif // smtk_extension_qtTypeDeclarations_h

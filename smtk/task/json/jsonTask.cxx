@@ -41,6 +41,10 @@ Task::Configuration jsonTask::operator()(const Task* task, Helper& helper) const
     {
       config["description"] = task->description();
     }
+    if (!task->originatingWorkletId().isNull())
+    {
+      config["originating-worklet-id"] = task->originatingWorkletId();
+    }
     if (!task->style().empty())
     {
       config["style"] = task->style();

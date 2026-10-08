@@ -13,6 +13,7 @@
 
 #include "smtk/extension/qt/MembershipBadge.h"
 #include "smtk/extension/qt/TypeAndColorBadge.h"
+#include "smtk/extension/qt/agents/JobRunnerAgent.h"
 #include "smtk/extension/qt/diagram/qtComponentNode.h"
 #include "smtk/extension/qt/diagram/qtConnectMode.h"
 #include "smtk/extension/qt/diagram/qtDefaultTaskNode.h"
@@ -25,8 +26,11 @@
 #include "smtk/extension/qt/diagram/qtSelectMode.h"
 #include "smtk/extension/qt/diagram/qtTaskEditor.h"
 #include "smtk/extension/qt/diagram/qtTaskNode.h"
+#include "smtk/extension/qt/job/ShellQueue.h"
+#include "smtk/extension/qt/job/UpdateContainerQueueMachine.h"
 #include "smtk/extension/qt/qtAnalysisView.h"
 #include "smtk/extension/qt/qtAssociationView.h"
+#include "smtk/extension/qt/qtAttributeTableView.h"
 #include "smtk/extension/qt/qtAttributeView.h"
 #include "smtk/extension/qt/qtCategorySelectorView.h"
 #include "smtk/extension/qt/qtComponentAttributeView.h"
@@ -42,6 +46,7 @@
 #include "smtk/plugin/Manager.h"
 
 #include "smtk/Options.h"
+#include "smtk/SystemConfig.h"
 
 #include <tuple>
 
@@ -53,9 +58,12 @@
 
 #include <QApplication>
 #include <QCoreApplication>
-#include <QFontDatabase>
 #include <QTimer>
 #include <QtDebug>
+
+#define SMTK_DEBUG 0
+
+using namespace smtk::string::literals;
 
 namespace smtk
 {
@@ -63,9 +71,12 @@ namespace extension
 {
 namespace
 {
+using OperationList = std::tuple<smtk::qt::job::UpdateContainerQueueMachine>;
+
 using ViewWidgetList = std::tuple<
   qtAnalysisView,
   qtAssociationView,
+  qtAttributeTableView,
   qtAttributeView,
   qtCategorySelectorView,
   qtGroupView,
@@ -87,6 +98,11 @@ using DiagramViewModeList = std::tuple<qtConnectMode, qtDisconnectMode, qtPanMod
 using TaskNodeList = std::tuple<qtTaskNode, qtDefaultTaskNode, qtDefaultTaskNode1>;
 using ObjectNodeList = std::tuple<qtResourceNode, qtComponentNode>;
 
+using AgentList = std::tuple<smtk::task::JobRunnerAgent>;
+
+/// A list of queues registered by this registrar (which should be removed when unregistering).
+std::set<std::shared_ptr<smtk::job::Queue>> g_queuesToRemove;
+
 } // namespace
 
 void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
@@ -107,6 +123,42 @@ void qtViewRegistrar::registerTo(const smtk::common::Managers::Ptr& managers)
       QMetaObject::invokeMethod(qApp, fn, Qt::BlockingQueuedConnection);
     };
 #endif
+
+  auto resourceManager = managers->get<smtk::resource::Manager::Ptr>();
+  auto operationManager = managers->get<smtk::operation::Manager::Ptr>();
+  // Registry attaches declared dependencies after invoking this registrar.
+  // Ensure the job manager exists before restoring the default queue; the job
+  // registrar preserves an existing manager when dependency registration follows.
+  smtk::job::Registrar::registerTo(managers);
+  auto jobManager = managers->get<smtk::job::Manager::Ptr>();
+  if (!resourceManager || !operationManager || !jobManager)
+  {
+    smtkErrorMacro(smtk::io::Logger::instance(), "Missing managers. Cannot restore shell_queue.");
+  }
+  else
+  {
+    auto shellQueue = smtk::qt::job::ShellQueue::createOrRestore<smtk::qt::job::ShellQueue>(
+      /* name */ "shell_queue",
+      /* description */ R"(A queue that runs each of its jobs on the local machine.)",
+      /* location */ "localhost",
+      /* maximum job size */ 0,
+      /* capability tags */ { "shell"_token, "bash"_token, "local"_token },
+      /* remove queue on destruction */ false,
+      smtk::common::UUID("e1b560df-f238-4191-80b8-40de9b63f071"),
+      resourceManager,
+      operationManager,
+      jobManager);
+#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__)
+    // Applications may replace this with their own interpreter and environment.
+    shellQueue->setInterpreter("bash.exe");
+    shellQueue->setInterpreterArguments({ "--noprofile", "--norc" });
+#endif
+    g_queuesToRemove.insert(shellQueue);
+    if (jobManager->queues().manage(shellQueue))
+    {
+      jobManager->activeQueue().switchTo(shellQueue.get());
+    }
+  }
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers)
@@ -119,26 +171,34 @@ void qtViewRegistrar::unregisterFrom(const smtk::common::Managers::Ptr& managers
 #endif
 }
 
+void qtViewRegistrar::registerTo(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->registerOperations<OperationList>();
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::operation::Manager::Ptr& operationManager)
+{
+  operationManager->unregisterOperations<OperationList>();
+}
+
+void qtViewRegistrar::registerTo(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.registerTypes<AgentList>();
+}
+
+void qtViewRegistrar::unregisterFrom(const smtk::task::Manager::Ptr& taskManager)
+{
+  auto& agentFactory = taskManager->agentFactory();
+  agentFactory.unregisterTypes<AgentList>();
+}
+
 void qtViewRegistrar::registerTo(const smtk::extension::qtManager::Ptr& qtMgr)
 {
   qtMgr->diagramViewModeFactory().registerTypes<DiagramViewModeList>();
   qtMgr->diagramGeneratorFactory().registerTypes<DiagramGeneratorList>();
   qtMgr->taskNodeFactory().registerTypes<TaskNodeList>();
   qtMgr->objectNodeFactory().registerTypes<ObjectNodeList>();
-
-  // If there is a Qt Application initialized then we need to add some additional
-  // fonts that are used by classes such as qtTaskNode
-  if (QCoreApplication::instance())
-  {
-    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeRegular.otf") < 0)
-    {
-      qWarning() << "FontAwesomeRegular cannot be loaded !";
-    }
-    if (QFontDatabase::addApplicationFont(":/fonts/fontAwesomeSolid.otf") < 0)
-    {
-      qWarning() << "FontAwesomeSolid cannot be loaded !";
-    }
-  }
 }
 
 void qtViewRegistrar::unregisterFrom(const smtk::extension::qtManager::Ptr& qtMgr)
@@ -156,6 +216,7 @@ void qtViewRegistrar::registerTo(const smtk::view::Manager::Ptr& manager)
   manager->viewWidgetFactory().addAlias<qtAnalysisView>("Analysis");
   manager->viewWidgetFactory().addAlias<qtAssociationView>("Associations");
   manager->viewWidgetFactory().addAlias<qtAttributeView>("Attribute");
+  manager->viewWidgetFactory().addAlias<qtAttributeTableView>("AttributeTable");
   manager->viewWidgetFactory().addAlias<qtGroupView>("Group");
   manager->viewWidgetFactory().addAlias<qtInstancedView>("Instanced");
   manager->viewWidgetFactory().addAlias<qtOperationPalette>("OperationPalette");
@@ -179,5 +240,16 @@ void qtViewRegistrar::unregisterFrom(const smtk::view::Manager::Ptr& manager)
 
   manager->badgeFactory().unregisterTypes<BadgeList>();
 }
+
+void qtViewRegistrar::registerTo(const smtk::job::Manager::Ptr&) {}
+
+void qtViewRegistrar::unregisterFrom(const smtk::job::Manager::Ptr& jobManager)
+{
+  for (const auto& queue : g_queuesToRemove)
+  {
+    jobManager->queues().unmanage(queue);
+  }
+}
+
 } // namespace extension
 } // namespace smtk

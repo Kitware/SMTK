@@ -34,6 +34,7 @@ set(resourceHeaders
   CopyOptions.h
   DerivedFrom.h
   GarbageCollector.h
+  GuardedLinks.h
   LinkInformation.h
   Links.h
   Lock.h

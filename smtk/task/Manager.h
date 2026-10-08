@@ -152,6 +152,14 @@ public:
   /// If this manager is owned by a resource (typically a project), return it.
   smtk::resource::Resource* resource() const;
 
+  /// Given a \a smtk::view::Configuration::Component holding a specification for workflow
+  /// objects, return a JSON specification for the same.
+  ///
+  /// The \a config should hold ActiveTaskPort, ProjectResources, or Control tags at its
+  /// top level. Unsupported tags will generate an error message in the log.
+  nlohmann::json workflowViewConfigurationToJSONSpec(
+    const smtk::view::Configuration::Component& config);
+
   /// Given a filter \a spec, return a set of objects grouped by their parent resources.
   ///
   /// The objects are drawn – according to the \a spec – from either ports of the active
@@ -265,6 +273,10 @@ private:
   // Expression constraint for placing worklets at the toplevel of a workflow.
   smtk::common::Categories::Expression m_expression;
 };
+
+/// Fetch the active task (if any) or return a null pointer.
+SMTKCORE_EXPORT Task* getActiveTask(const smtk::common::TypeContainer& context);
+
 } // namespace task
 } // namespace smtk
 

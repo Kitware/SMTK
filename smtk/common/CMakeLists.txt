@@ -1,6 +1,6 @@
 # set up sources to build
 set(commonClasses
-  Archive
+  Active
   Categories
   Color
   CompilerInformation
@@ -23,6 +23,7 @@ set(commonClasses
   Paths
   RangeDetector
   RuntimeTypeContainer
+  SharedActive
   Singleton
   Singletons
   Status

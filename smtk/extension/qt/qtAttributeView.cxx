@@ -73,6 +73,37 @@ const int status_column = 0;
 const int name_column = 1;
 const int type_column = 2;
 const int color_column = 3;
+
+// Express the initial list height in rows without restricting splitter resizing.
+class AttributeListTable : public QTableView
+{
+public:
+  AttributeListTable(int rows, QWidget* parent)
+    : QTableView(parent)
+    , m_rows(rows)
+  {
+  }
+
+  QSize sizeHint() const override
+  {
+    QSize hint = QTableView::sizeHint();
+    const qint64 height = 2 * this->frameWidth() +
+      (this->horizontalHeader()->isHidden() ? 0 : this->horizontalHeader()->sizeHint().height()) +
+      static_cast<qint64>(m_rows) * this->verticalHeader()->defaultSectionSize();
+    hint.setHeight(static_cast<int>(qMin<qint64>(height, QWIDGETSIZE_MAX)));
+    return hint;
+  }
+
+  QSize minimumSizeHint() const override
+  {
+    QSize hint = QTableView::minimumSizeHint();
+    hint.setHeight(qMin(hint.height(), this->sizeHint().height()));
+    return hint;
+  }
+
+private:
+  int m_rows;
+};
 }; // namespace
 
 using namespace smtk::attribute;
@@ -266,22 +297,24 @@ void qtAttributeView::createWidget()
 
   QFrame* TopFrame = new QFrame(frame);
   TopFrame->setObjectName(view->name().c_str());
-  m_internals->AttFrame = new QFrame(frame);
-  m_internals->AttFrame->setObjectName("attribute");
 
   m_internals->TopFrame = TopFrame;
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QVBoxLayout* TopLayout = new QVBoxLayout(TopFrame);
   TopLayout->setMargin(0);
-  TopFrame->setSizePolicy(sizeFixedPolicy);
-  QVBoxLayout* AttFrameLayout = new QVBoxLayout(m_internals->AttFrame);
-  AttFrameLayout->setMargin(0);
-  m_internals->AttFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  TopFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // create a list box for all the entries
-  m_internals->ListTable = new QTableView(frame);
+  bool validRows = false;
+  int listRows = QString::fromStdString(view->details().attributeAsString("AttributeListRows"))
+                   .toInt(&validRows);
+  if (!validRows || listRows < 1)
+  {
+    listRows = 2;
+  }
+  m_internals->ListTable = new AttributeListTable(listRows, TopFrame);
   m_internals->ListTable->setSelectionMode(QAbstractItemView::SingleSelection);
   m_internals->ListTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_internals->ListTable->setSizePolicy(tableSizePolicy);
@@ -431,10 +464,14 @@ void qtAttributeView::createWidget()
   // Attribute frame
   m_internals->AttFrame = new QFrame(frame);
   m_internals->AttFrame->setObjectName("attribute");
-  new QVBoxLayout(m_internals->AttFrame);
+  auto* attFrameLayout = new QVBoxLayout(m_internals->AttFrame);
+  attFrameLayout->setMargin(0);
+  m_internals->AttFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   frame->addWidget(TopFrame);
   frame->addWidget(m_internals->AttFrame);
+  frame->setStretchFactor(frame->indexOf(TopFrame), 0);
+  frame->setStretchFactor(frame->indexOf(m_internals->AttFrame), 1);
 
   // the association widget
   m_internals->AssociationsWidget = this->createAssociationWidget(frame, this);

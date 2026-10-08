@@ -71,7 +71,10 @@ public Q_SLOTS:
   /// Called when a client-server connection is removed.
   virtual void unobserveWrapper(pqSMTKWrapper*, pqServer*);
 
-  /**\brief Called when the user presses Ctrl+Space.
+  /// Route Ctrl+Space (also Option+Space on macOS) to the current mode's search.
+  virtual void quickLaunch();
+
+  /**\brief Focus the operation search bar.
     *
     * This method will raise the panel and apply focus to
     * the search bar.

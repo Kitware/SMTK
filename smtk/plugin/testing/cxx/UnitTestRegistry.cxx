@@ -12,6 +12,7 @@
 
 #include "smtk/common/testing/cxx/helpers.h"
 
+#include <new>
 #include <set>
 
 namespace
@@ -168,6 +169,29 @@ int UnitTestRegistry(int /*unused*/, char** const /*unused*/)
     test(manager_3->managed.size() == 1, "Manager_3 should be managing one thing");
     test(manager_33->managed.empty(), "Manager_3 should not be managing anything");
   }
+
+  // Reconnecting a server may allocate a new manager at the same address as
+  // one whose weak registry still exists. The new lifetime must register
+  // independently, and destroying the stale registry must not unregister it.
+  alignas(Manager_1) unsigned char storage[sizeof(Manager_1)];
+  auto makeManager = [&]() {
+    return std::shared_ptr<Manager_1>(
+      new (storage) Manager_1, [](Manager_1* manager) { manager->~Manager_1(); });
+  };
+  using Registry = smtk::plugin::Registry<Registrar_1, Manager_1>;
+  auto first = makeManager();
+  auto staleRegistry = std::make_unique<Registry>(first);
+  test(first->managed.size() == 1, "First manager must be registered.");
+  first.reset();
+  auto replacement = makeManager();
+  test(!staleRegistry->contains(replacement), "An expired registry must not match reused storage.");
+  {
+    Registry replacementRegistry(replacement);
+    test(replacement->managed.size() == 1, "Register the new manager at the reused address.");
+    staleRegistry.reset();
+    test(replacement->managed.size() == 1, "Old registry cleanup must not affect the new manager.");
+  }
+  test(replacement->managed.empty(), "New registry must clean up its own manager.");
 
   return 0;
 }

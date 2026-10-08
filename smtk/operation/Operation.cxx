@@ -152,8 +152,10 @@ Operation::Result Operation::operate(const BaseKey& key)
   std::multimap<Priority, Handler> instanceHandlers;
   {
     std::lock_guard<std::mutex> guard(m_handlerLock);
-    instanceHandlers = m_handlers;
-    m_handlers.clear();
+    // We use std::swap here to avoid needing to acquire the Python GIL
+    // for any handlers implemented in python. Otherwise, copying (rather
+    // than moving) the handlers will throw exceptions.
+    std::swap(instanceHandlers, m_handlers);
   }
 
   // Gather all requested resources and their lock types.
@@ -207,23 +209,24 @@ Operation::Result Operation::operate(const BaseKey& key)
         // Leave this for debugging, but do not include it in every debug build
         // as it can be quite noisy.
 #if 0
-    // Given the puzzling result of deadlock that can arise if one Operation
-    // calls another Operation using its public API and passes it a Resource
-    // with a Write LockType, we print to the terminal which resources we are
-    // locking. If you are working on an Operation and are trying to debug a
-    // deadlock, consider calling operations using the following syntax:
-    // $
-    // $ op->operate(Key());
-    // $
-    // This will avoid the inner Operation's resource locking and execute it
-    // directly. Be sure to verify the operation's validity prior to execution
-    // (via the ableToOperate() method).
-        std::cout << "Operation \"" << this->typeName() << "\" is locking resource " << resource->name()
-          << " (" << resource->typeName() << ") with lock type \""
-          << (lockType == smtk::resource::LockType::Read
-            ? "Read"
-            : (lockType == smtk::resource::LockType::Write ? "Write" : "DoNotLock"))
-          << "\"\n";
+        // Given the puzzling result of deadlock that can arise if one Operation
+        // calls another Operation using its public API and passes it a Resource
+        // with a Write LockType, we print to the terminal which resources we are
+        // locking. If you are working on an Operation and are trying to debug a
+        // deadlock, consider calling operations using the following syntax:
+        // $
+        // $ op->operate(Key());
+        // $
+        // This will avoid the inner Operation's resource locking and execute it
+        // directly. Be sure to verify the operation's validity prior to execution
+        // (via the ableToOperate() method).
+
+        // clang-format off
+        std::cout << "Operation \"" << this->typeName() << "\" is locking resource " <<
+          resource->name() << " (" << resource->typeName() << ") with lock type \"" <<
+          (lockType == smtk::resource::LockType::Read ? "Read" :
+           (lockType == smtk::resource::LockType::Write ? "Write" : "DoNotLock")) << "\"\n";
+        // clang-format on
 #endif
 
         // Is this resource already locked (by a parent perhaps).
@@ -325,12 +328,26 @@ Operation::Result Operation::operate(const BaseKey& key)
   // Then, we check if any observers wish to cancel this operation.
   else
   {
-    if (
-      key.m_observerOption == ObserverOption::InvokeObservers && manager &&
-      manager->observers()(*this, EventType::WILL_OPERATE, nullptr))
+    if (key.m_observerOption == ObserverOption::InvokeObservers && manager)
     {
-      outcome = Outcome::CANCELED;
-      result = this->createResult(outcome);
+      int shouldCancel = 0;
+      try
+      {
+        shouldCancel = manager->observers()(*this, EventType::WILL_OPERATE, nullptr);
+      }
+      catch (std::exception& e)
+      {
+        this->log().setFlushToStderr(true);
+        smtkErrorMacro(
+          this->log(),
+          "An unhandled exception (" << e.what() << ") occurred in " << this->typeName()
+                                     << "processing WILL_OPERATE observations.");
+      }
+      if (shouldCancel)
+      {
+        outcome = Outcome::CANCELED;
+        result = this->createResult(outcome);
+      }
     }
 
     if (outcome != Outcome::CANCELED)
@@ -431,7 +448,18 @@ Operation::Result Operation::operate(const BaseKey& key)
     instanceHandlers.clear();
     if (key.m_observerOption == ObserverOption::InvokeObservers && observePostOperation && manager)
     {
-      manager->observers()(*this, EventType::DID_OPERATE, result);
+      try
+      {
+        manager->observers()(*this, EventType::DID_OPERATE, result);
+      }
+      catch (std::exception& e)
+      {
+        this->log().setFlushToStderr(true);
+        smtkErrorMacro(
+          this->log(),
+          "An unhandled exception (" << e.what() << ") occurred in " << this->typeName()
+                                     << "processing DID_OPERATE observations.");
+      }
     }
   }
   catch (std::exception& e)

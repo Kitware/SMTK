@@ -29,6 +29,7 @@ using PySharedPtrClass = py::class_<T, std::shared_ptr<T>, Args...>;
 #include "PybindDomain.h"
 #include "PybindDomainMap.h"
 #include "PybindUnstructuredData.h"
+#include "PybindURL.h"
 
 #include "smtk/resource/Manager.h"
 
@@ -54,4 +55,5 @@ PYBIND11_MODULE(_smtkPybindMarkup, markup)
   auto smtk_markup_SpatialData = pybind11_init_smtk_markup_SpatialData(markup);
   auto smtk_markup_DiscreteGeometry = pybind11_init_smtk_markup_DiscreteGeometry(markup);
   auto smtk_markup_UnstructuredData = pybind11_init_smtk_markup_UnstructuredData(markup);
+  auto smtk_markup_URL = pybind11_init_smtk_markup_URL(markup);
 }

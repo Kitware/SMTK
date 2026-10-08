@@ -24,6 +24,7 @@
 #include "smtk/project/Project.h"
 #include "smtk/project/Registrar.h"
 #include "smtk/project/operators/Create.h"
+#include "smtk/project/operators/Read.h"
 #include "smtk/resource/Manager.h"
 
 #include "smtk/common/testing/cxx/helpers.h"
@@ -130,6 +131,22 @@ const char* CreateProjectOp::xmlDescription() const
 
 int TestProjectLifeCycle(int /*unused*/, char** const /*unused*/)
 {
+  // Surrogate resolution can call a resource reader without application
+  // managers during teardown. Project reads must reject that context without
+  // dereferencing a null project manager.
+  auto projectWithoutManagers = smtk::project::read("", nullptr);
+  smtkTest(
+    projectWithoutManagers == nullptr,
+    "A project read without application managers should fail cleanly.");
+
+  // Keep the operation-level guard covered as well; callers can instantiate
+  // Read directly instead of using the convenience function above.
+  auto readOperationWithoutManagers = smtk::project::Read::create();
+  auto readResult = readOperationWithoutManagers->operate();
+  smtkTest(
+    readResult->findInt("outcome")->value() != OP_SUCCEEDED,
+    "A project read operation without managers should fail cleanly.");
+
   // Create managers
   smtk::common::Managers::Ptr managers = smtk::common::Managers::create();
   smtk::resource::ManagerPtr resManager = smtk::resource::Manager::create();

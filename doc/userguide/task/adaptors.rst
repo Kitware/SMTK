@@ -131,8 +131,8 @@ Example
           {
             "from-role": "simulation attributes",
             "attribute[type='BoxWidget']/box": "/bounds"
-            "attribute[type='BlockMeshSize']/MeshSize": "/meshsize",
-            "attribute[type='BlockMeshBoundaryConditions']/FrontBackSides": "/bc/frontback"
+            "attribute[type='MeshSize']/MeshSize": "/meshsize",
+            "attribute[type='MeshBoundaryConditions']/FrontBackSides": "/bc/frontback"
           },
           {
             ...

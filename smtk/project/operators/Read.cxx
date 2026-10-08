@@ -73,6 +73,19 @@ void Read::markModifiedResources(Read::Result& result)
 
 Read::Result Read::operateInternal()
 {
+  // Resource surrogates may invoke a registered reader without an application
+  // manager collection (for example, while stale UI operation parameters are
+  // being released during a project switch). A project cannot be constructed
+  // without both contexts, so fail cleanly instead of dereferencing a null
+  // project manager below.
+  auto managers = this->managers();
+  auto projectManager = this->projectManager();
+  if (!managers || !projectManager)
+  {
+    smtkErrorMacro(log(), "Cannot read a project without application and project managers.");
+    return this->createResult(smtk::operation::Operation::Outcome::FAILED);
+  }
+
   std::string filename = this->parameters()->findFile("filename")->value();
 
   std::ifstream file(filename);
@@ -98,15 +111,15 @@ Read::Result Read::operateInternal()
 
   // Create a new project for the import
   boost::filesystem::path projectFilePath(filename);
-  auto project = this->projectManager()->create(j.at("type").get<std::string>(), this->managers());
+  auto project = projectManager->create(j.at("type").get<std::string>(), managers);
   if (project == nullptr)
   {
     smtkErrorMacro(log(), "project of type " << j.at("type") << " was not created.");
     return this->createResult(smtk::operation::Operation::Outcome::FAILED);
   }
 
-  project->resources().setManager(this->managers()->get<smtk::resource::Manager::Ptr>());
-  project->operations().setManager(this->managers()->get<smtk::operation::Manager::Ptr>());
+  project->resources().setManager(managers->get<smtk::resource::Manager::Ptr>());
+  project->operations().setManager(managers->get<smtk::operation::Manager::Ptr>());
 
   // manually reset the "location" string so that smtk::project::from_json() can properly translate
   //   resource paths to being relative (rather than absolute)
@@ -122,9 +135,8 @@ Read::Result Read::operateInternal()
   // internally call Resource Read Operations.
   auto key = this->childKey(ObserverOption::SkipObservers, LockOption::SkipLocks);
   smtk::operation::Helper::pushInstance(&key);
-  resourceHelper.setManagers(this->managers());
-  auto& taskHelper =
-    smtk::task::json::Helper::pushInstance(project->taskManager(), this->managers());
+  resourceHelper.setManagers(managers);
+  auto& taskHelper = smtk::task::json::Helper::pushInstance(project->taskManager(), managers);
 
   // Deserialize the project and see if it has an active task.
   //project = j;
@@ -174,7 +186,7 @@ Read::Result Read::operateInternal()
   auto it = j.find("ui_state");
   if (it != j.end())
   {
-    auto viewMngr = this->managers()->get<smtk::view::Manager::Ptr>();
+    auto viewMngr = managers->get<smtk::view::Manager::Ptr>();
     if (viewMngr)
     {
       // for each UI element type specified, look to see if one is registered in the
@@ -206,6 +218,15 @@ smtk::resource::ResourcePtr read(
   const std::string& filename,
   const std::shared_ptr<smtk::common::Managers>& managers)
 {
+  // Project deserialization requires the application manager collection.
+  // Resource-surrogate resolution may invoke registered readers with a null
+  // collection. Avoid constructing and running a Read operation that cannot
+  // succeed and would log errors for each unresolved project reference.
+  if (!managers || !managers->contains<smtk::project::Manager::Ptr>())
+  {
+    return nullptr;
+  }
+
   Read::Ptr read = Read::create();
   read->setManagers(managers);
   read->parameters()->findFile("filename")->setValue(filename);

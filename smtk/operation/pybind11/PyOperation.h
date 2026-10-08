@@ -148,6 +148,22 @@ public:
     PYBIND11_OVERLOAD(bool, Operation, ableToOperate, );
   }
 
+  smtk::operation::ResourceAccessMap identifyLocksRequired() override
+  {
+    smtk::operation::ResourceAccessMap resourceAccessMap;
+    PyOperation::runOnMainThread([&]()
+      {
+        resourceAccessMap = this->identifyLocksRequiredMainThread();
+      }
+    );
+    return resourceAccessMap;
+  }
+
+  smtk::operation::ResourceAccessMap identifyLocksRequiredMainThread()
+  {
+    PYBIND11_OVERLOAD(smtk::operation::ResourceAccessMap, Operation, identifyLocksRequired, );
+  }
+
   std::string typeName() const override { return m_typeName; }
 
   smtk::io::Logger& log() const override

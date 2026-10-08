@@ -216,7 +216,7 @@ public:
 
   void markCompleted()
   {
-    m_node->m_task->markCompleted(m_node->m_task->state() == smtk::task::State::Completable);
+    m_node->markCompleted(m_node->m_task->state() == smtk::task::State::Completable);
     // TODO: Provide feedback if no action taken (e.g., flash red)
   }
 

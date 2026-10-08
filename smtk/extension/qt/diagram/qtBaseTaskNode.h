@@ -72,6 +72,9 @@ public:
   /// Return the task this node represents.
   smtk::task::Task* task() const { return m_task; }
 
+  /// Change completion through an operation so the owning project is marked modified.
+  bool markCompleted(bool completed);
+
   /// Return the Task Editor for the node
   qtTaskEditor* editor() const { return static_cast<qtTaskEditor*>(m_generator); }
 

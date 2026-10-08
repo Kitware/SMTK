@@ -174,6 +174,10 @@ public:
   ItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle);
   ConstItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle) const;
   /// @}
+  /// \brief Determines if a child item is currently active
+  ///
+  /// If the item is not a child the method will return false
+  bool isChildActive(const smtk::attribute::ItemPtr& item) const;
 
 protected:
   ValueItem(Attribute* owningAttribute, int itemPosition);

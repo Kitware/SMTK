@@ -97,6 +97,7 @@ set(unit_tests
   unitDoubleItem.cxx
   unitEvaluatorFactory.cxx
   unitEvaluatorManager.cxx
+  unitExclusiveConditionalItems.cxx
   unitExclusionCategories.cxx
   unitGroupItem.cxx
   unitInfixExpressionEvaluator.cxx

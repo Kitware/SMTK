@@ -302,13 +302,20 @@ bool DoubleItemDefinition::reevaluateDefaults()
     double convertedVal;
     for (std::size_t i = 0; i < m_defaultValuesAsStrings.size(); i++)
     {
+      std::string valStr, unitsStr;
+      if (!DoubleItemDefinition::splitStringStartingDouble(
+            m_defaultValuesAsStrings[i], valStr, unitsStr))
+      {
+        return false;
+      }
       auto valMeasure = m_unitSystem->measurement(m_defaultValuesAsStrings[i], &status);
       if (!status)
       {
         // Could not parse the value
         return false;
       }
-      if (!valMeasure.m_units.dimensionless())
+      // Dimensionless units such as degrees are still explicit units.
+      if (!unitsStr.empty())
       {
         auto convertedMeasure = m_unitSystem->convert(valMeasure, defUnit, &status);
         if (!status)

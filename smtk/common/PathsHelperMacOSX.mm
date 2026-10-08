@@ -15,7 +15,14 @@
 #include "smtk/common/PathsHelperUnix.h"
 #include "smtk/common/Version.h"
 
+#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
+
+#include <mach-o/dyld.h>
+
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace smtk
 {
@@ -28,6 +35,7 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   Paths::s_toplevelDir.clear();
   Paths::s_executableDir.clear();
   Paths::s_workerSearchPaths.clear();
+  Paths::s_userConfigurationDirectory.clear();
 
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
@@ -35,6 +43,16 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   workerSearch.insert(
     Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
 
+  if (Paths::s_executable.empty())
+  {
+    std::vector<char> buf;
+    buf.resize(PATH_MAX + 1);
+    auto size = static_cast<uint32_t>(buf.size());
+    if (_NSGetExecutablePath(buf.data(), &size) == 0)
+    {
+      Paths::s_executable = buf.data();
+    }
+  }
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
   if (pos != std::string::npos && pos != 0)
@@ -62,6 +80,34 @@ PathsHelperMacOSX::PathsHelperMacOSX()
   PathsHelperUnix::AddSplitPaths(workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
   Paths::s_workerSearchPaths = std::vector<std::string>(workerSearch.begin(), workerSearch.end());
+
+  {
+    // On macos, configuration files belong in ~/Library/Application Support/ which
+    // we fetch programmatically like so:
+    NSArray* paths =
+      NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    NSString* applicationSupportDirectory = [paths firstObject];
+    std::string path([applicationSupportDirectory UTF8String]);
+
+    Paths::s_userConfigurationDirectory = path;
+  }
+  {
+    auto* pw = getpwuid(getuid());
+    const char* homePath = pw->pw_dir;
+    if (homePath)
+    {
+      Paths::s_userHomeDirectory = std::string(homePath);
+    }
+    else
+    {
+      homePath = getenv("HOME");
+      if (homePath)
+      {
+        Paths::s_userHomeDirectory = std::string(homePath);
+      }
+    }
+  }
+  Paths::s_userDocumentDirectory = Paths::s_userHomeDirectory / "Documents";
 }
 
 } // namespace common

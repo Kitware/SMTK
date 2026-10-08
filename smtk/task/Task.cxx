@@ -185,6 +185,10 @@ void Task::configure(const Configuration& config)
   {
     this->setDescription(config.at("description").get<std::string>());
   }
+  if (config.contains("originating-worklet-id"))
+  {
+    this->setOriginatingWorkletId(config.at("originating-worklet-id").get<smtk::common::UUID>());
+  }
   if (config.contains("style"))
   {
     try
@@ -1057,6 +1061,16 @@ bool Task::canAcceptWorklets() const
     [this](std::pair<const smtk::string::Token, std::shared_ptr<smtk::task::Worklet>>& info) {
       return this->acceptsChildCategories(info.second->categories());
     });
+}
+
+bool Task::setOriginatingWorkletId(const smtk::common::UUID& workletId)
+{
+  if (m_originatingWorkletId == workletId)
+  {
+    return false;
+  }
+  m_originatingWorkletId = workletId;
+  return true;
 }
 
 bool Task::hasInternalPorts() const
