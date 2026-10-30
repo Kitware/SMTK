@@ -79,4 +79,7 @@ foreach (test_file IN LISTS TESTS_WITH_BASELINES)
   list(APPEND pv_tests "pv.${test_basename}")
 endforeach ()
 smtk_test_apply_sanitizer(${pv_tests})
+# Run these tests without other CTest jobs to diagnose shared job-database
+# initialization failures observed in parallel coverage runs.
+set_tests_properties(${pv_tests} PROPERTIES RUN_SERIAL TRUE)
 endif()
