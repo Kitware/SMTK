@@ -4,6 +4,7 @@
 set(commonTests
   unitExtension
   unitPaths
+  unitAuxiliaryPaths
   unitRangeDetector
   unitUnionFind
   unitUUID

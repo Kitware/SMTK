@@ -71,6 +71,23 @@ public:
   std::string executableDirectory();
   std::string toplevelDirectory();
   std::string bundleDirectory();
+
+  /// Return ordered directories for installed SMTK auxiliary files and directories.
+  ///
+  /// Auxiliary files include workflows, templates, scripts, and configuration files.
+  /// Search the main app bundle's Contents/Resources/smtk, the loaded SMTK
+  /// library's ../share/smtk, then toplevelDirectory()/share/smtk.
+  /// Paths are normalized and duplicates removed; nonexistent directories are
+  /// retained. Runtime locations allow installations and bundles to be moved.
+  std::vector<std::filesystem::path> auxiliarySearchPaths();
+
+  /// Find a file or directory relative to an installed SMTK auxiliary directory.
+  ///
+  /// Search each candidate from auxiliarySearchPaths() for this specific auxiliary file or directory,
+  /// so a partial app bundle can fall back to the install tree. Return an empty
+  /// path if no match is accessible. Empty paths, rooted paths, and paths that
+  /// escape an auxiliary directory through ".." are rejected.
+  std::filesystem::path findAuxiliaryPath(const std::filesystem::path& relativePath);
   std::vector<std::string> workerSearchPaths(bool pruneInvalid = true);
   std::vector<std::string> findAvailablePlugins(const std::set<std::string>& pluginNames = {});
 
