@@ -25,6 +25,7 @@
 #include "smtk/Options.h"
 #include "smtk/io/Logger.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
@@ -282,6 +283,70 @@ std::string Paths::executableDirectory()
 {
   this->update();
   return Paths::s_executableDir;
+}
+
+std::vector<std::filesystem::path> Paths::auxiliarySearchPaths()
+{
+  // Normalize candidates and retain only their first occurrence, preserving
+  // search priority. Use lexical normalization so candidates need not exist.
+  std::vector<std::filesystem::path> roots;
+  auto append = [&roots](const std::filesystem::path& root) {
+    auto normalized = root.lexically_normal();
+    if (std::find(roots.begin(), roots.end(), normalized) == roots.end())
+    {
+      roots.push_back(normalized);
+    }
+  };
+
+  // Prefer auxiliary files shipped inside the running macOS app bundle.
+  // On platforms without app bundles, bundleDirectory() returns an empty string.
+  const auto bundle = this->bundleDirectory();
+  if (!bundle.empty())
+  {
+    append(std::filesystem::path(bundle) / "Contents/Resources/smtk");
+  }
+
+  // An installed executable may live inside Applications/<name>.app rather
+  // than <prefix>/bin. Anchor this candidate to the library actually loaded.
+  const auto library = Paths::pathToThisLibrary();
+  if (!library.empty())
+  {
+    append(std::filesystem::path(library).parent_path() / "share/smtk");
+  }
+
+  const auto top = this->toplevelDirectory();
+  if (!top.empty())
+  {
+    append(std::filesystem::path(top) / "share/smtk");
+  }
+  return roots;
+}
+
+std::filesystem::path Paths::findAuxiliaryPath(const std::filesystem::path& relativePath)
+{
+  if (relativePath.empty() || relativePath.has_root_path())
+  {
+    return {};
+  }
+  const auto normalized = relativePath.lexically_normal();
+  for (const auto& component : normalized)
+  {
+    if (component == "..")
+    {
+      return {};
+    }
+  }
+
+  for (const auto& root : this->auxiliarySearchPaths())
+  {
+    auto candidate = (root / normalized).lexically_normal();
+    std::error_code error;
+    if (std::filesystem::exists(candidate, error))
+    {
+      return candidate;
+    }
+  }
+  return {};
 }
 
 /**\brief Return the best guess at the top-level SMTK install directory.

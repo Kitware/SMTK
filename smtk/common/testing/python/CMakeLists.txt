@@ -2,6 +2,7 @@ set(smtkCommonPythonTests
   uuidGenerator
   datetimezonepairtest
   testURL
+  testAuxiliaryPaths
 )
 
 if (ParaView_VERSION VERSION_GREATER_EQUAL "5.10.0")

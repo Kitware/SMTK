@@ -104,6 +104,7 @@ if (SPHINX_FOUND)
     userguide/common/index.rst
     userguide/common/links.rst
     userguide/common/observers.rst
+    userguide/common/paths.rst
     userguide/common/threadpool.rst
     userguide/common/typecontainer.rst
     userguide/common/typemap.rst

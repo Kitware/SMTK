@@ -34,6 +34,11 @@ inline py::class_< smtk::common::Paths > pybind11_init_smtk_common_Paths(py::mod
     .def("executableDirectory", &smtk::common::Paths::executableDirectory)
     .def("toplevelDirectory", &smtk::common::Paths::toplevelDirectory)
     .def("bundleDirectory", &smtk::common::Paths::bundleDirectory)
+    .def("auxiliarySearchPaths", &smtk::common::Paths::auxiliarySearchPaths)
+    .def("findAuxiliaryPath", [](smtk::common::Paths& paths, const std::filesystem::path& relativePath) -> py::object {
+      auto result = paths.findAuxiliaryPath(relativePath);
+      return result.empty() ? py::none() : py::cast(result);
+    }, py::arg("relative_path"), "Return the matching installed auxiliary path, or None if not found.")
     .def("workerSearchPaths", &smtk::common::Paths::workerSearchPaths, py::arg("pruneInvalid") = true)
     .def("findAvailablePlugins", &smtk::common::Paths::findAvailablePlugins, py::arg("pluginNames") = std::set<std::string>())
     .def("toplevelDirectoryConfigured", &smtk::common::Paths::toplevelDirectoryConfigured)
