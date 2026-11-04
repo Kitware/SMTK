@@ -16,6 +16,7 @@
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#include <boost/cstdint.hpp>
 #include <boost/uuid/uuid.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 

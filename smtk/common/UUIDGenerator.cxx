@@ -12,6 +12,7 @@
 #include "smtk/common/CompilerInformation.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
+#include <boost/random/mersenne_twister.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 SMTK_THIRDPARTY_POST_INCLUDE
 
