@@ -56,6 +56,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <algorithm>
 #include <cctype>
+#include <iostream>
 
 constexpr const char* tooltipInactive =
   "Edit point coordinates manually or click the checkbox to enable 3-d editing.";

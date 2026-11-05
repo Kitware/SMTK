@@ -16,6 +16,8 @@
 #include <vtkObject.h>
 #include <vtkOutputWindow.h>
 
+#include <iostream>
+
 class vtkMyObject : public vtkObject
 {
 public:
