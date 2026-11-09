@@ -74,8 +74,10 @@ protected:
 } // namespace paraview
 } // namespace smtk
 
+#ifndef __VTK_WRAP__
 Q_DECLARE_INTERFACE(
   smtk::paraview::ApplicationConfiguration,
   "com.kitware.smtk.ApplicationConfiguration");
+#endif
 
 #endif // smtk_extension_paraview_appcomponents_ApplicationConfiguration_h

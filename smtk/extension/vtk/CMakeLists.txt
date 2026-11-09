@@ -48,7 +48,7 @@ if (SMTK_ENABLE_PYTHON_WRAPPING)
     INSTALL_EXPORT  smtk
     INSTALL_HEADERS OFF
     PYTHON_PACKAGE  "smtk.extension.vtk._modules"
-    #MODULE_DESTINATION  "${PARAVIEW_PYTHON_SITE_PACKAGES_SUFFIX}"
+    MODULE_DESTINATION "${SMTK_PYTHON_MODULEDIR}"
     #CMAKE_DESTINATION   "${paraview_cmake_destination}/vtk"
     WRAPPED_MODULES vtk_python_wrapped_modules
     TARGET          vtksmtkpythonmodules)
