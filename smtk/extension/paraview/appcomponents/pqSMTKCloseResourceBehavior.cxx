@@ -311,7 +311,7 @@ pqSMTKCloseResourceBehavior::pqSMTKCloseResourceBehavior(QObject* parent)
     QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* closeResourceAction =
         new QAction(QPixmap(":/CloseResourceBehavior/Close22.png"), tr("&Close Resource"), this);
-      closeResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
+      closeResourceAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_W));
       closeResourceAction->setObjectName("closeResource");
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());

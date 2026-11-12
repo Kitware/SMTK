@@ -116,6 +116,12 @@ cmake_dependent_option(
   SMTK_ENABLE_PYTHON_WRAPPING OFF)
 mark_as_advanced(SMTK_INSTALL_PYTHON_TO_SITE_PACKAGES)
 option(SMTK_ENABLE_QT_SUPPORT "Build Qt GUI" OFF)
+set(SMTK_QT_VERSION "Auto" CACHE STRING "Qt major version to use (Auto, 5, or 6).")
+set_property(CACHE SMTK_QT_VERSION PROPERTY STRINGS Auto 5 6)
+if (NOT SMTK_QT_VERSION MATCHES "^(Auto|5|6)$")
+  message(FATAL_ERROR
+    "SMTK_QT_VERSION must be Auto, 5, or 6 (got '${SMTK_QT_VERSION}').")
+endif ()
 cmake_dependent_option(SMTK_ENABLE_APPLICATIONS "Build Qt-enabled applications" ON SMTK_ENABLE_QT_SUPPORT OFF)
 cmake_dependent_option(
   SMTK_ENABLE_OPERATION_THREADS "Run operations in asynchronous threads" ON SMTK_ENABLE_QT_SUPPORT OFF)
@@ -388,6 +394,32 @@ if(SMTK_ENABLE_VTK_SUPPORT AND NOT SMTK_ENABLE_PARAVIEW_SUPPORT)
       "Python support.")
   endif ()
 endif()
+
+if (SMTK_ENABLE_QT_SUPPORT)
+  if (SMTK_QT_VERSION STREQUAL "Auto")
+    if (SMTK_ENABLE_PARAVIEW_SUPPORT)
+      set(SMTK_QT_VERSION "${PARAVIEW_QT_MAJOR_VERSION}")
+    elseif (SMTK_ENABLE_VTK_SUPPORT AND VTK_QT_VERSION MATCHES "^[56]$")
+      set(SMTK_QT_VERSION "${VTK_QT_VERSION}")
+    else ()
+      find_package(Qt6 QUIET COMPONENTS Core)
+      if (Qt6_FOUND)
+        set(SMTK_QT_VERSION 6)
+      else ()
+        find_package(Qt5 REQUIRED COMPONENTS Core)
+        set(SMTK_QT_VERSION 5)
+      endif ()
+    endif ()
+  endif ()
+
+  if (SMTK_ENABLE_PARAVIEW_SUPPORT AND
+      NOT SMTK_QT_VERSION STREQUAL PARAVIEW_QT_MAJOR_VERSION)
+    message(FATAL_ERROR
+      "SMTK requires Qt ${SMTK_QT_VERSION}, but ParaView uses Qt "
+      "${PARAVIEW_QT_MAJOR_VERSION}.")
+  endif ()
+  find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Core)
+endif ()
 
 ################################################################################
 # Build utility executables

@@ -1,4 +1,4 @@
-find_package(Qt5 REQUIRED COMPONENTS Core Svg Widgets)
+find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Core Svg Widgets)
 
 set(headers)
 set(classes
@@ -27,9 +27,9 @@ vtk_module_link(smtkPQMarkupExt
     smtkQtExt
     nlohmann_json
     vtkSMTKMarkupExt
-    Qt5::Core
-    Qt5::Svg
-    Qt5::Widgets
+    "Qt${SMTK_QT_VERSION}::Core"
+    "Qt${SMTK_QT_VERSION}::Svg"
+    "Qt${SMTK_QT_VERSION}::Widgets"
 )
 
 if (SMTK_ENABLE_TESTING)

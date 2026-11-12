@@ -317,10 +317,10 @@ void qtComponentAttributeView::createWidget()
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QVBoxLayout* TopLayout = new QVBoxLayout(TopFrame);
-  TopLayout->setMargin(0);
+  TopLayout->setContentsMargins(0, 0, 0, 0);
   TopFrame->setSizePolicy(sizeFixedPolicy);
   QVBoxLayout* BottomLayout = new QVBoxLayout(BottomFrame);
-  BottomLayout->setMargin(0);
+  BottomLayout->setContentsMargins(0, 0, 0, 0);
   BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

@@ -798,7 +798,7 @@ void qtInputsItem::addInputEditor(int i)
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setObjectName(QString("editorLayout%1").arg(i));
-  editorLayout->setMargin(0);
+  editorLayout->setContentsMargins(0, 0, 0, 0);
   editorLayout->setSpacing(3);
   if (item->isExtensible())
   {
@@ -935,7 +935,7 @@ QFrame* qtInputsItem::createLabelFrame(
   labelFrame->setObjectName("labelFrame");
   QHBoxLayout* labelLayout = new QHBoxLayout(labelFrame);
   labelLayout->setObjectName("labelLayout");
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   // this default may be overridden to just AlignLeft for one-line items
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -1060,7 +1060,7 @@ void qtInputsItem::updateUI()
   }
   m_internals->MainLayout = new QGridLayout(m_widget);
   m_internals->MainLayout->setObjectName("MainLayout");
-  m_internals->MainLayout->setMargin(0);
+  m_internals->MainLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->MainLayout->setSpacing(0);
   m_internals->MainLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -1074,7 +1074,7 @@ void qtInputsItem::updateUI()
   // Add Data Section
   auto* dataLayout = new QVBoxLayout(m_internals->m_dataFrame);
   dataLayout->setObjectName("dataLayout");
-  dataLayout->setMargin(0);
+  dataLayout->setContentsMargins(0, 0, 0, 0);
   dataLayout->setSpacing(0);
   dataLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   // This section will either display values or the expression (if this item supports them)
@@ -1083,7 +1083,7 @@ void qtInputsItem::updateUI()
 
   m_internals->EntryLayout = new QGridLayout(m_internals->m_valuesFrame);
   m_internals->EntryLayout->setObjectName("EntryLayout");
-  m_internals->EntryLayout->setMargin(0);
+  m_internals->EntryLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -1327,7 +1327,7 @@ QFrame* qtInputsItem::createExpressionRefFrame()
   frame->setObjectName("frame");
   QHBoxLayout* expressionLayout = new QHBoxLayout(frame);
   expressionLayout->setObjectName("expressionLayout");
-  expressionLayout->setMargin(0);
+  expressionLayout->setContentsMargins(0, 0, 0, 0);
   expressionLayout->setSpacing(0);
   expressionLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 

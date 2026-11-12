@@ -302,7 +302,7 @@ void qtAttributeView::createWidget()
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QVBoxLayout* TopLayout = new QVBoxLayout(TopFrame);
-  TopLayout->setMargin(0);
+  TopLayout->setContentsMargins(0, 0, 0, 0);
   TopFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -338,7 +338,7 @@ void qtAttributeView::createWidget()
   m_internals->ButtonsFrame = new QFrame(frame);
   m_internals->ButtonsFrame->setObjectName("buttons");
   QHBoxLayout* buttonLayout = new QHBoxLayout(m_internals->ButtonsFrame);
-  buttonLayout->setMargin(0);
+  buttonLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->ButtonsFrame->setSizePolicy(sizeFixedPolicy);
   if (view)
   {
@@ -425,7 +425,7 @@ void qtAttributeView::createWidget()
   m_internals->SearchBox = new QFrame(TopFrame);
   m_internals->SearchBox->setObjectName("searchBox");
   QHBoxLayout* searchLayout = new QHBoxLayout(m_internals->SearchBox);
-  searchLayout->setMargin(0);
+  searchLayout->setContentsMargins(0, 0, 0, 0);
 
   QLineEdit* searchBar = new QLineEdit(m_internals->SearchBox);
   searchBar->setPlaceholderText(m_searchBoxText.c_str());
@@ -465,7 +465,7 @@ void qtAttributeView::createWidget()
   m_internals->AttFrame = new QFrame(frame);
   m_internals->AttFrame->setObjectName("attribute");
   auto* attFrameLayout = new QVBoxLayout(m_internals->AttFrame);
-  attFrameLayout->setMargin(0);
+  attFrameLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->AttFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   frame->addWidget(TopFrame);

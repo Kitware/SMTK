@@ -295,7 +295,7 @@ void qtGroupView::createWidget()
 
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(layout);
 
   // Now process all of this view's children
@@ -477,7 +477,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
   tabPage->setWidget(content);
 
   QVBoxLayout* vLayout = new QVBoxLayout(content);
-  vLayout->setMargin(0);
+  vLayout->setContentsMargins(0, 0, 0, 0);
   vLayout->addWidget(child->widget());
 
   QIcon icon;
@@ -622,7 +622,7 @@ void qtGroupView::addTileEntry(qtBaseView* child)
     auto* innerLayout = new QVBoxLayout;
     innerLayout->setObjectName("GroupViewInnerLayout");
     innerLayout->setAlignment(Qt::AlignTop);
-    innerLayout->setMargin(0);
+    innerLayout->setContentsMargins(0, 0, 0, 0);
     inner->setLayout(innerLayout);
     area->setWidget(inner);
     frame->layout()->addWidget(area);

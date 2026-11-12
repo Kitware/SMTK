@@ -462,7 +462,7 @@ void qtDateTimeItem::updateUI()
   }
   this->Internals->EntryLayout = new QGridLayout(m_widget);
   this->Internals->EntryLayout->setObjectName("EntryLayout");
-  this->Internals->EntryLayout->setMargin(0);
+  this->Internals->EntryLayout->setContentsMargins(0, 0, 0, 0);
   this->Internals->EntryLayout->setSpacing(0);
   this->Internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -470,7 +470,7 @@ void qtDateTimeItem::updateUI()
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setObjectName("labelLayout");
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
@@ -570,7 +570,7 @@ void qtDateTimeItem::addInputEditor(int i)
 
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setObjectName(QString("editorLayout%1").arg(i));
-  editorLayout->setMargin(0);
+  editorLayout->setContentsMargins(0, 0, 0, 0);
   editorLayout->setSpacing(3);
   editorLayout->addWidget(editBox);
 

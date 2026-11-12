@@ -110,7 +110,7 @@ vtk_module_link(smtkPQComponentsExt
   PUBLIC
     smtkCore
     smtkQtExt
-    Qt5::Widgets
+    "Qt${SMTK_QT_VERSION}::Widgets"
 )
 if (ParaView_VERSION VERSION_LESS "5.10.0")
   target_compile_definitions(smtkPQComponentsExt

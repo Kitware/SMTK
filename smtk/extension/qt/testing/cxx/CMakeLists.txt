@@ -10,7 +10,7 @@
 #
 #=============================================================================
 
-find_package(Qt5 REQUIRED COMPONENTS Test)
+find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Test)
 
 set(unit_tests_headers
   qtPrintLog.h
@@ -84,7 +84,7 @@ smtk_unit_tests(
     smtkCoreModelTesting
     smtkCoreResourceTesting
     ${additional_libraries}
-    Qt5::Test
+    "Qt${SMTK_QT_VERSION}::Test"
     ${Boost_LIBRARIES}
     Threads::Threads
 )

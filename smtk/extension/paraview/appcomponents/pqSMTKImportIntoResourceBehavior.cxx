@@ -212,7 +212,7 @@ pqSMTKImportIntoResourceBehavior::pqSMTKImportIntoResourceBehavior(QObject* pare
   {
     QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* importIntoResourceAction = new QAction(tr("&Import Into Resource..."), this);
-      importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
+      importIntoResourceAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_I));
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 

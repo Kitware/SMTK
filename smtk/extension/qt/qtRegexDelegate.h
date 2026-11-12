@@ -14,7 +14,8 @@
 #include "smtk/extension/qt/Exports.h"
 
 #include <QLineEdit>
-#include <QRegExpValidator>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include <QStyledItemDelegate>
 
 namespace smtk
@@ -40,12 +41,12 @@ protected:
     const override
   {
     QLineEdit* editor = new QLineEdit(parent);
-    QRegExpValidator* validator = new QRegExpValidator(m_expression, parent);
+    QRegularExpressionValidator* validator = new QRegularExpressionValidator(m_expression, parent);
     editor->setValidator(validator);
 
     return editor;
   }
-  QRegExp m_expression;
+  QRegularExpression m_expression;
 
 }; // class
 }; // namespace extension

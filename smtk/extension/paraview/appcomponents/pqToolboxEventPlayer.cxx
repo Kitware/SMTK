@@ -16,7 +16,7 @@
 
 #include <QApplication>
 #include <QContextMenuEvent>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QSortFilterProxyModel>
 #include <QtDebug>
 
@@ -57,12 +57,13 @@ bool pqToolboxEventPlayer::playEvent(
       smtk::string::Token cmd = Command.toStdString();
       if (cmd.id() == "runOperationWithDefaults"_hash || cmd.id() == "editOperationParameters"_hash)
       {
-        QRegExp eventRegex("\\(([^,]*),([^,]*)\\)");
-        if (eventRegex.indexIn(Arguments) != -1)
+        QRegularExpression eventRegex("\\(([^,]*),([^,]*)\\)");
+        auto eventMatch = eventRegex.match(Arguments);
+        if (eventMatch.hasMatch())
         {
           // We ignore cap(1) for now since the operation index is
           // a platform-dependent hash code.
-          QVariant v = eventRegex.cap(2);
+          QVariant v = eventMatch.captured(2);
           std::string opTypeName = v.toString().toStdString();
           auto opTypeIndex = model->typeIndexFromTypeName(opTypeName);
           if (opTypeIndex)

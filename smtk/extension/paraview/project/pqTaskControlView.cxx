@@ -691,7 +691,7 @@ void pqTaskControlView::createWidget()
 
   // Create the layout for the frame
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(layout);
 
   // Start observing changes in the active task:

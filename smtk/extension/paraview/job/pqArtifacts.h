@@ -14,6 +14,7 @@
 #include "smtk/extension/paraview/job/smtkPVJobExtModule.h"
 #include "smtk/string/Token.h"
 
+#include <QObject>
 #include <QPointer>
 
 #include <filesystem>

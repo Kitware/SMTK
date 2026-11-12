@@ -30,7 +30,7 @@ vtk_module_link(smtkPQProjectExt
   PUBLIC
     smtkCore
     smtkQtExt
-    Qt5::Widgets
+    "Qt${SMTK_QT_VERSION}::Widgets"
 )
 vtk_module_definitions(smtkPQProjectExt PRIVATE QT_NO_KEYWORDS)
 

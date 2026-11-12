@@ -105,8 +105,9 @@ pqSMTKColorByWidget::pqSMTKColorByWidget(QWidget* _p)
   this->setToolTip("Choose colors used to draw SMTK components.");
   this->connect(
     this->Internal->comboBox,
-    SIGNAL(currentIndexChanged(const QString&)),
-    SLOT(comboBoxChanged(const QString&)));
+    &QComboBox::currentTextChanged,
+    this,
+    &pqSMTKColorByWidget::comboBoxChanged);
 }
 
 //-----------------------------------------------------------------------------
@@ -189,7 +190,7 @@ pqSMTKColorByPropertyWidget::pqSMTKColorByPropertyWidget(vtkSMProxy* smProxy, QW
   : pqPropertyWidget(smProxy, parentObject)
 {
   QVBoxLayout* layoutLocal = new QVBoxLayout;
-  layoutLocal->setMargin(0);
+  layoutLocal->setContentsMargins(0, 0, 0, 0);
   this->Widget = new pqSMTKColorByWidget(this);
   layoutLocal->addWidget(this->Widget);
   setLayout(layoutLocal);

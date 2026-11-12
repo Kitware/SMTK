@@ -143,7 +143,7 @@ public:
     smtk::view::ConfigurationPtr workletConfig = jsonConfig;
     QWidget* ww = new QWidget;
     auto* ll = new QVBoxLayout;
-    ll->setMargin(0);
+    ll->setContentsMargins(0, 0, 0, 0);
     ww->setLayout(ll);
     ww->setObjectName("Worklets");
     m_self->diagram()->sidebar()->layout()->addWidget(ww);

@@ -19,7 +19,6 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QEvent>
 #include <QObject>
@@ -34,6 +33,10 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QtGlobal>
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+#include <QDesktopWidget>
+#endif
 
 using namespace smtk::extension;
 

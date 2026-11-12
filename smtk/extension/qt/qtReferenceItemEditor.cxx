@@ -205,21 +205,21 @@ void qtReferenceItemEditor::createWidget()
     m_widget->setEnabled(false);
   }
   m_internals->m_mainLayout = new QVBoxLayout(m_widget);
-  m_internals->m_mainLayout->setMargin(0);
+  m_internals->m_mainLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->m_mainLayout->setSpacing(0);
   m_internals->m_mainLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QFrame* comboFrame = new QFrame(m_widget);
   comboFrame->setObjectName("Combo Frame");
   QHBoxLayout* entryLayout = new QHBoxLayout(comboFrame);
-  entryLayout->setMargin(0);
+  entryLayout->setContentsMargins(0, 0, 0, 0);
   entryLayout->setSpacing(0);
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
@@ -794,7 +794,8 @@ void qtReferenceItemEditor::updateContents()
   m_internals->m_childrenFrame->setObjectName("ChildItemsFrame");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   QVBoxLayout* clayout = new QVBoxLayout(m_internals->m_childrenFrame);
-  clayout->setMargin(m_itemInfo.indentChildren() ? 3 : 0);
+  const int margin = m_itemInfo.indentChildren() ? 3 : 0;
+  clayout->setContentsMargins(margin, margin, margin, margin);
   m_internals->m_childrenFrame->setSizePolicy(sizeFixedPolicy);
   m_internals->m_childrenFrame->setFrameShape(QFrame::Box);
 

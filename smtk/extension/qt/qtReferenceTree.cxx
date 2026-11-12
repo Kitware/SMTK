@@ -521,13 +521,13 @@ void qtReferenceTree::updateUI()
   }
   m_widget->installEventFilter(this);
   m_p->m_grid = new QGridLayout(m_widget);
-  m_p->m_grid->setMargin(0);
+  m_p->m_grid->setContentsMargins(0, 0, 0, 0);
   m_p->m_grid->setSpacing(0);
   m_p->m_grid->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // Create a layout for the item's checkbox (if it is optional) and its label.
   QHBoxLayout* labelLayout = new QHBoxLayout();
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -578,11 +578,11 @@ void qtReferenceTree::updateUI()
   // Now add widgetry for the "entry"
   // Create a layout for the item's entry editor.
   QVBoxLayout* entryLayout = new QVBoxLayout();
-  entryLayout->setMargin(0);
+  entryLayout->setContentsMargins(0, 0, 0, 0);
   entryLayout->setSpacing(6);
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QHBoxLayout* headerLayout = new QHBoxLayout();
-  headerLayout->setMargin(0);
+  headerLayout->setContentsMargins(0, 0, 0, 0);
   headerLayout->setSpacing(6);
   headerLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 

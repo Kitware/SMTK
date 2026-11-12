@@ -224,7 +224,7 @@ void qtWorkletPalette::createWidget()
 
   m_layout = new QVBoxLayout;
   m_layout->setObjectName("Layout");
-  m_layout->setMargin(0);
+  m_layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(m_layout);
   const auto& conf = m_viewInfo.configuration()->details();
   if (conf.attributeAsBool("ShowTitle"))

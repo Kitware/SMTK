@@ -77,7 +77,7 @@ void qtAnalysisView::createWidget()
   this->Widget->setObjectName(view->name().c_str());
   //create the layout for the frame area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(layout);
 
   auto attRes = this->attributeResource();
