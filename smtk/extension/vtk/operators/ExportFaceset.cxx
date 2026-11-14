@@ -21,6 +21,10 @@
 #include "vtkAppendPolyData.h"
 #include "vtkCompositeDataIterator.h"
 #include "vtkCompositeDataSet.h"
+#include "vtkVersionMacros.h"
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+#include "vtkCellTypeUtilities.h"
+#endif
 #include "vtkDataObject.h"
 #include "vtkDataSet.h"
 #include "vtkDataSetSurfaceFilter.h"
@@ -47,6 +51,9 @@ namespace geometry
 // This will require an update of ParaView/VTK versions in the SMTK build and CMB-superbuild.
 int DimensionFromCellType(int cellType)
 {
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+  return vtkCellTypeUtilities::GetDimension(static_cast<unsigned char>(cellType));
+#else
   switch (cellType)
   {
     case VTK_VERTEX: // fall through
@@ -113,6 +120,7 @@ int DimensionFromCellType(int cellType)
       break;
   }
   return -1;
+#endif
 }
 
 int EstimateParametricDimension(const vtkSmartPointer<vtkDataSet>& dset)

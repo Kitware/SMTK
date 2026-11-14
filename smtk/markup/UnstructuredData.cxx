@@ -19,6 +19,10 @@
 #include "vtkDataObject.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDataSetReader.h"
+#include "vtkVersionMacros.h"
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+#include "vtkCellTypeUtilities.h"
+#endif
 #include "vtkImageData.h"
 #include "vtkNew.h"
 #include "vtkPolyDataReader.h"
@@ -35,6 +39,15 @@ namespace markup
 
 namespace
 {
+
+int cellDimension(int cellType)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+  return vtkCellTypeUtilities::GetDimension(static_cast<unsigned char>(cellType));
+#else
+  return vtkCellTypes::GetDimension(static_cast<unsigned char>(cellType));
+#endif
+}
 
 int maxDimension(vtkSmartPointer<vtkDataObject> data)
 {
@@ -58,7 +71,7 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
     for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTuples(); ++ii)
     {
       int cellType = cellTypes->GetTuple1(ii);
-      int dim = vtkCellTypes::GetDimension(cellType);
+      int dim = cellDimension(cellType);
       if (dim > result)
       {
         result = dim;
@@ -73,13 +86,16 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
   }
   else // NOLINT(readability-misleading-indentation)
   {
-    // Use deprecated API.
     vtkNew<vtkCellTypes> cellTypes;
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+    dset->GetDistinctCellTypes(cellTypes);
+#else
     dset->GetCellTypes(cellTypes);
+#endif
     for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTypes(); ++ii)
     {
       int cellType = cellTypes->GetCellType(ii);
-      int dim = vtkCellTypes::GetDimension(cellType);
+      int dim = cellDimension(cellType);
       if (dim > result)
       {
         result = dim;

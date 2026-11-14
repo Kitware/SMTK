@@ -39,3 +39,17 @@ compatible with Qt 5.15. Notable changes include:
 
 These changes are not intended to alter SMTK algorithms or application
 behavior.
+
+VTK compatibility
+~~~~~~~~~~~~~~~~~
+
+SMTK's VTK extensions have been updated to avoid APIs deprecated by the VTK
+version used by ParaView 6.2. Cell-array construction and traversal now use
+the current connectivity and cell-ID APIs, and cell-type queries use
+``vtkCellTypeUtilities`` where available. Array preallocation now distinguishes
+between points, tuples, and scalar values using the corresponding reservation
+APIs.
+
+Version checks retain the implementations required by older VTK releases.
+These changes affect capacity allocation and API usage only; they are not
+intended to change generated geometry or application behavior.

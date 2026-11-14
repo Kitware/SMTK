@@ -31,6 +31,36 @@
 
 #include <cmath>
 
+namespace
+{
+void reservePoints(vtkPoints* points, vtkIdType numberOfPoints)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  points->Reserve(numberOfPoints);
+#else
+  points->Allocate(numberOfPoints);
+#endif
+}
+
+void reserveTuples(vtkAbstractArray* array, vtkIdType numberOfTuples)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  array->ReserveTuples(numberOfTuples);
+#else
+  array->Allocate(numberOfTuples * array->GetNumberOfComponents());
+#endif
+}
+
+void reserveValues(vtkAbstractArray* array, vtkIdType numberOfValues)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  array->ReserveValues(numberOfValues);
+#else
+  array->Allocate(numberOfValues);
+#endif
+}
+} // anonymous namespace
+
 vtkStandardNewMacro(vtkConeFrustum);
 
 vtkConeFrustum::vtkConeFrustum(int res)
@@ -137,51 +167,51 @@ int vtkConeFrustum::RequestData(
   vtkNew<vtkPoints> pts;
   pts->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  pts->Allocate(2 * this->Resolution);
+  reservePoints(pts, 2 * this->Resolution);
 
   vtkNew<vtkPoints> botPts;
   botPts->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  botPts->Allocate(this->Resolution);
+  reservePoints(botPts, this->Resolution);
 
   vtkNew<vtkPoints> topPts;
   topPts->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  topPts->Allocate(this->Resolution);
+  reservePoints(topPts, this->Resolution);
 
   vtkNew<vtkPoints> axisPoints;
   axisPoints->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  axisPoints->Allocate(2);
+  reservePoints(axisPoints, 2);
   axisPoints->InsertNextPoint(p0.GetData());
   axisPoints->InsertNextPoint(p1.GetData());
 
   vtkNew<vtkPoints> botPoint;
   botPoint->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  botPoint->Allocate(1);
+  reservePoints(botPoint, 1);
   botPoint->InsertNextPoint(p0.GetData());
 
   vtkNew<vtkPoints> topPoint;
   topPoint->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  topPoint->Allocate(1);
+  reservePoints(topPoint, 1);
   topPoint->InsertNextPoint(p1.GetData());
 
   vtkNew<vtkDoubleArray> nrm; // point normals
   nrm->SetNumberOfComponents(3);
   nrm->SetName("normals");
-  nrm->Allocate(2 * this->Resolution);
+  reserveTuples(nrm, 2 * this->Resolution);
 
   vtkNew<vtkDoubleArray> botNrm; // point normals
   botNrm->SetName("normals");
   botNrm->SetNumberOfComponents(3);
-  botNrm->Allocate(this->Resolution + 1);
+  reserveTuples(botNrm, this->Resolution + 1);
 
   vtkNew<vtkDoubleArray> topNrm; // point normals
   topNrm->SetName("normals");
   topNrm->SetNumberOfComponents(3);
-  topNrm->Allocate(this->Resolution + 1);
+  reserveTuples(topNrm, this->Resolution + 1);
 
   double angle = 2.0 * vtkMath::Pi() / this->Resolution;
 
@@ -247,12 +277,9 @@ int vtkConeFrustum::RequestData(
   vtkNew<vtkIdTypeArray> sideConn;
   vtkNew<vtkIdTypeArray> botConn;
   vtkNew<vtkIdTypeArray> topConn;
-  sideConn->Allocate(numConnSide);
-  botConn->Allocate(numConnCap);
-  topConn->Allocate(numConnCap);
-  axsLines->Allocate(3);
-  botLines->Allocate(this->Resolution + 2);
-  topLines->Allocate(this->Resolution + 2);
+  reserveValues(sideConn, numConnSide);
+  reserveValues(botConn, numConnCap);
+  reserveValues(topConn, numConnCap);
 
   // Side-face connectivity (quads).
   vtkIdType start0 = 0;
@@ -304,22 +331,22 @@ int vtkConeFrustum::RequestData(
     botEdgeConn->SetValue(ii + 1, 1 + (ii % this->Resolution));
     topEdgeConn->SetValue(ii + 1, ii % this->Resolution);
   }
-  botLines->SetCells(1, botEdgeConn);
-  topLines->SetCells(1, topEdgeConn);
-  axsLines->SetCells(1, axsEdgeConn);
+  botLines->ImportLegacyFormat(botEdgeConn);
+  topLines->ImportLegacyFormat(topEdgeConn);
+  axsLines->ImportLegacyFormat(axsEdgeConn);
 
   // Update the output
-  polys->SetCells(this->Resolution, sideConn);
+  polys->ImportLegacyFormat(sideConn);
   conical->SetPoints(pts);
   conical->SetPolys(polys);
   conical->GetPointData()->SetNormals(nrm);
 
-  botPolys->SetCells(this->Resolution, botConn);
+  botPolys->ImportLegacyFormat(botConn);
   botFace->SetPoints(botPts);
   botFace->SetPolys(botPolys);
   botFace->GetPointData()->SetNormals(botNrm);
 
-  topPolys->SetCells(this->Resolution, topConn);
+  topPolys->ImportLegacyFormat(topConn);
   topFace->SetPoints(topPts);
   topFace->SetPolys(topPolys);
   topFace->GetPointData()->SetNormals(topNrm);

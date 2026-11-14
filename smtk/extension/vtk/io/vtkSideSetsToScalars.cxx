@@ -10,12 +10,14 @@
 
 #include "smtk/extension/vtk/io/vtkSideSetsToScalars.h"
 #include "vtkCellData.h"
+#include "vtkDataArray.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkPointData.h"
 #include "vtkUnsignedCharArray.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkVersionMacros.h"
 
 vtkStandardNewMacro(vtkSideSetsToScalars);
 
@@ -104,14 +106,18 @@ int vtkSideSetsToScalars::RequestData(
 
     // Get all the relevant cell info
     vtkCellData* cellData = groupData->GetCellData();
-    vtkUnsignedCharArray* cellTypes = groupData->GetCellTypesArray();
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+    vtkDataArray* cellTypes = groupData->GetCellTypes();
+#else
+    vtkDataArray* cellTypes = groupData->GetCellTypesArray();
+#endif
     vtkIntArray* cellIds = vtkIntArray::SafeDownCast(cellData->GetGlobalIds());
 
     if (groupData->GetNumberOfCells() == 0)
     {
       continue;
     }
-    auto initCellType = static_cast<VTKCellType>(cellTypes->GetValue(0));
+    auto initCellType = static_cast<VTKCellType>(cellTypes->GetTuple1(0));
     if (initCellType == VTK_VERTEX && !cellIds)
     {
       // The IDs we care about for node sets are point IDs.
@@ -121,7 +127,7 @@ int vtkSideSetsToScalars::RequestData(
     for (vtkIdType j = 0; j < groupData->GetNumberOfCells(); j++)
     {
       // Ensure homogenous cell type
-      auto cellType = static_cast<VTKCellType>(cellTypes->GetValue(j));
+      auto cellType = static_cast<VTKCellType>(cellTypes->GetTuple1(j));
       if (initCellType != cellType)
       {
         vtkWarningMacro(<< "Group block contains heterogenous cell types");
