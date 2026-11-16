@@ -7,9 +7,9 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/extension/paraview/widgets/pqConePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/pqSMTKConePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/pqPointPickingVisibilityHelper.h"
-#include "smtk/extension/paraview/widgets/ui_pqConePropertyWidget.h"
+#include "smtk/extension/paraview/widgets/ui_pqSMTKConePropertyWidget.h"
 
 #include "pqCoreUtilities.h"
 #include "pqPointPickingHelper.h"
@@ -28,7 +28,7 @@
 #include "vtkVectorOperators.h"
 #endif
 
-class pqConePropertyWidget::Internals
+class pqSMTKConePropertyWidget::Internals
 {
 public:
   Internals()
@@ -36,19 +36,19 @@ public:
   {
   }
 
-  Ui::ConePropertyWidget Ui;
+  Ui::SMTKConePropertyWidget Ui;
   bool PickPoint1{ true };
   std::string BottomRadiusName;
 };
 
-pqConePropertyWidget::pqConePropertyWidget(
+pqSMTKConePropertyWidget::pqSMTKConePropertyWidget(
   vtkSMProxy* smproxy,
   vtkSMPropertyGroup* smgroup,
   QWidget* parentObj)
   : Superclass("representations", "ConeWidgetRepresentation", smproxy, smgroup, parentObj)
-  , m_p(new pqConePropertyWidget::Internals())
+  , m_p(new pqSMTKConePropertyWidget::Internals())
 {
-  Ui::ConePropertyWidget& ui = m_p->Ui;
+  Ui::SMTKConePropertyWidget& ui = m_p->Ui;
   ui.setupUi(this);
 
   auto* topRad = smgroup->GetProperty("TopRadius");
@@ -172,9 +172,9 @@ pqConePropertyWidget::pqConePropertyWidget(
   this->updateInformationLabels();
 }
 
-pqConePropertyWidget::~pqConePropertyWidget() = default;
+pqSMTKConePropertyWidget::~pqSMTKConePropertyWidget() = default;
 
-void pqConePropertyWidget::pick(double wx, double wy, double wz)
+void pqSMTKConePropertyWidget::pick(double wx, double wy, double wz)
 {
   if (m_p->PickPoint1)
   {
@@ -187,7 +187,7 @@ void pqConePropertyWidget::pick(double wx, double wy, double wz)
   m_p->PickPoint1 = !m_p->PickPoint1;
 }
 
-void pqConePropertyWidget::pickPoint1(double wx, double wy, double wz)
+void pqSMTKConePropertyWidget::pickPoint1(double wx, double wy, double wz)
 {
   double position[3] = { wx, wy, wz };
   vtkSMNewWidgetRepresentationProxy* wdgProxy = this->widgetProxy();
@@ -197,7 +197,7 @@ void pqConePropertyWidget::pickPoint1(double wx, double wy, double wz)
   this->render();
 }
 
-void pqConePropertyWidget::pickPoint2(double wx, double wy, double wz)
+void pqSMTKConePropertyWidget::pickPoint2(double wx, double wy, double wz)
 {
   double position[3] = { wx, wy, wz };
   vtkSMNewWidgetRepresentationProxy* wdgProxy = this->widgetProxy();
@@ -207,7 +207,7 @@ void pqConePropertyWidget::pickPoint2(double wx, double wy, double wz)
   this->render();
 }
 
-void pqConePropertyWidget::setCylindrical(bool isCylinder)
+void pqSMTKConePropertyWidget::setCylindrical(bool isCylinder)
 {
   int cyl = isCylinder ? 1 : 0;
   vtkSMNewWidgetRepresentationProxy* wdgProxy = this->widgetProxy();
@@ -232,7 +232,7 @@ void pqConePropertyWidget::setCylindrical(bool isCylinder)
   this->render();
 }
 
-void pqConePropertyWidget::setForceCylindrical(bool isCylinder)
+void pqSMTKConePropertyWidget::setForceCylindrical(bool isCylinder)
 {
   m_p->Ui.cylindrical->setChecked(isCylinder);
   if (isCylinder)
@@ -246,9 +246,9 @@ void pqConePropertyWidget::setForceCylindrical(bool isCylinder)
   this->setCylindrical(isCylinder);
 }
 
-void pqConePropertyWidget::updateInformationLabels()
+void pqSMTKConePropertyWidget::updateInformationLabels()
 {
-  Ui::ConePropertyWidget& ui = m_p->Ui;
+  Ui::SMTKConePropertyWidget& ui = m_p->Ui;
 
   vtkVector3d p1, p2;
   vtkSMProxy* wproxy = this->widgetProxy();
@@ -259,7 +259,7 @@ void pqConePropertyWidget::updateInformationLabels()
   ui.labelLength->setText(QString("<b>Length:</b> <i>%1</i> ").arg(distance));
 }
 
-void pqConePropertyWidget::placeWidget()
+void pqSMTKConePropertyWidget::placeWidget()
 {
   // Nothing to do?
 }

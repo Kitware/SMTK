@@ -40,6 +40,20 @@ compatible with Qt 5.15. Notable changes include:
 These changes are not intended to alter SMTK algorithms or application
 behavior.
 
+Cone widget rename
+~~~~~~~~~~~~~~~~~~
+
+SMTK's finite cone-frustum property widget has been renamed from
+``pqConePropertyWidget`` to ``pqSMTKConePropertyWidget``. Its header is now
+``smtk/extension/paraview/widgets/pqSMTKConePropertyWidget.h``. This avoids a
+symbol collision with ParaView's independently implemented
+``pqConePropertyWidget``, which represents an infinite cone using a different
+set of properties.
+
+Downstream code that directly uses SMTK's widget must update its include and
+class-name references. The widget's finite cone-frustum and cylinder behavior
+is otherwise unchanged.
+
 VTK compatibility
 ~~~~~~~~~~~~~~~~~
 

@@ -35,9 +35,9 @@ ParaView.
   interface that allows users to inspect and enter exact numeric values when needed.
   ParaView widgets inherit the pqInteractivePropertyWidget class.
 
-  A good example of a ParaView widget class is :smtk:`pqConePropertyWidget`, which
+  A good example of a ParaView widget class is :smtk:`pqSMTKConePropertyWidget`, which
   uses the VTK classes above, but indirectly via server-manager XML in the
-  plugin named smtkPVServerExtPlugin; when a pqConePropertyWidget is created on
+  plugin named smtkPVServerExtPlugin; when a pqSMTKConePropertyWidget is created on
   the client process, it constructs a proxy object named ConeWidgetRepresentation.
   This proxy object has subproxies named ConeWidget and ConeRepresentation that
   are backed on the server process by the VTK classes above.
