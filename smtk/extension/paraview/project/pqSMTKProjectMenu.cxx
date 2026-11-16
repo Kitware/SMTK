@@ -193,6 +193,7 @@ pqSMTKProjectMenu::pqSMTKProjectMenu(QObject* parent)
           smtk::project::view::IconConstructor()(backgroundColor))),
         tr("New &Project..."),
         this);
+      // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
       newProjectAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_P));
 
       if (menu)

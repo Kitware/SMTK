@@ -71,7 +71,10 @@ pqSMTKOperationToolboxPanel::pqSMTKOperationToolboxPanel(QWidget* parent)
 #ifndef PARAVIEW_VERSION_59
   // Register once, independently of the operation palette's configuration.
   m_findOperationShortcut = pqKeySequences::instance().addModalShortcut(
-    QKeySequence(Qt::CTRL | Qt::Key_Space), nullptr, this);
+    // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+    QKeySequence(Qt::CTRL | Qt::Key_Space),
+    nullptr,
+    this);
   // Use the main window so the shortcut also works when the toolbox is hidden.
   m_findOperationShortcut->setContextWidget(pqCoreUtilities::mainWidget(), Qt::ApplicationShortcut);
   QObject::connect(
@@ -82,7 +85,10 @@ pqSMTKOperationToolboxPanel::pqSMTKOperationToolboxPanel(QWidget* parent)
 #if defined(Q_OS_MAC)
   // ParaView advertises Option/Alt+Space on macOS. Keep the existing binding too.
   auto* altSpaceShortcut = pqKeySequences::instance().addModalShortcut(
-    QKeySequence(Qt::ALT | Qt::Key_Space), nullptr, this);
+    // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+    QKeySequence(Qt::ALT | Qt::Key_Space),
+    nullptr,
+    this);
   altSpaceShortcut->setContextWidget(pqCoreUtilities::mainWidget(), Qt::ApplicationShortcut);
   QObject::connect(
     altSpaceShortcut, &pqModalShortcut::activated, this, &pqSMTKOperationToolboxPanel::quickLaunch);

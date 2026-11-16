@@ -103,7 +103,7 @@ pqSMTKColorByWidget::pqSMTKColorByWidget(QWidget* _p)
   this->Internal = new pqSMTKColorByWidget::pqInternals();
   this->Internal->setupUi(this);
   this->setToolTip("Choose colors used to draw SMTK components.");
-  this->connect(
+  QObject::connect(
     this->Internal->comboBox,
     &QComboBox::currentTextChanged,
     this,
