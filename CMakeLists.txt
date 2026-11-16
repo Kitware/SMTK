@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.20...3.27)
 
 #If the user/superbuild hasn't explicitly stated what c++ standard to use
 #require C++17
