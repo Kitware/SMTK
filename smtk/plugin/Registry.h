@@ -424,8 +424,10 @@ private:
     const std::shared_ptr<Manager>& manager,
     const std::shared_ptr<T>&... managers)
   {
-    m_registries.push_back(new Registry<typename std::tuple_element<I, Tuple>::type, Manager, T...>(
-      0, manager, std::forward<const std::shared_ptr<T>&>(managers)...));
+    // Qualify the dependent base-class member so MSVC defers lookup until template instantiation.
+    this->m_registries.push_back(
+      new Registry<typename std::tuple_element<I, Tuple>::type, Manager, T...>(
+        0, manager, std::forward<const std::shared_ptr<T>&>(managers)...));
     return registerDependencies<I + 1, Tuple>(
       manager, std::forward<const std::shared_ptr<T>&>(managers)...);
   }
