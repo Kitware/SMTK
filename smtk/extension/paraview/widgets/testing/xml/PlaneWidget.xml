@@ -5,6 +5,9 @@
   <!-- Hide the "Diagram" panel to prevent the 3-d view from being shrunk too small even at 300x300. -->
   <pqevent object="pqClientMainWindow/menubar" command="activate" arguments="menu_View" />
   <pqevent object="pqClientMainWindow/menubar/menu_View" command="activate" arguments="Diagram" />
+  <!-- The orientation axes are not part of the plane-widget test and their
+       default visibility varies between applications. -->
+  <pqevent object="pqClientMainWindow/axesToolbar/actionShowOrientationAxes" command="set_boolean" arguments="false" />
   <!-- Lock the window size. -->
   <pqevent object="pqClientMainWindow/menubar/menuTools" command="activate" arguments="actionTesting_Window_Size" />
 
