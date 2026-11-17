@@ -24,6 +24,7 @@
 #include <vtkPolyData.h>
 #include <vtkTransform.h>
 #include <vtkTransformPolyDataFilter.h>
+#include <vtkVersionMacros.h>
 
 #include <vtkDelaunay2D.h>
 #include <vtkPolygon.h>
@@ -31,6 +32,18 @@
 
 #include <algorithm>
 #include <cassert>
+
+namespace
+{
+void reservePoints(vtkPoints* points, vtkIdType numberOfPoints)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  points->Reserve(numberOfPoints);
+#else
+  points->Allocate(numberOfPoints);
+#endif
+}
+} // anonymous namespace
 
 vtkStandardNewMacro(vtkCmbLayeredConeSource);
 
@@ -413,7 +426,7 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(
   {
     GeneratePoints gp(outerRes);
     outerRes = gp.usedResolution();
-    points->Allocate(outerRes * 2);
+    reservePoints(points, outerRes * 2);
     gp.AddPoints(points, 0, outerBottomR, 0);
     gp.AddPoints(points, h, outerTopR, 0);
   }
@@ -422,7 +435,7 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(
     GeneratePoints gp(outerRes);
     outerRes = gp.usedResolution();
     innerRes = static_cast<int>(InnerPoints.size());
-    points->Allocate((outerRes + innerRes) * 2);
+    reservePoints(points, (outerRes + innerRes) * 2);
     gp.AddPoints(points, 0, outerBottomR, 0);
     for (size_t i = 0; i < InnerPoints.size(); ++i)
     {
@@ -439,7 +452,7 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(
   {
     GeneratePoints gp(outerRes);
     innerRes = outerRes = gp.usedResolution();
-    points->Allocate(outerRes * 4);
+    reservePoints(points, outerRes * 4);
     gp.AddPoints(points, 0, outerBottomR, 0);
     gp.AddPoints(points, 0, innerBottomR, 0.0005);
     gp.AddPoints(points, h, outerTopR, 0);
@@ -452,7 +465,7 @@ vtkSmartPointer<vtkPolyData> vtkCmbLayeredConeSource::CreateLayer(
     outerRes = gpO.usedResolution() * mult;
     GeneratePoints gpI(innerRes);
     innerRes = gpI.usedResolution();
-    points->Allocate(((outerRes * mult) + innerRes) * 2);
+    reservePoints(points, ((outerRes * mult) + innerRes) * 2);
     gpO.AddPointsUpsampled(points, 0, outerBottomR, outerRes, 0);
     gpI.AddPoints(points, 0, innerBottomR, 0.0005);
     gpO.AddPointsUpsampled(points, h, outerTopR, outerRes, 0);

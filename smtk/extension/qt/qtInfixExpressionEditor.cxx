@@ -280,7 +280,7 @@ void qtInfixExpressionEditor::addInputEditor(int i)
 
   ConstStringItemDefinitionPtr itemDef = theItem->definitionAs<StringItemDefinition>();
   QHBoxLayout* editorLayout = new QHBoxLayout(this->widget());
-  editorLayout->setMargin(0);
+  editorLayout->setContentsMargins(0, 0, 0, 0);
   editorLayout->setSpacing(3);
   if (theItem->isExtensible())
   {
@@ -344,7 +344,7 @@ void qtInfixExpressionEditor::updateUI()
   m_widget->setObjectName(theItem->name().c_str());
 
   mp_internals->mp_entryLayout = new QGridLayout(m_widget);
-  mp_internals->mp_entryLayout->setMargin(0);
+  mp_internals->mp_entryLayout->setContentsMargins(0, 0, 0, 0);
   mp_internals->mp_entryLayout->setSpacing(0);
   mp_internals->mp_entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 

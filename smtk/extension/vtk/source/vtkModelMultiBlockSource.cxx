@@ -51,6 +51,7 @@
 #include "vtkPolyDataNormals.h"
 #include "vtkStringArray.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkVersionMacros.h"
 
 SMTK_THIRDPARTY_PRE_INCLUDE
 #include "boost/filesystem.hpp"
@@ -59,6 +60,27 @@ SMTK_THIRDPARTY_POST_INCLUDE
 #include <cerrno>
 #include <cinttypes>
 #include <cstdlib>
+
+namespace
+{
+void reservePoints(vtkPoints* points, vtkIdType numberOfPoints)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  points->Reserve(numberOfPoints);
+#else
+  points->Allocate(numberOfPoints);
+#endif
+}
+
+void reserveTuples(vtkAbstractArray* array, vtkIdType numberOfTuples)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  array->ReserveTuples(numberOfTuples);
+#else
+  array->Allocate(numberOfTuples * array->GetNumberOfComponents());
+#endif
+}
+} // anonymous namespace
 
 using namespace smtk::model;
 
@@ -412,13 +434,13 @@ vtkSmartPointer<vtkPolyData> vtkModelMultiBlockSource::GenerateRepresentationFro
   pd->SetPoints(pts.GetPointer());
 
   vtkIdType npts = tess->coords().size() / 3;
-  pts->Allocate(npts);
+  reservePoints(pts, npts);
   smtk::model::EntityPtr entrec;
   if (entity.isValid(&entrec))
   {
     AddEntityTessToPolyData(entity, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
     AddColorWithDefault(pd, entity, this->DefaultColor);
-    if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
+    if (this->AllowNormalGeneration && pd->GetPolys()->GetNumberOfCells() > 0)
     {
       bool reallyNeedNormals = genNormals;
       if (entity.hasIntegerProperty("generate normals"))
@@ -454,13 +476,13 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     return;
   }
   vtkIdType npts = tess->coords().size() / 3;
-  pts->Allocate(npts);
+  reservePoints(pts, npts);
   smtk::model::EntityPtr entity;
   if (entityref.isValid(&entity))
   {
     AddEntityTessToPolyData(entityref, pts.GetPointer(), pd, this->ShowAnalysisTessellation);
     AddColorWithDefault(pd, entity, this->DefaultColor);
-    if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
+    if (this->AllowNormalGeneration && pd->GetPolys()->GetNumberOfCells() > 0)
     {
       bool reallyNeedNormals = genNormals;
       if (entityref.hasIntegerProperty("generate normals"))
@@ -613,7 +635,7 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(
 
     vtkNew<vtkPolyData> instancePoly;
     vtkNew<vtkPoints> instancePts;
-    instancePts->Allocate(numPoints);
+    reservePoints(instancePts, numPoints);
     instancePoly->SetPoints(instancePts.GetPointer());
     instanceBlocks->SetBlock(block, instancePoly.GetPointer());
 
@@ -641,10 +663,10 @@ void vtkModelMultiBlockSource::PrepareInstanceOutput(
     //instancePrototype->SetNumberOfTuples(numPoints);
     //instanceMask->SetNumberOfTuples(numPoints);
 
-    instanceOrient->Allocate(numPoints);
-    instanceScale->Allocate(numPoints);
-    instancePrototype->Allocate(numPoints);
-    instanceMask->Allocate(numPoints);
+    reserveTuples(instanceOrient, numPoints);
+    reserveTuples(instanceScale, numPoints);
+    reserveTuples(instancePrototype, numPoints);
+    reserveTuples(instanceMask, numPoints);
 
     // WARNING: Pointdata-array indices are used blindly in AddInstancePoints. Do not reorder:
     auto* pd = instancePoly->GetPointData();
@@ -719,7 +741,7 @@ void vtkModelMultiBlockSource::AddInstancePoints(
   {
     colorArray->SetName(VTK_INSTANCE_COLOR);
     colorArray->SetNumberOfComponents(4);
-    colorArray->Allocate(static_cast<vtkIdType>(nptsThisInst));
+    reserveTuples(colorArray, static_cast<vtkIdType>(nptsThisInst));
   }
   for (size_t ii = 0; ii < nptsThisInst; ++ii, pit += 3)
   {

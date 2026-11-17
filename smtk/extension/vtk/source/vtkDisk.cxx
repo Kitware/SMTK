@@ -31,6 +31,27 @@
 
 #include <cmath>
 
+namespace
+{
+void reservePoints(vtkPoints* points, vtkIdType numberOfPoints)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  points->Reserve(numberOfPoints);
+#else
+  points->Allocate(numberOfPoints);
+#endif
+}
+
+void reserveValues(vtkAbstractArray* array, vtkIdType numberOfValues)
+{
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 7, 0)
+  array->ReserveValues(numberOfValues);
+#else
+  array->Allocate(numberOfValues);
+#endif
+}
+} // anonymous namespace
+
 vtkStandardNewMacro(vtkDisk);
 
 vtkDisk::vtkDisk(int res)
@@ -104,19 +125,19 @@ int vtkDisk::RequestData(
   vtkNew<vtkPoints> normPts;
   normPts->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  normPts->Allocate(2);
+  reservePoints(normPts, 2);
   normPts->InsertNextPoint(p0.GetData());
   normPts->InsertNextPoint(p1.GetData());
 
   vtkNew<vtkPoints> edgePts;
   edgePts->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  edgePts->Allocate(this->Resolution);
+  reservePoints(edgePts, this->Resolution);
 
   vtkNew<vtkPoints> centerPoint;
   centerPoint->SetDataType(
     this->OutputPointsPrecision == vtkAlgorithm::DOUBLE_PRECISION ? VTK_DOUBLE : VTK_FLOAT);
-  centerPoint->Allocate(1);
+  reservePoints(centerPoint, 1);
   centerPoint->InsertNextPoint(p0.GetData());
 
   vtkNew<vtkDoubleArray> faceNrm; // point normals
@@ -149,10 +170,9 @@ int vtkDisk::RequestData(
   vtkNew<vtkIdTypeArray> faceConn;
   vtkNew<vtkIdTypeArray> edgeConn;
   vtkNew<vtkIdTypeArray> normConn;
-  faceConn->Allocate(numConnFace);
-  edgeConn->Allocate(numConnEdge);
+  reserveValues(faceConn, numConnFace);
+  reserveValues(edgeConn, numConnEdge);
   normConn->SetNumberOfTuples(3);
-  normLines->Allocate(3);
   vtkIdType zero = 0;
   centerVertex->InsertNextCell(1, &zero);
 
@@ -171,9 +191,9 @@ int vtkDisk::RequestData(
   normConn->SetValue(1, 0);
   normConn->SetValue(2, 1);
 
-  facePolys->SetCells(this->Resolution, faceConn);
-  edgeLines->SetCells(1, edgeConn);
-  normLines->SetCells(1, normConn);
+  facePolys->ImportLegacyFormat(faceConn);
+  edgeLines->ImportLegacyFormat(edgeConn);
+  normLines->ImportLegacyFormat(normConn);
 
   diskFace->SetPoints(facePts);
   diskFace->SetPolys(facePolys);

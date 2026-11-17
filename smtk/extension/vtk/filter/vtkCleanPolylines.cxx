@@ -96,24 +96,24 @@ int vtkCleanPolylines::RequestData(
   std::multimap<double, vtkIdType> lineMap; // for easy sorting of lines by length
   vtkCellArray* lines = reducedPolylines->GetLines();
   lines->InitTraversal();
-  vtkIdType traverseLocation = 0, memoryRequirement = 0;
+  vtkIdType numberOfPointIds = 0;
   i = 0;
   while (lines->GetNextCell(npts, ptIds))
   {
     l = lengths1->GetValue(i);
     if (l > minimumPolylineLength)
     {
-      lineMap.insert(std::pair<double, vtkIdType>(l, traverseLocation));
-      memoryRequirement += npts + 1;
+      lineMap.insert(std::pair<double, vtkIdType>(l, i));
+      numberOfPointIds += npts;
     }
-    traverseLocation = lines->GetTraversalLocation();
     i++;
   }
 
   vtkNew<vtkPolyData> tmpPD;
   tmpPD->SetPoints(strippedLines->GetPoints());
   vtkNew<vtkCellArray> outputLines;
-  outputLines->Allocate(memoryRequirement);
+  const auto numberOfLines = static_cast<vtkIdType>(lineMap.size());
+  outputLines->AllocateExact(numberOfLines, numberOfPointIds);
   tmpPD->SetLines(outputLines.GetPointer());
   vtkNew<vtkDoubleArray> lineLengthArray;
   lineLengthArray->SetName("LineLength");
@@ -128,7 +128,7 @@ int vtkCleanPolylines::RequestData(
   std::multimap<double, vtkIdType>::reverse_iterator mapIter;
   for (mapIter = lineMap.rbegin(); mapIter != lineMap.rend(); mapIter++)
   {
-    lines->GetCell(mapIter->second, npts, ptIds);
+    lines->GetCellAtId(mapIter->second, npts, ptIds);
     vtkIdType contourIndex = outputLines->InsertNextCell(npts, ptIds);
     lineLengthArray->InsertNextValue(mapIter->first);
     contourIndices->InsertNextValue(contourIndex);

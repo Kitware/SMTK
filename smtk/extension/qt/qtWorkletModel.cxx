@@ -30,6 +30,7 @@
 #include "smtk/view/Selection.h"
 
 #include <QByteArray>
+#include <QIODevice>
 #include <QMimeData>
 
 #include <algorithm>

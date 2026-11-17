@@ -31,7 +31,7 @@ set(_smtk_packages
   Boost
   nlohmann_json
   pegtl
-  Qt5
+  Qt${SMTK_QT_VERSION}
   ParaView
   Python3
   VTK

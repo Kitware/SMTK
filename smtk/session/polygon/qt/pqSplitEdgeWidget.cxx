@@ -137,7 +137,7 @@ pqSplitEdgeWidget::pqSplitEdgeWidget(QWidget* prent)
 
   m_edgePointPicker->InteractiveSelectButton = splitButton;
   QVBoxLayout* layout = new QVBoxLayout(this);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(splitButton);
 
   this->Internals->InteractionModePropertyObserver.TakeReference(

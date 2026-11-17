@@ -225,12 +225,14 @@ pqSMTKGroupComponentsBehavior::pqSMTKGroupComponentsBehavior(QObject* parent)
   {
     QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       auto* groupSelectedComponentsAction = new QAction(tr("&Group"), this);
-      groupSelectedComponentsAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+      // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+      groupSelectedComponentsAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_G));
       groupSelectedComponentsAction->setShortcutContext(Qt::ApplicationShortcut);
       groupSelectedComponentsAction->setObjectName("groupSelectedComponents");
 
       auto* ungroupSelectedComponentsAction = new QAction(tr("&Ungroup"), this);
-      ungroupSelectedComponentsAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+      // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+      ungroupSelectedComponentsAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_G));
       ungroupSelectedComponentsAction->setShortcutContext(Qt::ApplicationShortcut);
       ungroupSelectedComponentsAction->setObjectName("ungroupSelectedComponents");
 

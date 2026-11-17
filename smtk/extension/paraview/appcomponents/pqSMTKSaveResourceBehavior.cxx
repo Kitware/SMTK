@@ -314,10 +314,12 @@ pqSMTKSaveResourceBehavior::pqSMTKSaveResourceBehavior(QObject* parent)
     QObject::connect(pqCore, &pqApplicationCore::clientEnvironmentDone, [this]() {
       QAction* saveResourceAction =
         new QAction(QPixmap(":/SaveResourceBehavior/Save24.png"), tr("&Save Resource"), this);
-      saveResourceAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+      // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+      saveResourceAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_S));
       QAction* saveResourceAsAction =
         new QAction(QPixmap(":/SaveResourceBehavior/Save24.png"), tr("&Save Resource As..."), this);
-      saveResourceAsAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+      // NOLINTNEXTLINE(bugprone-suspicious-enum-usage)
+      saveResourceAsAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_S));
 
       QMainWindow* mainWindow = qobject_cast<QMainWindow*>(pqCoreUtilities::mainWidget());
 

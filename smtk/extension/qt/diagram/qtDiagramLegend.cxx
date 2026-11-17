@@ -81,7 +81,7 @@ qtDiagramLegend::qtDiagramLegend(const QString& title, qtDiagram* parent)
   this->setLayout(new QVBoxLayout);
   this->layout()->setObjectName("LegendLayout");
   this->layout()->addWidget(m_view);
-  this->layout()->setMargin(0);
+  this->layout()->setContentsMargins(0, 0, 0, 0);
 }
 
 qtDiagramLegend::~qtDiagramLegend() = default;
@@ -115,7 +115,7 @@ bool qtDiagramLegend::addEntry(qtDiagramLegendEntry* entry)
     }
   }
 
-  QVariant entryRef(QMetaType::QObjectStar, &entry);
+  QVariant entryRef = QVariant::fromValue(static_cast<QObject*>(entry));
   QList<QStandardItem*> rowValues;
   // Insert a value for Column::Group, Column::Symbol, and Column::Description:
   rowValues.push_back(new QStandardItem);

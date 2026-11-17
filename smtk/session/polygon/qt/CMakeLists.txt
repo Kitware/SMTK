@@ -1,4 +1,4 @@
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Core Widgets)
 
 # set up sources to build
 set(PQWidgetsSrcs
@@ -53,8 +53,8 @@ target_link_libraries(smtkPolygonQtExt LINK_PUBLIC
   vtkSMTKSourceExt
   vtkSMTKFilterExt
   ParaView::pqApplicationComponents
-  Qt5::Core
-  Qt5::Widgets
+  "Qt${SMTK_QT_VERSION}::Core"
+  "Qt${SMTK_QT_VERSION}::Widgets"
   VTK::CommonCore
   VTK::DomainsChemistryOpenGL2
 LINK_PRIVATE

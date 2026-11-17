@@ -1,7 +1,7 @@
 if(SMTK_ENABLE_QT_SUPPORT)
   ##
   ## Create browseModel to test browsing model entity tree:
-  find_package(Qt5 COMPONENTS Widgets)
+  find_package("Qt${SMTK_QT_VERSION}" COMPONENTS Widgets)
 
   set(CMAKE_AUTOMOC 1)
   set(CMAKE_AUTOUIC 1)

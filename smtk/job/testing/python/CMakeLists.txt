@@ -5,7 +5,7 @@ endif()
 
 # The queues need a Qt application even when driven from Python.
 add_executable(queueJobPythonDriver queueJobPythonDriver.cxx)
-target_link_libraries(queueJobPythonDriver PRIVATE Qt5::Core Python3::Python)
+target_link_libraries(queueJobPythonDriver PRIVATE "Qt${SMTK_QT_VERSION}::Core" Python3::Python)
 add_test(NAME queueJobPy
   COMMAND queueJobPythonDriver "${CMAKE_CURRENT_SOURCE_DIR}/queueJob.py")
 # Bound runtime setup and image pulls as well as the Python job-completion waits.

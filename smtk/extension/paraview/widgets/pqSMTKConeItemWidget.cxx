@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/extension/paraview/widgets/pqSMTKConeItemWidget.h"
-#include "smtk/extension/paraview/widgets/pqConePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/pqSMTKAttributeItemWidgetP.h"
+#include "smtk/extension/paraview/widgets/pqSMTKConePropertyWidget.h"
 
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -86,7 +86,7 @@ bool pqSMTKConeItemWidget::createProxyAndWidget(
   {
     return false;
   }
-  auto* coneWidget = new pqConePropertyWidget(proxy, proxy->GetPropertyGroup(0));
+  auto* coneWidget = new pqSMTKConePropertyWidget(proxy, proxy->GetPropertyGroup(0));
   coneWidget->setForceCylindrical(m_forceCylinder);
   widget = coneWidget;
 
@@ -230,7 +230,7 @@ bool pqSMTKConeItemWidget::setForceCylindrical(bool isCylinder)
   m_forceCylinder = isCylinder;
   if (m_p->m_pvwidget)
   {
-    auto* widget = reinterpret_cast<pqConePropertyWidget*>(m_p->m_pvwidget);
+    auto* widget = reinterpret_cast<pqSMTKConePropertyWidget*>(m_p->m_pvwidget);
     widget->setForceCylindrical(m_forceCylinder);
   }
   return true;

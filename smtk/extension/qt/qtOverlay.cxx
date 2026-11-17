@@ -24,7 +24,7 @@ qtOverlay::qtOverlay(QWidget* parentW)
   //setAttribute(Qt::WA_TransparentForMouseEvents);
   new QHBoxLayout(this);
   this->layout()->setAlignment(Qt::AlignRight);
-  this->layout()->setMargin(0);
+  this->layout()->setContentsMargins(0, 0, 0, 0);
   m_overlayColor = QColor(80, 80, 255, 128);
 }
 

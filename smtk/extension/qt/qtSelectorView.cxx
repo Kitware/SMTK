@@ -100,7 +100,7 @@ bool qtSelectorView::createSelector()
   //create the layout for the frame area
   smtk::view::ConfigurationPtr view = this->configuration();
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(layout);
 
   // Get the Selector Attribute

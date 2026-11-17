@@ -79,7 +79,7 @@ void qtVoidItem::createWidget()
   }
   auto* vLayout = new QVBoxLayout(m_widget);
   vLayout->setObjectName("vLayout");
-  vLayout->setMargin(0);
+  vLayout->setContentsMargins(0, 0, 0, 0);
   vLayout->setSpacing(0);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

@@ -855,7 +855,7 @@ void qtFileItem::addInputEditor(
   editFrame->setObjectName(QString("editFrame%1").arg(i));
   QBoxLayout* editorLayout = new QHBoxLayout(editFrame);
   editorLayout->setObjectName(QString("editorLayout%1").arg(i));
-  editorLayout->setMargin(0);
+  editorLayout->setContentsMargins(0, 0, 0, 0);
   editorLayout->setSpacing(3);
   if (item.isExtensible() && (i >= static_cast<int>(itemDef.numberOfRequiredValues())))
   {
@@ -970,13 +970,13 @@ void qtFileItem::updateUI()
   }
   top->setObjectName("top");
 
-  top->setMargin(0);
+  top->setContentsMargins(0, 0, 0, 0);
   top->setSpacing(0);
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setObjectName("labelLayout");
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
@@ -1038,7 +1038,7 @@ void qtFileItem::updateUI()
   m_internals->Contents->setObjectName("Contents");
   m_internals->EntryLayout = new QVBoxLayout(m_internals->Contents);
   m_internals->EntryLayout->setObjectName("EntryLayout");
-  m_internals->EntryLayout->setMargin(0);
+  m_internals->EntryLayout->setContentsMargins(0, 0, 0, 0);
   m_internals->EntryLayout->setSpacing(0);
   m_internals->EntryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   top->addWidget(m_internals->Contents);

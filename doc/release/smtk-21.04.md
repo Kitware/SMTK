@@ -1580,7 +1580,7 @@ has no effect since the component does not exist in that scope).
   this method to a pqInteractivePropertyWidget subclass (like
   the cone widget in SMTK), replace that signal connection
   with an instantiation of pqPointPickingVisibilityHelper.
-  See `smtk/extension/paraview/widgets/pqConePropertyWidget.cxx`
+  See `smtk/extension/paraview/widgets/pqSMTKConePropertyWidget.cxx`
   for an example of its usage.
 
 

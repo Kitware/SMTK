@@ -121,7 +121,8 @@ int Import::taggedPolyData2PolygonModelEntities(
     vtkIdType i;
     n = verts->GetNumberOfCells();
     pcoords.resize(3 * n);
-    for (i = 0, verts->SetTraversalLocation(0); verts->GetNextCell(npts, pts);)
+    verts->InitTraversal();
+    for (i = 0; verts->GetNextCell(npts, pts);)
     {
       // There should only be 1 point per vertex
       if (npts != 1)
@@ -158,8 +159,8 @@ int Import::taggedPolyData2PolygonModelEntities(
   pcoords.clear();
   pcoords.reserve((n + 1) * 3);
 
-  for (cellId = linesOffset, lines->SetTraversalLocation(0); lines->GetNextCell(npts, pts);
-       cellId++)
+  lines->InitTraversal();
+  for (cellId = linesOffset; lines->GetNextCell(npts, pts); cellId++)
   {
     // There should only be 2 point per line
     if (npts != 2)
@@ -237,7 +238,8 @@ int Import::basicPolyData2PolygonModelEntities(
     return numEnts;
   }
 
-  for (cellId = 0, lines->SetTraversalLocation(0); lines->GetNextCell(npts, pts); cellId++)
+  lines->InitTraversal();
+  for (cellId = 0; lines->GetNextCell(npts, pts); cellId++)
   {
     pcoords.clear();
     pcoords.resize(npts * 3);
@@ -292,7 +294,8 @@ int polyLines2modelEdgesAndFaces(
     vtkIdType pidx = 0;
     const vtkIdType* pts{ nullptr };
     vtkIdType npts{ 0 };
-    for (lines->SetTraversalLocation(0); lines->GetNextCell(npts, pts); ++pidx)
+    lines->InitTraversal();
+    for (; lines->GetNextCell(npts, pts); ++pidx)
     {
       std::vector<int>
         counts; // how many edges make up the outer loop, how many inner loops are there and how many edges for each?

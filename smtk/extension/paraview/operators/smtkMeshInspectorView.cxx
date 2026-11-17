@@ -290,7 +290,7 @@ void smtkMeshInspectorView::createWidget()
   this->Widget = new QFrame(this->parentWidget());
   this->Widget->setObjectName("meshInspectorView");
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   this->Widget->setLayout(layout);
   this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 

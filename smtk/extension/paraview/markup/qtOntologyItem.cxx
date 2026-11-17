@@ -479,14 +479,14 @@ void qtOntologyItem::updateUI()
   m_p->m_content = new QWidget(m_widget);
   top->setObjectName("top");
 
-  top->setMargin(0);
+  top->setContentsMargins(0, 0, 0, 0);
   top->setSpacing(0);
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QSizePolicy minExpPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setObjectName("labelLayout");
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;

@@ -272,7 +272,7 @@ void qtAttribute::createBasicLayout(bool includeAssociations)
     QHBoxLayout* unitsLayout = new QHBoxLayout(unitFrame);
     std::string unitsLayoutName = att->name() + "UnitsLayout";
     unitsLayout->setObjectName(unitsLayoutName.c_str());
-    unitsLayout->setMargin(0);
+    unitsLayout->setContentsMargins(0, 0, 0, 0);
     unitFrame->setLayout(unitsLayout);
     std::string unitsLabel = att->name() + "'s units:";
 

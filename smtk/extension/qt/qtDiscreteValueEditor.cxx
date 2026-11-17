@@ -202,7 +202,7 @@ void qtDiscreteValueEditor::createWidget()
   }
   this->Internals->clearChildItems();
   QBoxLayout* wlayout = new QVBoxLayout(this);
-  wlayout->setMargin(0);
+  wlayout->setContentsMargins(0, 0, 0, 0);
   wlayout->setAlignment(Qt::AlignTop);
   if (!item || !item->isDiscrete())
   {

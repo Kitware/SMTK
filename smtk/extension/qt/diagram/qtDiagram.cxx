@@ -187,7 +187,7 @@ public:
 
     auto* sizerLayout = new QHBoxLayout;
     m_sidebarMiddleLayout->setObjectName("SidebarMiddleLayout");
-    m_sidebarMiddleLayout->setMargin(0);
+    m_sidebarMiddleLayout->setContentsMargins(0, 0, 0, 0);
     m_sidebarMiddleLayout->addWidget(m_sidebarMiddle);
     m_sidebarMiddleLayout->addLayout(sizerLayout);
     m_sidebarMiddle->setFrameStyle(QFrame::NoFrame | QFrame::Plain);

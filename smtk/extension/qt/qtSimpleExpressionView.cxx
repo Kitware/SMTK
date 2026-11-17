@@ -122,9 +122,9 @@ void qtSimpleExpressionView::createWidget()
   //QGridLayout* gridLayout = new QGridLayout(frame);
   //gridLayout->setMargin(0);
   QVBoxLayout* leftLayout = new QVBoxLayout(leftFrame);
-  leftLayout->setMargin(0);
+  leftLayout->setContentsMargins(0, 0, 0, 0);
   QVBoxLayout* rightLayout = new QVBoxLayout(rightFrame);
-  rightLayout->setMargin(0);
+  rightLayout->setContentsMargins(0, 0, 0, 0);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   // create a list box for all the array entries

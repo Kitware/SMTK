@@ -7,20 +7,23 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef smtk_extension_paraview_widgets_pqConePropertyWidget_h
-#define smtk_extension_paraview_widgets_pqConePropertyWidget_h
+#ifndef smtk_extension_paraview_widgets_pqSMTKConePropertyWidget_h
+#define smtk_extension_paraview_widgets_pqSMTKConePropertyWidget_h
 
 #include "smtk/extension/paraview/widgets/pqSMTKInteractivePropertyWidget.h"
 #include "smtk/extension/paraview/widgets/smtkPQWidgetsExtModule.h"
 
-class SMTKPQWIDGETSEXT_EXPORT pqConePropertyWidget : public pqSMTKInteractivePropertyWidget
+class SMTKPQWIDGETSEXT_EXPORT pqSMTKConePropertyWidget : public pqSMTKInteractivePropertyWidget
 {
   Q_OBJECT
   using Superclass = pqSMTKInteractivePropertyWidget;
 
 public:
-  pqConePropertyWidget(vtkSMProxy* proxy, vtkSMPropertyGroup* smgroup, QWidget* parent = nullptr);
-  ~pqConePropertyWidget() override;
+  pqSMTKConePropertyWidget(
+    vtkSMProxy* proxy,
+    vtkSMPropertyGroup* smgroup,
+    QWidget* parent = nullptr);
+  ~pqSMTKConePropertyWidget() override;
 
 public Q_SLOTS:
   void pick(double, double, double);
@@ -41,7 +44,7 @@ protected:
   Internals* m_p;
 
 private:
-  Q_DISABLE_COPY(pqConePropertyWidget);
+  Q_DISABLE_COPY(pqSMTKConePropertyWidget);
 };
 
-#endif // smtk_extension_paraview_widgets_pqConePropertyWidget_h
+#endif // smtk_extension_paraview_widgets_pqSMTKConePropertyWidget_h

@@ -124,14 +124,14 @@ void vtkPolygonArcInfo::CopyFromObject(vtkObject* obj)
   double p1[3], p2[3];
   vtkIdType npts{ 0 };
   const vtkIdType* pts{ nullptr };
-  lines->GetCell(0, npts, pts);
+  lines->GetCellAtId(0, npts, pts);
   if (npts == 0)
     return;
   edgePoly->GetPoint(pts[0], p1);
   if (numCells > 1)
   {
     // get last cell
-    lines->GetCell(numCells - 1, npts, pts);
+    lines->GetCellAtId(numCells - 1, npts, pts);
     if (npts == 0)
       return;
   }

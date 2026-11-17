@@ -8,13 +8,13 @@ cmake_minimum_required(VERSION 3.12)
 set(data_host "https://data.kitware.com")
 
 # Determine the tarball to download. ci-smtk-ci-developer-{date}-{git-sha}-{platform}.tar.gz
-# 20261003 - Updated to include SQL-lite support
+# 20261113 - Updated to use ParaView 6.2.1
 if ("$ENV{CMAKE_CONFIGURATION}" MATCHES "vs2022")
-  set(file_id "1ln0ALJsCcZnfMFNS3sFx-ytZ5c4UduHY")
-  set(file_hash "3baac3c823bd9a6c0aaa13cb12fe5ce0e2d3ad55e6b1a82890b495944fc7561663658c3e7d73dbe95e73abbdd3dc13c61fb9e9b22dc484e1b960d2b1c70052cd")
+  set(file_id "1KHiNJzgyO722S1z0IQ2kfS_dsnAC1RFs")
+  set(file_hash "b7659587f0bb8cbd953b6082e86ab4b325baf0ff4d6027611a919ed2878d6d33f2b93a3d10ed7d32918db04c8335de9ad63d58a4877abc5e0eeedaa8f406927d")
 elseif ("$ENV{CMAKE_CONFIGURATION}" MATCHES "macos_arm64")
-  set(file_id "1g8eJ5Qo_CY-x-mr-1FdScy3g-1oGOyUW")
-  set(file_hash "fc52085e6c1056c7fb75d3b77cc3ca05e3b2138378a3687b50da3585e57bc0d2836d832b16574e65b0eec48de87f65a8cfb7a3e4a31da30dc1809240dcab4a81")
+  set(file_id "1vA1EGoWWGdzUGsgBDN2kFNyrBOHRRFn9")
+  set(file_hash "9323f5354bb667ea97bfbf8d61680fa8da42ae7511753d09669e20434fac7feba71720ce663754e55baadf69b7f306509b856c90b55ba834b5edfcd47f4e98b4")
 else ()
   message(FATAL_ERROR
     "Unknown build to use for the superbuild")

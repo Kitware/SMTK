@@ -137,7 +137,7 @@ void qtGroupItem::createWidget()
   m_widget->setObjectName(item->name().c_str());
   auto* mainLayout = new QVBoxLayout(m_widget);
   mainLayout->setObjectName("mainLayout");
-  mainLayout->setMargin(0);
+  mainLayout->setContentsMargins(0, 0, 0, 0);
   mainLayout->setSpacing(0);
   mainLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
   m_internals->m_mainFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -147,7 +147,7 @@ void qtGroupItem::createWidget()
   mainLayout->addWidget(m_internals->m_titleFrame);
   auto* titleLayout = new QHBoxLayout(m_internals->m_titleFrame);
   titleLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-  titleLayout->setMargin(0);
+  titleLayout->setContentsMargins(0, 0, 0, 0);
 
   // We create both a checkbox and plain label for the group item since
   // its optional property could change while it is being displayed via
@@ -193,14 +193,14 @@ void qtGroupItem::createWidget()
   auto* hLayout = new QHBoxLayout(m_internals->ButtonsFrame);
   hLayout->setObjectName("hLayout");
   contentsLayout->addWidget(m_internals->ButtonsFrame);
-  hLayout->setMargin(0);
+  hLayout->setContentsMargins(0, 0, 0, 0);
 
   m_internals->ChildrensFrame = new QFrame(m_internals->m_contentsFrame);
   m_internals->ChildrensFrame->setObjectName("ChildrensFrame");
   auto* vLayout = new QVBoxLayout(m_internals->ChildrensFrame);
   vLayout->setObjectName("vLayout");
   contentsLayout->addWidget(m_internals->ChildrensFrame);
-  vLayout->setMargin(0);
+  vLayout->setContentsMargins(0, 0, 0, 0);
 
   if (this->isReadOnly())
   {
@@ -418,12 +418,12 @@ void qtGroupItem::addSubGroup(int i)
   QBoxLayout* subGroupLayout = new QVBoxLayout(subGroupFrame);
   if (item->numberOfGroups() == 1)
   {
-    subGroupLayout->setMargin(0);
+    subGroupLayout->setContentsMargins(0, 0, 0, 0);
     subGroupFrame->setFrameStyle(QFrame::NoFrame);
   }
   else
   {
-    frameLayout->setMargin(0);
+    frameLayout->setContentsMargins(0, 0, 0, 0);
     subGroupFrame->setFrameStyle(QFrame::Panel);
   }
   subGroupLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);

@@ -81,7 +81,8 @@ public:
 
 protected:
   // Implemented using Boost's UUID library.
-  boost::uuids::uuid m_data;
+  // Explicit value initialization preserves nil UUID behavior with older Boost versions.
+  boost::uuids::uuid m_data{}; // NOLINT(readability-redundant-member-init)
 };
 
 typedef std::set<UUID> UUIDs;

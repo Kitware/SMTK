@@ -1,7 +1,7 @@
 # ==============================================================================
 # Source
 # ==============================================================================
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Core Widgets)
 
 # Qt UI files
 # ------------

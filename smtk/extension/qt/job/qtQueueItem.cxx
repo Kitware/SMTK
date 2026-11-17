@@ -262,7 +262,7 @@ public:
     }
     m_widget = new QWidget;
     m_layout = new QHBoxLayout;
-    m_layout->setMargin(0);
+    m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(0);
     m_label = new QLabel("Queue");
     m_label->setObjectName("label");

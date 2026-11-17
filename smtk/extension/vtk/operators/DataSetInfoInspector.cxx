@@ -30,6 +30,10 @@
 
 #include "vtkCellIterator.h"
 #include "vtkCellType.h"
+#include "vtkVersionMacros.h"
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+#include "vtkCellTypeUtilities.h"
+#endif
 #include "vtkCellTypes.h"
 #include "vtkDataArray.h"
 #include "vtkDataSet.h"
@@ -143,7 +147,11 @@ void prepareResult(DataSetInfoInspector::Result& result, std::set<DataSetInfo>& 
     {
       if (count != 0)
       {
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+        std::string cellTypeName = vtkCellTypeUtilities::GetClassNameFromTypeId(jj);
+#else
         std::string cellTypeName = vtkCellTypes::GetClassNameFromTypeId(jj);
+#endif
         std::string itemName = cellTypeName + " count";
         if (auto item = info->findAs<IntItem>(ii, itemName))
         {

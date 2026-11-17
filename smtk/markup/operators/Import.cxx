@@ -41,6 +41,10 @@
 
 #include "vtkCellData.h"
 #include "vtkCellTypes.h"
+#include "vtkVersionMacros.h"
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+#include "vtkCellTypeUtilities.h"
+#endif
 #include "vtkDataArray.h"
 #include "vtkDataSet.h"
 #include "vtkDataSetSurfaceFilter.h"
@@ -152,7 +156,11 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
     for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTuples(); ++ii)
     {
       int cellType = cellTypes->GetTuple1(ii);
-      int dim = vtkCellTypes::GetDimension(cellType);
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+      int dim = vtkCellTypeUtilities::GetDimension(static_cast<unsigned char>(cellType));
+#else
+      int dim = vtkCellTypes::GetDimension(static_cast<unsigned char>(cellType));
+#endif
       if (dim > result)
       {
         result = dim;
@@ -162,13 +170,20 @@ int maxDimension(vtkSmartPointer<vtkDataObject> data)
   else
 #endif
   {
-    // Use deprecated API.
     vtkNew<vtkCellTypes> cellTypes;
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+    dset->GetDistinctCellTypes(cellTypes);
+#else
     dset->GetCellTypes(cellTypes);
+#endif
     for (vtkIdType ii = 0; ii < cellTypes->GetNumberOfTypes(); ++ii)
     {
       int cellType = cellTypes->GetCellType(ii);
-      int dim = vtkCellTypes::GetDimension(cellType);
+#if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9, 6, 0)
+      int dim = vtkCellTypeUtilities::GetDimension(static_cast<unsigned char>(cellType));
+#else
+      int dim = vtkCellTypes::GetDimension(static_cast<unsigned char>(cellType));
+#endif
       if (dim > result)
       {
         result = dim;

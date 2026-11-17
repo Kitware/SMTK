@@ -383,14 +383,14 @@ void pqSMTKAttributeItemWidget::updateUI()
   m_widget = new QFrame(this->parentWidget());
   m_widget->setObjectName(dataObj->name().c_str());
   this->m_p->m_layout = new QGridLayout(m_widget);
-  this->m_p->m_layout->setMargin(0);
+  this->m_p->m_layout->setContentsMargins(0, 0, 0, 0);
   this->m_p->m_layout->setSpacing(0);
   this->m_p->m_layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);
 
   QHBoxLayout* labelLayout = new QHBoxLayout();
-  labelLayout->setMargin(0);
+  labelLayout->setContentsMargins(0, 0, 0, 0);
   labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
@@ -475,7 +475,7 @@ void pqSMTKAttributeItemWidget::createEditor()
   }
 
   QBoxLayout* editorLayout = new QHBoxLayout;
-  editorLayout->setMargin(0);
+  editorLayout->setContentsMargins(0, 0, 0, 0);
   editorLayout->setSpacing(3);
 
   // remove previous signal-slot links

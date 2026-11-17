@@ -88,7 +88,9 @@
 #include <ctime>
 #include <sstream>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "moc_pqJobRunnerView.cpp"
+#endif
 
 // Set this to a non-zero value to print debug information.
 #define SMTK_DEBUG 0

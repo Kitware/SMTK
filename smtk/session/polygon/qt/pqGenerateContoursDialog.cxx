@@ -171,7 +171,7 @@ pqGenerateContoursDialog::pqGenerateContoursDialog(
       .Set(vtkPVRenderView::INTERACTION_MODE_2D);
 
     QVBoxLayout* vboxlayout = new QVBoxLayout(this->InternalWidget->renderFrame);
-    vboxlayout->setMargin(0);
+    vboxlayout->setContentsMargins(0, 0, 0, 0);
     vboxlayout->addWidget(this->RenderView->widget());
 
     this->ContourRepresentation = nullptr;

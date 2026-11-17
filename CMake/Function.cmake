@@ -5,9 +5,9 @@ function(determineFunctionType found type ptype incType)
 
   set(RESULT)
   set(PLACEHOLDERS_RESULT)
-  set(FUNCTION_TYPE_FOUND FALSE)
+  unset(FUNCTION_TYPE_FOUND CACHE)
 
-  if(NOT ${FUNCTION_TYPE_FOUND})
+  if(NOT FUNCTION_TYPE_FOUND)
     try_compile(FUNCTION_TYPE_FOUND
       ${PROJECT_BINARY_DIR}/CMakeTmp
       ${PROJECT_SOURCE_DIR}/CMake/function.cxx
@@ -16,7 +16,7 @@ function(determineFunctionType found type ptype incType)
         -DCMAKE_CXX_STANDARD_REQUIRED:BOOL=${CMAKE_CXX_STANDARD_REQUIRED}
         -DCMAKE_CXX_EXTENSIONS:BOOL=${CMAKE_CXX_EXTENSIONS}
     )
-    if(${FUNCTION_TYPE_FOUND})
+    if(FUNCTION_TYPE_FOUND)
       set(RESULT "std")
       set(PLACEHOLDERS_RESULT "
         using ${RESULT}::placeholders::_1;
@@ -28,12 +28,12 @@ function(determineFunctionType found type ptype incType)
     endif()
   endif()
 
-  if(NOT ${FUNCTION_TYPE_FOUND})
+  if(NOT FUNCTION_TYPE_FOUND)
     try_compile(FUNCTION_TYPE_FOUND
       ${PROJECT_BINARY_DIR}/CMakeTmp
       ${PROJECT_SOURCE_DIR}/CMake/function_tr1.cxx
     )
-    if(${FUNCTION_TYPE_FOUND})
+    if(FUNCTION_TYPE_FOUND)
       set(RESULT "std::tr1")
       set(PLACEHOLDERS_RESULT "${RESULT}")
       set(PLACEHOLDERS_RESULT "
@@ -46,13 +46,13 @@ function(determineFunctionType found type ptype incType)
     endif()
   endif()
 
-  if(NOT ${FUNCTION_TYPE_FOUND})
+  if(NOT FUNCTION_TYPE_FOUND)
     try_compile(FUNCTION_TYPE_FOUND
       ${PROJECT_BINARY_DIR}/CMakeTmp
       ${PROJECT_SOURCE_DIR}/CMake/function_boost.cxx
       CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${Boost_INCLUDE_DIRS}"
     )
-    if(${FUNCTION_TYPE_FOUND})
+    if(FUNCTION_TYPE_FOUND)
       set(RESULT "boost")
       set(PLACEHOLDERS_RESULT "
         // This is empty when using Boost as it puts the

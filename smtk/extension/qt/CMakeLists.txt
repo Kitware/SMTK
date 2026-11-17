@@ -1,4 +1,4 @@
-find_package(Qt5 REQUIRED COMPONENTS Core Svg Widgets)
+find_package("Qt${SMTK_QT_VERSION}" REQUIRED COMPONENTS Core Svg Widgets)
 
 # set up sources to build
 set(QAttrLibSrcs
@@ -360,9 +360,9 @@ target_include_directories(smtkQtExt PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(smtkQtExt
   LINK_PUBLIC
     smtkCore
-    Qt5::Core
-    Qt5::Svg
-    Qt5::Widgets
+    "Qt${SMTK_QT_VERSION}::Core"
+    "Qt${SMTK_QT_VERSION}::Svg"
+    "Qt${SMTK_QT_VERSION}::Widgets"
   LINK_PRIVATE
     Threads::Threads
     SQLite::SQLite3
