@@ -2423,6 +2423,8 @@
         label="Container Engine Path"
         number_of_elements="1"
         default_values=""
+        command="SetContainerEnginePath"
+        information_property="ContainerEnginePathInfo"
         panel_visibility="default">
         <Documentation>
           The path to the container engine executable.
@@ -2434,6 +2436,12 @@
           <PlaceholderText>Only used when a job's queue requires a container image.</PlaceholderText>
           <SaveInQSettings both="1"/>
         </Hints>
+      </StringVectorProperty>
+
+      <StringVectorProperty
+        name="ContainerEnginePathInfo"
+        command="GetContainerEnginePath"
+        information_only="1">
       </StringVectorProperty>
 
       <Hints>
