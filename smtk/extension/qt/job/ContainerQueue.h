@@ -38,6 +38,8 @@ class SMTKQTEXT_EXPORT ContainerQueue
   Q_OBJECT
   Q_PROPERTY(
     QString rootJobDirectory READ rootJobDirectoryAsString WRITE setRootJobDirectoryAsString);
+  Q_PROPERTY(
+    QString engineExecutable READ engineExecutableAsString WRITE setEngineExecutableAsString);
 
 public:
   smtkTypeMacro(smtk::qt::job::ContainerQueue);
@@ -110,6 +112,7 @@ public:
   /// The supported engines include podman and docker.
   /// In the future, singularity/apptainer may also be supported.
   std::filesystem::path engineExecutable() const;
+  QString engineExecutableAsString() const;
 
   /// Get whether the queue is online or not.
   ///
@@ -178,6 +181,7 @@ protected Q_SLOTS:
   /// The supported engines include podman and docker.
   /// In the future, singularity/apptainer may also be supported.
   bool setEngineExecutable(std::filesystem::path engineExecutable);
+  bool setEngineExecutableAsString(const QString& engineExecutable);
   ///@}
 
   ///@{

@@ -511,6 +511,18 @@ std::filesystem::path ContainerQueue::engineExecutable() const
                                          : m_p->m_engineExecutable;
 }
 
+QString ContainerQueue::engineExecutableAsString() const
+{
+  return QString::fromStdString(this->engineExecutable().string());
+}
+
+bool ContainerQueue::setEngineExecutableAsString(const QString& engineExecutable)
+{
+  return this->setEngineExecutable(
+    engineExecutable.isEmpty() ? std::filesystem::path("podman")
+                               : std::filesystem::path(engineExecutable.toStdString()));
+}
+
 bool ContainerQueue::setEngineExecutable(std::filesystem::path engineExecutable)
 {
   if (engineExecutable == m_p->m_engineExecutable)

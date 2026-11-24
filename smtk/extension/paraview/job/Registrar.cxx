@@ -29,6 +29,7 @@
 #include "vtkSMProxy.h"
 #include "vtkSMSessionProxyManager.h"
 
+#include <QPointer>
 #include <QTimer>
 #include <QtGlobal> // For Q_OS_WIN
 
@@ -52,12 +53,16 @@ namespace
 std::set<std::shared_ptr<smtk::qt::job::ContainerQueue>> g_queuesToRemove;
 
 pqPropertyLinks g_projectRootLink;
+pqPropertyLinks g_containerEngineLink;
+QPointer<pqServerManagerModel> g_settingsModel;
 
 // Observe completion independently of the lifetime of any task's view.
 std::map<smtk::operation::Manager*, smtk::operation::Observers::Key> g_artifactObservers;
 
 // This is called whenever a new pqServer attaches and monitors the SMTK settings for
-// changes. If the "ProjectsRootFolder" property is modified, any queues created by
+// changes. Copy the loaded container engine into each queue before linking its
+// project root, since changing the root can launch the container engine.
+// If the "ProjectsRootFolder" property is modified, any queues created by
 // this registrar have their "rootJobDirectory" updated to match so that the
 // host OS maps the "ProjectsRootFolder" to its VM (allowing individual containers to
 // access each job's case directory).
@@ -69,8 +74,18 @@ void serverConnect(pqServer* server)
     return;
   }
   g_projectRootLink.removeAllPropertyLinks();
+  g_containerEngineLink.removeAllPropertyLinks();
   for (const auto& queue : g_queuesToRemove)
   {
+    // This one-way link initializes queues created before settings were loaded
+    // and tracks applied settings changes. Do not copy queue defaults back into
+    // the user's settings.
+    g_containerEngineLink.addPropertyLink(
+      queue.get(),
+      "engineExecutable",
+      "",
+      smtkProxy,
+      smtkProxy->GetProperty("ContainerEnginePath"));
     g_projectRootLink.addPropertyLink(
       queue.get(),
       "rootJobDirectory",
@@ -84,23 +99,26 @@ void serverConnect(pqServer* server)
 void serverDisconnect(pqServer*)
 {
   g_projectRootLink.removeAllPropertyLinks();
+  g_containerEngineLink.removeAllPropertyLinks();
 }
 
-// This is called to reset the container queue's virtual machine
-// (WSL2/HyperV on Windows, ??? on MacOS) as the "ProjectsRootFolder"
-// is modified by users in the settings dialog.
-void syncSettingsProjectsRootFolder()
+// Bind queues to settings once the application and its server are ready.
+// Registration may happen before saved settings have been loaded.
+void syncSettings()
 {
   auto* core = pqApplicationCore::instance();
   if (!core)
   {
-    QTimer::singleShot(50 /*ms*/, &syncSettingsProjectsRootFolder);
+    QTimer::singleShot(50 /*ms*/, &syncSettings);
     return;
   }
-  QObject::connect(
-    core->getServerManagerModel(), &pqServerManagerModel::serverReady, &serverConnect);
-  QObject::connect(
-    core->getServerManagerModel(), &pqServerManagerModel::aboutToRemoveServer, &serverDisconnect);
+  if (g_settingsModel != core->getServerManagerModel())
+  {
+    g_settingsModel = core->getServerManagerModel();
+    QObject::connect(g_settingsModel.data(), &pqServerManagerModel::serverReady, &serverConnect);
+    QObject::connect(
+      g_settingsModel.data(), &pqServerManagerModel::aboutToRemoveServer, &serverDisconnect);
+  }
   if (auto* server = core->getActiveServer())
   {
     serverConnect(server);
@@ -194,7 +212,7 @@ void Registrar::registerTo(const smtk::common::Managers::Ptr& managers)
       // on windows. (We should undo this change when possible.)
       jobManager->activeQueue().switchTo(containerQueue.get());
     }
-    syncSettingsProjectsRootFolder();
+    syncSettings();
 #endif // Q_OS_WIN
   }
 }
